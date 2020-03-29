@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Prepare
+      run: chmod +x ./build.sh
+    
+    - name: Install prerequisites
+      run: ./build.sh install-prerequisites
+
+    - name: Build
+      run: ./build.sh
