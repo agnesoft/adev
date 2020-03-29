@@ -12,9 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Prepare
-      run: chmod +x ./build.sh
+
     
     - name: Install prerequisites
       run: ./build.sh install-prerequisites
