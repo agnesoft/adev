@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
     - name: Build
       run: ./build.sh
 
-  build:
+  build-windows:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
