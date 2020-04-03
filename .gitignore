@@ -33,3 +33,6 @@
 
 # User files
 *.user
+
+# Build files
+build/
