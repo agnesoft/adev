@@ -9,15 +9,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    
     - name: Prepare
       run: chmod +x ./build.sh
-    
     - name: Install prerequisites
       run: ./build.sh install-prerequisites
-
     - name: Build
       run: ./build.sh
+
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install prerequisites
+      run: ./build.bat install-prerequisites
+    - name: Build
+      run: ./build.bat
