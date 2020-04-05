@@ -19,13 +19,13 @@ jobs:
             runner: ubuntu-latest,
             environment: "",
             ninja: linux,
-            cc: gcc,
-            cxx: g++
+            cc: gcc-9,
+            cxx: g++-9
           }
         - {
             name: "Windows Latest MSVC",
             runner: windows-latest,
-            environment: 'cmd /c "C:\Progra~2\Micros~1\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat && C:\Progra~1\Git\Bin\bash.exe"',
+            environment: 'cmd /c "C:\Progra~2\Micros~1\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat & C:\Progra~1\Git\Bin\bash.exe"',
             ninja: win,
             cc: cl,
             cxx: cl
