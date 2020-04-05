@@ -49,4 +49,5 @@ jobs:
     - name: Test
       run: |
         cd adev-linux-gcc-x64/test
+        find -name "*Test" -type f -exec chmod +x {} ";"
         find -name "*Test" -type f -executable -exec {} ";"

@@ -49,4 +49,5 @@ jobs:
     - name: Test
       run: |
         cd adev-mac-clang-x64/test
+        find . -name "*Test" -type f -exec chmod 755 {} ";"
         find . -name "*Test" -type f -exec {} ";"
