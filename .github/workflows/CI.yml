@@ -7,60 +7,75 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: ${{matrix.config.name}}
-    runs-on: ${{matrix.config.runner}}
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-        - {
-            name: "Ubuntu Latest GCC",
-            runner: ubuntu-latest,
-            environment: "",
-            ninja: linux,
-            cc: gcc-9,
-            cxx: g++-9
-          }
-        - {
-            name: "Windows Latest MSVC",
-            runner: windows-latest,
-            environment: 'cmd /c "C:\Progra~2\Micros~1\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat & bash.exe"',
-            ninja: win,
-            cc: cl,
-            cxx: cl
-          }
-        - {
-            name: "macOS Latest Clang",
-            runner: macos-latest,
-            environment: "",
-            ninja: mac,
-            cc: clang,
-            cxx: clang++
-          }
+  build_gcc:
+    name: Ubuntu GCC
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare Environment
+    - name: Prepare
       run: |
-        ${{matrix.config.environment}}
         mkdir build
         cd build
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{matrix.config.ninja}}.zip
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
         unzip ninja.zip
-      
-    - name: Generate Build
+    - name: Generate
       run: |
-        ${{matrix.config.environment}}
-        echo Setting variables...
-        export PATH=.:$PATH
-        export CC=${{matrix.config.cc}}
-        export CXX=${{matrix.config.cxx}}
         cd build
-        echo Building...
+        export PATH=.:$PATH
+        export CC=gcc-9
+        export CXX=g++-9
         cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
-        
     - name: Build
       run: |
-        ${{matrix.config.environment}}
+        cd build
+        ./ninja
+
+  build_msvc:
+    name: Windows MSVC
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      shell: bash
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-win.zip
+        unzip ninja.zip
+    - name: Generate
+      shell: cmd
+      run: |
+        cd build
+        set CC=cl
+        set CXX=cl
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+    - name: Build
+      shell: cmd
+      run: |
+        cd build
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        ninja
+
+  build_clang:
+    name: macOS Clang
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-mac.zip
+        unzip ninja.zip
+    - name: Generate
+      run: |
+        cd build
+        export PATH=.:$PATH
+        export CC=clang
+        export CXX=clang++
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
         cd build
         ./ninja
