@@ -8,21 +8,63 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: ${{matrix.configuration.name}}
+    runs-on: ${{matrix.configuration.runner}}
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration:
+        - {
+            name: "Ubuntu Latest GCC",
+            runner: ubuntu-latest,
+            shell: bash
+            environment: "",
+            ninja: linux,
+            cc: gcc
+            cxx: g++
+          }
+        - {
+            name: "Windows Latest MSVC",
+            runner: windows-latest,
+            shell: cmd
+            environment: '"C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat" && C:/Program Files/Git/bin/bash.exe"',
+            ninja: win,
+            cc: cl
+            cxx: cl
+          }
+        - {
+            name: "macOS Latest Clang",
+            runner: macos-latest,
+            shell: bash
+            environment: "",
+            ninja: mac,
+            cc: clang
+            cxx: clang++
+          }
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare
-      run: chmod +x ./build.sh
-    - name: Install prerequisites
-      run: ./build.sh install-prerequisites
+    - name: Prepare Environment
+      shell: ${{matrix.configuration.shell}}
+      run: |
+        ${{matrix.configuration.environment}}
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{matrix.configuration.ninja}}.zip
+        unzip ninja.zip
+      
+    - name: Generate Build
+      shell: ${{matrix.configuration.shell}}
+      run: |
+        ${{matrix.configuration.environment}}
+        export PATH=.:$PATH
+        export CC=${{matrix.configuration.cc}}
+        export CXX=${{matrix.configuration.cxx}}
+        cd build
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+        
     - name: Build
-      run: ./build.sh
-
-  build:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install prerequisites
-      run: ./build.bat install-prerequisites
-    - name: Build
-      run: ./build.bat
+      shell: ${{matrix.configuration.shell}}
+      run: |
+        ${{matrix.configuration.environment}}
+        cd build
+        ninja
