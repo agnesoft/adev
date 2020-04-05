@@ -1,0 +1,34 @@
+name: Windows MSVC
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      shell: bash
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-win.zip
+        unzip ninja.zip
+    - name: Generate
+      shell: cmd
+      run: |
+        cd build
+        set CC=cl
+        set CXX=cl
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+    - name: Build
+      shell: cmd
+      run: |
+        cd build
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        ninja
