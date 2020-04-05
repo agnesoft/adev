@@ -25,15 +25,34 @@ jobs:
         set CC=cl
         set CXX=cl
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
     - name: Build
       shell: cmd
       run: |
         cd build
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         ninja
-    - name: Test
+    - name: Install
       shell: bash
       run: |
         cd build
+        ./ninja install
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-windows-msvc-x64
+        path: build/bin/
+
+  test:
+    needs: build
+    runs-on: windows-latest
+    steps:
+    - name: Download
+      uses: actions/download-artifact@v1
+      with:
+        name: adev-windows-msvc-x64
+    - name: Test
+      shell: bash
+      run: |
+        cd adev-windows-msvc-x64/test
         find -name "*Test.exe" -type f -executable -exec {} ";"
