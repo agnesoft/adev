@@ -24,3 +24,6 @@ target_link_libraries(ABuild ABuildStatic)
 #ABuildTest
 add_executable(ABuildTest projects/ABuild/test/FileTest.cpp)
 target_link_libraries(ABuildTest ABuildStatic Catch2)
+
+install(TARGETS ABuild DESTINATION bin)
+install(TARGETS ABuildTest DESTINATION bin/test)
