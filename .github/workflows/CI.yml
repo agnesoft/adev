@@ -51,10 +51,12 @@ jobs:
     - name: Generate Build
       run: |
         ${{matrix.config.environment}}
+        echo Setting variables...
         export PATH=.:$PATH
         export CC=${{matrix.config.cc}}
         export CXX=${{matrix.config.cxx}}
         cd build
+        echo Building...
         cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
         
     - name: Build
