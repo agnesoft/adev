@@ -23,12 +23,30 @@ jobs:
         export PATH=.:$PATH
         export CC=clang
         export CXX=clang++
-        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
     - name: Build
       run: |
         cd build
         ./ninja
-    - name: Test
+    - name: Install
       run: |
         cd build
+        ./ninja install
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-mac-clang-x64
+        path: build/bin/
+
+  test:
+    needs: build
+    runs-on: macos-latest
+    steps:
+    - name: Download
+      uses: actions/download-artifact@v1
+      with:
+        name: adev-mac-clang-x64
+    - name: Test
+      run: |
+        cd build/bin/test
         find . -name "*Test" -type f -exec {} ";"
