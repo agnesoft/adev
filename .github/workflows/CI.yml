@@ -17,7 +17,7 @@ jobs:
         - {
             name: "Ubuntu Latest GCC",
             runner: ubuntu-latest,
-            shell: bash
+            shell: bash,
             environment: "",
             ninja: linux,
             cc: gcc
@@ -26,7 +26,7 @@ jobs:
         - {
             name: "Windows Latest MSVC",
             runner: windows-latest,
-            shell: cmd
+            shell: cmd,
             environment: '"C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat" && C:/Program Files/Git/bin/bash.exe"',
             ninja: win,
             cc: cl
@@ -35,7 +35,7 @@ jobs:
         - {
             name: "macOS Latest Clang",
             runner: macos-latest,
-            shell: bash
+            shell: bash,
             environment: "",
             ninja: mac,
             cc: clang
