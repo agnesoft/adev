@@ -1,0 +1,30 @@
+name: Ubuntu GCC
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
+        unzip ninja.zip
+    - name: Generate
+      run: |
+        cd build
+        export PATH=.:$PATH
+        export CC=gcc-9
+        export CXX=g++-9
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: |
+        cd build
+        ./ninja
