@@ -10,3 +10,4 @@ target_include_directories(Catch2 PUBLIC projects/Catch2/include)
 
 #ABuild
 add_executable(ABuild projects/ABuild/main.cpp)
+target_compile_features(ABuild PRIVATE cxx_std_17)
