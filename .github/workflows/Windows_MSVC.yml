@@ -36,7 +36,7 @@ jobs:
       shell: bash
       run: |
         cd build
-        ninja install
+        ./ninja install
     - name: Archive
       uses: actions/upload-artifact@v1
       with:
@@ -54,5 +54,5 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        cd build/bin/test
+        cd adev-windows-msvc-x64/test
         find -name "*Test.exe" -type f -executable -exec {} ";"

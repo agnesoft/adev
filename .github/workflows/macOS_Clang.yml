@@ -48,5 +48,5 @@ jobs:
         name: adev-mac-clang-x64
     - name: Test
       run: |
-        cd build/bin/test
+        cd adev-mac-clang-x64/test
         find . -name "*Test" -type f -exec {} ";"
