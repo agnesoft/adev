@@ -11,6 +11,16 @@ target_compile_features(Catch2 PUBLIC cxx_std_17)
 target_include_directories(Catch2 PRIVATE projects/Catch2/include/Catch2)
 target_include_directories(Catch2 PUBLIC projects/Catch2/include)
 
+#ABuild Static Library
+add_library(ABuildStatic STATIC projects/ABuild/include/ABuild.hpp projects/ABuild/File.cpp projects/ABuild/include/ABuild/File.hpp)
+target_compile_features(ABuildStatic PUBLIC cxx_std_17)
+target_include_directories(ABuildStatic PRIVATE projects/ABuild/include/ABuild)
+target_include_directories(ABuildStatic PUBLIC projects/ABuild/include)
+
 #ABuild
-add_executable(ABuild projects/ABuild/main.cpp projects/ABuild/File.cpp projects/ABuild/File.hpp)
-target_compile_features(ABuild PRIVATE cxx_std_17)
+add_executable(ABuild projects/ABuild/main.cpp)
+target_link_libraries(ABuild ABuildStatic)
+
+#ABuildTest
+add_executable(ABuildTest projects/ABuild/test/FileTest.cpp)
+target_link_libraries(ABuildTest ABuildStatic Catch2)

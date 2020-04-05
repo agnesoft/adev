@@ -1,5 +1,5 @@
-#ifndef ABUILD_FILE
-#define ABUILD_FILE
+#ifndef ABUILD_FILE_HPP
+#define ABUILD_FILE_HPP
 
 #include <filesystem>
 
