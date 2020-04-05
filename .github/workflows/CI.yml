@@ -41,8 +41,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Environment
+      shell: bash
       run: |
-        ${{matrix.config.environment}}
         mkdir build
         cd build
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{matrix.config.ninja}}.zip
@@ -52,10 +52,10 @@ jobs:
       run: |
         ${{matrix.config.environment}}
         echo Setting variables...
+        cd build
         export PATH=.:$PATH
         export CC=${{matrix.config.cc}}
         export CXX=${{matrix.config.cxx}}
-        cd build
         echo Building...
         cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
         
