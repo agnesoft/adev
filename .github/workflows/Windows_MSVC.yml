@@ -36,4 +36,4 @@ jobs:
       shell: bash
       run: |
         cd build
-        find build -name "*Test.exe" -type f -executable -exec {} ";"
+        find -name "*Test.exe" -type f -executable -exec {} ";"
