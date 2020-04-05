@@ -31,4 +31,4 @@ jobs:
     - name: Test
       run: |
         cd build
-        find . -name "*Test" -type f -executable -exec {} ";"
+        find . -name "*Test" -type f -exec {} ";"
