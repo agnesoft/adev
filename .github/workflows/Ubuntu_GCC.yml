@@ -28,3 +28,7 @@ jobs:
       run: |
         cd build
         ./ninja
+    - name: Test
+      run: |
+        cd build
+        find -name "*Test" -type f -executable -exec {} ";"

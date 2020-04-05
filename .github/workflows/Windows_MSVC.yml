@@ -32,3 +32,8 @@ jobs:
         cd build
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         ninja
+    - name: Test
+      shell: bash
+      run: |
+        cd build
+        find -name "*Test.exe" -type f -executable -exec {} ";"
