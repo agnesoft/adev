@@ -8,12 +8,12 @@ on:
 
 jobs:
   build:
-    name: ${{matrix.configuration.name}}
-    runs-on: ${{matrix.configuration.runner}}
+    name: ${{matrix.config.name}}
+    runs-on: ${{matrix.config.runner}}
     strategy:
       fail-fast: false
       matrix:
-        configuration:
+        config:
         - {
             name: "Ubuntu Latest GCC",
             runner: ubuntu-latest,
@@ -44,27 +44,27 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Prepare Environment
-      shell: ${{matrix.configuration.shell}}
+      shell: ${{matrix.config.shell}}
       run: |
-        ${{matrix.configuration.environment}}
+        ${{matrix.config.environment}}
         mkdir build
         cd build
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{matrix.configuration.ninja}}.zip
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{matrix.config.ninja}}.zip
         unzip ninja.zip
       
     - name: Generate Build
-      shell: ${{matrix.configuration.shell}}
+      shell: ${{matrix.config.shell}}
       run: |
-        ${{matrix.configuration.environment}}
+        ${{matrix.config.environment}}
         export PATH=.:$PATH
-        export CC=${{matrix.configuration.cc}}
-        export CXX=${{matrix.configuration.cxx}}
+        export CC=${{matrix.config.cc}}
+        export CXX=${{matrix.config.cxx}}
         cd build
         cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release
         
     - name: Build
-      shell: ${{matrix.configuration.shell}}
+      shell: ${{matrix.config.shell}}
       run: |
-        ${{matrix.configuration.environment}}
+        ${{matrix.config.environment}}
         cd build
         ninja
