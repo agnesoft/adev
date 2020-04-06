@@ -7,7 +7,36 @@ on:
     branches: [ master ]
 
 jobs:
+  check_code:
+    name: Check Code
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Formatting
+      run: |
+        git fetch -q origin master
+        COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
+        if [ ! -z "$COMMITTED_FILES" ]
+        then
+          sudo apt-get -qq update
+          sudo apt-get -qq install software-properties-common
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+          sudo apt-get -qq install clang-format-10
+          clang-format-10 -i $COMMITTED_FILES
+          UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
+          if [ ! -z "$UNFORMATTED_FILES" ]
+          then
+            echo Incorrectly formatted files:
+            echo $UNFORMATTED_FILES
+            echo Run \'clang-format -i $UNFORMATTED_FILES\' and commit the result
+            exit 1
+          fi
+        fi
+        echo Formatting OK
+
   build_linux_gcc:
+    name: Linux GCC
+    needs: check_code
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -43,6 +72,8 @@ jobs:
         find -name "*Test" -type f -executable -exec {} ";"
 
   build_windows_msvc:
+    name: Windows MSVC
+    needs: check_code
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -84,6 +115,8 @@ jobs:
         find -name "*Test.exe" -type f -executable -exec {} ";"
 
   build_macos_clang:
+    name: macOS Clang
+    needs: check_code
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
