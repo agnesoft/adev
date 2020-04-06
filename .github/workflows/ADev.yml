@@ -7,7 +7,27 @@ on:
     branches: [ master ]
 
 jobs:
+  check_formatting:
+    runs-on: ubuntu-latest
+    steps: 
+    - name: clang-format
+      run: |
+        sudo apt update
+        sudo apt install clang-format-10
+        COMMIT=`git rev-parse HEAD`
+        COMMITED_FILES=`git diff-tree --no-commit-id --name-only -r $COMMIT | grep 'cpp\|hpp'`
+        clang-format-10 -i $COMMITED_FILES
+        UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'`
+        if [ ! -z "$UNFORMATTED_FILES" ]
+        then
+          echo Incorrectly formatted files:
+          echo $UNFORMATTED_FILES
+          echo Run \'clang-format $UNFORMATTED_FILES\' and commit the result
+          exit 1
+        fi
+
   build_linux_gcc:
+    needs: check_formatting
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -43,6 +63,7 @@ jobs:
         find -name "*Test" -type f -executable -exec {} ";"
 
   build_windows_msvc:
+    needs: check_formatting
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -84,6 +105,7 @@ jobs:
         find -name "*Test.exe" -type f -executable -exec {} ";"
 
   build_macos_clang:
+    needs: check_formatting
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
