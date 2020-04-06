@@ -1,0 +1,119 @@
+name: ADev
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build_linux_gcc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
+        unzip ninja.zip
+    - name: Generate
+      run: |
+        cd build
+        export PATH=.:$PATH
+        export CC=gcc-9
+        export CXX=g++-9
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
+    - name: Build
+      run: |
+        cd build
+        ./ninja
+    - name: Install
+      run: |
+        cd build
+        ./ninja install
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-linux-gcc-x64
+        path: build/bin/
+    - name: Test
+      run: |
+        cd build/test
+        find -name "*Test" -type f -executable -exec {} ";"
+
+  build_windows_msvc:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      shell: bash
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-win.zip
+        unzip ninja.zip
+    - name: Generate
+      shell: cmd
+      run: |
+        cd build
+        set CC=cl
+        set CXX=cl
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
+    - name: Build
+      shell: cmd
+      run: |
+        cd build
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        ninja
+    - name: Install
+      shell: bash
+      run: |
+        cd build
+        ./ninja install
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-windows-msvc-x64
+        path: build/bin/
+    - name: Test
+      shell: bash
+      run: |
+        cd build/test
+        find -name "*Test.exe" -type f -executable -exec {} ";"
+
+  build_macos_clang:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare
+      run: |
+        mkdir build
+        cd build
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-mac.zip
+        unzip ninja.zip
+    - name: Generate
+      run: |
+        cd build
+        export PATH=.:$PATH
+        export CC=clang
+        export CXX=clang++
+        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
+    - name: Build
+      run: |
+        cd build
+        ./ninja
+    - name: Install
+      run: |
+        cd build
+        ./ninja install
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-mac-clang-x64
+        path: build/bin/
+    - name: Test
+      run: |
+        cd build/test
+        find . -name "*Test" -type f -exec {} ";"
