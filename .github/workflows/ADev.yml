@@ -17,7 +17,7 @@ jobs:
     - name: Formatting
       run: |
         git fetch origin master
-        git diff --name-only HEAD master
+        git diff --name-only HEAD origin/master
         if [ ! -z "$COMMITTED_FILES" ]
         then
           echo Installing clang-format-10...
