@@ -21,7 +21,7 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get -qq install software-properties-common
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt-get -qq install clang-format-10 > /dev/null
+          sudo apt-get -qq install clang-format-10
           clang-format-10 -i $COMMITTED_FILES
           UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
           if [ ! -z "$UNFORMATTED_FILES" ]
