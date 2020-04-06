@@ -13,6 +13,8 @@ jobs:
     - name: clang-format
       run: |
         sudo apt update
+        sudo apt install add-apt-repository
+        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
         sudo apt install clang-format-10
         COMMIT=`git rev-parse HEAD`
         COMMITED_FILES=`git diff-tree --no-commit-id --name-only -r $COMMIT | grep 'cpp\|hpp'`
