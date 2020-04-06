@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 2
     - name: Formatting
       run: |
-        COMMITTED_FILES=`git diff --name-only HEAD^ HEAD | grep 'cpp\|hpp'`
+        COMMITTED_FILES=`git show --pretty="" --name-only HEAD | grep 'cpp\|hpp'`
         echo COMMITED_FILES are $COMMITTED_FILES
         if [ ! -z "$COMMITTED_FILES" ]
         then
