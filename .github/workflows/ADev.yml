@@ -11,21 +11,25 @@ jobs:
     name: Check Code
     runs-on: ubuntu-latest
     steps:
-    - name: Prepare
-      run: |
-        sudo apt update
-        sudo apt install software-properties-common
-        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
-        sudo apt install clang-format-10
     - uses: actions/checkout@v2 
     - name: Formatting
       run: |
         COMMIT=`git rev-parse HEAD`
-        COMMITED_FILES=`git diff-tree --no-commit-id --name-only -r $COMMIT | grep 'cpp\|hpp'`
-        if [ ! -z "$COMMITED_FILES" ]
+        echo COMMIT is $COMMIT
+        COMMITTED_FILES=`git diff-tree --no-commit-id --name-only -r $COMMIT | grep 'cpp\|hpp'`
+        echo COMMITED_FILES are $COMMITTED_FILES
+        if [ ! -z "$COMMITTED_FILES" ]
         then
+          echo Installing clang-format-10...
+          sudo apt update
+          sudo apt install software-properties-common
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
+          sudo apt install clang-format-10
+          echo About to run clang-format-10...
           clang-format-10 -i $COMMITED_FILES
+          echo Finished with clang-format-10...
           UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'`
+          echo UNFORMATTED_FILES are $UNFORMATTED_FILES
           if [ ! -z "$UNFORMATTED_FILES" ]
           then
             echo Incorrectly formatted files:
