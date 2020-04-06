@@ -17,19 +17,15 @@ jobs:
     - name: Formatting
       run: |
         git fetch origin master
-        COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp'`
+        COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp'` || [[ $? == 1 ]]
         if [ ! -z "$COMMITTED_FILES" ]
         then
-          echo Installing clang-format-10...
           sudo apt update
           sudo apt install software-properties-common
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
           sudo apt install clang-format-10
-          echo About to run clang-format-10...
           clang-format-10 -i $COMMITED_FILES
-          echo Finished with clang-format-10...
-          UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'`
-          echo UNFORMATTED_FILES are $UNFORMATTED_FILES
+          UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
           if [ ! -z "$UNFORMATTED_FILES" ]
           then
             echo Incorrectly formatted files:
