@@ -8,9 +8,9 @@ namespace abuild
 class File
 {
 public:
-    explicit File(std::filesystem::path path);
+  explicit File(std::filesystem::path path);
 
-    [[nodiscard]] const std::filesystem::path &path() const noexcept;
+      [[nodiscard]] const std::filesystem::path &path() const noexcept;
 
 private:
     std::filesystem::path mPath;
