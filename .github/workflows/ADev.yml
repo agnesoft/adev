@@ -39,7 +39,7 @@ jobs:
         path: build/bin/
     - name: Test
       run: |
-        cd build/test
+        cd build/bin/test
         find -name "*Test" -type f -executable -exec {} ";"
 
   build_windows_msvc:
@@ -80,7 +80,7 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        cd build/test
+        cd build/bin/test
         find -name "*Test.exe" -type f -executable -exec {} ";"
 
   build_macos_clang:
@@ -115,5 +115,5 @@ jobs:
         path: build/bin/
     - name: Test
       run: |
-        cd build/test
+        cd build/bin/test
         find . -name "*Test" -type f -exec {} ";"
