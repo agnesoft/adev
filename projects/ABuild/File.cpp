@@ -2,7 +2,7 @@
 
 namespace abuild
 {
-File::File(std::filesystem::path path) :
+File::File ( std::filesystem::path path ) :
     mPath(std::move(path))
 {
 }
