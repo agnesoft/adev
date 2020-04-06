@@ -15,14 +15,13 @@ jobs:
     - name: Formatting
       run: |
         git fetch origin master > /dev/null
-        COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp'` || [[ $? == 1 ]]
-        echo COMMITTED_FILES are $COMMITTED_FILES
+        COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
         if [ ! -z "$COMMITTED_FILES" ]
         then
-          sudo apt update > /dev/null
-          sudo apt install software-properties-common > /dev/null
+          sudo apt-get update > /dev/null
+          sudo apt-get install software-properties-common > /dev/null
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt install clang-format-10 > /dev/null
+          sudo apt-get install clang-format-10 > /dev/null
           clang-format-10 -i $COMMITTED_FILES
           UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
           if [ ! -z "$UNFORMATTED_FILES" ]
