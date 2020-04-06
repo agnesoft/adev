@@ -7,15 +7,18 @@ on:
     branches: [ master ]
 
 jobs:
-  check_formatting:
+  check_code:
     runs-on: ubuntu-latest
-    steps: 
-    - name: clang-format
+    steps:
+    - name: Prepare
       run: |
         sudo apt update
         sudo apt install software-properties-common
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
         sudo apt install clang-format-10
+    - uses: actions/checkout@v2 
+    - name: Check Formatting
+      run: |
         COMMIT=`git rev-parse HEAD`
         COMMITED_FILES=`git diff-tree --no-commit-id --name-only -r $COMMIT | grep 'cpp\|hpp'`
         clang-format-10 -i $COMMITED_FILES
@@ -29,7 +32,7 @@ jobs:
         fi
 
   build_linux_gcc:
-    needs: check_formatting
+    needs: check_code
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -65,7 +68,7 @@ jobs:
         find -name "*Test" -type f -executable -exec {} ";"
 
   build_windows_msvc:
-    needs: check_formatting
+    needs: check_code
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -107,7 +110,7 @@ jobs:
         find -name "*Test.exe" -type f -executable -exec {} ";"
 
   build_macos_clang:
-    needs: check_formatting
+    needs: check_code
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
