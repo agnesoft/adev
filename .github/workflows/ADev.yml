@@ -13,13 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
     - name: Formatting
       run: |
-        git show-ref
-        COMMIT=`git rev-parse HEAD`
-        echo $COMMIT
-        git show
+        git fetch origin master
+        git diff --name-only HEAD master
         if [ ! -z "$COMMITTED_FILES" ]
         then
           echo Installing clang-format-10...
