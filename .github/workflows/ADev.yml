@@ -8,6 +8,7 @@ on:
 
 jobs:
   check_code:
+    name: Check Code
     runs-on: ubuntu-latest
     steps:
     - name: Prepare
@@ -17,12 +18,13 @@ jobs:
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main"
         sudo apt install clang-format-10
     - uses: actions/checkout@v2 
-    - name: Check Formatting
+    - name: Formatting
       run: |
         COMMIT=`git rev-parse HEAD`
         COMMITED_FILES=`git diff-tree --no-commit-id --name-only -r $COMMIT | grep 'cpp\|hpp'`
         clang-format-10 -i $COMMITED_FILES
         UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'`
+        echo $UNFORMATTED_FILES
         if [ ! -z "$UNFORMATTED_FILES" ]
         then
           echo Incorrectly formatted files:
@@ -32,6 +34,7 @@ jobs:
         fi
 
   build_linux_gcc:
+    name: Linux GCC
     needs: check_code
     runs-on: ubuntu-latest
     steps:
@@ -68,6 +71,7 @@ jobs:
         find -name "*Test" -type f -executable -exec {} ";"
 
   build_windows_msvc:
+    name: Windows MSVC
     needs: check_code
     runs-on: windows-latest
     steps:
@@ -110,6 +114,7 @@ jobs:
         find -name "*Test.exe" -type f -executable -exec {} ";"
 
   build_macos_clang:
+    name: macOS Clang
     needs: check_code
     runs-on: macos-latest
     steps:
