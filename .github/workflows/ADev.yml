@@ -30,6 +30,8 @@ jobs:
             echo $UNFORMATTED_FILES
             echo Run \'clang-format -i $UNFORMATTED_FILES\' and commit the result
             exit 1
+          else
+            echo Formatting OK
           fi
         fi
 
