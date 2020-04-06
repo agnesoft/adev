@@ -18,7 +18,8 @@ jobs:
       run: |
         git show-ref
         COMMIT=`git rev-parse HEAD`
-        git show --pretty="" --name-only $COMMIT
+        echo $COMMIT
+        git show
         if [ ! -z "$COMMITTED_FILES" ]
         then
           echo Installing clang-format-10...
