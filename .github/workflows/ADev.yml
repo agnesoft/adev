@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 0
+        fetch-depth: 2
     - name: Formatting
       run: |
-        COMMITTED_FILES=`git diff-tree --no-commit-id --name-only -r HEAD | grep 'cpp\|hpp'`
+        COMMITTED_FILES=`git diff --name-only HEAD^ HEAD | grep 'cpp\|hpp'`
         echo COMMITED_FILES are $COMMITTED_FILES
         if [ ! -z "$COMMITTED_FILES" ]
         then
