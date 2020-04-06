@@ -12,12 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
     - name: Formatting
       run: |
         git fetch origin master
         COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp'` || [[ $? == 1 ]]
+        echo COMMITTED_FILES are $COMMITTED_FILES
         if [ ! -z "$COMMITTED_FILES" ]
         then
           sudo apt update
