@@ -11,10 +11,12 @@ jobs:
     name: Check Code
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2 
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
     - name: Formatting
       run: |
-        COMMITTED_FILES=`git show --pretty="" --name-only | grep 'cpp\|hpp'`
+        COMMITTED_FILES=`git diff-tree --no-commit-id --name-only -r HEAD | grep 'cpp\|hpp'`
         echo COMMITED_FILES are $COMMITTED_FILES
         if [ ! -z "$COMMITTED_FILES" ]
         then
