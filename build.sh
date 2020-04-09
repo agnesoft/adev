@@ -30,7 +30,7 @@ function printHelp () {
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Options: #2, #3, #4, #5 (see above)"
     echo "    * Builds with the given compilers and configuration (or with defaults if no options are provided)"
-    echo "  build_coverage:"
+    echo "  build-coverage:"
     echo "    * Requires: CMake, Ninja, Clang"
     echo "    * Options: #2"
     echo "    * Builds instrumented binaries with Clang with enabled code coverage."
@@ -42,6 +42,10 @@ function printHelp () {
     echo "    * Requires: llvm-cov, llvm-profdata"
     echo "    * Options: #2"
     echo "    * Runs the tests from code coverage enabled build and generate the code coverage report."
+    echo "  files-to-check:"
+    echo "    * Requires: git"
+    echo "    * Options: None"
+    echo "    * Determines if the files committed in the local branch that are different to the files in origin/master can be checked (i.e. *.cpp, *.hpp). Returns 0 if there are such files."
     echo "  test:"
     echo "    * Requires: None"
     echo "    * Options: #2"
@@ -61,17 +65,27 @@ function isAvailable () {
     test "$CMD"
 }
 
+function filesToCheck () {
+    local COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
+
+    if test "$COMMITTED_FILES"; then
+        exit 0
+    fi
+
+    exit 1
+}
+
 function checkFormatting () {
     if ! isAvailable "clang-format"; then
         echo "ERROR: 'clang-format' is not available"
         exit 1
     fi
 
-    COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp/|hpp' || [[ $? == 1 ]]`
+    local COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
 
     if test "$COMMITTED_FILES"; then
         clang-format -i $COMMITTED_FILES
-        UNFORMATTED_FILES=`git ls-files -m | grep 'cpp/|hpp'` || [[ $? == 1 ]]
+        local UNFORMATTED_FILES=`git ls-files -m | grep 'cpp/|hpp'` || [[ $? == 1 ]]
 
         if test "$UNFORMATTED_FILES"; then
             echo "Incorrectly formatted files: $UNFORMATTED_FILES"
@@ -99,7 +113,7 @@ function buildWindows () {
 
     mkdir -p $BUILD_DIR
     cd $BUILD_DIR
-    BUILD_SCRIPT="call \"${ENV_SCRIPT}\"
+    local BUILD_SCRIPT="call \"${ENV_SCRIPT}\"
                   set CC=${CC}
                   set CXX=${CXX}
                   cmake .. -GNinja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
@@ -176,7 +190,7 @@ function build () {
     fi
 }
 
-function build_coverage () {
+function buildCoverage () {
     CC="clang"
     CXX="clang++"
     BUILD_TYPE="Coverage"
@@ -242,7 +256,7 @@ function coverage () {
     fi
 }
 
-function run_tests () {
+function runTests () {
     if ! test "$BUILD_DIR"; then
         BUILD_DIR=$(find . -name "build_*" -type d | head -n 1)
     fi
@@ -258,15 +272,15 @@ function run_tests () {
 ###############
 if ! test "$ACTION"; then
     printHelp
-elif test "$ACTION" == 'build'; then
+elif test "$ACTION" == "build"; then
     build
-elif test $ACTION == 'build_coverage'; then
-    build_coverage
+elif test $ACTION == "build-coverage"; then
+    buildCoverage
 elif test "$ACTION" == "check-formatting"; then
     checkFormatting
-elif test $ACTION == 'coverage'; then
+elif test "$ACTION" == "coverage"; then
     if ! test -e "build_clang_Coverage"; then
-        build_coverage
+        buildCoverage
     fi
 
     if ! test "$BUILD_DIR"; then
@@ -274,6 +288,8 @@ elif test $ACTION == 'coverage'; then
     fi
 
     coverage
-elif test $ACTION == 'test'; then
-    run_tests
+elif test "$ACTION" == "files-to-check"; then
+    filesToCheck
+elif test "$ACTION" == "test"; then
+    runTests
 fi
