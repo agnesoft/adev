@@ -37,7 +37,7 @@ jobs:
         sudo apt-get -qq update
         sudo apt-get -qq install software-properties-common
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-        sudo apt-get -qq install lang-10 clang++-10 llvm-10
+        sudo apt-get -qq install clang-10 llvm-10
         sudo ln -s /usr/bin/clang-10 clang
         sudo ln -s /usr/bin/clang++-10 clang++
         sudo ln -s /usr/bin/llvm-cov-10 llvm-cov
