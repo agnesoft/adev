@@ -7,42 +7,54 @@ on:
     branches: [master]
 
 jobs:
-  check_code:
-    name: Check Code
+  formatting:
+    name: Code Formatting
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Enable Build Script
-      run: chmod +x ./build.sh
     - name: Formatting
       run: |
         git fetch origin master
+        sudo chmod +x ./build.sh
         if ./build.sh files-to-check; then
           sudo apt-get -qq update
           sudo apt-get -qq install software-properties-common
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
           sudo apt-get -qq install clang-format-10
-          alias clang-format=clang-format10
+          sudo ln -s /usr/bin/clang-format-10 clang-format
+          sudo chmod +x clang-format
+          export PATH=.:$PATH
         fi
         ./build.sh check-formatting
+        
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: Code Coverage
       run: |
         sudo apt-get -qq update
         sudo apt-get -qq install software-properties-common
-        sudo apt-get -qq install wget lsb-release
-        sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-        alias clang=clang-10
-        alias clang++=clang++-10
-        alias llvm-cov=llvm-cov-10
-        alias llvm-profdata=llvm-profdata-10
+        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+        sudo apt-get -qq install lang-10 clang++-10 llvm-10
+        sudo ln -s /usr/bin/clang-10 clang
+        sudo ln -s /usr/bin/clang++-10 clang++
+        sudo ln -s /usr/bin/llvm-cov-10 llvm-cov
+        sudo ln -s /usr/bin/llvm-profdata-10 llvm-profdata
+        sudo chmod +x clang
+        sudo chmod +x clang++
+        sudo chmod +x llvm-cov
+        sudo chmod +x llvm-profdata
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
         unzip ninja.zip
         export PATH=.:$PATH
+        sudo chmod +x ./build.sh
         ./build.sh coverage
 
   build:
     name: ${{ matrix.config.name }}
-    needs: check_code
+    needs: [formatting, coverage]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
