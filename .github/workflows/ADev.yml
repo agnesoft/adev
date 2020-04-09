@@ -46,6 +46,10 @@ jobs:
         sudo chmod +x clang++
         sudo chmod +x llvm-cov
         sudo chmod +x llvm-profdata
+        clang --version
+        clang++ --version
+        llvm-cov --version
+        llvm-profdata --version
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
         unzip ninja.zip
         export PATH=.:$PATH
