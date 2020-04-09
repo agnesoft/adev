@@ -11,29 +11,29 @@ jobs:
     name: Check Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Enable Build Script
-        run: chmod +x ./build.sh
-      - name: Formatting
-        run: |
-          git fetch origin master
-          if ./build.sh files-to-check; then
-            sudo apt-get -qq update
-            sudo apt-get -qq install software-properties-common
-            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-            sudo apt-get -qq install clang-format-10
-            alias clang-format=clang-format10
-          fi
-          ./build.sh check-formatting
-      - name: Code Coverage
-        run: |
+    - uses: actions/checkout@v2
+    - name: Enable Build Script
+      run: chmod +x ./build.sh
+    - name: Formatting
+      run: |
+        git fetch origin master
+        if ./build.sh files-to-check; then
           sudo apt-get -qq update
-          sudo apt-get -qq software-properties-common
-          sudo apt-get -qq wget lsb-release
-          bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-          alias clang=clang-10
-          alias clang++=clang++-10
-          ./build.sh coverage
+          sudo apt-get -qq install software-properties-common
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+          sudo apt-get -qq install clang-format-10
+          alias clang-format=clang-format10
+        fi
+        ./build.sh check-formatting
+    - name: Code Coverage
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -qq software-properties-common
+        sudo apt-get -qq wget lsb-release
+        bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+        alias clang=clang-10
+        alias clang++=clang++-10
+        ./build.sh coverage
 
   build:
     name: ${{ matrix.config.name }}
@@ -43,44 +43,24 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {
-              name: "Windows MSVC",
-              os: windows-latest,
-              cc: cl,
-              cxx: cl,
-              ninja: win,
-              platform: windows-msvc2019-x64,
-            }
-          - {
-              name: "Linux GCC",
-              os: ubuntu-latest,
-              cc: gcc-9,
-              cxx: g++-9,
-              ninja: linux,
-              platform: linux-gcc9-x64,
-            }
-          - {
-              name: "macOS Clang",
-              os: macos-latest,
-              cc: clang,
-              cxx: clang++,
-              ninja: macOS-clang9-x64,
-            }
-      steps:
-        - uses: actions/checkout@v2
-        - name: Build
-          shell: bash
-          run: |
-            curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
-            unzip ninja.zip
-            export PATH=.:$PATH
-            chmod +x ./build.sh
-            ./build.sh build build ${{ matrix.config.cc }} ${{ matrix.config.cxx }}
-        - name: Test
-          shell: bash
-          run: ./build.sh test build
-        - name: Archive
-          uses: actions/upload-artifact@v1
-          with:
-            name: adev-${{ matrix.config.platform }}
-            path: build/bin/
+          - { name: "Windows MSVC", os: windows-latest, cc: cl, cxx: cl, ninja: win, platform: windows-msvc2019-x64, }
+          - { name: "Linux GCC", os: ubuntu-latest, cc: gcc-9, cxx: g++-9, ninja: linux, platform: linux-gcc9-x64, }
+          - { name: "macOS Clang", os: macos-latest, cc: clang, cxx: clang++, ninja: macOS-clang9-x64, }
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      shell: bash
+      run: |
+        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
+        unzip ninja.zip
+        export PATH=.:$PATH
+        chmod +x ./build.sh
+        ./build.sh build build ${{ matrix.config.cc }} ${{ matrix.config.cxx }}
+    - name: Test
+      shell: bash
+      run: ./build.sh test build
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-${{ matrix.config.platform }}
+        path: build/bin/
