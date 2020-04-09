@@ -2,151 +2,85 @@ name: ADev
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   check_code:
     name: Check Code
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Formatting
-      run: |
-        git fetch -q origin master
-        COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
-        if [ ! -z "$COMMITTED_FILES" ]
-        then
-          sudo apt-get -qq update
-          sudo apt-get -qq install software-properties-common
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt-get -qq install clang-format-10
-          clang-format-10 -i $COMMITTED_FILES
-          UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
-          if [ ! -z "$UNFORMATTED_FILES" ]
-          then
-            echo Incorrectly formatted files:
-            echo $UNFORMATTED_FILES
-            echo Run \'clang-format -i $UNFORMATTED_FILES\' and commit the result
-            exit 1
+      - uses: actions/checkout@v2
+      - name: Enable Build Script
+        run: chmod +x ./build.sh
+      - name: Formatting
+        run: |
+          git fetch origin master
+          if ./build.sh files-to-check; then
+            sudo apt-get -qq update
+            sudo apt-get -qq install software-properties-common
+            sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+            sudo apt-get -qq install clang-format-10
+            alias clang-format=clang-format10
           fi
-        fi
-        echo Formatting OK
+          ./build.sh check-formatting
+      - name: Code Coverage
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq software-properties-common
+          sudo apt-get -qq wget lsb-release
+          bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+          alias clang=clang-10
+          alias clang++=clang++-10
+          ./build.sh coverage
 
-  build_linux_gcc:
-    name: Linux GCC
+  build:
+    name: ${{ matrix.config.name }}
     needs: check_code
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Prepare
-      run: |
-        mkdir build
-        cd build
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
-        unzip ninja.zip
-    - name: Generate
-      run: |
-        cd build
-        export PATH=.:$PATH
-        export CC=gcc-9
-        export CXX=g++-9
-        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
-    - name: Build
-      run: |
-        cd build
-        ./ninja
-    - name: Install
-      run: |
-        cd build
-        ./ninja install
-    - name: Archive
-      uses: actions/upload-artifact@v1
-      with:
-        name: adev-linux-gcc-x64
-        path: build/bin/
-    - name: Test
-      run: |
-        cd build/bin/test
-        find -name "*Test" -type f -executable -exec {} ";"
-
-  build_windows_msvc:
-    name: Windows MSVC
-    needs: check_code
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Prepare
-      shell: bash
-      run: |
-        mkdir build
-        cd build
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-win.zip
-        unzip ninja.zip
-    - name: Generate
-      shell: cmd
-      run: |
-        cd build
-        set CC=cl
-        set CXX=cl
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
-    - name: Build
-      shell: cmd
-      run: |
-        cd build
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        ninja
-    - name: Install
-      shell: bash
-      run: |
-        cd build
-        ./ninja install
-    - name: Archive
-      uses: actions/upload-artifact@v1
-      with:
-        name: adev-windows-msvc-x64
-        path: build/bin/
-    - name: Test
-      shell: bash
-      run: |
-        cd build/bin/test
-        find -name "*Test.exe" -type f -executable -exec {} ";"
-
-  build_macos_clang:
-    name: macOS Clang
-    needs: check_code
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Prepare
-      run: |
-        mkdir build
-        cd build
-        curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-mac.zip
-        unzip ninja.zip
-    - name: Generate
-      run: |
-        cd build
-        export PATH=.:$PATH
-        export CC=clang
-        export CXX=clang++
-        cmake .. -GNinja -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=.
-    - name: Build
-      run: |
-        cd build
-        ./ninja
-    - name: Install
-      run: |
-        cd build
-        ./ninja install
-    - name: Archive
-      uses: actions/upload-artifact@v1
-      with:
-        name: adev-mac-clang-x64
-        path: build/bin/
-    - name: Test
-      run: |
-        cd build/bin/test
-        find . -name "*Test" -type f -exec {} ";"
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows MSVC",
+              os: windows-latest,
+              cc: cl,
+              cxx: cl,
+              ninja: win,
+              platform: windows-msvc2019-x64,
+            }
+          - {
+              name: "Linux GCC",
+              os: ubuntu-latest,
+              cc: gcc-9,
+              cxx: g++-9,
+              ninja: linux,
+              platform: linux-gcc9-x64,
+            }
+          - {
+              name: "macOS Clang",
+              os: macos-latest,
+              cc: clang,
+              cxx: clang++,
+              ninja: macOS-clang9-x64,
+            }
+      steps:
+        - uses: actions/checkout@v2
+        - name: Build
+          shell: bash
+          run: |
+            curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
+            unzip ninja.zip
+            export PATH=.:$PATH
+            chmod +x ./build.sh
+            ./build.sh build build ${{ matrix.config.cc }} ${{ matrix.config.cxx }}
+        - name: Test
+          shell: bash
+          run: ./build.sh test build
+        - name: Archive
+          uses: actions/upload-artifact@v1
+          with:
+            name: adev-${{ matrix.config.platform }}
+            path: build/bin/
