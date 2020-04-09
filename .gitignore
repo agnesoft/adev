@@ -35,4 +35,4 @@
 *.user
 
 # Build files
-build/
+build*/
