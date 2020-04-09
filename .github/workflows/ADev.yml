@@ -30,7 +30,7 @@ jobs:
         sudo apt-get -qq update
         sudo apt-get -qq install software-properties-common
         sudo apt-get -qq install wget lsb-release
-        bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+        sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
         alias clang=clang-10
         alias clang++=clang++-10
         ./build.sh coverage
