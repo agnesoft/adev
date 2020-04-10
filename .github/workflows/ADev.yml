@@ -38,7 +38,7 @@ jobs:
         sudo apt-get -qq install clang-10 llvm-10
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
         unzip ninja.zip
-        export PATH=.:$PATH
+        export PATH=$(pwd):$PATH
         export CC=clang-10
         export CXX=clang++-10
         export LLVM_COV=llvm-cov-10
@@ -64,7 +64,7 @@ jobs:
       run: |
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
         unzip ninja.zip
-        export PATH=.:$PATH
+        export PATH=$(pwd):$PATH
         export CC=${{ matrix.config.cc }}
         export CXX=${{ matrix.config.cxx }}
         export BUILD_DIR=build
