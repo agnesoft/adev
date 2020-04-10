@@ -43,6 +43,15 @@ jobs:
         export CXX=clang++-10
         export LLVM_COV=llvm-cov-10
         export LLVM_PROFDATA=llvm-profdata-10
+        ninja --version
+        clang-10 --version
+        clang++-10 --version
+        llvm-cov-10 --version
+        llvm-profdata-10 --version
+        $CC --version
+        $CXX --version
+        $LLVM_COV --version
+        $LLVM_PROFDATA --version
         sudo chmod +x ./build.sh
         ./build.sh coverage
 
