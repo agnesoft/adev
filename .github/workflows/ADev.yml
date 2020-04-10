@@ -22,8 +22,10 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
           sudo apt-get -qq install clang-format-10 > /dev/null
           export CLANG_FORMAT=clang-format-10
+          ./build.sh check-formatting
+        else
+          echo "Nothing to check."
         fi
-        ./build.sh check-formatting
         
   coverage:
     name: Code Coverage
@@ -37,7 +39,7 @@ jobs:
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
         sudo apt-get -qq install clang-10 llvm-10 > /dev/null
         curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
-        unzip ninja.zip
+        unzip -q ninja.zip
         export PATH=$(pwd):$PATH
         export CC=clang-10
         export CXX=clang++-10
@@ -63,7 +65,7 @@ jobs:
       shell: bash
       run: |
         curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
-        unzip ninja.zip
+        unzip -q ninja.zip
         export PATH=$(pwd):$PATH
         export CC=${{ matrix.config.cc }}
         export CXX=${{ matrix.config.cxx }}
