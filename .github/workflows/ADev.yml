@@ -56,9 +56,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "Windows MSVC", os: windows-latest, cc: cl, cxx: cl, ninja: win, platform: windows-msvc2019-x64, }
-          - { name: "Linux GCC", os: ubuntu-latest, cc: gcc-9, cxx: g++-9, ninja: linux, platform: linux-gcc9-x64, }
-          - { name: "macOS Clang", os: macos-latest, cc: clang, cxx: clang++, ninja: macOS-clang9-x64, }
+          - { name: "Windows MSVC x64", os: windows-latest, cc: cl, cxx: cl, ninja: win, platform: windows-msvc2019-x64, }
+          - { name: "Linux GCC x64", os: ubuntu-latest, cc: gcc-9, cxx: g++-9, ninja: linux, platform: linux-gcc9-x64, }
+          - { name: "macOS Clang x64", os: macos-latest, cc: clang, cxx: clang++, ninja: mac, platform: macOS-clang9-x64, }
     steps:
     - uses: actions/checkout@v2
     - name: Build
