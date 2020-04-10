@@ -281,14 +281,14 @@ function coverage () {
         echo "  * Region: $REGION (can by any)"
         echo "  * Function: $FUNCTION (must be 100.00 %)"
         echo "  * Line: $LINE (must be 100.00 %)"
-        echo "NOTE: See code coverage repot in build artifacts for details."
+        echo "NOTE: See code coverage report in build artifacts for details."
         exit 1
     else
         echo "Test code coverage is OK:"
         echo "  * Region: $REGION"
         echo "  * Function: $FUNCTION"
         echo "  * Line: $LINE"
-        echo "NOTE: See code coverage repot in build artifacts for details."
+        echo "NOTE: See code coverage report in build artifacts for details."
     fi
 }
 
