@@ -16,14 +16,12 @@ jobs:
       run: |
         git fetch origin master
         sudo chmod +x ./build.sh
-        if ./build.sh files-to-check; then
+        if ./build.sh check-files; then
           sudo apt-get -qq update
           sudo apt-get -qq install software-properties-common
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
           sudo apt-get -qq install clang-format-10
-          sudo ln -s /usr/bin/clang-format-10 clang-format
-          sudo chmod +x clang-format
-          export PATH=.:$PATH
+          export CLANG_FORMAT=clang-format-10
         fi
         ./build.sh check-formatting
         
@@ -38,21 +36,13 @@ jobs:
         sudo apt-get -qq install software-properties-common
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
         sudo apt-get -qq install clang-10 llvm-10
-        sudo ln -s /usr/bin/clang-10 clang
-        sudo ln -s /usr/bin/clang++-10 clang++
-        sudo ln -s /usr/bin/llvm-cov-10 llvm-cov
-        sudo ln -s /usr/bin/llvm-profdata-10 llvm-profdata
-        sudo chmod +x clang
-        sudo chmod +x clang++
-        sudo chmod +x llvm-cov
-        sudo chmod +x llvm-profdata
-        clang --version
-        clang++ --version
-        llvm-cov --version
-        llvm-profdata --version
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
         unzip ninja.zip
         export PATH=.:$PATH
+        export CC=clang-10
+        export CXX=clang++-10
+        export LLVM_COV=llvm-cov-10
+        export LLVM_PROFDATA=llvm-profdata-10
         sudo chmod +x ./build.sh
         ./build.sh coverage
 
@@ -75,8 +65,12 @@ jobs:
         curl -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
         unzip ninja.zip
         export PATH=.:$PATH
+        export CC=${{ matrix.config.cc }}
+        export CXX=${{ matrix.config.cxx }}
+        export BUILD_DIR=build
+        export BUILD_TYPE=Release
         chmod +x ./build.sh
-        ./build.sh build build ${{ matrix.config.cc }} ${{ matrix.config.cxx }}
+        ./build.sh build
     - name: Test
       shell: bash
       run: ./build.sh test build
