@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: adev-code-coverage
-        path: build-clang-Coverage/coverage
+        path: build_clang_Coverage/coverage
 
   build:
     name: ${{ matrix.config.name }}
