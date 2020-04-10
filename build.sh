@@ -130,6 +130,11 @@ function buildUnix () {
     cd $BUILD_DIR
     export CC=$CC
     export CXX=$CXX
+    
+    echo $CC
+    echo $CXX
+    ninja --version
+
     cmake .. -GNinja -D CMAKE_BUILD_TYPE=$BUILD_TYPE -D CMAKE_INSTALL_PREFIX=.
     ninja
     ninja install
