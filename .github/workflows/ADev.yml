@@ -45,6 +45,12 @@ jobs:
         export LLVM_PROFDATA=llvm-profdata-10
         sudo chmod +x ./build.sh
         ./build.sh coverage
+    - name: Archive
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-code-coverage
+        path: build-clang-Coverage/coverage
 
   build:
     name: ${{ matrix.config.name }}
