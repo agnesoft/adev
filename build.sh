@@ -277,13 +277,18 @@ function coverage () {
     rm -rf *.profdata
 
     if ! test "${FUNCTION}" == "100.00%" || ! test "${LINE}" == "100.00%"; then
-        echo "ERROR: Test coverage is not sufficient:"
+        echo "ERROR: Test code coverage is not sufficient:"
         echo "  * Region: $REGION (can by any)"
         echo "  * Function: $FUNCTION (must be 100.00 %)"
         echo "  * Line: $LINE (must be 100.00 %)"
+        echo "NOTE: See code coverage repot in build artifacts for details."
         exit 1
     else
-        echo "Test coverage is 100.00 %"
+        echo "Test code coverage is OK:"
+        echo "  * Region: $REGION"
+        echo "  * Function: $FUNCTION"
+        echo "  * Line: $LINE"
+        echo "NOTE: See code coverage repot in build artifacts for details."
     fi
 }
 
