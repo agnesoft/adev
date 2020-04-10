@@ -83,11 +83,11 @@ function checkFormatting () {
 
     if test "$COMMITTED_FILES"; then
         $CLANG_FORMAT -i $COMMITTED_FILES
-        local UNFORMATTED_FILES=`git ls-files -m | grep 'cpp/|hpp'` || [[ $? == 1 ]]
-
+        local UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
+        echo $UNFORMATTED_FILES
         if test "$UNFORMATTED_FILES"; then
             echo "Incorrectly formatted files: $UNFORMATTED_FILES"
-            echo "Run '$CLANG_FORMAT -i $UNFORMATTED_FILES' and commit the result"
+            echo "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result"
             exit 1
         else
             echo "Formatting is OK"
