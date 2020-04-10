@@ -199,17 +199,15 @@ function buildCoverage () {
         BUILD_DIR="build_clang_Coverage"
     fi
 
-    if ! test -e "$BUILD_DIR"; then
-        if ! test "$CC"; then
-            CC="clang"
-        fi
-
-        if ! test "$CXX"; then
-            CXX="clang++"
-        fi
-
-        build
+    if ! test "$CC"; then
+        CC="clang"
     fi
+
+    if ! test "$CXX"; then
+        CXX="clang++"
+    fi
+
+    build
 }
 
 function coverage () {
