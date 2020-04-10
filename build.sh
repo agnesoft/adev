@@ -313,7 +313,7 @@ else
     echo "  * BUILD_TYPE=$BUILD_TYPE"
     echo "  * CLANG_FORMAT=$CLANG_FORMAT"
     echo "  * LLVM_COV=$LLVM_COV"
-    echo "  * LLVM_PROFDATA=$LVVM_PROFDATA"
+    echo "  * LLVM_PROFDATA=$LLVM_PROFDATA"
     echo "  * MSVC_ENV_SCRIPT=$MSVC_ENV_SCRIPT"
     echo ""
 fi
