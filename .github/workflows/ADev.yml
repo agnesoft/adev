@@ -23,8 +23,6 @@ jobs:
           sudo apt-get -qq install clang-format-10 > /dev/null
           export CLANG_FORMAT=clang-format-10
           ./build.sh check-formatting
-        else
-          echo "Nothing to check."
         fi
         
   coverage:

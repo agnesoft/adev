@@ -63,9 +63,11 @@ function checkFiles () {
     local COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
 
     if test "$COMMITTED_FILES"; then
+        echo "Files to check: $COMMITTED_FILES"
         exit 0
     fi
 
+    echo "Nothing to check."
     exit 1
 }
 
@@ -299,25 +301,6 @@ function runTests () {
 # Main Script #
 ###############
 
-if ! test "$ACTION"; then
-    printHelp
-else
-    echo "ADev Build Script"
-    echo "-----------------"
-    echo "Action:"
-    echo "  * ACTION=$ACTION"
-    echo "Environment:"
-    echo "  * CC=$CC"
-    echo "  * CXX=$CXX"
-    echo "  * BUILD_DIR=$BUILD_DIR"
-    echo "  * BUILD_TYPE=$BUILD_TYPE"
-    echo "  * CLANG_FORMAT=$CLANG_FORMAT"
-    echo "  * LLVM_COV=$LLVM_COV"
-    echo "  * LLVM_PROFDATA=$LLVM_PROFDATA"
-    echo "  * MSVC_ENV_SCRIPT=$MSVC_ENV_SCRIPT"
-    echo ""
-fi
-
 if test "$ACTION" == "build"; then
     build
 elif test "$ACTION" == "check-files"; then
@@ -329,4 +312,6 @@ elif test "$ACTION" == "coverage"; then
     coverage
 elif test "$ACTION" == "test"; then
     runTests
+else
+    printHelp
 fi
