@@ -5,6 +5,11 @@ project(ADev)
 #Required for clang-tidy
 add_definitions(-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH)
 
+#Required for llvm-cov
+if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+endif()
+
 # Catch2 Static Library
 add_library(Catch2 STATIC projects/Catch2/Catch2.cpp projects/Catch2/include/Catch2/catch.hpp)
 target_compile_features(Catch2 PUBLIC cxx_std_17)
