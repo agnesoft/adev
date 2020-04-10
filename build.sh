@@ -21,7 +21,7 @@ function printHelp () {
     echo "  CLANG_FORMAT: Binary used for formatting [Default: clang-format]"
     echo "  LLVM_COV: Binary used for generating code coverage [Default: llvm-cov]"
     echo "  LLVM_PROFDATA: Binary used for generating code coverage [Default: llvm-profdata]"
-    echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (vcvarsall.bat) [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
+    echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (e.g. vcvars64.bat) [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
     echo ""
     echo "Available Actions:"
     echo "  build:"
@@ -39,11 +39,11 @@ function printHelp () {
     echo "  coverage:"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Options: CC, CXX, BUILD_DIR, LLVM_COV, LLVM_PROFDATA"
-    echo "    * Runs the tests from the code coverage enabled build and generate the code coverage report. Builds it first if \${BUILD_DIR} does not exist"
+    echo "    * Builds with code coverage settings, runs the tests and generate the code coverage report."
     echo "  test:"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR"
-    echo "    * Run previously built unit tests from \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used."
+    echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used."
 }
 
 function isWindows () { 
