@@ -14,7 +14,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Formatting
       run: |
-        git -q fetch origin master
+        git fetch -q origin master
         sudo chmod +x ./build.sh
         if ./build.sh check-files; then
           sudo apt-get -qq update > /dev/null
