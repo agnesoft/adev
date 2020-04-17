@@ -1,3 +1,4 @@
+// clang-format off
 /*
  *  Catch v2.11.3
  *  Generated: 2020-04-03 09:32:01.139167
