@@ -68,7 +68,7 @@ jobs:
           sudo apt-get -qq update > /dev/null
           sudo apt-get -qq install software-properties-common > /dev/null
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt-get -qq install clang-10 llvm-10 > /dev/null
+          sudo apt-get -qq install clang-10 clang-tidy-10 > /dev/null
           curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
           unzip -q ninja.zip
           export PATH=$(pwd):$PATH
@@ -80,7 +80,7 @@ jobs:
 
   build:
     name: ${{ matrix.config.name }}
-    needs: [formatting, coverage]
+    needs: [formatting, coverage, analysis]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
