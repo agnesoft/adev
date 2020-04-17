@@ -75,7 +75,7 @@ jobs:
           export CC=clang-10
           export CXX=clang++-10
           export CLANG_TIDY=clang-tidy-10
-          ./build.sh analysis
+          ./build.sh analyse
         fi
 
   build:
