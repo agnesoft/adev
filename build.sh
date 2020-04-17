@@ -94,11 +94,24 @@ function analyse() {
     setSourceFiles
     for source in $SOURCE_FILES
     do
-        echo " "
         echo "ANALYZING: $CLANG_TIDY $source -p $(pwd)"
-        $CLANG_TIDY "$source" -p "$(pwd)"
+        $CLANG_TIDY "$source" --quiet -p "$(pwd)"
+
+        if test $? -ne 0; then
+            echo ""
+            echo "ERROR: Static analysis found issues. See the log above for details."
+            echo "Run 'clang-tidy --fix \"$source\" -p \"<dir with compile_commands.json>\"' or resolve the issues manually and commit the result."
+            echo ""
+            CLANG_TIDY_ERROR=1
+        fi
     done
     cd ..
+
+    if test $CLANG_TIDY_ERROR; then
+        echo ""
+        echo "ERROR: Static analysis found issues. See the log above for details."
+        exit 1
+    fi
 }
 
 function checkFiles () {
@@ -131,7 +144,7 @@ function checkFormatting () {
 
         if test "$UNFORMATTED_FILES"; then
             echo "ERROR: Incorrectly formatted files: $UNFORMATTED_FILES"
-            echo "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result"
+            echo "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
             exit 1
         else
             echo "Formatting is OK"
@@ -150,7 +163,7 @@ function buildWindows () {
         elif test -f "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat" ; then
             MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
         else
-            echo "ERROR: Visual Studio environemnt script not found"
+            echo "ERROR: Visual Studio environemnt script not found."
             exit 1
         fi
     fi
@@ -181,12 +194,12 @@ function buildUnix () {
 
 function build () {
     if ! isAvailable "cmake"; then
-        echo "ERROR: 'cmake' is not available"
+        echo "ERROR: 'cmake' is not available."
         exit 1
     fi
     
     if ! isAvailable "ninja"; then
-        echo "ERROR: 'ninja' build system is not available"
+        echo "ERROR: 'ninja' build system is not available."
         exit 1
     fi
 
@@ -211,11 +224,11 @@ function build () {
     fi
 
     if ! isAvailable "$CC" && ! isWindows; then
-        echo "ERROR: '$CC' C compiler is not available"
+        echo "ERROR: '$CC' C compiler is not available."
     fi
 
     if ! isAvailable "$CXX" && ! isWindows; then
-        echo "ERROR: '$CXX' C++ compiler is not available"
+        echo "ERROR: '$CXX' C++ compiler is not available."
     fi
 
     if ! test "$BUILD_TYPE"; then
@@ -257,7 +270,7 @@ function coverage () {
     fi
 
     if ! isAvailable "$LLVM_COV"; then   
-        echo "ERROR: '$LLVM_COV' is not available"
+        echo "ERROR: '$LLVM_COV' is not available."
         exit 1
     fi
 
@@ -266,7 +279,7 @@ function coverage () {
     fi
 
     if ! isAvailable "$LLVM_PROFDATA"; then
-        echo "ERROR: '$LLVM_PROFDATA' is not available"
+        echo "ERROR: '$LLVM_PROFDATA' is not available."
         exit 1
     fi
 
