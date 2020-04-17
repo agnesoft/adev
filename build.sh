@@ -92,26 +92,28 @@ function analyse() {
     build
     cd $BUILD_DIR
     setSourceFiles
+
     for source in $SOURCE_FILES
     do
-        echo "ANALYZING: $CLANG_TIDY $source -p $(pwd)"
+        echo "ANALYZING: $source"
         $CLANG_TIDY "$source" --quiet -p "$(pwd)"
 
         if test $? -ne 0; then
             echo ""
             echo "ERROR: Static analysis found issues. See the log above for details."
-            echo "Run 'clang-tidy --fix \"$source\" -p \"<dir with compile_commands.json>\"' or resolve the issues manually and commit the result."
+            echo "Run 'clang-tidy --fix \"$source\" -p \"$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
             echo ""
             CLANG_TIDY_ERROR=1
         fi
     done
-    cd ..
 
     if test $CLANG_TIDY_ERROR; then
         echo ""
         echo "ERROR: Static analysis found issues. See the log above for details."
         exit 1
     fi
+
+    cd ..
 }
 
 function checkFiles () {
