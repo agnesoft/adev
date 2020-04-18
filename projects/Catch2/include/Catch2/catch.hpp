@@ -1,3 +1,4 @@
+// clang-format off
 /*
  *  Catch v2.11.3
  *  Generated: 2020-04-03 09:32:01.139167
@@ -151,7 +152,7 @@ namespace Catch {
 #    define CATCH_INTERNAL_START_WARNINGS_SUPPRESSION _Pragma( "clang diagnostic push" )
 #    define CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION  _Pragma( "clang diagnostic pop" )
 
-#    define CATCH_INTERNAL_IGNORE_BUT_WARN(...) (void)__builtin_constant_p(__VA_ARGS__) /* NOLINT(cppcoreguidelines-pro-type-vararg) */
+#    define CATCH_INTERNAL_IGNORE_BUT_WARN(...) (void)__builtin_constant_p(__VA_ARGS__) /* NOLINT */
 
 #    define CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS \
          _Pragma( "clang diagnostic ignored \"-Wexit-time-destructors\"" ) \

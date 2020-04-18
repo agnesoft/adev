@@ -3,18 +3,24 @@ cmake_minimum_required(VERSION 3.10)
 project(ADev)
 
 #Required for clang-tidy
-add_definitions(-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH)
+set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
 #Required for llvm-cov
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 endif()
 
+if(MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
+
 # Catch2 Static Library
 add_library(Catch2 STATIC projects/Catch2/Catch2.cpp projects/Catch2/include/Catch2/catch.hpp)
 target_compile_features(Catch2 PUBLIC cxx_std_17)
-target_include_directories(Catch2 PRIVATE projects/Catch2/include/Catch2)
-target_include_directories(Catch2 PUBLIC projects/Catch2/include)
+target_include_directories(Catch2 SYSTEM PRIVATE projects/Catch2/include/Catch2)
+target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/include)
 
 #ABuild Static Library
 add_library(ABuildStatic STATIC projects/ABuild/include/ABuild.hpp projects/ABuild/File.cpp projects/ABuild/include/ABuild/File.hpp)

@@ -7,7 +7,7 @@ File::File(std::filesystem::path path) :
 {
 }
 
-const std::filesystem::path &File::path() const noexcept
+auto File::path() const noexcept -> const std::filesystem::path &
 {
     return mPath;
 }

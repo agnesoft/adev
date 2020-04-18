@@ -10,7 +10,7 @@ class File
 public:
     explicit File(std::filesystem::path path);
 
-    [[nodiscard]] const std::filesystem::path &path() const noexcept;
+    [[nodiscard]] auto path() const noexcept -> const std::filesystem::path &;
 
 private:
     std::filesystem::path mPath;
