@@ -14,17 +14,14 @@ jobs:
     - uses: actions/checkout@v2
     - name: Formatting
       run: |
-        git fetch -q origin master
+        sudo apt-get -qq update > /dev/null
+        sudo apt-get -qq install software-properties-common > /dev/null
+        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+        sudo apt-get -qq install clang-format-10 > /dev/null
+        export CLANG_FORMAT=clang-format-10
         sudo chmod +x ./build.sh
-        if ./build.sh check-files; then
-          sudo apt-get -qq update > /dev/null
-          sudo apt-get -qq install software-properties-common > /dev/null
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt-get -qq install clang-format-10 > /dev/null
-          export CLANG_FORMAT=clang-format-10
-          ./build.sh check-formatting
-        fi
-        
+        ./build.sh check-formatting
+
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
@@ -32,22 +29,19 @@ jobs:
     - uses: actions/checkout@v2
     - name: Code Coverage
       run: |
-        git fetch -q origin master
+        sudo apt-get -qq update > /dev/null
+        sudo apt-get -qq install software-properties-common > /dev/null
+        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+        sudo apt-get -qq install clang-10 llvm-10 > /dev/null
+        curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
+        unzip -q ninja.zip
+        export PATH=$(pwd):$PATH
+        export CC=clang-10
+        export CXX=clang++-10
+        export LLVM_COV=llvm-cov-10
+        export LLVM_PROFDATA=llvm-profdata-10
         sudo chmod +x ./build.sh
-        if ./build.sh check-files; then
-          sudo apt-get -qq update > /dev/null
-          sudo apt-get -qq install software-properties-common > /dev/null
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt-get -qq install clang-10 llvm-10 > /dev/null
-          curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
-          unzip -q ninja.zip
-          export PATH=$(pwd):$PATH
-          export CC=clang-10
-          export CXX=clang++-10
-          export LLVM_COV=llvm-cov-10
-          export LLVM_PROFDATA=llvm-profdata-10
-          ./build.sh coverage
-        fi
+        ./build.sh coverage
     - name: Archive
       if: always()
       uses: actions/upload-artifact@v1
@@ -62,21 +56,18 @@ jobs:
     - uses: actions/checkout@v2
     - name: Analysis
       run: |
-        git fetch -q origin master
+        sudo apt-get -qq update > /dev/null
+        sudo apt-get -qq install software-properties-common > /dev/null
+        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+        sudo apt-get -qq install clang-10 clang-tidy-10 > /dev/null
+        curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
+        unzip -q ninja.zip
+        export PATH=$(pwd):$PATH
+        export CC=clang-10
+        export CXX=clang++-10
+        export CLANG_TIDY=clang-tidy-10
         sudo chmod +x ./build.sh
-        if ./build.sh check-files; then
-          sudo apt-get -qq update > /dev/null
-          sudo apt-get -qq install software-properties-common > /dev/null
-          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-          sudo apt-get -qq install clang-10 clang-tidy-10 > /dev/null
-          curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
-          unzip -q ninja.zip
-          export PATH=$(pwd):$PATH
-          export CC=clang-10
-          export CXX=clang++-10
-          export CLANG_TIDY=clang-tidy-10
-          ./build.sh analyse
-        fi
+        ./build.sh analyse
 
   build:
     name: ${{ matrix.config.name }}
