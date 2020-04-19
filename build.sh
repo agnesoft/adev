@@ -64,21 +64,6 @@ function isAvailable () {
     test "$CMD"
 }
 
-function setSourceFiles () {
-    if ! test -f "compile_commands.json"; then
-        echo "ERROR: 'compile_commands.json' not generated. Are you missing CMAKE_EXPORT_COMPILE_COMMANDS from CMakeLists.txt?"
-        exit 1
-    fi
-
-    while IFS= read -r line
-    do
-        local file=$(echo $line | perl -nle 'print "$1" while /"file": "(.+)"/g;')
-        if test "$file"; then
-            SOURCE_FILES="$file $SOURCE_FILES"
-        fi
-    done < "compile_commands.json"
-}
-
 function analyse() {
     if ! test "$CLANG_TIDY"; then
         CLANG_TIDY="clang-tidy"
@@ -91,41 +76,46 @@ function analyse() {
 
     build
     cd $BUILD_DIR
-    setSourceFiles
+    
+    if ! test -f "compile_commands.json"; then
+        echo "ERROR: 'compile_commands.json' not generated. Are you missing 'set(CMAKE_EXPORT_COMPILE_COMMANDS true)' in CMakeLists.txt?"
+        exit 1
+    fi
+
+    while IFS= read -r line
+    do
+        local file=$(echo $line | perl -nle 'print "$1" while /"file": "(.+)"/g;')
+        if test "$file"; then
+            SOURCE_FILES="$file $SOURCE_FILES"
+        fi
+    done < "compile_commands.json"
+
+    echo "Analysing..."
 
     for source in $SOURCE_FILES
     do
-        echo "ANALYZING: $source"
-        $CLANG_TIDY "$source" --quiet -p "$(pwd)"
+        LINT_RESULT=$($CLANG_TIDY "$source" -p "$(pwd)" 2>&1)
 
         if test $? -ne 0; then
             echo ""
-            echo "ERROR: Static analysis found issues. See the log above for details."
-            echo "Run 'clang-tidy --fix \"$source\" -p \"$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
+            echo $LINT_RESULT
+            echo ""
+            echo "Run 'clang-tidy --fix \"$source\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
             echo ""
             CLANG_TIDY_ERROR=1
+        else
+            echo "$source (OK)"
         fi
     done
 
     if test $CLANG_TIDY_ERROR; then
-        echo ""
         echo "ERROR: Static analysis found issues. See the log above for details."
         exit 1
+    else
+        echo "Analysis OK"
     fi
 
     cd ..
-}
-
-function checkFiles () {
-    local COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
-
-    if test "$COMMITTED_FILES"; then
-        echo "Files to check: $COMMITTED_FILES"
-        exit 0
-    fi
-
-    echo "Nothing to check."
-    exit 1
 }
 
 function checkFormatting () {
@@ -138,22 +128,29 @@ function checkFormatting () {
         exit 1
     fi
 
-    local COMMITTED_FILES=`git diff --name-only HEAD origin/master | grep 'cpp\|hpp' || [[ $? == 1 ]]`
+    local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
 
-    if test "$COMMITTED_FILES"; then
-        $CLANG_FORMAT -i $COMMITTED_FILES
-        local UNFORMATTED_FILES=`git ls-files -m | grep 'cpp\|hpp'` || [[ $? == 1 ]]
+    echo "Formatting..."
 
-        if test "$UNFORMATTED_FILES"; then
-            echo "ERROR: Incorrectly formatted files: $UNFORMATTED_FILES"
-            echo "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
-            exit 1
+    for file in $SOURCE_FILES
+    do
+        local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
+
+        if test "$REPLACEMENTS"; then
+            echo "$file (ERROR: Incorrectly formatted file.)"
+            UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
         else
-            echo "Formatting is OK"
+            echo "$file (OK)"
         fi
+    done
+    
+    if test "$UNFORMATTED_FILES"; then
+        echo "ERROR: Incorrectly formatted files."
+        echo "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
+        exit 1
     else
-        echo "Nothing to check."
-    fi 
+        echo "Formatting OK"
+    fi
 }
 
 function buildWindows () {
