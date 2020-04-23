@@ -72,7 +72,7 @@ jobs:
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
-    streps:
+    steps:
     - uses: actions/checkout@v2
     - name: Documentation
       run: |
