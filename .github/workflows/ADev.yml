@@ -69,9 +69,25 @@ jobs:
         sudo chmod +x ./build.sh
         ./build.sh analyse
 
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-latest
+    streps:
+    - uses: actions/checkout@v2
+    - name: Documentation
+      run: |
+        sudo apt-get -qq update > /dev/null
+        sudo apt-get -qq doxygen > /dev/null
+        ./build.sh documentation
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-docs
+        path: docs/html
+
   build:
     name: ${{ matrix.config.name }}
-    needs: [formatting, coverage, analysis]
+    needs: [formatting, coverage, analysis, documentation]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
