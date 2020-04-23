@@ -77,7 +77,7 @@ jobs:
     - name: Documentation
       run: |
         sudo apt-get -qq update > /dev/null
-        sudo apt-get -qq doxygen > /dev/null
+        sudo apt-get -qq install doxygen > /dev/null
         ./build.sh documentation
     - name: Archive
       uses: actions/upload-artifact@v1
