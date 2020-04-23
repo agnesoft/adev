@@ -1,12 +1,8 @@
 #####################
 # ADev Build Script #
 #####################
-#Parameters
 ACTION=$1
 
-#############
-# Functions #
-#############
 function printHelp () {
     echo "ADev Build Script"
     echo "-----------------"
@@ -20,6 +16,7 @@ function printHelp () {
     echo "  BUILD_TYPE: Type of build passed to CMake. [Default: Release]"
     echo "  CLANG_FORMAT: Binary used for formatting [Default: clang-format]"
     echo "  CLANG_TIDY: Binary used for static analysis [Default: clang-tidy]"
+    echo "  DOXYGEN: Binary used for building documentation [Default: doxygen]"
     echo "  LLVM_COV: Binary used for generating code coverage [Default: llvm-cov]"
     echo "  LLVM_PROFDATA: Binary used for generating code coverage [Default: llvm-profdata]"
     echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (e.g. vcvars64.bat) [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
@@ -45,6 +42,10 @@ function printHelp () {
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Options: CC, CXX, BUILD_DIR, LLVM_COV, LLVM_PROFDATA"
     echo "    * Builds with code coverage settings, runs the tests and generate the code coverage report."
+    echo "  documentation:"
+    echo "    * Requires: Doxygen"
+    echo "    * Options: DOXYGEN"
+    echo "    * Builds documentation from the sources."
     echo "  test:"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR"
@@ -343,6 +344,19 @@ function coverage () {
     fi
 }
 
+function documentation () {
+    if ! test "$DOXYGEN"; then
+        DOXYGEN="doxygen"
+    fi
+
+    if ! isAvailable "$DOXYGEN"; then   
+        echo "ERROR: '$DOXYGEN' is not available."
+        exit 1
+    fi
+
+    $DOXYGEN ADev.doxyfile
+}
+
 function runTests () {
     if ! test "$BUILD_DIR"; then
         BUILD_DIR=$(find . -name "build_*" -type d | head -n 1)
@@ -368,6 +382,8 @@ elif test "$ACTION" == "coverage"; then
     coverage
 elif test "$ACTION" == "analyse"; then
     analyse
+elif test "$ACTION" == "documentation"; then
+    documentation
 elif test "$ACTION" == "test"; then
     runTests
 else
