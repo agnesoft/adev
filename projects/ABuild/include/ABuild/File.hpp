@@ -15,7 +15,7 @@ public:
     //! Constructs the File object from path.
     explicit File(std::filesystem::path path);
 
-    // Returns the path the File.
+    //! Returns the path the File.
     [[nodiscard]] auto path() const noexcept -> const std::filesystem::path &;
 
 private:
