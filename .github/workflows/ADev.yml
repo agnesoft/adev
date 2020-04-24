@@ -19,7 +19,6 @@ jobs:
         sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
         sudo apt-get -qq install clang-format-10 > /dev/null
         export CLANG_FORMAT=clang-format-10
-        sudo chmod +x ./build.sh
         ./build.sh check-formatting
 
   coverage:
@@ -40,7 +39,6 @@ jobs:
         export CXX=clang++-10
         export LLVM_COV=llvm-cov-10
         export LLVM_PROFDATA=llvm-profdata-10
-        sudo chmod +x ./build.sh
         ./build.sh coverage
     - name: Archive
       if: always()
@@ -66,12 +64,27 @@ jobs:
         export CC=clang-10
         export CXX=clang++-10
         export CLANG_TIDY=clang-tidy-10
-        sudo chmod +x ./build.sh
         ./build.sh analyse
+
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Documentation
+      run: |
+        sudo apt-get -qq update > /dev/null
+        sudo apt-get -qq install doxygen > /dev/null
+        ./build.sh documentation
+    - name: Archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: adev-docs
+        path: docs/html
 
   build:
     name: ${{ matrix.config.name }}
-    needs: [formatting, coverage, analysis]
+    needs: [formatting, coverage, analysis, documentation]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
@@ -92,7 +105,6 @@ jobs:
         export CXX=${{ matrix.config.cxx }}
         export BUILD_DIR=build
         export BUILD_TYPE=Release
-        chmod +x ./build.sh
         ./build.sh build
     - name: Test
       shell: bash
