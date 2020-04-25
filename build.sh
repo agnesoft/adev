@@ -12,14 +12,15 @@ function printHelp () {
     echo "Environment Variables:"
     echo "  CC: C compiler to use. [Default: 'gcc' on Linux, 'cl' on Windows, 'clang' on macOS, 'clang' if building 'coverage' everywhere]"
     echo "  CXX: C++ compiler to use. [Default: 'g++' on Linux, 'cl' on Windows, 'clang++' on macOS, 'clang++' if building 'coverage' everywhere]"
-    echo "  BUILD_DIR: Relative directory to build in [Default: build_\${CC}_\${BUILD_Type}] (e.g. build_gcc_Release)"
+    echo "  BUILD_DIR: Relative directory to build in. [Default: build_\${CC}_\${BUILD_Type}] (e.g. build_gcc_Release)"
     echo "  BUILD_TYPE: Type of build passed to CMake. [Default: Release]"
-    echo "  CLANG_FORMAT: Binary used for formatting [Default: clang-format]"
-    echo "  CLANG_TIDY: Binary used for static analysis [Default: clang-tidy]"
-    echo "  DOXYGEN: Binary used for building documentation [Default: doxygen]"
-    echo "  LLVM_COV: Binary used for generating code coverage [Default: llvm-cov]"
-    echo "  LLVM_PROFDATA: Binary used for generating code coverage [Default: llvm-profdata]"
-    echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (e.g. vcvars64.bat) [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
+    echo "  CLANG_FORMAT: Binary used for formatting. [Default: clang-format]"
+    echo "  CLANG_TIDY: Binary used for static analysis. [Default: clang-tidy]"
+    echo "  DOXYGEN: Binary used for building documentation. [Default: doxygen]"
+    echo "  LLVM_COV: Binary used for generating code coverage. [Default: llvm-cov]"
+    echo "  LLVM_PROFDATA: Binary used for generating code coverage. [Default: llvm-profdata]"
+    echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (e.g. vcvars64.bat). [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
+    echo "  TEST_REPEAT: Runs each test this many times. [Default: 1]"
     echo ""
     echo "Available Actions:"
     echo "  build:"
@@ -28,7 +29,7 @@ function printHelp () {
     echo "    * Builds with the given compilers and configuration (or with defaults if no options are provided)"
     echo "  check-files:"
     echo "    * Requires: git"
-    echo "    * Options: None"
+    echo "    * Environment Variables: None"
     echo "    * Determines if the files committed in the local branch that are different to the files in origin/master can be checked (i.e. if they are *.cpp, *.hpp). Returns 0 if there are such files."
     echo "  check-formatting"
     echo "    * Requires: clang-format"
@@ -40,16 +41,24 @@ function printHelp () {
     echo "    * Builds and then performs clang-tidy static analysis on all source files using the compile commands database."
     echo "  coverage:"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
-    echo "    * Options: CC, CXX, BUILD_DIR, LLVM_COV, LLVM_PROFDATA"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, LLVM_COV, LLVM_PROFDATA"
     echo "    * Builds with code coverage settings, runs the tests and generate the code coverage report."
     echo "  documentation:"
     echo "    * Requires: Doxygen"
-    echo "    * Options: DOXYGEN"
+    echo "    * Environment Variables: DOXYGEN"
     echo "    * Builds documentation from the sources."
     echo "  test:"
     echo "    * Requires: None"
-    echo "    * Environment Variables: BUILD_DIR"
-    echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used."
+    echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
+    echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used. If \$REPEAT is specified each test will be run that many times/"
+}
+
+function printError () {
+    echo -e "\033[31m$1\033[0m"
+}
+
+function printOK () {
+    echo -e "\033[32m$1\033[0m"
 }
 
 function isWindows () { 
@@ -71,7 +80,7 @@ function analyse() {
     fi
 
     if ! isAvailable "$CLANG_TIDY"; then
-        echo "ERROR: '$CLANG_TIDY' is not available"
+        printError "ERROR: '$CLANG_TIDY' is not available"
         exit 1
     fi
 
@@ -79,7 +88,7 @@ function analyse() {
     cd $BUILD_DIR
     
     if ! test -f "compile_commands.json"; then
-        echo "ERROR: 'compile_commands.json' not generated. Are you missing 'set(CMAKE_EXPORT_COMPILE_COMMANDS true)' in CMakeLists.txt?"
+        printError "ERROR: 'compile_commands.json' not generated. Are you missing 'set(CMAKE_EXPORT_COMPILE_COMMANDS true)' in CMakeLists.txt?"
         exit 1
     fi
 
@@ -101,19 +110,19 @@ function analyse() {
             echo ""
             echo $LINT_RESULT
             echo ""
-            echo "Run 'clang-tidy --fix \"$source\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
+            printError "Run 'clang-tidy --fix \"$source\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
             echo ""
             CLANG_TIDY_ERROR=1
         else
-            echo "$source (OK)"
+            printOK "$source (OK)"
         fi
     done
 
     if test $CLANG_TIDY_ERROR; then
-        echo "ERROR: Static analysis found issues. See the log above for details."
+        printError "ERROR: Static analysis found issues. See the log above for details."
         exit 1
     else
-        echo "Analysis OK"
+        printOK "Analysis OK"
     fi
 
     cd ..
@@ -125,7 +134,7 @@ function checkFormatting () {
     fi
 
     if ! isAvailable "$CLANG_FORMAT"; then
-        echo "ERROR: '$CLANG_FORMAT' is not available"
+        printError "ERROR: '$CLANG_FORMAT' is not available"
         exit 1
     fi
 
@@ -138,19 +147,19 @@ function checkFormatting () {
         local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
 
         if test "$REPLACEMENTS"; then
-            echo "$file (ERROR: Incorrectly formatted file.)"
+            printError "$file (ERROR: Incorrectly formatted file.)"
             UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
         else
-            echo "$file (OK)"
+            printOK "$file (OK)"
         fi
     done
     
     if test "$UNFORMATTED_FILES"; then
-        echo "ERROR: Incorrectly formatted files."
-        echo "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
+        printError "ERROR: Incorrectly formatted files."
+        printError "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
         exit 1
     else
-        echo "Formatting OK"
+        printOK "Formatting OK"
     fi
 }
 
@@ -163,7 +172,7 @@ function buildWindows () {
         elif test -f "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat" ; then
             MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
         else
-            echo "ERROR: Visual Studio environemnt script not found."
+            printError "ERROR: Visual Studio environemnt script not found."
             exit 1
         fi
     fi
@@ -194,12 +203,12 @@ function buildUnix () {
 
 function build () {
     if ! isAvailable "cmake"; then
-        echo "ERROR: 'cmake' is not available."
+        printError "ERROR: 'cmake' is not available."
         exit 1
     fi
     
     if ! isAvailable "ninja"; then
-        echo "ERROR: 'ninja' build system is not available."
+        printError "ERROR: 'ninja' build system is not available."
         exit 1
     fi
 
@@ -224,11 +233,11 @@ function build () {
     fi
 
     if ! isAvailable "$CC" && ! isWindows; then
-        echo "ERROR: '$CC' C compiler is not available."
+        printError "ERROR: '$CC' C compiler is not available."
     fi
 
     if ! isAvailable "$CXX" && ! isWindows; then
-        echo "ERROR: '$CXX' C++ compiler is not available."
+        printError "ERROR: '$CXX' C++ compiler is not available."
     fi
 
     if ! test "$BUILD_TYPE"; then
@@ -270,7 +279,7 @@ function coverage () {
     fi
 
     if ! isAvailable "$LLVM_COV"; then   
-        echo "ERROR: '$LLVM_COV' is not available."
+        printError "ERROR: '$LLVM_COV' is not available."
         exit 1
     fi
 
@@ -279,7 +288,7 @@ function coverage () {
     fi
 
     if ! isAvailable "$LLVM_PROFDATA"; then
-        echo "ERROR: '$LLVM_PROFDATA' is not available."
+        printError "ERROR: '$LLVM_PROFDATA' is not available."
         exit 1
     fi
 
@@ -329,18 +338,18 @@ function coverage () {
     rm -rf *.profdata
 
     if ! test "${FUNCTION}" == "100.00%" || ! test "${LINE}" == "100.00%"; then
-        echo "ERROR: Test code coverage is not sufficient:"
-        echo "  * Region: $REGION (can by any)"
-        echo "  * Function: $FUNCTION (must be 100.00 %)"
-        echo "  * Line: $LINE (must be 100.00 %)"
-        echo "NOTE: See code coverage report in build artifacts for details."
+        printError "ERROR: Test code coverage is not sufficient:"
+        printError "  * Region: $REGION (can by any)"
+        printError "  * Function: $FUNCTION (must be 100.00 %)"
+        printError "  * Line: $LINE (must be 100.00 %)"
+        printError "NOTE: See code coverage report in build artifacts for details."
         exit 1
     else
-        echo "Test code coverage is OK:"
-        echo "  * Region: $REGION"
-        echo "  * Function: $FUNCTION"
-        echo "  * Line: $LINE"
-        echo "NOTE: See code coverage report in build artifacts for details."
+        printOK "Test code coverage is OK:"
+        printOK "  * Region: $REGION"
+        printOK "  * Function: $FUNCTION"
+        printOK "  * Line: $LINE"
+        printOK "NOTE: See code coverage report in build artifacts for details."
     fi
 }
 
@@ -350,7 +359,7 @@ function documentation () {
     fi
 
     if ! isAvailable "$DOXYGEN"; then   
-        echo "ERROR: '$DOXYGEN' is not available."
+        printError "ERROR: '$DOXYGEN' is not available."
         exit 1
     fi
 
@@ -361,10 +370,51 @@ function runTests () {
     if ! test "$BUILD_DIR"; then
         BUILD_DIR=$(find . -name "build_*" -type d | head -n 1)
     fi
+
+    if ! test "$TEST_REPEAT"; then
+        TEST_REPEAT=1
+    fi
     
     cd $BUILD_DIR/bin/test
+    local TESTS=`find . -name "*Test" -o -name "*Test.exe" -type f`
     export LD_LIBRARY_PATH=.
-    find . -name "*Test" -o -name "*Test.exe" -type f -exec {} ";"
+    local TEST_RUN_RESULT=0
+    local TEST_OK=0
+    local i=0
+    local RETURN=0
+
+    echo "Running tests $TEST_REPEAT times..."
+
+    for test in $TESTS;
+    do
+        TEST_OK=0
+        i=0
+
+        while test "$i" -lt "$TEST_REPEAT";
+        do
+            i=$(($i + 1))
+            LOG=$($test)
+            RETURN=$?
+
+            if test $RETURN -ne 0; then
+                echo ""
+                echo ""
+                printError "ERROR: $test failed on run $i:"
+                echo "$LOG"
+                TEST_RUN_RESULT=1
+                TEST_OK=$(($TEST_OK + 1))
+                continue;
+            fi
+        done
+
+        if test $TEST_OK -ne 0; then
+            printError "ERROR: $test failed $TEST_OK times out of $TEST_REPEAT (see above for errors)"
+        else
+            printOK "$test OK"
+        fi
+    done
+
+    exit $TEST_RUN_RESULT
 }
 
 ###############
