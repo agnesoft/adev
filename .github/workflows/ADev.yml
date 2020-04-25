@@ -84,7 +84,6 @@ jobs:
 
   build:
     name: ${{ matrix.config.name }}
-    needs: [formatting, coverage, analysis, documentation]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
@@ -108,7 +107,10 @@ jobs:
         ./build.sh build
     - name: Test
       shell: bash
-      run: ./build.sh test build
+      run: |
+        export TEST_REPEAT=100
+        export BUILD_DIR=build
+        ./build.sh test
     - name: Archive
       uses: actions/upload-artifact@v1
       with:

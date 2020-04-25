@@ -383,6 +383,8 @@ function runTests () {
     local i=0
     local RETURN=0
 
+    echo "Running tests $TEST_REPEAT times..."
+
     for test in $TESTS;
     do
         TEST_OK=0
