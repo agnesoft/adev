@@ -11,7 +11,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
 endif()
 
 if(MSVC)
-    add_compile_options(/W4 /WX)
+    string(REGEX REPLACE "/W[1-3]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
