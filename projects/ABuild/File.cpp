@@ -1,11 +1,20 @@
 #include "File.hpp"
 
+#include <fstream>
+
 namespace abuild
 {
 File::File(std::filesystem::path path) :
     mPath{std::move(path)},
-    mType{detectType(mPath.extension())}
+    mType{detectType(mPath.extension())},
+    mLastWrite{lastWriteTime(mPath)},
+    mContent{fileContent(mPath)}
 {
+}
+
+auto File::isChanged() const -> bool
+{
+    return mLastWrite != lastWriteTime(mPath) && mContent != fileContent(mPath);
 }
 
 auto File::path() const noexcept -> const std::filesystem::path &
@@ -31,5 +40,21 @@ auto File::detectType(const std::filesystem::path &extension) noexcept -> Type
     }
 
     return Type::Other;
+}
+
+auto File::lastWriteTime(const std::filesystem::path &path) -> std::filesystem::file_time_type
+{
+    if (std::filesystem::exists(path))
+    {
+        return std::filesystem::last_write_time(path);
+    }
+
+    return {};
+}
+
+auto File::fileContent(const std::filesystem::path &path) -> std::string
+{
+    std::ifstream stream{path.string()};
+    return std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
 }
 }
