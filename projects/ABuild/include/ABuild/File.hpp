@@ -11,14 +11,31 @@ namespace abuild
 class File
 {
 public:
-    //! Constructs the File object from \a path.
+    //! Build type of file
+    enum class Type
+    {
+        //! Source file
+        Source,
+        //! Header file
+        Header,
+        //! Not a build file
+        Other
+    };
+
+    //! Constructs a File object from \a path.
     explicit File(std::filesystem::path path);
 
-    //! Returns the path of the File.
+    //! Returns the path of the underlying file.
     [[nodiscard]] auto path() const noexcept -> const std::filesystem::path &;
 
+    //! Returns the #Type of the underlying file.
+    [[nodiscard]] auto type() const noexcept -> Type;
+
 private:
+    [[nodiscard]] static auto detectType(const std::filesystem::path &extension) noexcept -> Type;
+
     std::filesystem::path mPath;
+    Type mType = Type::Other;
 };
 }
 
