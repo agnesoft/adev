@@ -22,10 +22,10 @@ public:
         Other
     };
 
-    //! Constructs the File object from \a path.
+    //! Constructs a File object from \a path.
     explicit File(std::filesystem::path path);
 
-    //! Returns the path of the File.
+    //! Returns the path of the underlying file.
     [[nodiscard]] auto path() const noexcept -> const std::filesystem::path &;
 
     //! Returns the #Type of the underlying file.
