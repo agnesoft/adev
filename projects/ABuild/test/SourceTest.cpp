@@ -14,6 +14,8 @@ TEST_CASE("update() -> bool [abuild::File]")
 
     abuild::Source source{testFile.path()};
 
+    int i = 0;
+
     SECTION("[unchanged]")
     {
         REQUIRE_FALSE(source.update());
@@ -63,6 +65,8 @@ TEST_CASE("update() -> bool [abuild::File]")
 
     SECTION("[timestamp updated]")
     {
+        int i = 1;
+
         std::filesystem::last_write_time(testFile.path(), std::filesystem::last_write_time(testFile.path()) + std::chrono::hours{1});
         REQUIRE_FALSE(source.update());
         REQUIRE_FALSE(source.update());
