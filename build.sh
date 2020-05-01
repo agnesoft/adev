@@ -187,7 +187,6 @@ function buildWindows () {
                         ninja install"
     echo "$BUILD_SCRIPT" > build.bat
     cmd //c build.bat
-    cd ..
 }
 
 function buildUnix () {
@@ -198,7 +197,6 @@ function buildUnix () {
     cmake .. -G Ninja -D CMAKE_BUILD_TYPE=$BUILD_TYPE -D CMAKE_INSTALL_PREFIX=.
     ninja
     ninja install
-    cd ..
 }
 
 function build () {
@@ -252,6 +250,12 @@ function build () {
         buildWindows
     else
         buildUnix
+    fi
+
+    if test $? -ne 0; then
+        exit 1
+    else
+        cd ..
     fi
 }
 
