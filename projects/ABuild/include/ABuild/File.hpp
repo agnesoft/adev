@@ -15,7 +15,7 @@ public:
     enum class Type
     {
         //! Source file (extension .cpp, .cxx, .cc or .c)
-        Source,
+        TranslationUnit,
         //! Header file (extension (.hpp, .hxx, .h)
         Header,
         //! Not a build file
@@ -25,25 +25,17 @@ public:
     //! Constructs a File object from \a path.
     explicit File(std::filesystem::path path);
 
-    //! Returns \c true if the underlying file has
-    //! changed since the construction of the File object.
-    [[nodiscard]] auto isChanged() const -> bool;
+    //! Returns contents of the underlying file.
+    [[nodiscard]] auto content() const -> std::string;
 
     //! Returns the path of the underlying file.
     [[nodiscard]] auto path() const noexcept -> const std::filesystem::path &;
 
-    //! Returns the #Type of the underlying file.
-    [[nodiscard]] auto type() const noexcept -> Type;
+    //! Returns the #Type of the file at \a path.
+    [[nodiscard]] static auto type(const std::filesystem::path &path) -> Type;
 
 private:
-    [[nodiscard]] static auto detectType(const std::filesystem::path &extension) noexcept -> Type;
-    [[nodiscard]] static auto lastWriteTime(const std::filesystem::path &path) -> std::filesystem::file_time_type;
-    [[nodiscard]] static auto fileContent(const std::filesystem::path &path) -> std::string;
-
     std::filesystem::path mPath;
-    Type mType = Type::Other;
-    std::filesystem::file_time_type mLastWrite;
-    std::string mContent;
 };
 }
 

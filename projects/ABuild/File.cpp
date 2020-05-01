@@ -1,20 +1,19 @@
 #include "File.hpp"
 
 #include <fstream>
+#include <functional>
 
 namespace abuild
 {
 File::File(std::filesystem::path path) :
-    mPath{std::move(path)},
-    mType{detectType(mPath.extension())},
-    mLastWrite{lastWriteTime(mPath)},
-    mContent{fileContent(mPath)}
+    mPath{std::move(path)}
 {
 }
 
-auto File::isChanged() const -> bool
+auto File::content() const -> std::string
 {
-    return mLastWrite != lastWriteTime(mPath) && mContent != fileContent(mPath);
+    std::ifstream stream{path().string()};
+    return std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
 }
 
 auto File::path() const noexcept -> const std::filesystem::path &
@@ -22,39 +21,18 @@ auto File::path() const noexcept -> const std::filesystem::path &
     return mPath;
 }
 
-auto File::type() const noexcept -> Type
+auto File::type(const std::filesystem::path &path) -> Type
 {
-    return mType;
-}
-
-auto File::detectType(const std::filesystem::path &extension) noexcept -> Type
-{
-    if (extension == ".cpp" || extension == ".cxx" || extension == ".cc" || extension == ".c")
+    if (path.extension().string() == ".cpp" || path.extension().string() == ".cxx" || path.extension().string() == ".cc" || path.extension().string() == ".c")
     {
-        return Type::Source;
+        return Type::TranslationUnit;
     }
 
-    if (extension == ".hpp" || extension == ".hxx" || extension == ".h")
+    if (path.extension().string() == ".hpp" || path.extension().string() == ".hxx" || path.extension().string() == ".h")
     {
         return Type::Header;
     }
 
     return Type::Other;
-}
-
-auto File::lastWriteTime(const std::filesystem::path &path) -> std::filesystem::file_time_type
-{
-    if (std::filesystem::exists(path))
-    {
-        return std::filesystem::last_write_time(path);
-    }
-
-    return {};
-}
-
-auto File::fileContent(const std::filesystem::path &path) -> std::string
-{
-    std::ifstream stream{path.string()};
-    return std::string{std::istreambuf_iterator<char>{stream}, std::istreambuf_iterator<char>{}};
 }
 }
