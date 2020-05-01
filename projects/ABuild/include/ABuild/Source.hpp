@@ -13,7 +13,6 @@ public:
     [[nodiscard]] auto update() -> bool;
 
 private:
-    [[nodiscard]] auto isChanged() const -> bool;
     [[nodiscard]] auto lastWriteTime() const -> std::filesystem::file_time_type;
     auto scanContent() -> bool;
 

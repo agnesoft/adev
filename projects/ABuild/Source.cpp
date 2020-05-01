@@ -7,22 +7,18 @@ namespace abuild
 Source::Source(const std::filesystem::path &path) :
     File{path}
 {
-    scanContent();
+    static_cast<void>(update());
 }
 
 auto Source::update() -> bool
 {
-    if (isChanged())
+    if (mLastWriteTime != lastWriteTime())
     {
+        mLastWriteTime = lastWriteTime();
         return scanContent();
     }
 
     return false;
-}
-
-auto Source::isChanged() const -> bool
-{
-    return mLastWriteTime != lastWriteTime();
 }
 
 auto Source::lastWriteTime() const -> std::filesystem::file_time_type
@@ -38,7 +34,6 @@ auto Source::scanContent() -> bool
     if (hash != mHash)
     {
         mHash = hash;
-        mLastWriteTime = lastWriteTime();
         return true;
     }
 
