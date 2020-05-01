@@ -10,6 +10,10 @@ TEST_CASE("update() -> bool [abuild::File]")
 {
     const std::string originalContent = "int main() {}";
     const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp", originalContent};
+    auto fileTime = std::filesystem::last_write_time(testFile.path());
+    fileTime -= std::chrono::hours{1};
+    std::filesystem::last_write_time(testFile.path(), fileTime);
+
     abuild::Source source{testFile.path()};
 
     SECTION("[unchanged]")
@@ -64,7 +68,6 @@ TEST_CASE("update() -> bool [abuild::File]")
         auto fileTime = std::filesystem::last_write_time(testFile.path());
         fileTime += std::chrono::hours{1};
         std::filesystem::last_write_time(testFile.path(), fileTime);
-
         REQUIRE_FALSE(source.update());
         REQUIRE_FALSE(source.update());
     }
