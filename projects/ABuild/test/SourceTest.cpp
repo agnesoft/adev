@@ -6,7 +6,7 @@
 
 namespace sourcetest
 {
-TEST_CASE("isChanged() -> bool [abuild::File]")
+TEST_CASE("update() -> bool [abuild::File]")
 {
     const std::string originalContent = "int main() {}";
     const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp", originalContent};
