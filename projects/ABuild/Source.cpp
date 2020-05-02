@@ -10,6 +10,11 @@ Source::Source(const std::filesystem::path &path) :
     static_cast<void>(update());
 }
 
+auto Source::includes() const noexcept -> const std::vector<std::string> &
+{
+    return mIncludes;
+}
+
 auto Source::update() -> bool
 {
     if (mLastWriteTime != lastWriteTime())

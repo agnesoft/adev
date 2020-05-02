@@ -3,6 +3,9 @@
 
 #include "File.hpp"
 
+#include <string>
+#include <vector>
+
 namespace abuild
 {
 //! \class Source Source.hpp ABuild.hpp
@@ -18,6 +21,10 @@ public:
     //! Constructs a Source object.
     explicit Source(const std::filesystem::path &path);
 
+    //! Returns all included files of this
+    //! source file.
+    [[nodiscard]] auto includes() const noexcept -> const std::vector<std::string> &;
+
     //! Reloads the source file if it has
     //! changed. Returns true only if the
     //! file was changed (and thus updated)
@@ -30,6 +37,7 @@ private:
 
     std::filesystem::file_time_type mLastWriteTime;
     std::size_t mHash = 0;
+    std::vector<std::string> mIncludes;
 };
 }
 

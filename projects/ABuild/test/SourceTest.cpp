@@ -8,7 +8,10 @@ namespace sourcetest
 {
 TEST_CASE("update() -> bool [abuild::File]")
 {
-    const std::string originalContent = "int main() {}";
+    const std::string originalContent = "#include <string>\n"
+                                        "#include \"my/included/header.h\""
+                                        "\n"
+                                        "int main() {}";
     const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp", originalContent};
     std::filesystem::last_write_time(testFile.path(), std::filesystem::last_write_time(testFile.path()) - std::chrono::hours{1});
 
@@ -66,6 +69,142 @@ TEST_CASE("update() -> bool [abuild::File]")
         std::filesystem::last_write_time(testFile.path(), std::filesystem::last_write_time(testFile.path()) + std::chrono::hours{1});
         REQUIRE_FALSE(source.update());
         REQUIRE_FALSE(source.update());
+    }
+
+    SECTION("[includes changed]")
+    {
+        {
+            std::fstream stream{testFile.path().string(), abuildtest::testFileOpenMode()};
+            const std::string newContent = "#include <string>\n"
+                                           "#include \"my/included/header.h\""
+                                           "\n"
+                                           "int main() {}";
+            stream.write(newContent.c_str(), newContent.size());
+        }
+
+        REQUIRE(source.update());
+        REQUIRE_FALSE(source.update());
+    }
+}
+
+TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source]")
+{
+    SECTION("[no includes]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp", "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes().empty());
+    }
+
+    SECTION("[single include]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "\n"
+                                            "int main() {}\n"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h"});
+    }
+
+    SECTION("[multiple includes]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "#include \"SomeInclude.h\"\n"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "SomeInclude.h"});
+    }
+
+    SECTION("[quotes brackets mix]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "#include <string>\n"
+                                            "#include \"SomeInclude.h\"\n"
+                                            "#include <vector>\n"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
+    }
+
+    SECTION("[leading spaces]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#ifdef X\n"
+                                            "  #include \"Lib/SomeFile.h\"\n"
+                                            "#endif\n"
+                                            "#include \"SomeInclude.h\"\n"
+                                            "  #include <cstdint>"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "SomeInclude.h", "cstdint"});
+    }
+
+    SECTION("[commented include]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "//Some comment at the beginning"
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "//#include <string>\n"
+                                            "#include <atomic>"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "atomic"});
+    }
+
+    SECTION("[added]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "#include <string>\n"
+                                            "#include \"SomeInclude.h\"\n"
+                                            "#include <vector>\n"
+                                            "\n"
+                                            "int main() {}"};
+
+        abuild::Source source{testFile.path()};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
+
+        {
+            std::fstream stream{testFile.path().string(), abuildtest::testFileOpenMode()};
+            const std::string newContent = "#include \"Lib/SomeFile.h\"\n"
+                                           "#include <string>\n"
+                                           "#include \"SomeInclude.h\"\n"
+                                           "#include \"my/included/header.h\""
+                                           "#include <vector>\n"
+                                           "\n"
+                                           "int main() {}";
+            stream.write(newContent.c_str(), newContent.size());
+        }
+
+        REQUIRE(source.update());
+        REQUIRE(source.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "my/included/header.h", "vector"});
+    }
+
+    SECTION("[removed]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "#include <string>\n"
+                                            "#include \"SomeInclude.h\"\n"
+                                            "#include <vector>\n"
+                                            "\n"
+                                            "int main() {}"};
+
+        abuild::Source source{testFile.path()};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
+
+        {
+            std::fstream stream{testFile.path().string(), abuildtest::testFileOpenMode()};
+            const std::string newContent = "#include \"Lib/SomeFile.h\"\n"
+                                           "#include <string>\n"
+                                           "//#include <vector>\n"
+                                           "\n"
+                                           "int main() {}";
+            stream.write(newContent.c_str(), newContent.size());
+        }
+
+        REQUIRE(source.update());
+        REQUIRE(source.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string"});
     }
 }
 }
