@@ -75,8 +75,7 @@ TEST_CASE("update() -> bool [abuild::File]")
     {
         {
             std::fstream stream{testFile.path().string(), abuildtest::testFileOpenMode()};
-            const std::string newContent = "#include <string>\n"
-                                           "#include \"my/included/header.h\""
+            const std::string newContent = "#include \"my/included/header.h\""
                                            "\n"
                                            "int main() {}";
             stream.write(newContent.c_str(), newContent.size());
@@ -92,7 +91,9 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
     SECTION("[no includes]")
     {
         const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp", "int main() {}"};
-        REQUIRE(abuild::Source{testFile.path()}.includes().empty());
+        const abuild::Source source{testFile.path()};
+        REQUIRE(noexcept(source.includes()));
+        REQUIRE(source.includes() == std::vector<std::string>{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[single include]")
@@ -142,13 +143,24 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
     SECTION("[commented include]")
     {
         const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
-                                            "//Some comment at the beginning"
+                                            "//Some comment at the beginning\n"
                                             "#include \"Lib/SomeFile.h\"\n"
                                             "//#include <string>\n"
                                             "#include <atomic>"
                                             "\n"
                                             "int main() {}"};
         REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "atomic"});
+    }
+
+    SECTION("[unrelated comment]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "/* Do not use "
+                                            "#include \"foo\" "
+                                            "in your code */\n"
+                                            "\n"
+                                            "int main() {}\n"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[added]")
@@ -162,14 +174,14 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
                                             "int main() {}"};
 
         abuild::Source source{testFile.path()};
-        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
+        REQUIRE(source.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
 
         {
             std::fstream stream{testFile.path().string(), abuildtest::testFileOpenMode()};
             const std::string newContent = "#include \"Lib/SomeFile.h\"\n"
                                            "#include <string>\n"
                                            "#include \"SomeInclude.h\"\n"
-                                           "#include \"my/included/header.h\""
+                                           "#include \"my/included/header.h\"\n"
                                            "#include <vector>\n"
                                            "\n"
                                            "int main() {}";
@@ -191,7 +203,7 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
                                             "int main() {}"};
 
         abuild::Source source{testFile.path()};
-        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
+        REQUIRE(source.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
 
         {
             std::fstream stream{testFile.path().string(), abuildtest::testFileOpenMode()};

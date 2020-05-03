@@ -32,6 +32,7 @@ public:
     [[nodiscard]] auto update() -> bool;
 
 private:
+    auto extractIncludes() -> std::vector<std::string>;
     [[nodiscard]] auto lastWriteTime() const -> std::filesystem::file_time_type;
     auto scanContent() -> bool;
 
