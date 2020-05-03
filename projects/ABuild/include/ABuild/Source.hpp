@@ -12,17 +12,16 @@ namespace abuild
 //! \brief The Source class provides common
 //! base for C++ source files.
 //!
-//! The class provides the ability to detect
-//! changes to the underlying file and to
-//! update() the meta data.
+//! The class provides the includes() and the
+//! ability to detect changes to the underlying
+//! file and to update() itself on demand.
 class Source : public File
 {
 public:
     //! Constructs a Source object.
     explicit Source(const std::filesystem::path &path);
 
-    //! Returns all included files of this
-    //! source file.
+    //! Returns all the included files.
     [[nodiscard]] auto includes() const noexcept -> const std::vector<std::string> &;
 
     //! Reloads the source file if it has
@@ -36,8 +35,8 @@ private:
     [[nodiscard]] auto lastWriteTime() const -> std::filesystem::file_time_type;
     auto scanContent() -> bool;
 
-    std::filesystem::file_time_type mLastWriteTime;
     std::size_t mHash = 0;
+    std::filesystem::file_time_type mLastWriteTime;
     std::vector<std::string> mIncludes;
 };
 }
