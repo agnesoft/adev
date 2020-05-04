@@ -78,13 +78,21 @@ function isAvailable () {
     test "$CMD"
 }
 
+function addLLVMRepo () {
+    sudo apt-get -qq update > /dev/null
+    sudo apt-get -qq install software-properties-common > /dev/null
+    sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
+}
+
 function installClangFormat () {
     if [ "$INSTALL" = "install" ]; then
         if isWindows; then
             choco install llvm
             export PATH="C:/Program Files/LLVM/bin:$PATH"
         elif isLinux; then
+            addLLVMRepo
             sudo apt-get install clang-format-10
+            CLANG_FORMAT="clang-format-10"
         else
             brew install clang-format
         fi
@@ -100,7 +108,9 @@ function installClangTidy () {
             choco install llvm
             export PATH="C:/Program Files/LLVM/bin:$PATH"
         elif isLinux; then
-            sudo apt-get install clang-tidy
+            addLLVMRepo
+            sudo apt-get install clang-tidy-10
+            CLANG_TIDY="clang-tidy-10"
         else
             brew install llvm
         fi
@@ -116,6 +126,7 @@ function installLLVM () {
             choco install llvm
             export PATH="C:/Program Files/LLVM/bin:$PATH"
         elif isLinux; then
+            addLLVMRepo
             sudo apt-get install llvm-10
             LLVM_COV="llvm-cov-10"
             LLVM_PROFDATA="llvm-profdata-10"
@@ -134,7 +145,10 @@ function installClang () {
             choco install llvm
             export PATH="C:/Program Files/LLVM/bin:$PATH"
         elif isLinux; then
-            sudo apt-get install clang clang++
+            addLLVMRepo
+            sudo apt-get install clang-10 clang++-10
+            CC=clang-10
+            CXX=clang++-10
         fi
 
         $CC --version
@@ -156,7 +170,7 @@ function installDoxygen () {
             brew install doxygen
         fi
 
-        doxygen --version
+        $DOXYGEN --version
     else
         printError "ERROR: 'doxygen' is not available"
         exit 1
@@ -191,7 +205,7 @@ function analyse() {
         installClangTidy
     fi
 
-    clang-tidy --version
+    $CLANG_TIDY --version
 
     build
     cd $BUILD_DIR
@@ -246,7 +260,7 @@ function checkFormatting () {
         installClangFormat
     fi
 
-    clang-format --version
+    $CLANG_FORMAT --version
 
     local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
 
