@@ -11,76 +11,44 @@ jobs:
     name: Code Formatting
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Formatting
-      run: |
-        sudo apt-get -qq update > /dev/null
-        sudo apt-get -qq install software-properties-common > /dev/null
-        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-        sudo apt-get -qq install clang-format-10 > /dev/null
-        export CLANG_FORMAT=clang-format-10
-        ./build.sh check-formatting
+      - uses: actions/checkout@v2
+      - name: Formatting
+        run: ./build.sh check-formatting install
 
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Code Coverage
-      run: |
-        sudo apt-get -qq update > /dev/null
-        sudo apt-get -qq install software-properties-common > /dev/null
-        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-        sudo apt-get -qq install clang-10 llvm-10 > /dev/null
-        curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
-        unzip -q ninja.zip
-        export PATH=$(pwd):$PATH
-        export CC=clang-10
-        export CXX=clang++-10
-        export LLVM_COV=llvm-cov-10
-        export LLVM_PROFDATA=llvm-profdata-10
-        ./build.sh coverage
-    - name: Archive
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: adev-code-coverage
-        path: build_clang_Coverage/coverage
+      - uses: actions/checkout@v2
+      - name: Code Coverage
+        run: ./build.sh coverage install
+      - name: Archive
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-code-coverage
+          path: build_clang_Coverage/coverage
 
   analysis:
     name: Static Analysis
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Analysis
-      run: |
-        sudo apt-get -qq update > /dev/null
-        sudo apt-get -qq install software-properties-common > /dev/null
-        sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main" > /dev/null
-        sudo apt-get -qq install clang-10 clang-tidy-10 > /dev/null
-        curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-linux.zip
-        unzip -q ninja.zip
-        export PATH=$(pwd):$PATH
-        export CC=clang-10
-        export CXX=clang++-10
-        export CLANG_TIDY=clang-tidy-10
-        ./build.sh analyse
+      - uses: actions/checkout@v2
+      - name: Analysis
+        run: ./build.sh analyse install
 
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Documentation
-      run: |
-        sudo apt-get -qq update > /dev/null
-        sudo apt-get -qq install doxygen > /dev/null
-        ./build.sh documentation
-    - name: Archive
-      uses: actions/upload-artifact@v1
-      with:
-        name: adev-docs
-        path: docs/html
+      - uses: actions/checkout@v2
+      - name: Documentation
+        run: ./build.sh documentation install
+      - name: Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-docs
+          path: docs/html
 
   build:
     name: ${{ matrix.config.name }}
@@ -89,30 +57,45 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "Windows MSVC x64", os: windows-latest, cc: cl, cxx: cl, ninja: win, platform: windows-msvc2019-x64, }
-          - { name: "Linux GCC x64", os: ubuntu-latest, cc: gcc-9, cxx: g++-9, ninja: linux, platform: linux-gcc9-x64, }
-          - { name: "macOS Clang x64", os: macos-latest, cc: clang, cxx: clang++, ninja: mac, platform: macOS-clang9-x64, }
+          - {
+              name: "Windows MSVC x64",
+              os: windows-latest,
+              cc: cl,
+              cxx: cl,
+              platform: windows-msvc2019-x64,
+            }
+          - {
+              name: "Linux GCC x64",
+              os: ubuntu-latest,
+              cc: gcc-9,
+              cxx: g++-9,
+              platform: linux-gcc9-x64,
+            }
+          - {
+              name: "macOS Clang x64",
+              os: macos-latest,
+              cc: clang,
+              cxx: clang++,
+              platform: macOS-clang9-x64,
+            }
     steps:
-    - uses: actions/checkout@v2
-    - name: Build
-      shell: bash
-      run: |
-        curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${{ matrix.config.ninja }}.zip
-        unzip -q ninja.zip
-        export PATH=$(pwd):$PATH
-        export CC=${{ matrix.config.cc }}
-        export CXX=${{ matrix.config.cxx }}
-        export BUILD_DIR=build
-        export BUILD_TYPE=Release
-        ./build.sh build
-    - name: Test
-      shell: bash
-      run: |
-        export TEST_REPEAT=100
-        export BUILD_DIR=build
-        ./build.sh test
-    - name: Archive
-      uses: actions/upload-artifact@v1
-      with:
-        name: adev-${{ matrix.config.platform }}
-        path: build/bin/
+      - uses: actions/checkout@v2
+      - name: Build
+        shell: bash
+        run: |
+          export CC=${{ matrix.config.cc }}
+          export CXX=${{ matrix.config.cxx }}
+          export BUILD_DIR=build
+          export BUILD_TYPE=Release
+          ./build.sh build install
+      - name: Test
+        shell: bash
+        run: |
+          export TEST_REPEAT=100
+          export BUILD_DIR=build
+          ./build.sh test
+      - name: Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-${{ matrix.config.platform }}
+          path: build/bin/

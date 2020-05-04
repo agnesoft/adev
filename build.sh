@@ -2,13 +2,17 @@
 # ADev Build Script #
 #####################
 ACTION=$1
+INSTALL=$2
 
 function printHelp () {
     echo "ADev Build Script"
     echo "-----------------"
     echo "Supported OS: Windows, Linux, macOS"
     echo "Usage:"
-    echo "  ./build.sh [ACTION]"
+    echo "  ./build.sh [ACTION] [install]"
+    echo ""
+    echo "NOTE: The 'install' argument is optional and will enable installing of the prerequisites for the given action if they are not available."
+    echo ""
     echo "Environment Variables:"
     echo "  CC: C compiler to use. [Default: 'gcc' on Linux, 'cl' on Windows, 'clang' on macOS, 'clang' if building 'coverage' everywhere]"
     echo "  CXX: C++ compiler to use. [Default: 'g++' on Linux, 'cl' on Windows, 'clang++' on macOS, 'clang++' if building 'coverage' everywhere]"
@@ -74,14 +78,121 @@ function isAvailable () {
     test "$CMD"
 }
 
+function installClangFormat () {
+    if [ "$INSTALL" = "install" ]; then
+        if isWindows; then
+            choco install llvm
+            export PATH="C:/Program Files/LLVM/bin:$PATH"
+        elif isLinux; then
+            sudo apt-get install clang-format-10
+        else
+            brew install clang-format
+        fi
+
+        clang-format --version
+    else
+        printError "ERROR: 'clang-format' is not available"
+        exit 1
+    fi
+}
+
+function installClangTidy () {
+    if [ "$INSTALL" = "install" ]; then
+        if isWindows; then
+            choco install llvm
+            export PATH="C:/Program Files/LLVM/bin:$PATH"
+        elif isLinux; then
+            sudo apt-get install clang-tidy
+        else
+            brew install llvm
+        fi
+
+        clang-tidy --version
+    else
+        printError "ERROR: 'clang-tidy' is not available"
+        exit 1
+    fi
+}
+
+function installLLVM () {
+    if [ "$INSTALL" = "install" ]; then
+        if isWindows; then
+            choco install llvm
+            export PATH="C:/Program Files/LLVM/bin:$PATH"
+        elif isLinux; then
+            sudo apt-get install llvm
+        fi
+
+        $1 --version
+    else
+        printError "ERROR: '$1' is not available"
+        exit 1
+    fi
+}
+
+function installClang () {
+    if [ "$INSTALL" = "install" ]; then
+        if isWindows; then
+            choco install llvm
+            export PATH="C:/Program Files/LLVM/bin:$PATH"
+        elif isLinux; then
+            sudo apt-get install clang clang++
+        fi
+
+        $CC --version
+        $CXX --version
+    else
+        printError "ERROR: 'clang' is not available"
+        exit 1
+    fi
+}
+
+function installDoxygen () {
+    if [ "$INSTALL" = "install" ]; then
+        if isWindows; then
+            choco install doxygen.install
+            export PATH="C:/Program Files/doxygen/bin:$PATH"
+        elif isLinux; then
+            sudo apt-get install doxygen
+        else
+            brew install doxygen
+        fi
+
+        doxygen --version
+    else
+        printError "ERROR: 'doxygen' is not available"
+        exit 1
+    fi
+}
+
+function installNinja () {
+    if [ "$INSTALL" = "install" ]; then
+        if isWindows; then
+            NinjaOS=win
+        elif isLinux; then
+            NinjaOS=linux
+        else
+            NinjaOS=mac
+        fi
+
+        curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${NinjaOS}.zip
+        unzip -q ninja.zip
+        export PATH=$(pwd):$PATH
+
+        ninja --version
+    else
+        printError "ERROR: 'ninja' is not available"
+        exit 1
+    fi
+}
+
 function analyse() {
     if ! test "$CLANG_TIDY"; then
         CLANG_TIDY="clang-tidy"
     fi
 
     if ! isAvailable "$CLANG_TIDY"; then
-        printError "ERROR: '$CLANG_TIDY' is not available"
-        exit 1
+        installLLVM $CLANG_TIDY
     fi
 
     build
@@ -134,8 +245,7 @@ function checkFormatting () {
     fi
 
     if ! isAvailable "$CLANG_FORMAT"; then
-        printError "ERROR: '$CLANG_FORMAT' is not available"
-        exit 1
+        installLLVM $CLANG_FORMAT
     fi
 
     local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
@@ -206,8 +316,7 @@ function build () {
     fi
     
     if ! isAvailable "ninja"; then
-        printError "ERROR: 'ninja' build system is not available."
-        exit 1
+        installNinja
     fi
 
     if ! test "$CC"; then
@@ -232,10 +341,12 @@ function build () {
 
     if ! isAvailable "$CC" && ! isWindows; then
         printError "ERROR: '$CC' C compiler is not available."
+        exit 1
     fi
 
     if ! isAvailable "$CXX" && ! isWindows; then
         printError "ERROR: '$CXX' C++ compiler is not available."
+        exit 1
     fi
 
     if ! test "$BUILD_TYPE"; then
@@ -267,11 +378,23 @@ function buildCoverage () {
     fi
 
     if ! test "$CC"; then
-        CC="clang"
+        if isWindows; then
+            CC="clang-cl"
+        else
+            CC="clang"
+        fi
     fi
 
     if ! test "$CXX"; then
-        CXX="clang++"
+        if isWindows; then
+            CXX="clang-cl"
+        else
+            CXX="clang++"
+        fi
+    fi
+
+    if ! isAvailable $CC || ! isAvailable $CXX; then
+        installClang
     fi
 
     build
@@ -282,9 +405,8 @@ function coverage () {
         LLVM_COV="llvm-cov"
     fi
 
-    if ! isAvailable "$LLVM_COV"; then   
-        printError "ERROR: '$LLVM_COV' is not available."
-        exit 1
+    if ! isAvailable "$LLVM_COV"; then
+        installLLVM $LLVM_COV
     fi
 
     if ! test "$LLVM_PROFDATA"; then
@@ -292,8 +414,7 @@ function coverage () {
     fi
 
     if ! isAvailable "$LLVM_PROFDATA"; then
-        printError "ERROR: '$LLVM_PROFDATA' is not available."
-        exit 1
+        installLLVM $LLVM_PROFDATA
     fi
 
     cd $BUILD_DIR/bin/test
@@ -362,12 +483,15 @@ function documentation () {
         DOXYGEN="doxygen"
     fi
 
-    if ! isAvailable "$DOXYGEN"; then   
-        printError "ERROR: '$DOXYGEN' is not available."
-        exit 1
+    if ! isAvailable "$DOXYGEN"; then
+        installDoxygen $DOXYGEN
     fi
 
     $DOXYGEN ADev.doxyfile
+
+    if test $?; then
+        printOK "Documentation OK"
+    fi
 }
 
 function runTests () {
