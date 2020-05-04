@@ -18,18 +18,13 @@ function printHelp () {
     echo "  CXX: C++ compiler to use. [Default: 'g++' on Linux, 'cl' on Windows, 'clang++' on macOS, 'clang++' if building 'coverage' everywhere]"
     echo "  BUILD_DIR: Relative directory to build in. [Default: build_\${CC}_\${BUILD_Type}] (e.g. build_gcc_Release)"
     echo "  BUILD_TYPE: Type of build passed to CMake. [Default: Release]"
-    echo "  CLANG_FORMAT: Binary used for formatting. [Default: clang-format]"
-    echo "  CLANG_TIDY: Binary used for static analysis. [Default: clang-tidy]"
-    echo "  DOXYGEN: Binary used for building documentation. [Default: doxygen]"
-    echo "  LLVM_COV: Binary used for generating code coverage. [Default: llvm-cov]"
-    echo "  LLVM_PROFDATA: Binary used for generating code coverage. [Default: llvm-profdata]"
     echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (e.g. vcvars64.bat). [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
     echo "  TEST_REPEAT: Runs each test this many times. [Default: 1]"
     echo ""
     echo "Available Actions:"
     echo "  build:"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds with the given compilers and configuration (or with defaults if no options are provided)"
     echo "  check-files:"
     echo "    * Requires: git"
@@ -37,19 +32,19 @@ function printHelp () {
     echo "    * Determines if the files committed in the local branch that are different to the files in origin/master can be checked (i.e. if they are *.cpp, *.hpp). Returns 0 if there are such files."
     echo "  check-formatting"
     echo "    * Requires: clang-format"
-    echo "    * Environment Variables: CLANG_FORMAT"
+    echo "    * Environment Variables: None"
     echo "    * Checks formatting of files in commits that are not also in 'master'."
     echo "   analyse"
     echo "    * Requires: CMake, Ninja, C++ Toolchain, clang-tidy"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, CLANG_TIDY"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds and then performs clang-tidy static analysis on all source files using the compile commands database."
     echo "  coverage:"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, LLVM_COV, LLVM_PROFDATA"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
     echo "    * Builds with code coverage settings, runs the tests and generate the code coverage report."
     echo "  documentation:"
     echo "    * Requires: Doxygen"
-    echo "    * Environment Variables: DOXYGEN"
+    echo "    * Environment Variables: None"
     echo "    * Builds documentation from the sources."
     echo "  test:"
     echo "    * Requires: None"
@@ -169,8 +164,6 @@ function installDoxygen () {
         else
             brew install doxygen
         fi
-
-        $DOXYGEN --version
     else
         printError "ERROR: 'doxygen' is not available"
         exit 1
@@ -197,7 +190,9 @@ function installNinja () {
 }
 
 function analyse() {
-    if ! test "$CLANG_TIDY"; then
+    if isLinux; then
+        CLANG_TIDY="clang-tidy-10"
+    else
         CLANG_TIDY="clang-tidy"
     fi
 
@@ -252,7 +247,9 @@ function analyse() {
 }
 
 function checkFormatting () {
-    if ! test "$CLANG_FORMAT"; then
+    if isLinux; then
+        CLANG_FORMAT="clang-format-10"
+    else
         CLANG_FORMAT="clang-format"
     fi
 
@@ -397,6 +394,8 @@ function buildCoverage () {
     if ! test "$CC"; then
         if isWindows; then
             CC="clang-cl"
+        elif isLinux; then
+            CC="clang-10"
         else
             CC="clang"
         fi
@@ -405,6 +404,8 @@ function buildCoverage () {
     if ! test "$CXX"; then
         if isWindows; then
             CXX="clang-cl"
+        elif isLinux; then
+            CXX="clang++-10"
         else
             CXX="clang++"
         fi
@@ -418,20 +419,20 @@ function buildCoverage () {
 }
 
 function coverage () {
-    if ! test "$LLVM_COV"; then
+    if isLinux; then
+        LLVM_COV="llvm-cov-10"
+    else
         LLVM_COV="llvm-cov"
     fi
 
-    if ! isAvailable "$LLVM_COV"; then
-        installLLVM $LLVM_COV
-    fi
-
-    if ! test "$LLVM_PROFDATA"; then
+    if isLinux; then
+        LLVM_PROFDATA="llvm-profdata-10"
+    else
         LLVM_PROFDATA="llvm-profdata"
     fi
 
-    if ! isAvailable "$LLVM_PROFDATA"; then
-        installLLVM $LLVM_PROFDATA
+    if ! isAvailable "$LLVM_COV" || ! isAvailable "$LLVM_PROFDATA"; then
+        installLLVM $LLVM_COV
     fi
 
     cd $BUILD_DIR/bin/test
@@ -496,14 +497,14 @@ function coverage () {
 }
 
 function documentation () {
-    if ! test "$DOXYGEN"; then
-        DOXYGEN="doxygen"
-    fi
+    DOXYGEN="doxygen"
 
     if ! isAvailable "$DOXYGEN"; then
-        installDoxygen $DOXYGEN
+        installDoxygen
     fi
 
+    local DOXYGEN_VERSION=`$DOXYGEN --version`
+    echo "Doxygen ${DOXYGEN_VERSION}"
     $DOXYGEN ADev.doxyfile
 
     if test $?; then
