@@ -88,8 +88,6 @@ function installClangFormat () {
         else
             brew install clang-format
         fi
-
-        clang-format --version
     else
         printError "ERROR: 'clang-format' is not available"
         exit 1
@@ -106,8 +104,6 @@ function installClangTidy () {
         else
             brew install llvm
         fi
-
-        clang-tidy --version
     else
         printError "ERROR: 'clang-tidy' is not available"
         exit 1
@@ -120,10 +116,12 @@ function installLLVM () {
             choco install llvm
             export PATH="C:/Program Files/LLVM/bin:$PATH"
         elif isLinux; then
-            sudo apt-get install llvm
+            sudo apt-get install llvm-10
+            LLVM_COV="llvm-cov-10"
+            LLVM_PROFDATA="llvm-profdata-10"
+        else
+            brew install llvm
         fi
-
-        $1 --version
     else
         printError "ERROR: '$1' is not available"
         exit 1
@@ -178,8 +176,6 @@ function installNinja () {
         curl -s -S -f -L -o ninja.zip https://github.com/ninja-build/ninja/releases/download/v1.10.0/ninja-${NinjaOS}.zip
         unzip -q ninja.zip
         export PATH=$(pwd):$PATH
-
-        ninja --version
     else
         printError "ERROR: 'ninja' is not available"
         exit 1
@@ -192,8 +188,10 @@ function analyse() {
     fi
 
     if ! isAvailable "$CLANG_TIDY"; then
-        installLLVM $CLANG_TIDY
+        installClangTidy
     fi
+
+    clang-tidy --version
 
     build
     cd $BUILD_DIR
@@ -245,8 +243,10 @@ function checkFormatting () {
     fi
 
     if ! isAvailable "$CLANG_FORMAT"; then
-        installLLVM $CLANG_FORMAT
+        installClangFormat
     fi
+
+    clang-format --version
 
     local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
 
@@ -318,6 +318,9 @@ function build () {
     if ! isAvailable "ninja"; then
         installNinja
     fi
+
+    local NINJA_VERSION=`ninja --version`
+    echo "ninja ${NINJA_VERSION}"
 
     if ! test "$CC"; then
         if isWindows; then
