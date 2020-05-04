@@ -200,8 +200,6 @@ function analyse() {
         installClangTidy
     fi
 
-    $CLANG_TIDY --version
-
     build
     cd $BUILD_DIR
     
@@ -337,7 +335,7 @@ function build () {
         if isWindows; then
             CC="cl"
         elif isLinux; then
-            CC="gcc"
+            CC="gcc-9"
         else
             CC="clang"
         fi
@@ -347,7 +345,7 @@ function build () {
         if isWindows; then
             CXX="cl"
         elif isLinux; then
-            CXX="g++"
+            CXX="g++-9"
         else
             CXX="clang"
         fi

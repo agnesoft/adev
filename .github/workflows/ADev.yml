@@ -60,22 +60,16 @@ jobs:
           - {
               name: "Windows MSVC x64",
               os: windows-latest,
-              cc: cl,
-              cxx: cl,
               platform: windows-msvc2019-x64,
             }
           - {
               name: "Linux GCC x64",
               os: ubuntu-latest,
-              cc: gcc-9,
-              cxx: g++-9,
               platform: linux-gcc9-x64,
             }
           - {
               name: "macOS Clang x64",
               os: macos-latest,
-              cc: clang,
-              cxx: clang++,
               platform: macOS-clang9-x64,
             }
     steps:
@@ -83,16 +77,13 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          export CC=${{ matrix.config.cc }}
-          export CXX=${{ matrix.config.cxx }}
           export BUILD_DIR=build
-          export BUILD_TYPE=Release
           ./build.sh build install
       - name: Test
         shell: bash
         run: |
-          export TEST_REPEAT=100
           export BUILD_DIR=build
+          export TEST_REPEAT=100
           ./build.sh test
       - name: Archive
         uses: actions/upload-artifact@v1
