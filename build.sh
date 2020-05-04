@@ -347,7 +347,7 @@ function build () {
         elif isLinux; then
             CXX="g++-9"
         else
-            CXX="clang"
+            CXX="clang++"
         fi
     fi
 
