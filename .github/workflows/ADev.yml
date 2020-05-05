@@ -13,7 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Formatting
-        run: ./build.sh check-formatting install
+        run: |
+          ./build.sh install-clang-format
+          ./build.sh formatting
 
   coverage:
     name: Code Coverage
@@ -21,7 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Code Coverage
-        run: ./build.sh coverage install
+        run: |
+          ./build.sh install-ninja
+          ./build.sh install-clang
+          ./build.sh install-llvm
+          ./build.sh coverage
       - name: Archive
         if: always()
         uses: actions/upload-artifact@v1
@@ -35,7 +41,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Analysis
-        run: ./build.sh analyse install
+        run: |
+          ./build.sh install-ninja
+          ./build.sh install-clang-tidy
+          ./build.sh analysis
 
   documentation:
     name: Documentation
@@ -43,7 +52,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Documentation
-        run: ./build.sh documentation install
+        run: |
+          ./build.sh install-doxygen
+          ./build.sh documentation
       - name: Archive
         uses: actions/upload-artifact@v1
         with:
@@ -78,13 +89,14 @@ jobs:
         shell: bash
         run: |
           export BUILD_DIR=build
-          ./build.sh build install
+          ./build.sh install-ninja
+          ./build.sh build
       - name: Test
         shell: bash
         run: |
           export BUILD_DIR=build
           export TEST_REPEAT=100
-          ./build.sh test
+          ./build.sh tests
       - name: Archive
         uses: actions/upload-artifact@v1
         with:
