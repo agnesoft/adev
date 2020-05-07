@@ -20,8 +20,8 @@ if(WIN32)
     set(LIBCLANG_INCLUDE_DIR "C:/Program Files/LLVM/include")
     set(LIBCLANG_LIB "C:/Program Files/LLVM/lib/libclang.lib")
 else()
-    set(LIBCLANG_INCLUDE_DIR "/usr/lib/llvm-9/include")
-    set(LIBCLANG_LIB "/usr/lib/llvm-9/lib/libclang.so")
+    set(LIBCLANG_INCLUDE_DIR "/usr/lib/llvm-10/include")
+    set(LIBCLANG_LIB "/usr/lib/llvm-10/lib/libclang.so")
 endif()
 
 # Catch2 Static Library
