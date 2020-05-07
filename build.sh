@@ -619,7 +619,7 @@ elif test "$ACTION" == "install-llvm"; then
 elif test "$ACTION" == "install-msvc"; then
     installMSVC
 elif test "$ACTION" == "install-ninja"; then
-    installMSVC
+    installNinja
 elif test "$ACTION" == "tests"; then
     tests
 else
