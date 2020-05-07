@@ -2,6 +2,8 @@
 # ADev Build Script #
 #####################
 ACTION=$1
+GCC_VERSION=9
+LLVM_VERSION=10
 
 function printHelp () {
     echo "ADev Build Script"
@@ -9,45 +11,41 @@ function printHelp () {
     echo "Supported OS: Windows, Linux, macOS"
     echo "Usage:"
     echo "  ./build.sh [ACTION]"
+    echo ""
     echo "Environment Variables:"
     echo "  CC: C compiler to use. [Default: 'gcc' on Linux, 'cl' on Windows, 'clang' on macOS, 'clang' if building 'coverage' everywhere]"
     echo "  CXX: C++ compiler to use. [Default: 'g++' on Linux, 'cl' on Windows, 'clang++' on macOS, 'clang++' if building 'coverage' everywhere]"
     echo "  BUILD_DIR: Relative directory to build in. [Default: build_\${CC}_\${BUILD_Type}] (e.g. build_gcc_Release)"
     echo "  BUILD_TYPE: Type of build passed to CMake. [Default: Release]"
-    echo "  CLANG_FORMAT: Binary used for formatting. [Default: clang-format]"
-    echo "  CLANG_TIDY: Binary used for static analysis. [Default: clang-tidy]"
-    echo "  DOXYGEN: Binary used for building documentation. [Default: doxygen]"
-    echo "  LLVM_COV: Binary used for generating code coverage. [Default: llvm-cov]"
-    echo "  LLVM_PROFDATA: Binary used for generating code coverage. [Default: llvm-profdata]"
     echo "  MSVC_ENV_SCRIPT: [ONLY WINDOWS] Path to Visual Studio Environment Script (e.g. vcvars64.bat). [Default: C:/Program Files (x86)/Microsoft Visual Studio/2019/[Enterprise|Professional|Community]/VC/Auxiliary/Build/vcvars64.bat]"
     echo "  TEST_REPEAT: Runs each test this many times. [Default: 1]"
     echo ""
     echo "Available Actions:"
+    echo "  analysis"
+    echo "    * Requires: CMake, Ninja, C++ Toolchain, clang-tidy"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
+    echo "    * Builds and then performs static analysis using Clang-Tidy on all source files using the compile commands database."
     echo "  build:"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE"
-    echo "    * Builds with the given compilers and configuration (or with defaults if no options are provided)"
-    echo "  check-files:"
-    echo "    * Requires: git"
-    echo "    * Environment Variables: None"
-    echo "    * Determines if the files committed in the local branch that are different to the files in origin/master can be checked (i.e. if they are *.cpp, *.hpp). Returns 0 if there are such files."
-    echo "  check-formatting"
-    echo "    * Requires: clang-format"
-    echo "    * Environment Variables: CLANG_FORMAT"
-    echo "    * Checks formatting of files in commits that are not also in 'master'."
-    echo "   analyse"
-    echo "    * Requires: CMake, Ninja, C++ Toolchain, clang-tidy"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, CLANG_TIDY"
-    echo "    * Builds and then performs clang-tidy static analysis on all source files using the compile commands database."
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
+    echo "    * Builds using the either the default compiler and configuration (see above) or values from environment variables if set."
     echo "  coverage:"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, LLVM_COV, LLVM_PROFDATA"
-    echo "    * Builds with code coverage settings, runs the tests and generate the code coverage report."
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
+    echo "    * Builds with Clang compiler and BUILD_TYPE=Coverage, runs the tests and generate the code coverage report."
     echo "  documentation:"
     echo "    * Requires: Doxygen"
-    echo "    * Environment Variables: DOXYGEN"
-    echo "    * Builds documentation from the sources."
-    echo "  test:"
+    echo "    * Environment Variables: None"
+    echo "    * Builds documentation from the source files using Doxygen."
+    echo "  formatting"
+    echo "    * Requires: clang-format"
+    echo "    * Environment Variables: None"
+    echo "    * Checks formatting of the source files with Clang-Format."
+    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja]"
+    echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
+    echo "    * Environment Variables: None"
+    echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
+    echo "  tests:"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
     echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used. If \$REPEAT is specified each test will be run that many times/"
@@ -74,21 +72,291 @@ function isAvailable () {
     test "$CMD"
 }
 
-function analyse() {
-    if ! test "$CLANG_TIDY"; then
-        CLANG_TIDY="clang-tidy"
+#############
+# INSTALL-* #
+#############
+function addLLVMRepository () {
+    sudo apt-get update -y
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${LLVM_VERSION} main"
+}
+
+function installClang () {
+    if isWindows; then
+        choco install llvm
+    elif isLinux; then
+        addLLVMRepository
+        sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
+    else
+        brew install llvm
+    fi
+}
+
+function installClangFormat () {
+    if isWindows; then
+        choco install llvm
+    elif isLinux; then
+        addLLVMRepository
+        sudo apt-get install -y clang-format-${LLVM_VERSION}
+    else
+        brew install clang-format
+    fi
+}
+
+function installClangTidy () {
+    if isWindows; then
+        choco install llvm
+    elif isLinux; then
+        addLLVMRepository
+        sudo apt-get install -y clang-tidy-${LLVM_VERSION}
+    else
+        brew install llvm
+    fi
+}
+
+function installCMake () {
+    if isWindows; then
+        choco install cmake
+    elif isLinux; then
+        addLLVMRepository
+        sudo apt-get install -y cmake
+    else
+        brew install cmake
+    fi
+}
+
+function installDoxygen () {
+    if isWindows; then
+        choco install doxygen.install
+    elif isLinux; then
+        sudo apt-get update -y
+        sudo apt-get install doxygen
+    else
+        brew install doxygen
+    fi
+}
+
+function installGCC () {
+    if isLinux; then
+        sudo apt-get update -y
+        sudo apt-get install gcc-${GCC_VERSION} g++-${GCC_VERSION}
+    else
+        echo "ERROR: 'GCC' can only be installed on Linux."
+    fi
+}
+
+function installLLVM () {
+    if isWindows; then
+        choco install llvm
+    elif isLinux; then
+        addLLVMRepository
+        sudo apt-get install -y llvm-10
+    else
+        brew install llvm
+    fi
+}
+
+function installMSVC () {
+    if isWindows; then
+        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --passive --norestart"
+    else
+        printError "ERROR: 'MSVC' can only be installed on Windows."
+        exit 1
+    fi
+}
+
+function installNinja () {
+    if isWindows; then
+        choco install ninja
+    elif isLinux; then
+        sudo apt-get update -y
+        sudo apt-get install -y ninja-build
+    else
+        brew install ninja
+    fi
+}
+
+##########
+# DETECT #
+##########
+function detectBuildProperties () {
+    if ! test "$BUILD_TYPE"; then
+        BUILD_TYPE="Release"
     fi
 
-    if ! isAvailable "$CLANG_TIDY"; then
-        printError "ERROR: '$CLANG_TIDY' is not available"
+    if ! test "$BUILD_DIR"; then
+        BUILD_DIR="build_${CC}_${BUILD_TYPE}"
+    fi
+}
+
+function detectClang () {
+    if isWindows && isAvailable "clang-cl"; then
+        CC="clang-cl"
+        CXX="clang-cl"
+    elif isAvailable "clang++-${LLVM_VERSION}"; then
+        CC="clang-${LLVM_VERSION}"
+        CXX="clang++-${LLVM_VERSION}"
+    elif isAvailable "clang++"; then
+        CC="clang"
+        CXX="clang++"
+    else
+        printError "ERROR: 'clang' is not available. Try installing it with './build.sh install-clang'."
         exit 1
     fi
 
+    $CXX --version | head -n 1
+}
+
+function detectClangFormat () {
+    if isAvailable "clang-format-${LLVM_VERSION}"; then
+        CLANG_FORMAT="clang-format-${LLVM_VERSION}"
+    elif isAvailable "clang-format"; then
+        CLANG_FORMAT="clang-format"
+    else
+        printError "ERROR: 'clang-format' is not available. Try installing it with './build.sh install-clang-format'."
+        exit 1
+    fi
+
+    $CLANG_FORMAT --version | head -n 1
+}
+
+function detectClangTidy () {
+    if isAvailable "clang-tidy-${LLVM_VERSION}"; then
+        CLANG_TIDY="clang-tidy-${LLVM_VERSION}"
+    elif isAvailable "clang-tidy"; then
+        CLANG_TIDY="clang-tidy"
+    else
+        printError "ERROR: 'clang-tidy' is not available. Try installing it with './build.sh install-clang-tidy'."
+        exit 1
+    fi
+
+    echo "clang-tidy from $($CLANG_TIDY --version | head -n 2 | tail -n 1)"
+}
+
+function detectCMake () {
+    if isAvailable "cmake"; then
+        CMAKE="cmake"
+    else
+        printError "ERROR: 'cmake' is not available. Try installing it with './build.sh install-cmake'."
+    fi
+
+    $CMAKE --version | head -n 1
+}
+
+function detectCompiler () {
+    if ! test "$CXX"; then
+        if isWindows; then
+            detectMSVC
+        elif isLinux; then
+            detectGCC
+        else
+            detectClang
+        fi
+    fi
+}
+
+function detectDoxygen () {
+    if isAvailable "doxygen"; then
+        DOXYGEN="doxygen"
+    else
+        printError "ERROR: 'doxygen' is not available. Try installing it with './build.sh install-doxygen'."
+        exit 1
+    fi
+
+    echo "Doxygen $(doxygen --version)"
+}
+
+function detectGCC () {
+    if isAvailable "g++-${GCC_VERSION}"; then
+        CC="gcc-${GCC_VERSION}"
+        CXX="g++-${GCC_VERSION}"
+    elif isAvailable "g++"; then
+        CC="gcc"
+        CXX="g++"
+    else
+        printError "ERROR: 'GCC' is not available. Try installing it with './build.sh install-gcc'"
+        exit 1
+    fi
+
+    $CXX --version | head -n 1
+}
+
+function detectLLVMCov () {
+    if isAvailable "llvm-cov-${LLVM_VERSION}"; then
+        LLVM_COV="llvm-cov-${LLVM_VERSION}"
+    elif isAvailable "llvm-cov"; then
+        LLVM_COV="llvm-cov"
+    else
+        printError "ERROR: 'llvm-cov' is not available. Try installing it with './build.sh install-llvm'."
+        exit 1
+    fi
+
+    echo "llvm-cov from $($LLVM_COV --version | head -n 2 | tail -n 1)"
+}
+
+function detectLLVMProfdata () {
+    if isAvailable "llvm-profdata-${LLVM_VERSION}"; then
+        LLVM_PROFDATA="llvm-profdata-${LLVM_VERSION}"
+    elif isAvailable "llvm-profdata"; then
+        LLVM_PROFDATA="llvm-profdata"
+    else
+        printError "ERROR: 'llvm-profdata' is not available. Try installing it with './build.sh install-llvm'."
+        exit 1
+    fi
+}
+
+function detectMSVC () {
+    local CL=`find "C:/Program Files (x86)/Microsoft Visual Studio" -name "cl.exe" -type f | head -n 1`
+    if test "$CL"; then
+        CC=cl
+        CXX=cl
+    else
+        printError "ERROR: 'MSVC' is not available. Try installing it with './build.sh install-msvc'."
+        exit 1
+    fi
+
+    "$CL" 2>&1 | head -n 1
+}
+
+function detectMSVCEnvScript () {
+    MSVC_ENV_SCRIPT=`find "C:/Program Files (x86)/Microsoft Visual Studio" -name "vcvars64.bat" -type f | head -n 1`
+    if ! test "$MSVC_ENV_SCRIPT"; then
+        printError "ERROR: Visual Studio environemnt script not found."
+        exit 1
+    fi
+}
+
+function detectNinja () {
+    if isAvailable "ninja"; then
+        NINJA="ninja"
+    else
+        printError "ERROR: 'ninja' is not available. Try installing it with './build.sh install-ninja'."
+        exit 1
+    fi
+
+    echo "ninja $(ninja --version)"
+}
+
+function detectTestProperties () {
+    if ! test "$BUILD_DIR"; then
+        BUILD_DIR=$(find . -name "build_*" -type d | head -n 1)
+    fi
+
+    if ! test "$TEST_REPEAT"; then
+        TEST_REPEAT=1
+    fi
+}
+
+###########
+# ACTIONS #
+###########
+function analysis() {
+    detectClangTidy
     build
     cd $BUILD_DIR
     
     if ! test -f "compile_commands.json"; then
-        printError "ERROR: 'compile_commands.json' not generated. Are you missing 'set(CMAKE_EXPORT_COMPILE_COMMANDS true)' in CMakeLists.txt?"
+        printError "ERROR: 'compile_commands.json' cannot be found. Are you missing 'set(CMAKE_EXPORT_COMPILE_COMMANDS true)' in CMakeLists.txt?"
         exit 1
     fi
 
@@ -124,127 +392,13 @@ function analyse() {
     else
         printOK "Analysis OK"
     fi
-
-    cd ..
-}
-
-function checkFormatting () {
-    if ! test "$CLANG_FORMAT"; then
-        CLANG_FORMAT="clang-format"
-    fi
-
-    if ! isAvailable "$CLANG_FORMAT"; then
-        printError "ERROR: '$CLANG_FORMAT' is not available"
-        exit 1
-    fi
-
-    local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
-
-    echo "Formatting..."
-
-    for file in $SOURCE_FILES
-    do
-        local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
-
-        if test "$REPLACEMENTS"; then
-            printError "$file (ERROR: Incorrectly formatted file.)"
-            UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
-        else
-            printOK "$file (OK)"
-        fi
-    done
-    
-    if test "$UNFORMATTED_FILES"; then
-        printError "ERROR: Incorrectly formatted files."
-        printError "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
-        exit 1
-    else
-        printOK "Formatting OK"
-    fi
-}
-
-function buildWindows () {
-    if ! test -f "$MSVC_ENV_SCRIPT"; then
-        if test -f "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"; then
-            MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-        elif test -f "C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"; then
-            MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
-        elif test -f "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat" ; then
-            MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
-        else
-            printError "ERROR: Visual Studio environemnt script not found."
-            exit 1
-        fi
-    fi
-
-    mkdir -p $BUILD_DIR
-    cd $BUILD_DIR
-    local BUILD_SCRIPT="call \"${MSVC_ENV_SCRIPT}\"
-                        set CC=${CC}
-                        set CXX=${CXX}
-                        cmake .. -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
-                        ninja
-                        ninja install"
-    echo "$BUILD_SCRIPT" > build.bat
-    cmd //c build.bat
-}
-
-function buildUnix () {
-    mkdir -p $BUILD_DIR
-    cd $BUILD_DIR
-    export CC=$CC
-    export CXX=$CXX
-    cmake .. -G Ninja -D CMAKE_BUILD_TYPE=$BUILD_TYPE -D CMAKE_INSTALL_PREFIX=.
-    ninja
-    ninja install
 }
 
 function build () {
-    if ! isAvailable "cmake"; then
-        printError "ERROR: 'cmake' is not available."
-        exit 1
-    fi
-    
-    if ! isAvailable "ninja"; then
-        printError "ERROR: 'ninja' build system is not available."
-        exit 1
-    fi
-
-    if ! test "$CC"; then
-        if isWindows; then
-            CC="cl"
-        elif isLinux; then
-            CC="gcc"
-        else
-            CC="clang"
-        fi
-    fi
-
-    if ! test "$CXX"; then
-        if isWindows; then
-            CXX="cl"
-        elif isLinux; then
-            CXX="g++"
-        else
-            CXX="clang"
-        fi
-    fi
-
-    if ! isAvailable "$CC" && ! isWindows; then
-        printError "ERROR: '$CC' C compiler is not available."
-    fi
-
-    if ! isAvailable "$CXX" && ! isWindows; then
-        printError "ERROR: '$CXX' C++ compiler is not available."
-    fi
-
-    if ! test "$BUILD_TYPE"; then
-        BUILD_TYPE="Release"
-    fi
-
-    if ! test "$BUILD_DIR"; then
-        BUILD_DIR="build_${CC}_${BUILD_TYPE}"
-    fi
+    detectCMake
+    detectNinja
+    detectCompiler
+    detectBuildProperties
 
     if isWindows; then
         buildWindows
@@ -259,42 +413,36 @@ function build () {
     fi
 }
 
-function buildCoverage () {
-    BUILD_TYPE="Coverage"
+function buildUnix () {
+    mkdir -p $BUILD_DIR
+    cd $BUILD_DIR
+    export CC=$CC
+    export CXX=$CXX
+    $CMAKE .. -G Ninja -D CMAKE_BUILD_TYPE=$BUILD_TYPE -D CMAKE_INSTALL_PREFIX=.
+    $NINJA
+    $NINJA install
+}
 
-    if ! test "$BUILD_DIR"; then
-        BUILD_DIR="build_clang_Coverage"
-    fi
-
-    if ! test "$CC"; then
-        CC="clang"
-    fi
-
-    if ! test "$CXX"; then
-        CXX="clang++"
-    fi
-
-    build
+function buildWindows () {
+    detectMSVCEnvScript
+    mkdir -p $BUILD_DIR
+    cd $BUILD_DIR
+    local BUILD_SCRIPT="call \"${MSVC_ENV_SCRIPT}\"
+                        set CC=${CC}
+                        set CXX=${CXX}
+                        ${CMAKE} .. -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
+                        ${NINJA}
+                        ${NINJA} install"
+    echo "$BUILD_SCRIPT" > build.bat
+    cmd //c build.bat
 }
 
 function coverage () {
-    if ! test "$LLVM_COV"; then
-        LLVM_COV="llvm-cov"
-    fi
-
-    if ! isAvailable "$LLVM_COV"; then   
-        printError "ERROR: '$LLVM_COV' is not available."
-        exit 1
-    fi
-
-    if ! test "$LLVM_PROFDATA"; then
-        LLVM_PROFDATA="llvm-profdata"
-    fi
-
-    if ! isAvailable "$LLVM_PROFDATA"; then
-        printError "ERROR: '$LLVM_PROFDATA' is not available."
-        exit 1
-    fi
+    detectLLVMCov
+    detectLLVMProfdata
+    detectClang
+    BUILD_TYPE="Coverage"
+    build
 
     cd $BUILD_DIR/bin/test
     
@@ -358,36 +506,57 @@ function coverage () {
 }
 
 function documentation () {
-    if ! test "$DOXYGEN"; then
-        DOXYGEN="doxygen"
-    fi
-
-    if ! isAvailable "$DOXYGEN"; then   
-        printError "ERROR: '$DOXYGEN' is not available."
+    detectDoxygen
+    echo "Generating documentation..."
+    $DOXYGEN ADev.doxyfile
+    if test $?; then
+        printOK "Documentation OK"
+    else
+        printError "ERROR: Building documentation failed."
         exit 1
     fi
-
-    $DOXYGEN ADev.doxyfile
 }
 
-function runTests () {
-    if ! test "$BUILD_DIR"; then
-        BUILD_DIR=$(find . -name "build_*" -type d | head -n 1)
-    fi
+function formatting () {
+    detectClangFormat
 
-    if ! test "$TEST_REPEAT"; then
-        TEST_REPEAT=1
-    fi
+    echo "Formatting..."
+
+    local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
+    for file in $SOURCE_FILES
+    do
+        local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
+
+        if test "$REPLACEMENTS"; then
+            printError "$file (ERROR: Incorrectly formatted file.)"
+            UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
+        else
+            printOK "$file (OK)"
+        fi
+    done
     
+    if test "$UNFORMATTED_FILES"; then
+        printError "ERROR: Incorrectly formatted files."
+        printError "Run 'clang-format -i $UNFORMATTED_FILES' and commit the result."
+        exit 1
+    else
+        printOK "Formatting OK"
+    fi
+}
+
+function tests () {
+    detectTestProperties
+
     cd $BUILD_DIR/bin/test
     local TESTS=`find . -name "*Test" -o -name "*Test.exe" -type f`
-    export LD_LIBRARY_PATH=.
     local TEST_RUN_RESULT=0
     local TEST_OK=0
     local i=0
     local RETURN=0
 
     echo "Running tests $TEST_REPEAT times..."
+
+    export LD_LIBRARY_PATH=.
 
     for test in $TESTS;
     do
@@ -425,21 +594,34 @@ function runTests () {
 # Main Script #
 ###############
 
-if test "$ACTION" == "build"; then
+if test "$ACTION" == "analysis"; then
+    analysis
+elif test "$ACTION" == "build"; then
     build
-elif test "$ACTION" == "check-files"; then
-    checkFiles
-elif test "$ACTION" == "check-formatting"; then
-    checkFormatting
 elif test "$ACTION" == "coverage"; then
-    buildCoverage
     coverage
-elif test "$ACTION" == "analyse"; then
-    analyse
 elif test "$ACTION" == "documentation"; then
     documentation
-elif test "$ACTION" == "test"; then
-    runTests
+elif test "$ACTION" == "formatting"; then
+    formatting
+elif test "$ACTION" == "install-clang"; then
+    installClang
+elif test "$ACTION" == "install-clang-format"; then
+    installClangFormat
+elif test "$ACTION" == "install-clang-tidy"; then
+    installClangTidy
+elif test "$ACTION" == "install-cmake"; then
+    installCMake
+elif test "$ACTION" == "install-doxygen"; then
+    installDoxygen
+elif test "$ACTION" == "install-llvm"; then
+    installLLVM
+elif test "$ACTION" == "install-msvc"; then
+    installMSVC
+elif test "$ACTION" == "install-ninja"; then
+    installNinja
+elif test "$ACTION" == "tests"; then
+    tests
 else
     printHelp
 fi
