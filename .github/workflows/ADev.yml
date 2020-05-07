@@ -12,49 +12,54 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Clang-Format
+        run: ./build.sh install-format
       - name: Formatting
-        run: |
-          ./build.sh install-clang-format
-          ./build.sh formatting
+        run: ./build.sh formatting
 
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
       - name: Code Coverage
         run: |
-          ./build.sh install-ninja
-          ./build.sh install-clang
-          ./build.sh install-llvm
+          export BUILD_DIR=build
           ./build.sh coverage
       - name: Archive
         if: always()
         uses: actions/upload-artifact@v1
         with:
           name: adev-code-coverage
-          path: build_clang_Coverage/coverage
+          path: build/coverage
 
   analysis:
     name: Static Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang-Tidy
+        run: ./build.sh install-clang-tidy
       - name: Analysis
-        run: |
-          ./build.sh install-ninja
-          ./build.sh install-clang-tidy
-          ./build.sh analysis
+        run: ./build.sh analysis
 
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install Doxygen
+      - run: ./build.sh install-doxygen
       - name: Documentation
-        run: |
-          ./build.sh install-doxygen
-          ./build.sh documentation
+        run: ./build.sh documentation
       - name: Archive
         uses: actions/upload-artifact@v1
         with:
@@ -85,13 +90,15 @@ jobs:
             }
     steps:
       - uses: actions/checkout@v2
+      - name: Install Ninja
+        shell: bash
+        run: ./build.sh install-ninja
       - name: Build
         shell: bash
         run: |
           export BUILD_DIR=build
-          ./build.sh install-ninja
           ./build.sh build
-      - name: Test
+      - name: Tests
         shell: bash
         run: |
           export BUILD_DIR=build
