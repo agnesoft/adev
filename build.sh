@@ -75,18 +75,11 @@ function isAvailable () {
 #############
 # INSTALL-* #
 #############
-function addLLVMRepository () {
-    sudo apt-get update -y
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${LLVM_VERSION} main"
-    sudo apt-get update -y
-}
-
 function installClang () {
     if isWindows; then
         choco install llvm
     elif isLinux; then
-        addLLVMRepository
+        sudo apt-get update -y
         sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
     else
         brew install llvm
@@ -97,7 +90,7 @@ function installClangFormat () {
     if isWindows; then
         choco install llvm
     elif isLinux; then
-        addLLVMRepository
+        sudo apt-get update -y
         sudo apt-get install -y clang-format-${LLVM_VERSION}
     else
         brew install clang-format
@@ -108,7 +101,7 @@ function installClangTidy () {
     if isWindows; then
         choco install llvm
     elif isLinux; then
-        addLLVMRepository
+        sudo apt-get update -y
         sudo apt-get install -y clang-tidy-${LLVM_VERSION}
     else
         brew install llvm
@@ -119,7 +112,7 @@ function installCMake () {
     if isWindows; then
         choco install cmake
     elif isLinux; then
-        addLLVMRepository
+        sudo apt-get update -y
         sudo apt-get install -y cmake
     else
         brew install cmake
@@ -150,7 +143,7 @@ function installLLVM () {
     if isWindows; then
         choco install llvm
     elif isLinux; then
-        addLLVMRepository
+        sudo apt-get update -y
         sudo apt-get install -y llvm-10
     else
         brew install llvm
