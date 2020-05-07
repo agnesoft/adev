@@ -172,6 +172,7 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
                                             "#include <vector>\n"
                                             "\n"
                                             "int main() {}"};
+        std::filesystem::last_write_time(testFile.path(), std::filesystem::last_write_time(testFile.path()) - std::chrono::hours{1});
 
         abuild::Source source{testFile.path()};
         REQUIRE(source.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
@@ -201,6 +202,7 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
                                             "#include <vector>\n"
                                             "\n"
                                             "int main() {}"};
+        std::filesystem::last_write_time(testFile.path(), std::filesystem::last_write_time(testFile.path()) - std::chrono::hours{1});
 
         abuild::Source source{testFile.path()};
         REQUIRE(source.includes() == std::vector<std::string>{"Lib/SomeFile.h", "string", "SomeInclude.h", "vector"});
