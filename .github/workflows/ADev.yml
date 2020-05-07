@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Doxygen
-      - run: ./build.sh install-doxygen
+        run: ./build.sh install-doxygen
       - name: Documentation
         run: ./build.sh documentation
       - name: Archive
