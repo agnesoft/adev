@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Clang-Format
-        run: ./build.sh install-format
+        run: ./build.sh install-clang-format
       - name: Formatting
         run: ./build.sh formatting
 

@@ -76,9 +76,10 @@ function isAvailable () {
 # INSTALL-* #
 #############
 function addLLVMRepository () {
-    sudo apt-get -qq update -y
-    sudo apt-get -qq install -y software-properties-common
+    sudo apt-get update -y
+    sudo apt-get install -y software-properties-common
     sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${LLVM_VERSION} main"
+    sudo apt-get update -y
 }
 
 function installClang () {
