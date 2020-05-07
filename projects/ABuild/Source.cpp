@@ -11,7 +11,7 @@ namespace libclang
 class TranslationUnit
 {
 public:
-    TranslationUnit(const std::filesystem::path &path) :
+    explicit TranslationUnit(const std::filesystem::path &path) :
         mIndex{clang_createIndex(0, 0)},
         mUnit{clang_parseTranslationUnit(mIndex,
                                          path.string().c_str(),
