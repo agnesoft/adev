@@ -170,7 +170,7 @@ function installNinja () {
         choco install ninja
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get install -y ninja
+        sudo apt-get install -y ninja-build
     else
         brew install ninja
     fi
