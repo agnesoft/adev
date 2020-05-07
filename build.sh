@@ -24,27 +24,27 @@ function printHelp () {
     echo "  analysis"
     echo "    * Requires: CMake, Ninja, C++ Toolchain, clang-tidy"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
-    echo "    * Builds and then performs clang-tidy static analysis on all source files using the compile commands database."
+    echo "    * Builds and then performs static analysis using Clang-Tidy on all source files using the compile commands database."
     echo "  build:"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
-    echo "    * Builds with the given compilers and configuration (or with defaults if no options are provided)"
+    echo "    * Builds using the either the default compiler and configuration (see above) or values from environment variables if set."
     echo "  coverage:"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
-    echo "    * Builds with Clang and code coverage settings, runs the tests and generate the code coverage report."
+    echo "    * Builds with Clang compiler and BUILD_TYPE=Coverage, runs the tests and generate the code coverage report."
     echo "  documentation:"
     echo "    * Requires: Doxygen"
     echo "    * Environment Variables: None"
-    echo "    * Builds documentation from the source files."
+    echo "    * Builds documentation from the source files using Doxygen."
     echo "  formatting"
     echo "    * Requires: clang-format"
     echo "    * Environment Variables: None"
-    echo "    * Checks formatting of the source files."
+    echo "    * Checks formatting of the source files with Clang-Format."
     echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja]"
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
-    echo "    * Installs one of the packages required byt the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
+    echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
     echo "  tests:"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
@@ -79,7 +79,6 @@ function addLLVMRepository () {
     sudo apt-get update -y
     sudo apt-get install -y software-properties-common
     sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${LLVM_VERSION} main"
-    sudo apt-get update -y
 }
 
 function installClang () {
