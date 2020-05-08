@@ -625,6 +625,8 @@ elif test "$ACTION" == "install-cmake"; then
     installCMake
 elif test "$ACTION" == "install-doxygen"; then
     installDoxygen
+elif test "$ACTION" == "install-libclang"; then
+    installLibClang
 elif test "$ACTION" == "install-llvm"; then
     installLLVM
 elif test "$ACTION" == "install-msvc"; then
