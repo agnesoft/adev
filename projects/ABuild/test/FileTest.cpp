@@ -33,12 +33,12 @@ TEST_CASE("content() const -> std::string [abuild::File")
     SECTION("[empty]")
     {
         const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp", ""};
-        REQUIRE(abuild::File{testFile.path()}.content().empty());
+        REQUIRE(abuild::File{testFile.path()}.content() == std::string{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[non existing]")
     {
-        REQUIRE(abuild::File{""}.content().empty());
+        REQUIRE(abuild::File{""}.content() == std::string{}); //NOLINT(readability-container-size-empty)
     }
 }
 

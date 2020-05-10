@@ -30,8 +30,8 @@ add_library(ABuildStatic STATIC projects/ABuild/include/ABuild.hpp
                                 projects/ABuild/File.cpp
                                 projects/ABuild/Source.cpp)
 target_compile_features(ABuildStatic PUBLIC cxx_std_17)
-target_include_directories(ABuildStatic PRIVATE projects/ABuild/include/ABuild)
 target_include_directories(ABuildStatic PUBLIC projects/ABuild/include)
+target_include_directories(ABuildStatic PRIVATE projects/ABuild/include/ABuild)
 
 #ABuild
 add_executable(ABuild projects/ABuild/main.cpp)
