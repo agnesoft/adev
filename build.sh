@@ -41,7 +41,7 @@ function printHelp () {
     echo "    * Requires: clang-format"
     echo "    * Environment Variables: None"
     echo "    * Checks formatting of the source files with Clang-Format."
-    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|libclang|llvm|msvc|ninja]"
+    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja]"
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
@@ -142,17 +142,6 @@ function installGCC () {
         sudo apt-get install gcc-${GCC_VERSION} g++-${GCC_VERSION}
     else
         echo "ERROR: 'GCC' can only be installed on Linux."
-    fi
-}
-
-function installLibClang () {
-    if isWindows; then
-        choco install llvm
-    elif isLinux; then
-        addLLVMRepository
-        sudo apt-get install libclang-10-dev
-    else
-        brew install llvm
     fi
 }
 
@@ -625,8 +614,6 @@ elif test "$ACTION" == "install-cmake"; then
     installCMake
 elif test "$ACTION" == "install-doxygen"; then
     installDoxygen
-elif test "$ACTION" == "install-libclang"; then
-    installLibClang
 elif test "$ACTION" == "install-llvm"; then
     installLLVM
 elif test "$ACTION" == "install-msvc"; then

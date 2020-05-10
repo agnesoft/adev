@@ -24,8 +24,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Ninja
         run: ./build.sh install-ninja
-      - name: Install LibClang
-        run: ./build.sh install-libclang
       - name: Install Clang
         run: ./build.sh install-clang
       - name: Install LLVM
@@ -48,8 +46,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Ninja
         run: ./build.sh install-ninja
-      - name: Install LibClang
-        run: ./build.sh install-libclang
       - name: Install Clang-Tidy
         run: ./build.sh install-clang-tidy
       - name: Analysis
@@ -97,9 +93,6 @@ jobs:
       - name: Install Ninja
         shell: bash
         run: ./build.sh install-ninja
-      - name: Install LibClang
-        shell: bash
-        run: ./build.sh install-libclang
       - name: Build
         shell: bash
         run: |
