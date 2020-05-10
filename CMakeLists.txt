@@ -16,17 +16,6 @@ else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-if(WIN32)
-    set(LIBCLANG_INCLUDE_DIR "C:/Program Files/LLVM/include")
-    set(LIBCLANG_LIB "C:/Program Files/LLVM/lib/libclang.lib")
-elseif(APPLE)
-    set(LIBCLANG_INCLUDE_DIR "/usr/local/opt/llvm/include")
-    set(LIBCLANG_LIB "/usr/local/opt/llvm/lib/libclang.dylib")
-else()
-    set(LIBCLANG_INCLUDE_DIR "/usr/lib/llvm-10/include")
-    set(LIBCLANG_LIB "/usr/lib/llvm-10/lib/libclang.so")
-endif()
-
 # Catch2 Static Library
 add_library(Catch2 STATIC projects/Catch2/Catch2.cpp
                           projects/Catch2/include/Catch2/catch.hpp)
@@ -42,8 +31,7 @@ add_library(ABuildStatic STATIC projects/ABuild/include/ABuild.hpp
                                 projects/ABuild/Source.cpp)
 target_compile_features(ABuildStatic PUBLIC cxx_std_17)
 target_include_directories(ABuildStatic PUBLIC projects/ABuild/include)
-target_include_directories(ABuildStatic PRIVATE projects/ABuild/include/ABuild ${LIBCLANG_INCLUDE_DIR})
-target_link_libraries(ABuildStatic PRIVATE ${LIBCLANG_LIB})
+target_include_directories(ABuildStatic PRIVATE projects/ABuild/include/ABuild)
 
 #ABuild
 add_executable(ABuild projects/ABuild/main.cpp)

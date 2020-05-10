@@ -140,6 +140,45 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
         REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "SomeInclude.h", "cstdint"});
     }
 
+    SECTION("[trailing spaces]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#ifdef X\n"
+                                            "  #include    \"Lib/SomeFile.h\"\n"
+                                            "#endif\n"
+                                            "#include    \"SomeInclude.h\"\n"
+                                            "  #include <cstdint>"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "SomeInclude.h", "cstdint"});
+    }
+
+    SECTION("[tabs]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#ifdef X\n"
+                                            "\t#include    \"Lib/SomeFile.h\"\n"
+                                            "#endif\n"
+                                            "#include\t\t\"SomeInclude.h\"\n"
+                                            "\t#include <cstdint>"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "SomeInclude.h", "cstdint"});
+    }
+
+    SECTION("[backslashes]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#ifdef X\n"
+                                            "\t#include    \"Lib\\\\SomeFile.h\"\n"
+                                            "#endif\n"
+                                            "#include\t\t\"SomeInclude.h\"\n"
+                                            "\t#include <cstdint>"
+                                            "\n"
+                                            "int main() {}"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib\\\\SomeFile.h", "SomeInclude.h", "cstdint"});
+    }
+
     SECTION("[commented include]")
     {
         const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
@@ -152,12 +191,56 @@ TEST_CASE("includes() const noexcept -> std::vector<std::string> [abuild::Source
         REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "atomic"});
     }
 
+    SECTION("[string literal]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "//Some comment at the beginning\n"
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "//#include <string>\n"
+                                            "#include <atomic>"
+                                            "\n"
+                                            "int main() { const char *c = \"#include \\\"foo\\\"\" }"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "atomic"});
+    }
+
+    SECTION("[division]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "//Some comment at the beginning\n"
+                                            "#include \"Lib/SomeFile.h\"\n"
+                                            "//#include <string>\n"
+                                            "#include <atomic>"
+                                            "\n"
+                                            "int main() { return 4 / 2 }"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{"Lib/SomeFile.h", "atomic"});
+    }
+
     SECTION("[unrelated comment]")
     {
         const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
                                             "/* Do not use "
                                             "#include \"foo\" "
                                             "in your code */\n"
+                                            "\n"
+                                            "int main() {}\n"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{}); //NOLINT(readability-container-size-empty)
+    }
+
+    SECTION("[unfinished comment]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "/* Do not use "
+                                            "#include \"foo\" "
+                                            "in your code \n"
+                                            "\n"
+                                            "int main() {}\n"};
+        REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{}); //NOLINT(readability-container-size-empty)
+    }
+
+    SECTION("[unfinished include]")
+    {
+        const abuildtest::TestFile testFile{"Abuild.FileTest.TestFile.cpp",
+                                            "#include \"Lib\n"
                                             "\n"
                                             "int main() {}\n"};
         REQUIRE(abuild::Source{testFile.path()}.includes() == std::vector<std::string>{}); //NOLINT(readability-container-size-empty)

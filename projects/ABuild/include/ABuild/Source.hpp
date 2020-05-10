@@ -3,6 +3,7 @@
 
 #include "File.hpp"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,9 +32,17 @@ public:
     [[nodiscard]] auto update() -> bool;
 
 private:
-    auto extractIncludes() -> std::vector<std::string>;
+    auto extractInclude(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
+    auto extractIncludes(const std::string &sourceContent) -> void;
     [[nodiscard]] auto lastWriteTime() const -> std::filesystem::file_time_type;
+    auto saveInclude(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
     auto scanContent() -> bool;
+    static auto skipComment(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
+    static auto skipInclude(std::string::const_iterator it, std::string::const_iterator end) -> std::optional<std::string::const_iterator>;
+    static auto skipLineComment(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
+    static auto skipMultiLineComment(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
+    static auto skipStringLiteral(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
+    static auto skipWhiteSpace(std::string::const_iterator it, std::string::const_iterator end) -> std::string::const_iterator;
 
     std::size_t mHash = 0;
     std::filesystem::file_time_type mLastWriteTime;
