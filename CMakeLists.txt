@@ -16,6 +16,9 @@ else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
+##########
+# CATCH2 #
+##########
 # Catch2 Static Library
 add_library(Catch2 STATIC projects/Catch2/Catch2.cpp
                           projects/Catch2/include/Catch2/catch.hpp)
@@ -23,6 +26,25 @@ target_compile_features(Catch2 PUBLIC cxx_std_17)
 target_include_directories(Catch2 SYSTEM PRIVATE projects/Catch2/include/Catch2)
 target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/include)
 
+#########
+# ACORE #
+#########
+#ACore Static Library
+add_library(ACore STATIC projects/ACore/include/ACore.hpp
+                         projects/ACore/include/ACore/Numeric.hpp
+                         projects/ACore/Numeric.cpp)
+target_compile_features(ACore PUBLIC cxx_std_17)
+target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
+target_include_directories(ACore PUBLIC projects/ACore/include)
+
+#ACoreTest
+add_executable(ACoreTest projects/ACore/test/pch.hpp
+                         projects/ACore/test/NumericTest.cpp)
+target_link_libraries(ACoreTest ACore Catch2)
+
+##########
+# ABUILD #
+##########
 #ABuild Static Library
 add_library(ABuildStatic STATIC projects/ABuild/include/ABuild.hpp
                                 projects/ABuild/include/ABuild/File.hpp
@@ -44,5 +66,6 @@ add_executable(ABuildTest projects/ABuild/test/TestFile.hpp
                           projects/ABuild/test/SourceTest.cpp)
 target_link_libraries(ABuildTest ABuildStatic Catch2)
 
+### INSTALLATION ###
 install(TARGETS ABuild DESTINATION bin)
 install(TARGETS ABuildTest DESTINATION bin/test)
