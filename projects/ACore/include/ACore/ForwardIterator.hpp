@@ -47,19 +47,19 @@ public:
     //! Constructs an iterator with \a index
     //! and \a iterable.
     constexpr ForwardIterator(size_type index, Iterable *iterable) noexcept :
-        mIndex(index),
-        mIterable(iterable)
+        mIndex{index},
+        mIterable{iterable}
     {
     }
 
     //! Returns the \c index this iterator points to.
-    [[nodiscard]] constexpr size_type index() const noexcept
+    [[nodiscard]] constexpr auto index() const noexcept -> size_type
     {
         return mIndex;
     }
 
     //! Returns the \c iterable this iterator operators on.
-    [[nodiscard]] constexpr Iterable *iterable() const noexcept
+    [[nodiscard]] constexpr auto iterable() const noexcept -> Iterable *
     {
         return mIterable;
     }
@@ -67,7 +67,7 @@ public:
     //! Searches forward for the position of the
     //! next valid index in the underlying \c iterable
     //! and returns a \c reference to itself.
-    constexpr ForwardIterator &operator++()
+    constexpr auto operator++() -> ForwardIterator &
     {
         mIndex = mIterable->nextIndex(mIndex);
         return *this;
@@ -75,7 +75,7 @@ public:
 
     //! Same as operator++() but returns the copy
     //! of itself before the search.
-    [[nodiscard]] constexpr ForwardIterator operator++(int) &
+    [[nodiscard]] constexpr auto operator++(int) & -> ForwardIterator
     {
         ForwardIterator it = *this;
         ++(*this);
@@ -84,7 +84,7 @@ public:
 
     //! Returns #reference to the value pointed to
     //! by the current index.
-    [[nodiscard]] constexpr reference operator*() const
+    [[nodiscard]] constexpr auto operator*() const -> reference
     {
         return mIterable->referenceAt(mIndex);
     }
@@ -108,8 +108,8 @@ private:
 //! \relates ForwardIterator
 //! Returns \c true if the \a left points to the
 //! same position in the same iterable as the \a right.
-template<typename T, typename ReferenceT, typename Iterable>
-[[nodiscard]] constexpr bool operator==(ForwardIterator<T, ReferenceT, Iterable> left, ForwardIterator<T, ReferenceT, Iterable> right) noexcept
+template<typename T, typename ReferenceType, typename Iterable>
+[[nodiscard]] constexpr auto operator==(ForwardIterator<T, ReferenceType, Iterable> left, ForwardIterator<T, ReferenceType, Iterable> right) noexcept -> bool
 {
     return left.index() == right.index() && left.iterable() == right.iterable();
 }
@@ -118,8 +118,8 @@ template<typename T, typename ReferenceT, typename Iterable>
 //! Returns \c true if the \a left does not point
 //! to the same position in the same iterable as the
 //! \a right.
-template<typename T, typename ReferenceT, typename Iterable>
-[[nodiscard]] constexpr bool operator!=(ForwardIterator<T, ReferenceT, Iterable> left, ForwardIterator<T, ReferenceT, Iterable> right) noexcept
+template<typename T, typename ReferenceType, typename Iterable>
+[[nodiscard]] constexpr auto operator!=(ForwardIterator<T, ReferenceType, Iterable> left, ForwardIterator<T, ReferenceType, Iterable> right) noexcept -> bool
 {
     return !(left == right);
 }
