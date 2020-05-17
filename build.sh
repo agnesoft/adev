@@ -509,11 +509,11 @@ function documentation () {
     detectDoxygen
     echo "Generating documentation..."
     $DOXYGEN ADev.doxyfile
-    if test $?; then
-        printOK "Documentation OK"
-    else
+    if test $? -ne 0; then
         printError "ERROR: Building documentation failed."
         exit 1
+    else
+        printOK "Documentation OK"
     fi
 }
 
