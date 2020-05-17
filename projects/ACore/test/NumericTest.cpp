@@ -4,7 +4,7 @@
 
 namespace numerictest
 {
-TEST_CASE("nextPowerOfTwo(std::int64_t value) -> std::int64_t [ACore]")
+TEST_CASE("nextPowerOfTwo(size_type value) -> size_type [ACore]")
 {
     REQUIRE(acore::nextPowerOfTwo(0) == std::int64_t{2});
     REQUIRE(acore::nextPowerOfTwo(1) == std::int64_t{2});

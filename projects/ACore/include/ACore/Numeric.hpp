@@ -1,15 +1,14 @@
 #ifndef ACORE_NUMERIC_HPP
 #define ACORE_NUMERIC_HPP
 
-#include <cmath>
-#include <cstdint>
+#include "ACoreModule.hpp"
 
 namespace acore
 {
 //! Returns the smallest ^2 of the \a value.
 //! If the \a value is already ^2 this function
 //! simply returns it.
-[[nodiscard]] auto nextPowerOfTwo(std::int64_t value) -> std::int64_t;
+[[nodiscard]] auto nextPowerOfTwo(size_type value) -> size_type;
 }
 
 #endif
