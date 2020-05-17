@@ -32,6 +32,7 @@ target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/include)
 #ACore Static Library
 add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/ACoreModule.hpp
+                         projects/ACore/include/ACore/BitMask.hpp
                          projects/ACore/include/ACore/ForwardIterator.hpp
                          projects/ACore/include/ACore/Numeric.hpp
                          projects/ACore/Numeric.cpp)
@@ -41,6 +42,7 @@ target_include_directories(ACore PUBLIC projects/ACore/include)
 
 #ACoreTest
 add_executable(ACoreTest projects/ACore/test/pch.hpp
+                         projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
                          projects/ACore/test/NumericTest.cpp)
 target_link_libraries(ACoreTest ACore Catch2)
