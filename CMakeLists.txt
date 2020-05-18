@@ -47,6 +47,14 @@ add_executable(ACoreTest projects/ACore/test/pch.hpp
                          projects/ACore/test/NumericTest.cpp)
 target_link_libraries(ACoreTest ACore Catch2)
 
+###############
+# ABENCHMARKS #
+###############
+#ABenchmarks
+add_executable(ABenchmarks projects/ABenchmarks/pch.hpp
+                           projects/ABenchmarks/BitMaskBenchmark.cpp)
+target_link_libraries(ABenchmarks ACore Catch2)
+
 ##########
 # ABUILD #
 ##########
@@ -72,6 +80,5 @@ add_executable(ABuildTest projects/ABuild/test/TestFile.hpp
 target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
-install(TARGETS ABuild DESTINATION bin)
-install(TARGETS ABuildTest DESTINATION bin/test)
-install(TARGETS ACoreTest DESTINATION bin/test)
+install(TARGETS ABuild ABenchmarks DESTINATION bin)
+install(TARGETS ABuildTest ACoreTest DESTINATION bin/test)
