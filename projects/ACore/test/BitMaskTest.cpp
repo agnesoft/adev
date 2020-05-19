@@ -4,78 +4,138 @@
 
 namespace bitmasktest
 {
-TEST_CASE("BitMask(T data) [acore::BitMask]")
+TEST_CASE("BitMask(T data) noexcept [acore::BitMask]")
 {
+    std::vector<acore::size_type> positions;
+
     SECTION("[none]")
     {
-        REQUIRE(noexcept(acore::BitMask{acore::size_type{0}}));
-        constexpr acore::BitMask bitMask{acore::size_type{0}};
-        REQUIRE(std::vector<acore::size_type>(bitMask.begin(), bitMask.end()) == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
+        REQUIRE(noexcept(acore::BitMask{std::uint16_t{0}}));
+        acore::BitMask bitMask{std::uint16_t{0}};
+
+        REQUIRE(positions == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[single]")
     {
-        constexpr acore::BitMask bitMask{std::uint8_t{0b00010000}};
-        REQUIRE(std::vector<acore::size_type>(bitMask.begin(), bitMask.end()) == std::vector<acore::size_type>{4});
+        acore::BitMask bitMask{std::uint16_t{0b0000000000010000}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        for (acore::size_type pos : bitMask)
+        {
+            positions.push_back(pos);
+        }
+
+        REQUIRE(positions == std::vector<acore::size_type>{4});
     }
 
     SECTION("[multi]")
     {
-        constexpr acore::BitMask bitMask{std::uint16_t{0b0100000101000100}};
-        REQUIRE(std::vector<acore::size_type>(bitMask.begin(), bitMask.end()) == std::vector<acore::size_type>{2, 6, 8, 14});
+        acore::BitMask bitMask{std::uint16_t{0b0100000101000100}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        for (acore::size_type pos : bitMask)
+        {
+            positions.push_back(pos);
+        }
+        REQUIRE(positions == std::vector<acore::size_type>{2, 6, 8, 14});
     }
 
     SECTION("[all]")
     {
-        constexpr acore::BitMask bitMask{std::uint32_t{0b11111111111111111111111111111111}};
-        REQUIRE(std::vector<acore::size_type>(bitMask.begin(), bitMask.end()) == std::vector<acore::size_type>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31});
+        acore::BitMask bitMask{std::uint16_t{0b1111111111111111}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        for (acore::size_type pos : bitMask)
+        {
+            positions.push_back(pos);
+        }
+
+        REQUIRE(positions == std::vector<acore::size_type>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
     }
 }
 
-TEST_CASE("begin() const noexcept -> const_iterator [acore::BitMask]")
+TEST_CASE("begin() const noexcept -> BitMask [acore::BitMask]")
+{
+    acore::BitMask bitMask{0b0001000100010001}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+    REQUIRE(noexcept(bitMask.begin()));
+    REQUIRE(bitMask.begin() == bitMask);
+}
+
+TEST_CASE("end() const noexcept -> BitMask [acore::BitMask]]")
+{
+    acore::BitMask bitMask{0b0001000100010001}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+    REQUIRE(noexcept(bitMask.end()));
+    REQUIRE_FALSE(bitMask.end() == bitMask);
+    REQUIRE(bitMask.end() == acore::BitMask{0});
+}
+
+TEST_CASE("operator*() const noexcept -> size_type [acore::BitMask]")
 {
     SECTION("[none]")
     {
-        constexpr acore::BitMask bitMask{acore::size_type{0}};
-        REQUIRE(noexcept(bitMask.end()));
-        REQUIRE(bitMask.begin() == bitMask.end());
+        acore::BitMask bitMask{std::uint16_t{0}};
+        REQUIRE(noexcept(*bitMask));
     }
 
     SECTION("[single]")
     {
-        constexpr acore::BitMask bitMask{std::uint16_t{0b1000000000000000}};
-        REQUIRE_FALSE(bitMask.begin() == bitMask.end());
-        REQUIRE(*bitMask.begin() == 15);
+        acore::BitMask bitMask{std::uint16_t{0b1000000000000000}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE(*(bitMask) == 15);
     }
 
     SECTION("[multi]")
     {
-        constexpr acore::BitMask bitMask{std::uint8_t{0b01001010}};
-        REQUIRE_FALSE(bitMask.begin() == bitMask.end());
-        REQUIRE(*bitMask.begin() == 1);
+        acore::BitMask bitMask{std::uint16_t{0b0000000001001010}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE(*(bitMask) == 1);
     }
 }
 
-TEST_CASE("end() const noexcept -> const_iterator [acore::BitMask]")
+TEST_CASE("operator++() noexcept -> BitMask & [acore::BitMask]")
 {
-    constexpr acore::BitMask bitMask{std::uint8_t{0b01010101}};
-    REQUIRE(noexcept(bitMask.end()));
-    REQUIRE(bitMask.begin() != bitMask.end());
-}
-
-TEST_CASE("none() const -> bool [acore::BitMask]")
-{
-    SECTION("[none]")
+    SECTION("[multiple]")
     {
-        constexpr acore::BitMask bitMask{std::uint32_t{}};
-        REQUIRE(noexcept(bitMask.none()));
-        REQUIRE(bitMask.none());
+        acore::BitMask bitMask{std::uint16_t{0b0000000000101000}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE(noexcept(++bitMask));
+        REQUIRE(*(++bitMask) == 5);
     }
 
-    SECTION("[multi]")
+    SECTION("[all]")
     {
-        constexpr acore::BitMask bitMask{acore::size_type{123456789}};
-        REQUIRE_FALSE(bitMask.none());
+        acore::BitMask bitMask{std::uint16_t{0b1111111111111111}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE(noexcept(++bitMask));
+        REQUIRE(*(++bitMask) == 1);
+    }
+}
+
+TEST_CASE("operator==(const BitMask &left, const BitMask &right) noexcept -> bool [acore::BitMask]")
+{
+    SECTION("[equal]")
+    {
+        acore::BitMask bitMask{0b0000000010000000}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::BitMask other{0b0000000010000000}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE(bitMask == other);
+    }
+
+    SECTION("[different]")
+    {
+        acore::BitMask bitMask{0b0000000010000000}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::BitMask other{0b0000100010000001}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE_FALSE(bitMask == other);
+    }
+}
+
+TEST_CASE("operator!=(const BitMask &left, const BitMask &right) noexcept -> bool [acore::BitMask]")
+{
+    SECTION("[equal]")
+    {
+        acore::BitMask bitMask{0b0000000010000000}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::BitMask other{0b0000000010000000}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE_FALSE(bitMask != other);
+    }
+
+    SECTION("[different]")
+    {
+        acore::BitMask bitMask{0b0000000010000000}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::BitMask other{0b0000100010000001}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        REQUIRE(bitMask != other);
     }
 }
 
@@ -85,7 +145,8 @@ TEST_CASE("acore::BitMask<T> [examples]")
     {
         // clang-format off
         //! [[Usage]]
-constexpr acore::BitMask mask(std::uint16_t{0b0001000110001010});
+const std::uint16_t value{0b0001000110001010};
+acore::BitMask mask{value};
 std::vector<acore::size_type> positions;
 
 for(acore::size_type pos : mask)
