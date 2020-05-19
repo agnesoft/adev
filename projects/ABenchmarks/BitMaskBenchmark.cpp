@@ -3,63 +3,40 @@
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <Catch2/catch.hpp>
 
+#include <bitset>
+
 namespace abenchmarks
 {
-template<typename T>
-class AbseilBitMask
+TEST_CASE("BitMask")
 {
-public:
-    explicit AbseilBitMask(T value) noexcept :
-        mValue{value}
-    {
-    }
+    constexpr std::uint16_t value = 0b1001000100010001;
 
-    [[nodiscard]] explicit operator bool() const noexcept
-    {
-        return mValue != 0;
-    }
-
-    [[nodiscard]] auto operator++() noexcept -> AbseilBitMask &
-    {
-        mValue &= (mValue - 1);
-        return *this;
-    }
-
-    [[nodiscard]] auto operator*() const -> int
-    {
-#if defined(_MSC_VER) && !defined(__clang__)
-        unsigned long result = 0;
-        _BitScanForward(&result, mValue);
-        return result;
-#else
-        return __builtin_ctz(mValue);
-#endif
-    }
-
-private:
-    T mValue = 0;
-};
-
-TEST_CASE("acore::BitMask")
-{
     BENCHMARK("[acore::BitMask]")
     {
+        acore::BitMask mask{value};
         acore::size_type positions = 0;
-        for (acore::size_type i : acore::BitMask<std::uint16_t>{0b0010001011000101})
+
+        for (acore::size_type pos : mask)
         {
-            positions += i;
+            positions += pos;
         }
+
         return positions;
     };
 
-    BENCHMARK("[abseil::BitMask]")
+    BENCHMARK("std::bitset")
     {
-        auto positions = 0;
-        AbseilBitMask<std::uint16_t> mask{0b0010001011000101};
-        while (++mask)
+        std::bitset<sizeof(std::uint16_t) * CHAR_BIT> mask{value};
+        acore::size_type positions = 0;
+
+        for (size_t i = 0; i < mask.size(); ++i)
         {
-            positions += *mask;
+            if (mask[i])
+            {
+                positions += static_cast<acore::size_type>(i);
+            }
         }
+
         return positions;
     };
 }
