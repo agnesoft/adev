@@ -13,7 +13,7 @@ TEST_CASE("BitMask")
 {
     int acoreBitMask = 0;
     int stdBitSet = 0;
-    constexpr std::uint16_t value = 0b1000000100000001;
+    std::uint16_t value = 0b0001000100000010;
 
     BENCHMARK_ADVANCED("[acore::BitMask]")
     (Catch::Benchmark::Chronometer meter)
