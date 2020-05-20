@@ -13,7 +13,7 @@ TEST_CASE("BitMask")
 {
     int acoreBitMask = 0;
     int stdBitSet = 0;
-    std::uint16_t value = 0b0001000100000010;
+    std::uint16_t value = 0b0001000100000010; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
     BENCHMARK_ADVANCED("[acore::BitMask]")
     (Catch::Benchmark::Chronometer meter)
