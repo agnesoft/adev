@@ -13,6 +13,11 @@ TEST_CASE("BitMask(T data) noexcept [acore::BitMask]")
         REQUIRE(noexcept(acore::BitMask{std::uint16_t{0}}));
         acore::BitMask bitMask{std::uint16_t{0}};
 
+        for (acore::size_type pos : bitMask)
+        {
+            positions.push_back(pos);
+        }
+
         REQUIRE(positions == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
     }
 

@@ -4,7 +4,7 @@
 #include <Catch2/catch.hpp>
 
 #include <bitset>
-#include <iostream>
+#include <climits>
 
 namespace abenchmarks
 {
