@@ -25,15 +25,19 @@ function printHelp () {
     echo "    * Requires: CMake, Ninja, C++ Toolchain, clang-tidy"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds and then performs static analysis using Clang-Tidy on all source files using the compile commands database."
-    echo "  build:"
+    echo "  benchmarks"
+    echo "    * Requires: None"
+    echo "    * Environment Variables: BUILD_DIR"
+    echo "    * Runs benchmark executables (.*[Bb]enchmark.*) found under \$BUILD_DIR/bin expecting first cases to be always the fastest."
+    echo "  build"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds using the either the default compiler and configuration (see above) or values from environment variables if set."
-    echo "  coverage:"
+    echo "  coverage"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
     echo "    * Builds with Clang compiler and BUILD_TYPE=Coverage, runs the tests and generate the code coverage report."
-    echo "  documentation:"
+    echo "  documentation"
     echo "    * Requires: Doxygen"
     echo "    * Environment Variables: None"
     echo "    * Builds documentation from the source files using Doxygen."
@@ -45,7 +49,7 @@ function printHelp () {
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
-    echo "  tests:"
+    echo "  tests"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
     echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used. If \$REPEAT is specified each test will be run that many times/"
@@ -394,6 +398,33 @@ function analysis() {
     fi
 }
 
+function benchmarks () {
+    detectTestProperties
+
+    cd $BUILD_DIR/bin
+    local EXECUTABLES=`find . -name "*benchmark*" -o -name "*Benchmark*" -o -name "*benchmark*.exe" -o -name "*Benchmark*" -type f`
+    local RETURN=0
+    local BENCHMARKS_RESULT=0
+
+    for benchmark in $EXECUTABLES
+    do
+        LOG=$($benchmark)
+        RETURN=$?
+        
+        if test $RETURN -ne 0; then
+            echo ""
+            echo ""
+            printError "ERROR: $benchmark failed. It is expected that the first benchmark of every case is the fastest (have the most runs). See the following log for details:"
+            echo "$LOG"
+            BENCHMARKS_RESULT=1
+        else
+            printOK "$benchmark OK"
+        fi
+    done
+
+    exit $BENCHMARKS_RESULT
+}
+
 function build () {
     detectCMake
     detectNinja
@@ -461,7 +492,15 @@ function coverage () {
     local TESTS=$(find . -name "*Test" -o -name "*Test.exe" -type f)
     for test in $TESTS
     do
-        LLVM_PROFILE_FILE="${test}.profraw" ./${test}
+        export LLVM_PROFILE_FILE="${test}.profraw"
+        LOG=$(./${test})
+
+        if test $? -ne 0; then
+            echo ""
+            echo ""
+            printError "ERROR: $test failed:"
+            echo "$LOG"
+        fi
     done
 
     #Generate individual reports per test
@@ -596,6 +635,8 @@ function tests () {
 
 if test "$ACTION" == "analysis"; then
     analysis
+elif test "$ACTION" == "benchmarks"; then
+    benchmarks
 elif test "$ACTION" == "build"; then
     build
 elif test "$ACTION" == "coverage"; then
