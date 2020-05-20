@@ -380,7 +380,7 @@ function analysis() {
 
         if test $? -ne 0; then
             echo ""
-            echo $LINT_RESULT
+            echo "$LINT_RESULT"
             echo ""
             printError "Run 'clang-tidy --fix \"$source\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
             echo ""
