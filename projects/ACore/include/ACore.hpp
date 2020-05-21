@@ -5,5 +5,6 @@
 #include "ACore/Endianness.hpp"
 #include "ACore/ForwardIterator.hpp"
 #include "ACore/Numeric.hpp"
+#include "ACore/Reference.hpp"
 
 #endif
