@@ -2,6 +2,8 @@
 
 #include <Catch2/catch.hpp>
 
+#include <cstring>
+
 namespace endiannesstest
 {
 class EndiannessGuard
