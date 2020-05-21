@@ -5,9 +5,12 @@
 
 namespace acore
 {
-//! \internal
+//! Struct holding the current
+//! endianness value.
 struct Endianness
 {
+    //! Is true when the program is being run
+    //! on the little-endian system or false otherwise.
     static bool littleEndianness;
 };
 
