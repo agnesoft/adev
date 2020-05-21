@@ -5,14 +5,12 @@
 
 namespace acore
 {
-//! Struct holding the current
-//! endianness value.
+//! \cond IMPLEMENTAION_DETAIL
 struct Endianness
 {
-    //! Is true when the program is being run
-    //! on the little-endian system or false otherwise.
     static bool littleEndianness;
 };
+//! \endcond
 
 //! Declaration for byte swapping functions.
 template<typename T>
