@@ -14,7 +14,7 @@ namespace acore
 //! Unlike the <a href="http://en.cppreference.com/w/cpp/error/exception">std::exception</a>
 //! the Exception is a standard layout class and
 //! can be safely used (and thrown) across library
-//! boundaries. Similar to <a href="http://en.cppreference.com/w/cpp/error/exception">std::logic_error</a>
+//! boundaries. Similar to <a href="http://en.cppreference.com/w/cpp/error/exception">std::exception</a>
 //! the what() method is provided to access the
 //! message associated with the exception.
 //!
@@ -39,7 +39,7 @@ public:
         return mMessage.c_str();
     }
 
-    //!Appends the arbitrary \a text to the exception's
+    //! Appends the arbitrary \a text to the exception's
     //! message. The type \c T must support the
     //! \c std::stringstream::operator<<(). Returns
     //! the r-value of this exception.
