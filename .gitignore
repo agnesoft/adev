@@ -37,3 +37,4 @@
 # Build files
 build*/
 /docs/
+.vscode/
