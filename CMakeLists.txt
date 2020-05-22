@@ -42,7 +42,6 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/Numeric.hpp
                          projects/ACore/include/ACore/RandomAccessIterator.hpp
                          projects/ACore/include/ACore/Reference.hpp
-                         projects/ACore/DataStream.cpp
                          projects/ACore/DataStreamBuffer.cpp
                          projects/ACore/Endianness.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
