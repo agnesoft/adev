@@ -12,6 +12,11 @@ namespace acore
 //! simply returns it.
 [[nodiscard]] inline auto nextPowerOfTwo(size_type value) -> size_type
 {
+    if (value <= 2)
+    {
+        return 2;
+    }
+
     return static_cast<size_type>(std::uint64_t{1} << (static_cast<std::uint64_t>(std::log2(value - 1)) + 1));
 }
 }
