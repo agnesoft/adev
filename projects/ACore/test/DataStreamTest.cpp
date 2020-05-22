@@ -63,7 +63,7 @@ TEST_CASE("read(char *data, size_type count) -> void [acore::DataStream]")
     {
         acore::DataStream stream;
         std::array<char, 10> buf{}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        REQUIRE_THROWS_AS(stream.read(buf.data(), 5), std::exception);
+        REQUIRE_THROWS_AS(stream.read(buf.data(), 5), acore::Exception);
     }
 
     SECTION("[in bounds]")
@@ -81,7 +81,7 @@ TEST_CASE("read(char *data, size_type count) -> void [acore::DataStream]")
         acore::DataStream stream;
         stream.buffer().data().assign({'1', '2', '3'});
         std::vector<char> buf(5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        REQUIRE_THROWS_AS(stream.read(buf.data(), 5), std::exception);
+        REQUIRE_THROWS_AS(stream.read(buf.data(), 5), acore::Exception);
     }
 }
 
@@ -131,7 +131,7 @@ TEST_CASE("write(const char *data, size_type count) -> void [acore::DataStream]"
         SECTION("[invalid pos]")
         {
             stream.seek(-1);
-            REQUIRE_THROWS_AS(stream.write("Hello", 5), std::exception);
+            REQUIRE_THROWS_AS(stream.write("Hello", 5), acore::Exception);
         }
     }
 }

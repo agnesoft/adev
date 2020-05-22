@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Endianness.hpp"
+#include "Exception.hpp"
 
 #include <array>
 #include <cstring>
@@ -82,7 +83,7 @@ public:
 
         if (mIndex < 0 || end < mIndex || mBuffer.size() < end)
         {
-            throw std::exception{std::string{"Cannot read outside of the stream's buffer boundaries (current position: " + std::to_string(mIndex) + ", buffer size: " + std::to_string(mBuffer.size()) + ", count to read: " + std::to_string(count) + ')'}.c_str()};
+            throw Exception{} << "Cannot read outside of the stream's buffer boundaries (current position: " << mIndex << ", buffer size: " << mBuffer.size() << ", count to read: " << count << ')';
         }
 
         mBuffer.read(mIndex, data, count);
@@ -126,7 +127,7 @@ public:
 
         if (mIndex < 0)
         {
-            throw std::exception{std::string{"Cannot write outside of the stream's buffer boundaries (current position: " + std::to_string(mIndex) + ", buffer size: " + std::to_string(mBuffer.size()) + ", count to write: " + std::to_string(count) + ')'}.c_str()};
+            throw acore::Exception{} << "Cannot write outside of the stream's buffer boundaries (current position: " << mIndex << ", buffer size: " << mBuffer.size() << ", count to write: " << count << ')';
         }
 
         if (mBuffer.size() < end)
