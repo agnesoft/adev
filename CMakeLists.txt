@@ -33,14 +33,17 @@ target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/include)
 add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/ACoreModule.hpp
                          projects/ACore/include/ACore/BitMask.hpp
+                         projects/ACore/include/ACore/DataStream.hpp
+                         projects/ACore/include/ACore/DataStreamBase.hpp
+                         projects/ACore/include/ACore/DataStreamBuffer.hpp
                          projects/ACore/include/ACore/Endianness.hpp
                          projects/ACore/include/ACore/Exception.hpp
                          projects/ACore/include/ACore/ForwardIterator.hpp
                          projects/ACore/include/ACore/Numeric.hpp
                          projects/ACore/include/ACore/RandomAccessIterator.hpp
                          projects/ACore/include/ACore/Reference.hpp
-                         projects/ACore/Endianness.cpp
-                         projects/ACore/Numeric.cpp)
+                         projects/ACore/DataStreamBuffer.cpp
+                         projects/ACore/Endianness.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
 target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
@@ -48,6 +51,7 @@ target_include_directories(ACore PUBLIC projects/ACore/include)
 #ACoreTest
 add_executable(ACoreTest projects/ACore/test/pch.hpp
                          projects/ACore/test/BitMaskTest.cpp
+                         projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
