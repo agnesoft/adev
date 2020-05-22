@@ -3,6 +3,7 @@
 #include "Endianness.hpp"
 
 #include <array>
+#include <cstring>
 #include <exception>
 #include <string>
 #include <vector>
