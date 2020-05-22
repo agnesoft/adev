@@ -37,6 +37,7 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/DataStreamBase.hpp
                          projects/ACore/include/ACore/DataStreamBuffer.hpp
                          projects/ACore/include/ACore/Endianness.hpp
+                         projects/ACore/include/ACore/Exception.hpp
                          projects/ACore/include/ACore/ForwardIterator.hpp
                          projects/ACore/include/ACore/Numeric.hpp
                          projects/ACore/include/ACore/RandomAccessIterator.hpp
@@ -53,6 +54,7 @@ add_executable(ACoreTest projects/ACore/test/pch.hpp
                          projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
+                         projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
                          projects/ACore/test/NumericTest.cpp
                          projects/ACore/test/RandomAccessIteratorTest.cpp

@@ -9,7 +9,8 @@ misc-*,
 modernize-*,
 performance-*,
 portability-*,
-readability-*
+readability-*,
+-hicpp-exception-baseclass
 '
 WarningsAsErrors: '
 -*,
@@ -22,5 +23,6 @@ misc-*,
 modernize-*,
 performance-*,
 portability-*,
-readability-*
+readability-*,
+-hicpp-exception-baseclass
 '
