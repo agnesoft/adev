@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ACORE_DATASTREAMBASE_HPP
+#define ACORE_DATASTREAMBASE_HPP
 
 #include "Endianness.hpp"
 #include "Exception.hpp"
@@ -75,7 +76,7 @@ public:
     //! be big enough to hold at least \a count bytes.
     //!
     //! If pos() is not within valid range
-    //! <tt>(0 < pos() < buffer().size())</tt>
+    //! <tt> ( 0 < pos() < buffer().size() ) </tt>
     //! an exception of type acore::Exception is thrown.
     auto read(char *data, size_type count) -> void
     {
@@ -455,7 +456,7 @@ auto operator>>(DataStreamBase<Buffer> &stream, double &value) -> DataStreamBase
 template<typename Buffer>
 auto operator<<(DataStreamBase<Buffer> &stream, const char *value) -> DataStreamBase<Buffer> &
 {
-    size_type size = std::strlen(value);
+    const auto size = static_cast<size_type>(std::strlen(value));
     stream << size;
     stream.write(value, size);
     return stream;
@@ -580,3 +581,5 @@ auto operator>>(DataStreamBase<Buffer> &&stream, T &value) -> DataStreamBase<Buf
     return std::move(stream >> value);
 }
 }
+
+#endif

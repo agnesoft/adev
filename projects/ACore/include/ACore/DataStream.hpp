@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ACORE_DATASTREAM_HPP
+#define ACORE_DATASTREAM_HPP
 
 #include "DataStreamBase.hpp"
 #include "DataStreamBuffer.hpp"
@@ -27,3 +28,5 @@ public:
     }
 };
 }
+
+#endif

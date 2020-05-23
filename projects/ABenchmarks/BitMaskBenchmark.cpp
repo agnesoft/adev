@@ -6,7 +6,7 @@
 #include <bitset>
 #include <climits>
 
-namespace abenchmarks
+namespace bitmaskbenchmark
 {
 
 TEST_CASE("BitMask")
