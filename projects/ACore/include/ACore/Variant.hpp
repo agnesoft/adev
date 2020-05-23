@@ -33,13 +33,6 @@ public:
         mStream << value;
     }
 
-    //! Constructs a Variant from \c string \a value.
-    template<>
-    explicit Variant(const std::string &value) :
-        mStream{std::vector<char>(value.begin(), value.end())}
-    {
-    }
-
     //! Constructs a Variant from raw data vector \a value.
     explicit Variant(std::vector<char> value) :
         mStream{std::move(value)}
@@ -76,38 +69,6 @@ public:
         }
 
         return val;
-    }
-
-    //! Explicit specialization returning the const
-    //! reference to the underlying data.
-    template<>
-    [[nodiscard]] auto value() const -> const std::vector<char> &
-    {
-        return mStream.buffer().data();
-    }
-
-    //! Explicit specialization returning the copy
-    //! of the underlying data as a string.
-    template<>
-    [[nodiscard]] auto value() const -> std::string
-    {
-        return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
-    }
-
-    //! Explicit specialization returning the copy
-    //! of the underlying data.
-    template<>
-    [[nodiscard]] auto value() const -> std::vector<char>
-    {
-        return mStream.buffer().data();
-    }
-
-    //! Explicit specialization simply returning
-    //! the copy of this variant.
-    template<>
-    [[nodiscard]] auto value() const -> Variant
-    {
-        return *this;
     }
 
 private:
@@ -147,6 +108,45 @@ private:
 
     mutable DataStream mStream;
 };
+
+//! Constructs a Variant from \c string \a value.
+template<>
+inline Variant::Variant(const std::string &value) :
+    mStream{std::vector<char>(value.begin(), value.end())}
+{
+}
+
+//! Explicit specialization returning the const
+//! reference to the underlying data.
+template<>
+inline auto Variant::value() const -> const std::vector<char> &
+{
+    return mStream.buffer().data();
+}
+
+//! Explicit specialization returning the copy
+//! of the underlying data as a string.
+template<>
+inline auto Variant::value() const -> std::string
+{
+    return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
+}
+
+//! Explicit specialization returning the copy
+//! of the underlying data.
+template<>
+inline auto Variant::value() const -> std::vector<char>
+{
+    return mStream.buffer().data();
+}
+
+//! Explicit specialization simply returning
+//! the copy of this variant.
+template<>
+inline auto Variant::value() const -> Variant
+{
+    return *this;
+}
 }
 
 #endif
