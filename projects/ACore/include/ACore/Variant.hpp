@@ -1,9 +1,9 @@
 #ifndef ACORE_VARIANT_HPP
 #define ACORE_VARIANT_HPP
 
-#include "DataStream.hpp"
+//#include "DataStream.hpp"
 
-#include <string>
+//#include <string>
 
 namespace acore
 {
@@ -33,17 +33,18 @@ public:
         mStream << value;
     }
 
-    // template<>
-    // explicit Variant(const std::string &value) :
-    //     mStream{std::vector<char>(value.begin(), value.end())}
-    // {
-    // }
+    //! Constructs a Variant from \c string \a value.
+    template<>
+    explicit Variant(const std::string &value) :
+        mStream{std::vector<char>(value.begin(), value.end())}
+    {
+    }
 
-    // template<>
-    // explicit Variant(const std::vector<char> &value) :
-    //     mStream{value}
-    // {
-    // }
+    //! Constructs a Variant from raw data vector \a value.
+    explicit Variant(std::vector<char> value) :
+        mStream{std::move(value)}
+    {
+    }
 
     //! Returns \c true if the Variant holds a
     //! value or \c false otherwise.
@@ -77,29 +78,37 @@ public:
         return val;
     }
 
-    // template<>
-    // [[nodiscard]] auto value() const -> const std::vector<char> &
-    // {
-    //     return mStream.buffer().data();
-    // }
+    //! Explicit specialization returning the const
+    //! reference to the underlying data.
+    template<>
+    [[nodiscard]] auto value() const -> const std::vector<char> &
+    {
+        return mStream.buffer().data();
+    }
 
-    // template<>
-    // [[nodiscard]] auto value() const -> std::string
-    // {
-    //     return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
-    // }
+    //! Explicit specialization returning the copy
+    //! of the underlying data as a string.
+    template<>
+    [[nodiscard]] auto value() const -> std::string
+    {
+        return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
+    }
 
-    // template<>
-    // [[nodiscard]] auto value() const -> std::vector<char>
-    // {
-    //     return mStream.buffer().data();
-    // }
+    //! Explicit specialization returning the copy
+    //! of the underlying data.
+    template<>
+    [[nodiscard]] auto value() const -> std::vector<char>
+    {
+        return mStream.buffer().data();
+    }
 
-    // template<>
-    // [[nodiscard]] auto value() const -> Variant
-    // {
-    //     return *this;
-    // }
+    //! Explicit specialization simply returning
+    //! the copy of this variant.
+    template<>
+    [[nodiscard]] auto value() const -> Variant
+    {
+        return *this;
+    }
 
 private:
     //! \relates Variant
@@ -138,5 +147,6 @@ private:
 
     mutable DataStream mStream;
 };
+}
 
 #endif

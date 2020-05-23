@@ -56,10 +56,22 @@ TEST_CASE("value() const -> T [acore::Variant]")
         REQUIRE(variant.value<std::string>() == "Hello World!");
     }
 
+    SECTION("[raw data]")
+    {
+        const acore::Variant variant{std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'}};
+        REQUIRE(variant.value<std::vector<char>>() == std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'});
+    }
+
+    SECTION("[Variant]")
+    {
+        const acore::Variant variant{std::vector{1, -1, 2, -2, 3, -3, 4, -4}};
+        REQUIRE(variant.value<acore::Variant>() == variant);
+    }
+
     SECTION("[invalid type]")
     {
         const acore::Variant variant{10};
-        REQUIRE(variant.value<std::string>() == std::string{}); //NOLINT(readability-container-size-empty)
+        REQUIRE(variant.value<std::vector<int>>() == std::vector<int>{}); //NOLINT(readability-container-size-empty)
     }
 }
 
@@ -131,7 +143,7 @@ TEST_CASE("operator<<(DataStreamBase<Buffer> &stream, const Variant &value) -> D
 
     SECTION("[data]")
     {
-        const acore::Variant variant{std::vector<int>{1, 2, 3, 4, 5}};
+        const acore::Variant variant{std::vector<int>{1, 2, 3, 4, -4}};
         acore::DataStream stream;
 
         stream << variant;
