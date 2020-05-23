@@ -9,5 +9,6 @@
 #include "ACore/Numeric.hpp"
 #include "ACore/RandomAccessIterator.hpp"
 #include "ACore/Reference.hpp"
+#include "ACore/Variant.hpp"
 
 #endif
