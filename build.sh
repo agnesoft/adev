@@ -356,6 +356,7 @@ function detectTestProperties () {
 ###########
 function analysis() {
     detectClangTidy
+    detectClang
     build
     cd $BUILD_DIR
     
@@ -368,7 +369,9 @@ function analysis() {
     do
         local file=$(echo $line | perl -nle 'print "$1" while /"file": "(.+)"/g;')
         if test "$file"; then
-            SOURCE_FILES="$file $SOURCE_FILES"
+            if [[ $file != *"cmake_pch"* ]]; then
+                SOURCE_FILES="$file $SOURCE_FILES"
+            fi
         fi
     done < "compile_commands.json"
 
