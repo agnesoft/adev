@@ -49,8 +49,7 @@ target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
 
 #ACoreTest
-add_executable(ACoreTest projects/ACore/test/pch.hpp
-                         projects/ACore/test/BitMaskTest.cpp
+add_executable(ACoreTest projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
@@ -59,15 +58,16 @@ add_executable(ACoreTest projects/ACore/test/pch.hpp
                          projects/ACore/test/RandomAccessIteratorTest.cpp
                          projects/ACore/test/ReferenceTest.cpp
                          projects/ACore/test/VariantTest.cpp)
+target_precompile_headers(ACoreTest PRIVATE projects/ACore/test/pch.hpp)
 target_link_libraries(ACoreTest ACore Catch2)
 
 ###############
 # ABENCHMARKS #
 ###############
 #ABenchmarks
-add_executable(ABenchmarks projects/ABenchmarks/pch.hpp
-                           projects/ABenchmarks/BitMaskBenchmark.cpp
+add_executable(ABenchmarks projects/ABenchmarks/BitMaskBenchmark.cpp
                            projects/ABenchmarks/VariantBenchmark.cpp)
+target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
 target_link_libraries(ABenchmarks ACore Catch2)
 
 ##########
