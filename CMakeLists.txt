@@ -40,11 +40,13 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/Exception.hpp
                          projects/ACore/include/ACore/ForwardIterator.hpp
                          projects/ACore/include/ACore/Numeric.hpp
+                         projects/ACore/include/ACore/Process.hpp
                          projects/ACore/include/ACore/RandomAccessIterator.hpp
                          projects/ACore/include/ACore/Reference.hpp
                          projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
-                         projects/ACore/Endianness.cpp)
+                         projects/ACore/Endianness.cpp
+                         projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
 target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
@@ -56,6 +58,7 @@ add_executable(ACoreTest projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
                          projects/ACore/test/NumericTest.cpp
+                         projects/ACore/test/ProcessTest.cpp
                          projects/ACore/test/RandomAccessIteratorTest.cpp
                          projects/ACore/test/ReferenceTest.cpp
                          projects/ACore/test/UndoStackTest.cpp
