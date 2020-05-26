@@ -42,6 +42,7 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/Numeric.hpp
                          projects/ACore/include/ACore/RandomAccessIterator.hpp
                          projects/ACore/include/ACore/Reference.hpp
+                         projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
                          projects/ACore/Endianness.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
@@ -57,6 +58,7 @@ add_executable(ACoreTest projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/NumericTest.cpp
                          projects/ACore/test/RandomAccessIteratorTest.cpp
                          projects/ACore/test/ReferenceTest.cpp
+                         projects/ACore/test/UndoStackTest.cpp
                          projects/ACore/test/VariantTest.cpp)
 target_precompile_headers(ACoreTest PRIVATE projects/ACore/test/pch.hpp)
 target_link_libraries(ACoreTest ACore Catch2)
