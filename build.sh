@@ -369,7 +369,7 @@ function analysis() {
     do
         local file=$(echo $line | perl -nle 'print "$1" while /"file": "(.+)"/g;')
         if test "$file"; then
-            if [[ $file != *"cmake_pch"* ]]; then
+            if [[ $file != *"cmake_pch"* ]] && [[ $file != *"tiny-process-library"* ]]; then
                 SOURCE_FILES="$file $SOURCE_FILES"
             fi
         fi
@@ -519,8 +519,8 @@ function coverage () {
 
     #Generate complete report
     $LLVM_PROFDATA merge $DATA -o coverage.profdata 
-    $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage -ignore-filename-regex=.*[Tt]est[\/\\].* -format=html -instr-profile=coverage.profdata
-    local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -ignore-filename-regex=.*[Tt]est[\/\\].* -instr-profile=coverage.profdata | grep "TOTAL.*")
+    $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage -ignore-filename-regex=".*[Tt]est[\/\\])|tiny-process-library.*" -format=html -instr-profile=coverage.profdata
+    local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -ignore-filename-regex=".*[Tt]est[\/\\]|tiny-process-library.*" -instr-profile=coverage.profdata | grep "TOTAL.*")
     local MATCH=$(echo $TOTAL | perl -nle'print $& while m{[\d\.]+\%}g')
     local MATCH_ARR=(${MATCH})
     local REGION=${MATCH_ARR[0]}
