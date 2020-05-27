@@ -1,12 +1,6 @@
 #include "Process.hpp"
 
-#include <tiny-process-library/process.cpp>
 #include <tiny-process-library/process.hpp>
-#ifdef _WIN32
-#    include <tiny-process-library/process_win.cpp>
-#else
-#    include <tiny-process-library/process_unix.cpp>
-#endif
 
 #include <filesystem>
 
@@ -24,32 +18,32 @@ Process::Process(std::string command, std::string workingDirectory) :
     mExitCode = executeProcess();
 }
 
-const std::string &Process::command() const noexcept
+auto Process::command() const noexcept -> const std::string &
 {
     return mCommand;
 }
 
-int Process::exitCode() const noexcept
+auto Process::exitCode() const noexcept -> int
 {
     return mExitCode;
 }
 
-const std::string &Process::standardError() const noexcept
+auto Process::standardError() const noexcept -> const std::string &
 {
     return mError;
 }
 
-const std::string &Process::standardOutput() const noexcept
+auto Process::standardOutput() const noexcept -> const std::string &
 {
     return mOutput;
 }
 
-const std::string &Process::workingDirectory() const noexcept
+auto Process::workingDirectory() const noexcept -> const std::string &
 {
     return mWorkingDirectory;
 }
 
-int Process::executeProcess()
+auto Process::executeProcess() -> int
 {
     TinyProcessLib::Process process{command(),
                                     workingDirectory(),

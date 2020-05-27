@@ -1,6 +1,5 @@
-#pragma once
-
-#include "Vector.hpp"
+#ifndef ACORE_PROCESS_HPP
+#define ACORE_PROCESS_HPP
 
 #include <string>
 
@@ -12,11 +11,11 @@ public:
     explicit Process(std::string command);
     Process(std::string command, std::string workingDirectory);
 
-    [[nodiscard]] const std::string &command() const noexcept;
-    [[nodiscard]] int exitCode() const noexcept;
-    [[nodiscard]] const std::string &standardError() const noexcept;
-    [[nodiscard]] const std::string &standardOutput() const noexcept;
-    [[nodiscard]] const std::string &workingDirectory() const noexcept;
+    [[nodiscard]] auto command() const noexcept -> const std::string &;
+    [[nodiscard]] auto exitCode() const noexcept -> int;
+    [[nodiscard]] auto standardError() const noexcept -> const std::string &;
+    [[nodiscard]] auto standardOutput() const noexcept -> const std::string &;
+    [[nodiscard]] auto workingDirectory() const noexcept -> const std::string &;
 
 private:
     int executeProcess();
@@ -28,3 +27,5 @@ private:
     int mExitCode = 0;
 };
 }
+
+#endif

@@ -7,6 +7,7 @@
 #include "ACore/Exception.hpp"
 #include "ACore/ForwardIterator.hpp"
 #include "ACore/Numeric.hpp"
+#include "ACore/Process.hpp"
 #include "ACore/RandomAccessIterator.hpp"
 #include "ACore/Reference.hpp"
 #include "ACore/UndoStack.hpp"

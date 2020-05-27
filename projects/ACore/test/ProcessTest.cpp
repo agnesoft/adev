@@ -1,6 +1,7 @@
 #include "pch.hpp"
 
 #include <catch2/catch.hpp>
+
 #include <filesystem>
 
 namespace processtest
@@ -20,7 +21,7 @@ public:
     TestDir(const TestDir &other) = delete;
     TestDir(TestDir &&other) = delete;
 
-    ~TestDir() noexcept
+    ~TestDir()
     {
         try
         {
@@ -28,29 +29,29 @@ public:
             {
                 removeDir();
             }
-            catch(...)
+            catch (...)
             {
                 INFO("Unable to remove dir processtest::TestDir::~TestDir()");
             }
         }
-        catch(...)
+        catch (...)
         {
             std::terminate();
         }
     }
 
-    [[nodiscard]] const std::string &testDir() const noexcept
+    [[nodiscard]] auto testDir() const noexcept -> const std::string &
     {
         return mDir;
     }
 
-    TestDir &operator=(const TestDir &other) = delete;
-    TestDir &operator=(TestDir &&other) = delete;
+    auto operator=(const TestDir &other) -> TestDir & = delete;
+    auto operator=(TestDir &&other) -> TestDir & = delete;
 
 private:
     void removeDir()
     {
-        if(std::filesystem::exists(TEST_DIR))
+        if (std::filesystem::exists(TEST_DIR))
         {
             std::filesystem::remove(TEST_DIR);
         }
