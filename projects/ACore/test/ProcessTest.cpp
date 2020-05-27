@@ -1,6 +1,6 @@
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
+#include <Catch2/catch.hpp>
 
 #include <filesystem>
 
@@ -49,11 +49,11 @@ public:
     auto operator=(TestDir &&other) -> TestDir & = delete;
 
 private:
-    void removeDir()
+    auto removeDir() -> void
     {
-        if (std::filesystem::exists(TEST_DIR))
+        if (std::filesystem::exists(mDir))
         {
-            std::filesystem::remove(TEST_DIR);
+            std::filesystem::remove(mDir);
         }
     }
 
