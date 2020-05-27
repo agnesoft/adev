@@ -568,13 +568,15 @@ function formatting () {
     local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
     for file in $SOURCE_FILES
     do
-        local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
+        if [[ $file != *"tiny-process-library"* ]]; then
+            local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
 
-        if test "$REPLACEMENTS"; then
-            printError "$file (ERROR: Incorrectly formatted file.)"
-            UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
-        else
-            printOK "$file (OK)"
+            if test "$REPLACEMENTS"; then
+                printError "$file (ERROR: Incorrectly formatted file.)"
+                UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
+            else
+                printOK "$file (OK)"
+            fi
         fi
     done
     
