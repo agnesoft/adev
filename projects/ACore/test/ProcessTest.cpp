@@ -120,7 +120,7 @@ TEST_CASE("exitCode() const noexcept -> int [acore::Process]")
     SECTION("[failure]")
     {
 #ifdef _WIN32
-        const acore::Process process{"cmd /C exit -1"};
+        const acore::Process process{"cmd /C exit 4"};
 #else
         const acore::Process process{"exit 4"};
 #endif
