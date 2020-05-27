@@ -36,6 +36,7 @@ endif()
 
 find_package(Threads REQUIRED)
 
+target_compile_features(tiny-process-library PUBLIC cxx_std_17)
 target_link_libraries(tiny-process-library ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(tiny-process-library PUBLIC projects)
 
