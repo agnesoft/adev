@@ -10,12 +10,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 endif()
 
-if(MSVC)
-    add_compile_options(/W4 /WX)
-else()
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
-endif()
-
 ##########
 # CATCH2 #
 ##########
@@ -25,6 +19,26 @@ add_library(Catch2 STATIC projects/Catch2/Catch2.cpp
 target_compile_features(Catch2 PUBLIC cxx_std_17)
 target_include_directories(Catch2 SYSTEM PRIVATE projects/Catch2/include/Catch2)
 target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/include)
+
+########################
+# TINY-PROCESS-LIBRARY #
+########################
+# tiny-process-library Static Library
+add_library(tiny-process-library STATIC projects/tiny-process-library/process.cpp)
+
+if(MSVC)
+  target_sources(tiny-process-library PRIVATE projects/tiny-process-library/process_win.cpp)
+  target_compile_options(tiny-process-library PRIVATE "")
+else()
+  target_sources(tiny-process-library PRIVATE projects/tiny-process-library/process_unix.cpp)
+  target_compile_options(tiny-process-library PRIVATE -Wall -Wextra)
+endif()
+
+find_package(Threads REQUIRED)
+
+target_compile_features(tiny-process-library PUBLIC cxx_std_17)
+target_link_libraries(tiny-process-library ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(tiny-process-library PUBLIC projects)
 
 #########
 # ACORE #
@@ -40,12 +54,20 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/Exception.hpp
                          projects/ACore/include/ACore/ForwardIterator.hpp
                          projects/ACore/include/ACore/Numeric.hpp
+                         projects/ACore/include/ACore/Process.hpp
                          projects/ACore/include/ACore/RandomAccessIterator.hpp
                          projects/ACore/include/ACore/Reference.hpp
                          projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
-                         projects/ACore/Endianness.cpp)
+                         projects/ACore/Endianness.cpp
+                         projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
+if(MSVC)
+    target_compile_options(ACore PUBLIC /W4 /WX)
+else()
+    target_compile_options(ACore PUBLIC -Wall -Wextra -pedantic -Werror)
+endif()
+target_link_libraries(ACore tiny-process-library)
 target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
 
@@ -56,6 +78,7 @@ add_executable(ACoreTest projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
                          projects/ACore/test/NumericTest.cpp
+                         projects/ACore/test/ProcessTest.cpp
                          projects/ACore/test/RandomAccessIteratorTest.cpp
                          projects/ACore/test/ReferenceTest.cpp
                          projects/ACore/test/UndoStackTest.cpp

@@ -369,7 +369,7 @@ function analysis() {
     do
         local file=$(echo $line | perl -nle 'print "$1" while /"file": "(.+)"/g;')
         if test "$file"; then
-            if [[ $file != *"cmake_pch"* ]]; then
+            if [[ $file != *"cmake_pch"* ]] && [[ $file != *"tiny-process-library"* ]]; then
                 SOURCE_FILES="$file $SOURCE_FILES"
             fi
         fi
@@ -518,9 +518,10 @@ function coverage () {
     done
 
     #Generate complete report
+    local EXCLUDE_REGEX=".*[Tt]est[\/\\]|tiny-process-library.*"
     $LLVM_PROFDATA merge $DATA -o coverage.profdata 
-    $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage -ignore-filename-regex=.*[Tt]est[\/\\].* -format=html -instr-profile=coverage.profdata
-    local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -ignore-filename-regex=.*[Tt]est[\/\\].* -instr-profile=coverage.profdata | grep "TOTAL.*")
+    $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage -ignore-filename-regex=$EXCLUDE_REGEX -format=html -instr-profile=coverage.profdata
+    local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -ignore-filename-regex=$EXCLUDE_REGEX -instr-profile=coverage.profdata | grep "TOTAL.*")
     local MATCH=$(echo $TOTAL | perl -nle'print $& while m{[\d\.]+\%}g')
     local MATCH_ARR=(${MATCH})
     local REGION=${MATCH_ARR[0]}
@@ -533,16 +534,16 @@ function coverage () {
 
     if ! test "${FUNCTION}" == "100.00%" || ! test "${LINE}" == "100.00%"; then
         printError "ERROR: Test code coverage is not sufficient:"
-        printError "  * Region: $REGION (can by any)"
         printError "  * Function: $FUNCTION (must be 100.00 %)"
         printError "  * Line: $LINE (must be 100.00 %)"
+        printError "  * Region: $REGION (can by any)"
         printError "NOTE: See code coverage report in build artifacts for details."
         exit 1
     else
         printOK "Test code coverage is OK:"
-        printOK "  * Region: $REGION"
         printOK "  * Function: $FUNCTION"
         printOK "  * Line: $LINE"
+        printOK "  * Region: $REGION"
         printOK "NOTE: See code coverage report in build artifacts for details."
     fi
 }
@@ -567,13 +568,15 @@ function formatting () {
     local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
     for file in $SOURCE_FILES
     do
-        local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
+        if [[ $file != *"tiny-process-library"* ]]; then
+            local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
 
-        if test "$REPLACEMENTS"; then
-            printError "$file (ERROR: Incorrectly formatted file.)"
-            UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
-        else
-            printOK "$file (OK)"
+            if test "$REPLACEMENTS"; then
+                printError "$file (ERROR: Incorrectly formatted file.)"
+                UNFORMATTED_FILES="$UNFORMATTED_FILES $file"
+            else
+                printOK "$file (OK)"
+            fi
         fi
     done
     

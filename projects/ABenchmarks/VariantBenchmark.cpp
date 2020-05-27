@@ -47,7 +47,8 @@ TEST_CASE("Variant")
         });
     };
 
-    REQUIRE(acoreVariant > (stdAny / 2));
-    REQUIRE(acoreVariant > (stdVariant / 2));
+    constexpr double benchmarkFactor = 2.5;
+    REQUIRE(acoreVariant > (stdAny / benchmarkFactor));
+    REQUIRE(acoreVariant > (stdVariant / benchmarkFactor));
 }
 }
