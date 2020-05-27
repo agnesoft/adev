@@ -47,7 +47,7 @@ TEST_CASE("Variant")
         });
     };
 
-    REQUIRE(acoreVariant > (stdAny / 2));
-    REQUIRE(acoreVariant > (stdVariant / 2));
+    REQUIRE(acoreVariant > (stdAny / 2.5));
+    REQUIRE(acoreVariant > (stdVariant / 2.5));
 }
 }
