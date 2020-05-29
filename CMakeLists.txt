@@ -14,11 +14,9 @@ endif()
 # CATCH2 #
 ##########
 # Catch2 Static Library
-add_library(Catch2 STATIC projects/Catch2/Catch2.cpp
-                          projects/Catch2/include/Catch2/catch.hpp)
+add_library(Catch2 STATIC projects/Catch2/catch2.cpp)
 target_compile_features(Catch2 PUBLIC cxx_std_17)
-target_include_directories(Catch2 SYSTEM PRIVATE projects/Catch2/include/Catch2)
-target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/include)
+target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/single_include)
 
 ########################
 # TINY-PROCESS-LIBRARY #
