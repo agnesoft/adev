@@ -568,7 +568,7 @@ function formatting () {
     local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
     for file in $SOURCE_FILES
     do
-        if [[ $file != *"tiny-process-library"* ]]; then
+        if [[ $file != *"tiny-process-library"* ]] && [[ $file != *"Catch2"* ]]; then
             local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
 
             if test "$REPLACEMENTS"; then
