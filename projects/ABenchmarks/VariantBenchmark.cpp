@@ -1,7 +1,7 @@
 #include "pch.hpp"
 
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
-#include <Catch2/catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <any>
 #include <unordered_map>

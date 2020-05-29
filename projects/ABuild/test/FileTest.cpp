@@ -1,6 +1,6 @@
 #include "TestFile.hpp"
 
-#include <Catch2/catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <ABuild.hpp>
 
