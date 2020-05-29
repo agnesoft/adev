@@ -479,7 +479,7 @@ function coverage () {
     build
 
     cd $BUILD_DIR/bin/test
-    
+
     #Collect all binary objects (libraries and executables)
     local OBJECTS=$(ls)
     local OBJECTS_ARR=(${OBJECTS})
@@ -509,18 +509,18 @@ function coverage () {
     #Generate individual reports per test
     local DATA_RAW=$(find . -name "*.profraw" -type f)
     local DATA=""
+    local EXCLUDE_REGEX=".*[Tt]est[\/\\]|tiny-process-library.*"
 
     for raw_data in $DATA_RAW
     do
         $LLVM_PROFDATA merge ${raw_data} -o ${raw_data}.profdata 
-        $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage/${raw_data::-8} -ignore-filename-regex=.*[Tt]est[\/\\].* -format=html -instr-profile=${raw_data}.profdata
-        local DATA="$DATA ${raw_data}.profdata"
+        $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage/${raw_data::-8} -format=html -ignore-filename-regex=$EXCLUDE_REGEX -instr-profile=${raw_data}.profdata
+        DATA="$DATA ${raw_data}.profdata"
     done
 
     #Generate complete report
-    local EXCLUDE_REGEX=".*[Tt]est[\/\\]|tiny-process-library.*"
     $LLVM_PROFDATA merge $DATA -o coverage.profdata 
-    $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage -ignore-filename-regex=$EXCLUDE_REGEX -format=html -instr-profile=coverage.profdata
+    $LLVM_COV show $OBJECTS_ARGS -output-dir=../../coverage -format=html -ignore-filename-regex=$EXCLUDE_REGEX -instr-profile=coverage.profdata
     local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -ignore-filename-regex=$EXCLUDE_REGEX -instr-profile=coverage.profdata | grep "TOTAL.*")
     local MATCH=$(echo $TOTAL | perl -nle'print $& while m{[\d\.]+\%}g')
     local MATCH_ARR=(${MATCH})
