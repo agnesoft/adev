@@ -83,7 +83,9 @@ add_executable(ACoreTest projects/ACore/test/BitMaskTest.cpp
                          projects/ACore/test/ReferenceTest.cpp
                          projects/ACore/test/UndoStackTest.cpp
                          projects/ACore/test/VariantTest.cpp)
-target_precompile_headers(ACoreTest PRIVATE projects/ACore/test/pch.hpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    target_precompile_headers(ACoreTest PRIVATE projects/ACore/test/pch.hpp)
+endif()
 target_link_libraries(ACoreTest ACore Catch2)
 
 ###############
@@ -92,7 +94,9 @@ target_link_libraries(ACoreTest ACore Catch2)
 #ABenchmarks
 add_executable(ABenchmarks projects/ABenchmarks/BitMaskBenchmark.cpp
                            projects/ABenchmarks/VariantBenchmark.cpp)
-target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
+endif()
 target_link_libraries(ABenchmarks ACore Catch2)
 
 ##########
