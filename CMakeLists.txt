@@ -14,7 +14,7 @@ endif()
 # CATCH2 #
 ##########
 # Catch2 Static Library
-add_library(Catch2 STATIC projects/Catch2/catch2.cpp)
+add_library(Catch2 STATIC projects/Catch2/Catch2.cpp)
 target_compile_features(Catch2 PUBLIC cxx_std_17)
 target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/single_include)
 
