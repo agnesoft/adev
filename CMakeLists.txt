@@ -124,3 +124,8 @@ target_link_libraries(ABuildTest ABuildStatic Catch2)
 ### INSTALLATION ###
 install(TARGETS ABuild ABenchmarks DESTINATION bin)
 install(TARGETS ABuildTest ACoreTest DESTINATION bin/test)
+
+#Licenses
+install(FILES LICENSE DESTINATION bin/LICENSE)
+install(FILES projects/Catch2/LICENSE.txt DESTINATION bin/LICENSE/Catch2)
+install(FILES projects/tiny-process-library/LICENSE DESTINATION bin/LICENSE/tiny-process-library)
