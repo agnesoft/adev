@@ -50,13 +50,17 @@ function printHelp () {
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
     echo "  sanitize-address"
-    echo "    * Requires: Clang, llvm-symbolizer, [MSVC_ENV_SCRIPT]"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
+    echo "    * Requires: Clang, llvm-symbolizer"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR"
     echo "    * Builds with Clang/LLVM memory address sanitizer and run tests."
     echo "  sanitize-memory"
     echo "    * Requires: [Linux], Clang, llvm-symbolizer"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR"
     echo "    * Builds with Clang/LLVM memory sanitizer and run tests."
+    echo "  sanitize-ub"
+    echo "    * Requires: Clang, llvm-symbolizer"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR"
+    echo "    * Builds with Clang/LLVM undefined behavior sanitizer and run tests."
     echo "  tests"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
@@ -661,6 +665,19 @@ function sanitizeMemory () {
     tests
 }
 
+function sanitizeUB () {
+    if isWindows; then
+        printError "ERROR: Undefined behavior sanitizer is not supported on Windows."
+        exit 1
+    fi
+
+    detectLLVMSymbolizer
+    detectClang
+    BUILD_TYPE="SanitizeUB"
+    build
+    tests
+}
+
 function tests () {
     detectTestProperties
 
@@ -743,6 +760,8 @@ elif test "$ACTION" == "sanitize-address"; then
     sanitizeAddress
 elif test "$ACTION" == "sanitize-memory"; then
     sanitizeMemory
+elif test "$ACTION" == "sanitize-ub"; then
+    sanitizeUB
 elif test "$ACTION" == "tests"; then
     tests
 else
