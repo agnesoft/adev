@@ -633,6 +633,11 @@ function formatting () {
 }
 
 function sanitizeAddress () {
+    if isWindows; then
+        printError "ERROR: Address sanitizer is not supported on Windows."
+        exit 1
+    fi
+
     detectLLVMSymbolizer
     detectClang
     BUILD_TYPE="SanitizeAddress"
