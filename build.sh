@@ -95,7 +95,7 @@ function addLLVMRepository () {
 
 function installClang () {
     if isWindows; then
-        choco install llvm
+        choco install -y llvm
     elif isLinux; then
         addLLVMRepository
         sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
@@ -106,7 +106,7 @@ function installClang () {
 
 function installClangFormat () {
     if isWindows; then
-        choco install llvm
+        choco install -y llvm
     elif isLinux; then
         addLLVMRepository
         sudo apt-get install -y clang-format-${LLVM_VERSION}
@@ -117,7 +117,7 @@ function installClangFormat () {
 
 function installClangTidy () {
     if isWindows; then
-        choco install llvm
+        choco install -y llvm
     elif isLinux; then
         addLLVMRepository
         sudo apt-get install -y clang-tidy-${LLVM_VERSION}
@@ -128,7 +128,7 @@ function installClangTidy () {
 
 function installCMake () {
     if isWindows; then
-        choco install cmake
+        choco install -y cmake
     elif isLinux; then
         addLLVMRepository
         sudo apt-get install -y cmake
@@ -139,10 +139,10 @@ function installCMake () {
 
 function installDoxygen () {
     if isWindows; then
-        choco install doxygen.install
+        choco install doxygen.install -y
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get install doxygen
+        sudo apt-get install -y doxygen
     else
         brew install doxygen
     fi
@@ -151,7 +151,7 @@ function installDoxygen () {
 function installGCC () {
     if isLinux; then
         sudo apt-get update -y
-        sudo apt-get install gcc-${GCC_VERSION} g++-${GCC_VERSION}
+        sudo apt-get install -y gcc-${GCC_VERSION} g++-${GCC_VERSION}
     else
         echo "ERROR: 'GCC' can only be installed on Linux."
     fi
@@ -159,7 +159,7 @@ function installGCC () {
 
 function installLLVM () {
     if isWindows; then
-        choco install llvm
+        choco install -y llvm
     elif isLinux; then
         addLLVMRepository
         sudo apt-get install -y llvm-10
@@ -170,7 +170,7 @@ function installLLVM () {
 
 function installMSVC () {
     if isWindows; then
-        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --passive --norestart"
+        choco install -y visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --passive --norestart"
     else
         printError "ERROR: 'MSVC' can only be installed on Windows."
         exit 1
@@ -179,7 +179,7 @@ function installMSVC () {
 
 function installNinja () {
     if isWindows; then
-        choco install ninja
+        choco install -y ninja
     elif isLinux; then
         sudo apt-get update -y
         sudo apt-get install -y ninja-build
@@ -258,7 +258,8 @@ function detectCMake () {
 function detectCompiler () {
     if ! test "$CXX"; then
         if isWindows; then
-            detectMSVC
+            CC=cl
+            CXX=cl
         elif isLinux; then
             detectGCC
         else
@@ -328,22 +329,23 @@ function detectLLVMSymbolizer () {
     fi
 }
 
-function detectMSVC () {
-    local CL=`find "C:/Program Files (x86)/Microsoft Visual Studio" -name "cl.exe" -type f | head -n 1`
-    if test "$CL"; then
-        CC=cl
-        CXX=cl
-    else
-        printError "ERROR: 'MSVC' is not available. Try installing it with './build.sh install-msvc'."
-        exit 1
-    fi
-
-    "$CL" 2>&1 | head -n 1
-}
-
 function detectMSVCEnvScript () {
-    MSVC_ENV_SCRIPT=`find "C:/Program Files (x86)/Microsoft Visual Studio" -name "vcvars64.bat" -type f | head -n 1`
     if ! test "$MSVC_ENV_SCRIPT"; then
+        MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        if test -f "$MSVC_ENV_SCRIPT"; then
+            return
+        fi
+        
+        MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
+        if test -f "$MSVC_ENV_SCRIPT"; then
+            return
+        fi
+
+        MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
+        if test -f "$MSVC_ENV_SCRIPT"; then
+            return
+        fi
+
         printError "ERROR: Visual Studio environemnt script not found."
         exit 1
     fi
@@ -510,6 +512,7 @@ function buildWindows () {
                         ${CMAKE} .. -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
                         ${NINJA}
                         ${NINJA} install"
+
     echo "$BUILD_SCRIPT" > build.bat
     cmd //c build.bat
 }
