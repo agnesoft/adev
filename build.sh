@@ -49,6 +49,10 @@ function printHelp () {
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
+    echo "  sanitize-address"
+    echo "    * Requires: Clang, llvm-symbolizer, [MSVC_ENV_SCRIPT]"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
+    echo "    * Builds with Clang/LLVM memory address sanitizer and run tests."
     echo "  sanitize-memory"
     echo "    * Requires: [Linux], Clang, llvm-symbolizer"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR"
@@ -628,6 +632,14 @@ function formatting () {
     fi
 }
 
+function sanitizeAddress () {
+    detectLLVMSymbolizer
+    detectClang
+    BUILD_TYPE="SanitizeAddress"
+    build
+    tests
+}
+
 function sanitizeMemory () {
     if ! isLinux; then
         printError "ERROR: Memory sanitizer is supported only on Linux."
@@ -719,6 +731,8 @@ elif test "$ACTION" == "install-msvc"; then
     installMSVC
 elif test "$ACTION" == "install-ninja"; then
     installNinja
+elif test "$ACTION" == "sanitize-address"; then
+    sanitizeAddress
 elif test "$ACTION" == "sanitize-memory"; then
     sanitizeMemory
 elif test "$ACTION" == "tests"; then
