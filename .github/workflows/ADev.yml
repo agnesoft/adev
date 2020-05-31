@@ -8,7 +8,7 @@ on:
 
 jobs:
   analysis:
-    name: Static Analysis
+    name: Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
         run: ./build.sh analysis
 
   coverage:
-    name: Code Coverage
+    name: Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
-      - name: Code Coverage
+      - name: Coverage
         run: |
           export BUILD_DIR=build
           ./build.sh coverage
@@ -57,7 +57,7 @@ jobs:
           path: docs/html
 
   formatting:
-    name: Code Formatting
+    name: Formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -66,7 +66,7 @@ jobs:
       - name: Formatting
         run: ./build.sh formatting
 
-  sanitize_address:
+  sanitize-address:
     name: Sanitize Address
     runs-on: ubuntu-latest
     steps:
@@ -77,10 +77,10 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
-      - name: Sanitize Memory
+      - name: Sanitize Address
         run: ./build.sh sanitize-address
 
-  sanitize_memory:
+  sanitize-memory:
     name: Sanitize Memory
     runs-on: ubuntu-latest
     steps:
@@ -94,7 +94,7 @@ jobs:
       - name: Sanitize Memory
         run: ./build.sh sanitize-memory
 
-  sanitize_ub:
+  sanitize-ub:
     name: Sanitize Undefined Behavior
     runs-on: ubuntu-latest
     steps:
@@ -105,7 +105,7 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
-      - name: Sanitize Memory
+      - name: Sanitize Undefined Behavior
         run: ./build.sh sanitize-ub
 
   build:
