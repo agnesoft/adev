@@ -7,15 +7,17 @@ on:
     branches: [master]
 
 jobs:
-  formatting:
-    name: Code Formatting
+  analysis:
+    name: Static Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install Clang-Format
-        run: ./build.sh install-clang-format
-      - name: Formatting
-        run: ./build.sh formatting
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang-Tidy
+        run: ./build.sh install-clang-tidy
+      - name: Analysis
+        run: ./build.sh analysis
 
   coverage:
     name: Code Coverage
@@ -39,18 +41,6 @@ jobs:
           name: adev-code-coverage
           path: build/coverage
 
-  analysis:
-    name: Static Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Ninja
-        run: ./build.sh install-ninja
-      - name: Install Clang-Tidy
-        run: ./build.sh install-clang-tidy
-      - name: Analysis
-        run: ./build.sh analysis
-
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
@@ -65,6 +55,58 @@ jobs:
         with:
           name: adev-docs
           path: docs/html
+
+  formatting:
+    name: Code Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Clang-Format
+        run: ./build.sh install-clang-format
+      - name: Formatting
+        run: ./build.sh formatting
+
+  sanitize_address:
+    name: Sanitize Address
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Sanitize Memory
+        run: ./build.sh sanitize-address
+
+  sanitize_memory:
+    name: Sanitize Memory
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Sanitize Memory
+        run: ./build.sh sanitize-memory
+
+  sanitize_ub:
+    name: Sanitize Undefined Behavior
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Sanitize Memory
+        run: ./build.sh sanitize-ub
 
   build:
     name: ${{ matrix.config.name }}
