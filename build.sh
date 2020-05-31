@@ -59,7 +59,7 @@ function printHelp () {
     echo "    * Builds with Clang/LLVM memory sanitizer and run tests."
     echo "  sanitize-ub"
     echo "    * Requires: Clang, llvm-symbolizer"
-    echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR"
     echo "    * Builds with Clang/LLVM undefined behavior sanitizer and run tests."
     echo "  tests"
     echo "    * Requires: None"
@@ -666,7 +666,7 @@ function sanitizeMemory () {
 }
 
 function sanitizeUB () {
-if isWindows; then
+    if isWindows; then
         printError "ERROR: Undefined behavior sanitizer is not supported on Windows."
         exit 1
     fi
