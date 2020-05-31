@@ -49,6 +49,10 @@ function printHelp () {
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
+    echo "  sanitize-memory"
+    echo "    * Requires: [Linux], Clang, llvm-symbolizer"
+    echo "    * Environment Variables: CC, CXX, BUILD_DIR"
+    echo "    * Builds with Clang/LLVM memory sanitizer and run tests."
     echo "  tests"
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
@@ -309,6 +313,17 @@ function detectLLVMProfdata () {
     fi
 }
 
+function detectLLVMSymbolizer () {
+    if isAvailable "llvm-symbolizer-${LLVM_VERSION}"; then
+        LLVM_SYMBOLIZER="llvm-symbolizer-${LLVM_VERSION}"
+    elif isAvailable "llvm-symbolizer"; then
+        LLVM_SYMBOLIZER="llvm-symbolizer"
+    else
+        printError "ERROR: 'llvm-symbolizer' is not available. Try insdtalling it with './build.sh install-llvm'."
+        exit 1
+    fi
+}
+
 function detectMSVC () {
     local CL=`find "C:/Program Files (x86)/Microsoft Visual Studio" -name "cl.exe" -type f | head -n 1`
     if test "$CL"; then
@@ -445,6 +460,30 @@ function build () {
     else
         cd ..
     fi
+}
+
+function buildLibCppWithMemorySanitizer () {
+    detectCMake
+    detectNinja
+    detectClang
+
+    if [ ! -d "llvm" ]; then
+        git clone --depth=1 https://github.com/llvm/llvm-project llvm
+    fi
+    
+    cd llvm
+    
+    if [ ! -d "build_msan" ]; then 
+        mkdir "build_msan"
+    fi
+
+    cd build_msan
+
+    export CC=$CC
+    export CXX=$CXX
+    $CMAKE -G Ninja ../llvm -D CMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" -DLLVM_USE_SANITIZER=MemoryWithOrigins
+    $CMAKE --build . -- cxx cxxabi
+    cd ../..
 }
 
 function buildUnix () {
@@ -589,6 +628,19 @@ function formatting () {
     fi
 }
 
+function sanitizeMemory () {
+    if ! isLinux; then
+        printError "ERROR: Memory sanitizer is supported only on Linux."
+        exit 1
+    fi
+
+    detectLLVMSymbolizer
+    buildLibCppWithMemorySanitizer
+    BUILD_TYPE="SanitizeMemory"
+    build
+    tests
+}
+
 function tests () {
     detectTestProperties
 
@@ -667,6 +719,8 @@ elif test "$ACTION" == "install-msvc"; then
     installMSVC
 elif test "$ACTION" == "install-ninja"; then
     installNinja
+elif test "$ACTION" == "sanitize-memory"; then
+    sanitizeMemory
 elif test "$ACTION" == "tests"; then
     tests
 else
