@@ -258,7 +258,8 @@ function detectCMake () {
 function detectCompiler () {
     if ! test "$CXX"; then
         if isWindows; then
-            return
+            CC=cl
+            CXX=cl
         elif isLinux; then
             detectGCC
         else
@@ -505,20 +506,12 @@ function buildWindows () {
     detectMSVCEnvScript
     mkdir -p $BUILD_DIR
     cd $BUILD_DIR
-    
-    if test $CXX; then
-        local BUILD_SCRIPT="call \"${MSVC_ENV_SCRIPT}\"
-                            set CC=${CC}
-                            set CXX=${CXX}
-                            ${CMAKE} .. -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
-                            ${NINJA}
-                            ${NINJA} install"
-    else
-        local BUILD_SCRIPT="call \"${MSVC_ENV_SCRIPT}\"
-                            ${CMAKE} .. -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
-                            ${NINJA}
-                            ${NINJA} install"
-    fi
+    local BUILD_SCRIPT="call \"${MSVC_ENV_SCRIPT}\"
+                        set CC=${CC}
+                        set CXX=${CXX}
+                        ${CMAKE} .. -G Ninja -D CMAKE_BUILD_TYPE=${BUILD_TYPE} -D CMAKE_INSTALL_PREFIX=.
+                        ${NINJA}
+                        ${NINJA} install"
 
     echo "$BUILD_SCRIPT" > build.bat
     cmd //c build.bat
