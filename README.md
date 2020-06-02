@@ -20,7 +20,7 @@ For simply building all of ADev you will require CMake generator, Ninja build sy
 
 ## Projects
 
-* [ABenchmarks](projects/ABenchmarks.md) Collection of benchmarks from other projects.
+* [ABenchmarks](projects/ABenchmarks/README.md) Collection of benchmarks from other projects.
 * [ABuild](projects/ABuild/README.md) C++ automatic build system.
 * [ACore](projects/ACore/README.md) C++ basic containers and utilities.
 
