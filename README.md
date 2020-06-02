@@ -25,8 +25,8 @@ For simply building all of ADev you will require CMake generator, Ninja build sy
 * [ACore](projects/ACore/README.md) C++ basic containers and utilities.
 
 ## Third Party Projects
-* [Catch2](projects/Catch2/README.md) C++ a multi-paradigm test framework. Copyright (c) 2020 Two Blue Cubes Ltd. All rights reserved.
-* [tiny-process-library](projects/tiny-process-library/README.md) C++ platform independent process library. Copyright (c) 2015-2020 Ole Christian Eidheim
+* [Catch2](https://github.com/catchorg/Catch2) C++ a multi-paradigm test framework. Copyright (c) 2020 Two Blue Cubes Ltd. All rights reserved.
+* [tiny-process-library](https://gitlab.com/eidheim/tiny-process-library) C++ platform independent process library. Copyright (c) 2015-2020 Ole Christian Eidheim
 
 ## Continuous Integration (GitHub Actions)
 
