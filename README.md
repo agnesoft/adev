@@ -6,6 +6,18 @@
 
 Central development repository providing shared cross platform infrastructure to projects.
 
+## Build
+
+All build actions are done using **build.sh** script. Bash scripts are native on Linux and macOS, on Windows use **Git Bash**. When run without any commands it prints extensive readme with all avaiable actions, requirements and used environment variables for each action. It also auto-detects the prerequisites for each action. If any prerequisites for a given action are missing it offers a platform independent installation action (./build.sh install-xxx). This requires you to have a package manager though:
+
+* [Chocolatey](https://chocolatey.org/) on Windows
+* [apt](https://en.wikipedia.org/wiki/APT_(software)) on Linux
+* [Homebrew](https://brew.sh/index_cs) on macOS
+
+For simply building all of ADev you will require CMake generator, Ninja build system and a C++ toolchain, then run:
+
+`./build.sh build`
+
 ## Projects
 
 * [ABenchmarks](projects/ABenchmarks.md) Collection of benchmarks from other projects.
@@ -15,18 +27,6 @@ Central development repository providing shared cross platform infrastructure to
 ## Third Party Projects
 * [Catch2](projects/Catch2/README.md) C++ a multi-paradigm test framework. Copyright (c) 2020 Two Blue Cubes Ltd. All rights reserved.
 * [tiny-process-library](projects/tiny-process-library/README.md) C++ platform independent process library. Copyright (c) 2015-2020 Ole Christian Eidheim
-
-## Build
-
-All build actions are done using **build.sh** script. Bash scripts are native on Linxu and macOS, on Windows use **Git Bash**. When run without any commands it prints extensive readme with all avaiable actions, requirements and used environment variables for each action. It also auto-detects the prerequisites for each action. If any prerequisites for a given action are missing it offers a platform independent installation action (./build.sh install-xxx). This requires you to have a package manager though:
-
-* [Chocolatey](https://chocolatey.org/) on Windows
-* [apt](https://en.wikipedia.org/wiki/APT_(software)) on Linux
-* [Homebrew](https://brew.sh/index_cs) on macOS
-
-For simply building all of ADev you will require CMake generator, Ninja build system and a C++ toolchain, then run:
-
-`./build.sh build`
 
 ## Continuous Integration (GitHub Actions)
 
