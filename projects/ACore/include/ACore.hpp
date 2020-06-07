@@ -15,7 +15,6 @@
 #ifndef ACORE_ACORE_HPP
 #define ACORE_ACORE_HPP
 
-#include "ACore/BitMask.hpp"
 #include "ACore/DataStream.hpp"
 #include "ACore/Endianness.hpp"
 #include "ACore/Exception.hpp"

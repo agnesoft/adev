@@ -60,7 +60,6 @@ target_include_directories(tiny-process-library PUBLIC projects)
 #ACore Static Library
 add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/ACoreModule.hpp
-                         projects/ACore/include/ACore/BitMask.hpp
                          projects/ACore/include/ACore/DataStream.hpp
                          projects/ACore/include/ACore/DataStreamBase.hpp
                          projects/ACore/include/ACore/DataStreamBuffer.hpp
@@ -86,8 +85,7 @@ target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
 
 #ACoreTest
-add_executable(ACoreTest projects/ACore/test/BitMaskTest.cpp
-                         projects/ACore/test/DataStreamTest.cpp
+add_executable(ACoreTest projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
@@ -106,8 +104,7 @@ target_link_libraries(ACoreTest ACore Catch2)
 # ABENCHMARKS #
 ###############
 #ABenchmarks
-add_executable(ABenchmarks projects/ABenchmarks/BitMaskBenchmark.cpp
-                           projects/ABenchmarks/VariantBenchmark.cpp)
+add_executable(ABenchmarks projects/ABenchmarks/VariantBenchmark.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
 endif()
