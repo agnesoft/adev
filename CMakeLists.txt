@@ -77,6 +77,7 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
                          projects/ACore/Endianness.cpp
+                         projects/ACore/DataIndexMap.cpp
                          projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
 if(MSVC)
@@ -89,7 +90,8 @@ target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
 
 #ACoreTest
-add_executable(ACoreTest projects/ACore/test/DataIndexMapTest.cpp
+add_executable(ACoreTest projects/ACore/test/DataIndexMapElementTest.cpp
+                         projects/ACore/test/DataIndexMapTest.cpp
                          projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
                          projects/ACore/test/ExceptionTest.cpp

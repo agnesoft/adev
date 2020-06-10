@@ -17,10 +17,11 @@
 
 #include "DataIndexMapElement.hpp"
 
-#include <unordered_map>
+#include <vector>
 
 namespace acore
 {
+//! \cond IMPLEMENTAION_DETAIL
 class DataIndexMapData
 {
 public:
@@ -30,22 +31,17 @@ public:
         mCount = 0;
     }
 
-    [[nodiscard]] constexpr size_type count() const noexcept
+    [[nodiscard]] constexpr auto count() const noexcept -> size_type
     {
         return mCount;
     }
 
-    [[nodiscard]] size_type count(size_type element) const
+    [[nodiscard]] auto count(size_type element) const -> size_type
     {
-        if (isValid(element))
-        {
-            return static_cast<size_type>(mData[element].size());
-        }
-
-        return 0;
+        return static_cast<size_type>(mData[element].size());
     }
 
-    void insert(size_type element, size_type key, size_type value)
+    auto insert(size_type element, size_type key, size_type value) -> void
     {
         if (element >= static_cast<size_type>(mData.size()))
         {
@@ -65,44 +61,47 @@ public:
         }
     }
 
-    void remove(size_type element)
+    auto remove(size_type element) -> void
     {
-        if (isValid(element))
+        mCount -= mData[element].size();
+        mData[element].clear();
+    }
+
+    auto remove(size_type element, size_type key) -> void
+    {
+        const auto it = find(element, key);
+
+        if (it != mData[element].end())
         {
-            mCount -= mData[element].size();
-            mData[element].clear();
+            --mCount;
+            mData[element].erase(it);
         }
     }
 
-    void remove(size_type element, size_type key)
+    auto shrink_to_fit() -> void
     {
-        if (isValid(element))
-        {
-            const auto it = find(element, key);
+        size_t i = mData.size();
 
-            if (it != mData[element].end())
-            {
-                --mCount;
-                mData[element].erase(it);
-            }
+        while (i > 0 && mData[i - 1].empty())
+        {
+            --i;
         }
+
+        mData.resize(i);
     }
 
-    [[nodiscard]] auto size() const noexcept
+    [[nodiscard]] auto size() const noexcept -> size_type
     {
-        return mData.size();
+        return static_cast<size_type>(mData.size());
     }
 
-    [[nodiscard]] size_type value(size_type element, size_type key) const
+    [[nodiscard]] auto value(size_type element, size_type key) const -> size_type
     {
-        if (isValid(element))
+        for (const DataIndexMapElement &e : mData[element])
         {
-            for (const DataIndexMapElement &e : mData[element])
+            if (e.key == key)
             {
-                if (e.key == key)
-                {
-                    return e.value;
-                }
+                return e.value;
             }
         }
 
@@ -111,28 +110,11 @@ public:
 
     [[nodiscard]] auto values(size_type element) const -> std::vector<DataIndexMapElement>
     {
-        if (isValid(element))
-        {
-            return mData[element];
-        }
-
-        return {};
+        return mData[element];
     }
 
 private:
-    [[nodiscard]] auto isValid(size_type element) const noexcept -> bool
-    {
-        return element < static_cast<size_type>(mData.size());
-    }
-
     [[nodiscard]] auto find(size_type element, size_type key) -> std::vector<DataIndexMapElement>::iterator
-    {
-        return std::find_if(mData[element].begin(), mData[element].end(), [&](const DataIndexMapElement &e) {
-            return e.key == key;
-        });
-    }
-
-    [[nodiscard]] auto find(size_type element, size_type key) const -> std::vector<DataIndexMapElement>::const_iterator
     {
         return std::find_if(mData[element].begin(), mData[element].end(), [&](const DataIndexMapElement &e) {
             return e.key == key;
@@ -142,6 +124,7 @@ private:
     std::vector<std::vector<DataIndexMapElement>> mData;
     size_type mCount = 0;
 };
+//! \endcond
 }
 
 #endif

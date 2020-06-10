@@ -25,7 +25,7 @@ namespace dataindexmapbenchmark
 class Map2DVector
 {
 public:
-    Map2DVector(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
+    explicit Map2DVector(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
     {
         for (auto val : data)
         {
@@ -58,7 +58,7 @@ private:
 class MapHashVector
 {
 public:
-    MapHashVector(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
+    explicit MapHashVector(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
     {
         for (auto val : data)
         {
@@ -118,7 +118,7 @@ private:
 class MapVectorLinkedList
 {
 public:
-    MapVectorLinkedList(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
+    explicit MapVectorLinkedList(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
     {
         for (auto val : data)
         {
@@ -179,7 +179,7 @@ private:
 class MapHashBuckets
 {
 public:
-    MapHashBuckets(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
+    explicit MapHashBuckets(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
     {
         for (auto val : data)
         {
@@ -212,7 +212,7 @@ private:
 class MapMultiHash
 {
 public:
-    MapMultiHash(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
+    explicit MapMultiHash(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &data)
     {
         for (auto val : data)
         {
@@ -248,8 +248,8 @@ TEST_CASE("DataIndexMap")
     int mapHashBuckets = 0;
     int mapMultiHash = 0;
 
-    int elements = 1000;
-    int keys = 100;
+    constexpr int elements = 1000;
+    constexpr int keys = 100;
 
     std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data;
     data.reserve(elements * keys);

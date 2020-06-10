@@ -18,7 +18,7 @@
 
 namespace acore
 {
-auto operator==(const DataIndexMap &map, const std::vector<std::pair<size_type, DataIndexMapElement>> &values) -> bool
+[[nodiscard]] auto operator==(const DataIndexMap &map, const std::vector<std::pair<size_type, DataIndexMapElement>> &values) -> bool
 {
     if (values.size() != static_cast<size_t>(map.count()))
     {
@@ -45,7 +45,7 @@ namespace Catch
 template<>
 struct StringMaker<acore::DataIndexMap>
 {
-    [[nodiscard]] static std::string convert(const acore::DataIndexMap &map)
+    [[nodiscard]] static auto convert(const acore::DataIndexMap &map) -> std::string
     {
         std::stringstream os;
         os << '{';
@@ -64,7 +64,7 @@ struct StringMaker<acore::DataIndexMap>
 template<>
 struct StringMaker<std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>>
 {
-    [[nodiscard]] static std::string convert(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &values)
+    [[nodiscard]] static auto convert(const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &values) -> std::string
     {
         std::stringstream os;
         os << '{';
@@ -82,6 +82,9 @@ namespace dataindexmaptest
 {
 TEST_CASE("[acore::DataIndexMap]")
 {
+#if defined(MSVC) && !defined(DEBUG)
+    REQUIRE(std::is_standard_layout_v<acore::DataIndexMap>);
+#endif
     REQUIRE(std::is_default_constructible_v<acore::DataIndexMap>);
     REQUIRE(std::is_copy_constructible_v<acore::DataIndexMap>);
     REQUIRE(std::is_copy_assignable_v<acore::DataIndexMap>);
@@ -95,9 +98,9 @@ TEST_CASE("DataIndexMap() [acore::DataIndexMap]")
     REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{});
 }
 
-TEST_CASE("DataIndexMap(const Vector<std::pair<size_type, DataIndexMapElement>> &data) [acore::DataIndexMap]")
+TEST_CASE("DataIndexMap(const std::vector<std::pair<size_type, DataIndexMapElement>> &data) [acore::DataIndexMap]")
 {
-    const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}};
+    const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     const acore::DataIndexMap map{data};
     REQUIRE(map == data);
 }
@@ -113,7 +116,7 @@ TEST_CASE("clear() -> void [acore::DataIndexMap]")
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{1, {10, 11}}, {1, {-2, -3}}, {5, {55, 555}}, {69, {42, 1}}}};
+        acore::DataIndexMap map{{{1, {10, 11}}, {1, {-2, -3}}, {5, {55, 555}}, {69, {42, 1}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         map.clear();
         REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{});
     }
@@ -130,7 +133,7 @@ TEST_CASE("count() const noexcept -> size_type [acore::DataIndexMap]")
 
     SECTION("[data]")
     {
-        const acore::DataIndexMap map{{{51, {1, 2}}, {49, {3, 45}}, {42, {65, 7}}, {1, {-1, -1}}, {5, {2, 3}}}};
+        const acore::DataIndexMap map{{{51, {1, 2}}, {49, {3, 45}}, {42, {65, 7}}, {1, {-1, -1}}, {5, {2, 3}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(map.count() == 5);
     }
 }
@@ -145,7 +148,7 @@ TEST_CASE("count(size_type element) const [acore::DataIndexMap]")
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{1, {2, 3}}, {1, {4, 5}}, {5, {6, 7}}, {10, {11, 12}}, {1, {6, 7}}}};
+        acore::DataIndexMap map{{{1, {2, 3}}, {1, {4, 5}}, {5, {6, 7}}, {10, {11, 12}}, {1, {6, 7}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[existing]")
         {
@@ -159,9 +162,15 @@ TEST_CASE("count(size_type element) const [acore::DataIndexMap]")
 
         SECTION("[removed]")
         {
-            map.remove(5);
+            map.remove(5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(std::as_const(map).count(5) == 0);
         }
+    }
+
+    SECTION("[invalid]")
+    {
+        const acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.count(-1), acore::Exception);
     }
 }
 
@@ -176,19 +185,25 @@ TEST_CASE("insert(size_type element, size_type key, size_type value) -> void [ac
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{100, {99, 98}}, {99, {98, 97}}, {6, {7, 8}}, {9, {10, 11}}}};
+        acore::DataIndexMap map{{{100, {99, 98}}, {99, {98, 97}}, {6, {7, 8}}, {9, {10, 11}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[existing]")
         {
-            map.insert(99, 98, 100);
+            map.insert(99, 98, 100); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{100, {99, 98}}, {99, {98, 100}}, {6, {7, 8}}, {9, {10, 11}}});
         }
 
         SECTION("[missing]")
         {
-            map.insert(69, 42, 0);
+            map.insert(69, 42, 0); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{69, {42, 0}}, {100, {99, 98}}, {99, {98, 97}}, {6, {7, 8}}, {9, {10, 11}}});
         }
+    }
+
+    SECTION("[invalid]")
+    {
+        acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.insert(-1, 1, 2), acore::Exception);
     }
 }
 
@@ -208,7 +223,7 @@ TEST_CASE("isEmpty() const noexcept -> bool [acore::DataIndexMap]")
     }
 }
 
-TEST_CASE("keys() const -> Vector<size_type> [acore::DataIndexMap]")
+TEST_CASE("keys(size_type element) const -> std::vector<size_type> [acore::DataIndexMap]")
 {
     SECTION("[empty]")
     {
@@ -218,11 +233,11 @@ TEST_CASE("keys() const -> Vector<size_type> [acore::DataIndexMap]")
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{1, {2, 3}}, {5, {6, 7}}, {10, {15, 16}}, {5, {16, 17}}, {18, {19, 20}}, {5, {1, 0}}}};
+        acore::DataIndexMap map{{{1, {2, 3}}, {5, {6, 7}}, {10, {15, 16}}, {5, {16, 17}}, {18, {19, 20}}, {5, {1, 0}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[existing]")
         {
-            std::vector<acore::size_type> actual = std::as_const(map).keys(5);
+            std::vector<acore::size_type> actual = std::as_const(map).keys(5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             std::sort(actual.begin(), actual.end());
             REQUIRE(actual == std::vector<acore::size_type>{1, 6, 16});
         };
@@ -234,9 +249,15 @@ TEST_CASE("keys() const -> Vector<size_type> [acore::DataIndexMap]")
 
         SECTION("[removed]")
         {
-            map.remove(18);
+            map.remove(18); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(std::as_const(map).keys(18) == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
         }
+    }
+
+    SECTION("[invalid]")
+    {
+        const acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.keys(-2), acore::Exception);
     }
 }
 
@@ -245,13 +266,13 @@ TEST_CASE("remove(size_type element) -> void [acore::DataIndexMap]")
     SECTION("[empty]")
     {
         acore::DataIndexMap map;
-        map.remove(10);
+        map.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{});
     }
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{1, {2, 3}}, {10, {2, 3}}, {100, {3, 5}}, {10, {3, 4}}}};
+        acore::DataIndexMap map{{{1, {2, 3}}, {10, {2, 3}}, {100, {3, 5}}, {10, {3, 4}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[existing]")
         {
@@ -261,9 +282,15 @@ TEST_CASE("remove(size_type element) -> void [acore::DataIndexMap]")
 
         SECTION("[multiple]")
         {
-            map.remove(10);
+            map.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {100, {3, 5}}});
         }
+    }
+
+    SECTION("[invalid]")
+    {
+        acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.remove(-3), acore::Exception);
     }
 }
 
@@ -272,15 +299,57 @@ TEST_CASE("remove(size_type element, size_type key) -> void [acore::DataIndexMap
     SECTION("[empty]")
     {
         acore::DataIndexMap map;
-        map.remove(5, 10);
+        map.remove(5, 10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{});
     }
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{100, {-101, -102}}, {200, {15, 20}}, {0, {1, 2}}, {200, {-300, -1}}, {5, {17, 58}}, {69, {42, 0}}}};
-        map.remove(200, -300);
+        acore::DataIndexMap map{{{100, {-101, -102}}, {200, {15, 20}}, {0, {1, 2}}, {200, {-300, -1}}, {5, {17, 58}}, {69, {42, 0}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        map.remove(200, -300); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{100, {-101, -102}}, {200, {15, 20}}, {0, {1, 2}}, {5, {17, 58}}, {69, {42, 0}}});
+    }
+
+    SECTION("[invalid]")
+    {
+        acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.remove(-2, 1), acore::Exception);
+    }
+}
+
+TEST_CASE("shrink_to_fit() -> void [acore::DataIndexMap")
+{
+    SECTION("[empty]")
+    {
+        acore::DataIndexMap map;
+        map.shrink_to_fit();
+        REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{});
+    }
+
+    SECTION("[data]")
+    {
+        const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::DataIndexMap map{data};
+        map.shrink_to_fit();
+        REQUIRE(map == data);
+    }
+
+    SECTION("[removed]")
+    {
+        const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::DataIndexMap map{data};
+        map.remove(1);
+        map.shrink_to_fit();
+        REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{5, {6, 7}}, {10, {4, 3}}});
+    }
+
+    SECTION("[removed at end]")
+    {
+        const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        acore::DataIndexMap map{data};
+        map.remove(10);
+        map.shrink_to_fit();
+        REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {5, {6, 7}}, {1, {4, 9}}, {1, {0, 2}}});
     }
 }
 
@@ -298,7 +367,7 @@ TEST_CASE("size() const noexcept -> acore::size_type [acore::DataIndexMap")
         acore::DataIndexMap map;
         map.insert(1, 2, 3);
         map.insert(3, 1, 2);
-        map.insert(5, 4, 4);
+        map.insert(5, 4, 4); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(map.size() == 6);
     }
 
@@ -310,6 +379,24 @@ TEST_CASE("size() const noexcept -> acore::size_type [acore::DataIndexMap")
         map.insert(3, 2, 2);
         map.insert(3, 3, 3);
         REQUIRE(map.size() == 4);
+    }
+
+    SECTION("[removed]")
+    {
+        acore::DataIndexMap map;
+        map.insert(1, 2, 3);
+        map.insert(3, 1, 2);
+        map.insert(5, 4, 4); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        map.remove(5);
+        REQUIRE(map.size() == 6);
+    }
+
+    SECTION("[shrinked]")
+    {
+        acore::DataIndexMap map{{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        map.remove(10);
+        map.shrink_to_fit();
+        REQUIRE(map.size() == 6);
     }
 }
 
@@ -327,7 +414,7 @@ TEST_CASE("storage() const noexcept -> const Data * [acore::DataIndexMap]")
     REQUIRE(map.storage() != nullptr);
 }
 
-TEST_CASE("value(size_type element) -> size_type [acore::DataIndexMap]")
+TEST_CASE("value(size_type element, size_type key) -> size_type [acore::DataIndexMap]")
 {
     SECTION("[empty]")
     {
@@ -337,7 +424,7 @@ TEST_CASE("value(size_type element) -> size_type [acore::DataIndexMap]")
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{2, {4, 8}}, {32, {64, 128}}, {2, {10, 11}}, {256, {512, 1024}}, {2048, {4096, 8192}}}};
+        acore::DataIndexMap map{{{2, {4, 8}}, {32, {64, 128}}, {2, {10, 11}}, {256, {512, 1024}}, {2048, {4096, 8192}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[existing]")
         {
@@ -351,13 +438,19 @@ TEST_CASE("value(size_type element) -> size_type [acore::DataIndexMap]")
 
         SECTION("[removed]")
         {
-            map.remove(256);
+            map.remove(256); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(std::as_const(map).value(256, 512) == acore::INVALID_INDEX);
         }
     }
+
+    SECTION("[invalid]")
+    {
+        const acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.value(-4, 4), acore::Exception);
+    }
 }
 
-TEST_CASE("values(size_type element) const -> Vector<DataIndexMapElement> [acore::DataIndexMap]")
+TEST_CASE("values(size_type element) const -> std::vector<DataIndexMapElement> [acore::DataIndexMap]")
 {
     SECTION("[empty]")
     {
@@ -367,7 +460,7 @@ TEST_CASE("values(size_type element) const -> Vector<DataIndexMapElement> [acore
 
     SECTION("[data]")
     {
-        acore::DataIndexMap map{{{10, {20, 30}}, {11, {21, 31}}, {12, {21, 31}}, {11, {13, 14}}, {52, {65, 67}}, {11, {87, 89}}}};
+        acore::DataIndexMap map{{{10, {20, 30}}, {11, {21, 31}}, {12, {21, 31}}, {11, {13, 14}}, {52, {65, 67}}, {11, {87, 89}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[existing]")
         {
@@ -376,7 +469,7 @@ TEST_CASE("values(size_type element) const -> Vector<DataIndexMapElement> [acore
 
         SECTION("[multiple]")
         {
-            std::vector<acore::DataIndexMapElement> actual = std::as_const(map).values(11);
+            std::vector<acore::DataIndexMapElement> actual = std::as_const(map).values(11); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             std::sort(actual.begin(), actual.end());
             REQUIRE(actual == std::vector<acore::DataIndexMapElement>{{13, 14}, {21, 31}, {87, 89}});
         }
@@ -388,9 +481,15 @@ TEST_CASE("values(size_type element) const -> Vector<DataIndexMapElement> [acore
 
         SECTION("[removed]")
         {
-            map.remove(12);
+            map.remove(12); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(std::as_const(map).values(12) == std::vector<acore::DataIndexMapElement>{}); //NOLINT(readability-container-size-empty)
         }
+    }
+
+    SECTION("[invalid]")
+    {
+        const acore::DataIndexMap map;
+        REQUIRE_THROWS_AS(map.values(-2), acore::Exception);
     }
 }
 

@@ -36,7 +36,7 @@ struct DataIndexMapElement
 //! Returns \c true if the \a left's key is less than
 //! \a right 's. If they are equal returns \c true
 //! if \a left 's value is less than \a right 's.
-[[nodiscard]] constexpr bool operator<(DataIndexMapElement left, DataIndexMapElement right) noexcept
+[[nodiscard]] constexpr auto operator<(DataIndexMapElement left, DataIndexMapElement right) noexcept -> bool
 {
     if (left.key == right.key)
     {
@@ -49,7 +49,7 @@ struct DataIndexMapElement
 //! \relates DataIndexMapElement
 //! Returns \c true if the \a left 's key and value
 //! are equal to the \a right 's.
-[[nodiscard]] constexpr bool operator==(DataIndexMapElement left, DataIndexMapElement right) noexcept
+[[nodiscard]] constexpr auto operator==(DataIndexMapElement left, DataIndexMapElement right) noexcept -> bool
 {
     return left.key == right.key && left.value == right.value;
 }
@@ -57,7 +57,7 @@ struct DataIndexMapElement
 //! \relates DataIndexMapElement
 //! Returns \c true if the \a left 's key or value
 //! are different to the \a right 's.
-[[nodiscard]] constexpr bool operator!=(DataIndexMapElement left, DataIndexMapElement right) noexcept
+[[nodiscard]] constexpr auto operator!=(DataIndexMapElement left, DataIndexMapElement right) noexcept -> bool
 {
     return !(left == right);
 }
@@ -67,7 +67,7 @@ struct DataIndexMapElement
 //! the \c key followed by \a value  and returns the
 //! \c stream.
 template<typename Buffer>
-constexpr DataStreamBase<Buffer> &operator<<(DataStreamBase<Buffer> &stream, const DataIndexMapElement &element)
+constexpr auto operator<<(DataStreamBase<Buffer> &stream, const DataIndexMapElement &element) -> DataStreamBase<Buffer> &
 {
     return stream << element.key << element.value;
 }
@@ -77,7 +77,7 @@ constexpr DataStreamBase<Buffer> &operator<<(DataStreamBase<Buffer> &stream, con
 //! the \c key followed by \a value  and returns the
 //! \c stream.
 template<typename Buffer>
-constexpr DataStreamBase<Buffer> &operator>>(DataStreamBase<Buffer> &stream, DataIndexMapElement &element)
+constexpr auto operator>>(DataStreamBase<Buffer> &stream, DataIndexMapElement &element) -> DataStreamBase<Buffer> &
 {
     return stream >> element.key >> element.value;
 }

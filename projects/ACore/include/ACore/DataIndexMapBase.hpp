@@ -32,71 +32,69 @@ namespace acore
 //! as graphs. All of the elements, keys and values
 //! are identified using the acore::size_type values.
 //!
-//! Besides the convenience methods to manipulate
-//! the data with insert(), remove() and value()
-//! it is also possible to iterate over all the stored
-//! data.
+//! To manipulate the data use insert(), remove() and value()
+//! methods.
 //!
 //! It is also possible to get all the values associated
-//! with the given \c element using the operator[]
-//! or values() methods.
+//! with a given \c element using the values() method or
+//! only keys() with the namesake method.
 //!
 //! The \c Data template argument must provide the
 //! following types and functionality:
 //!
-//! Types
-//! - <tt>Data::const_iteartor </tt>
-//!
 //! Methods
-//! - <tt> Data::const_iterator %begin() const </tt>
-//! - <tt> void %clear() </tt>
-//! - <tt> acore::size_type %count() const </tt>
-//! - <tt> acore::size_type %count(acore::size_type element) const </tt>
-//! - <tt> Data::const_iterator %end() const </tt>
-//! - <tt> Data::const_iterator %find(size_type element, size_type key) const </tt>
-//! - <tt> void %insert(acore::size_type element, acore::size_type key, acore::size_type value) </tt>
-//! - <tt> void %remove(acore::size_type element) </tt>
-//! - <tt> void %remove(acore::size_type element, acore::size_type key) </tt>
-//! - <tt> void %setValue(acore::size_type element, acore::size_type data, acore::size_type value) </tt>
-//! - <tt> acore::size_type %value(acore::size_type element, acore::size_type key) const </tt>
-//! - <tt> acore::std::vector<#acore::DataIndexMapElement> %values(acore::size_type element) const </tt>
-//!
-//! See DataIndexMapData class for example implementation.
+//! - <tt> auto %clear() -> void </tt>
+//! - <tt> auto %count() const -> acore::size_type </tt>
+//! - <tt> auto %count(acore::size_type element) const -> acore::size_type </tt>
+//! - <tt> auto %insert(acore::size_type element, acore::size_type key, acore::size_type value) -> void </tt>
+//! - <tt> auto %remove(acore::size_type element) -> void </tt>
+//! - <tt> auto %remove(acore::size_type element, acore::size_type key) -> void </tt>
+//! - <tt> auto shrink_to_fit() -> void </tt>
+//! - <tt> auto %value(acore::size_type element, acore::size_type key) const -> acore::size_type </tt>
+//! - <tt> auto %values(acore::size_type element) const -> acore::std::vector<#acore::DataIndexMapElement> </tt>
 template<typename Data>
 class DataIndexMapBase
 {
 public:
     //! Clears all the data from this object.
-    constexpr void clear()
+    constexpr auto clear() -> void
     {
         mData.clear();
     }
 
     //! Returns the \c number of the \c element-key-value
     //! data stored in the object.
-    [[nodiscard]] constexpr size_type count() const noexcept
+    [[nodiscard]] constexpr auto count() const noexcept -> size_type
     {
         return mData.count();
     }
 
     //! Returns the \c number of the \c key-value
     //! pairs associated with the \a element.
-    [[nodiscard]] constexpr size_type count(size_type element) const
+    [[nodiscard]] constexpr auto count(size_type element) const -> size_type
     {
-        return mData.count(element);
+        validateElement(element);
+
+        if (isValid(element))
+        {
+            return mData.count(element);
+        }
+
+        return 0;
     }
 
     //! Inserts or updates the \c element-key-value
     //! data. If there already is a value associated
     //! with the \c element-key pair it is updated.
-    constexpr void insert(size_type element, size_type key, size_type value)
+    constexpr auto insert(size_type element, size_type key, size_type value) -> void
     {
+        validateElement(element);
         mData.insert(element, key, value);
     }
 
     //! Returns \c true if there is no \c element-key-value
     //! data stored in the map.
-    [[nodiscard]] constexpr bool isEmpty() const noexcept
+    [[nodiscard]] constexpr auto isEmpty() const noexcept -> bool
     {
         return count() == 0;
     }
@@ -104,33 +102,63 @@ public:
     //! Returns \c list of keys associated with the
     //! \a element or empty list if the \a element
     //! has not data stored in the map.
-    [[nodiscard]] std::vector<size_type> keys(size_type element) const
+    [[nodiscard]] auto keys(size_type element) const -> std::vector<size_type>
     {
-        const std::vector<DataIndexMapElement> data = values(element);
-        std::vector<size_type> keys;
-        keys.reserve(data.size());
+        validateElement(element);
 
-        for (const DataIndexMapElement &e : data)
+        if (isValid(element))
         {
-            keys.push_back(e.key);
+            const std::vector<DataIndexMapElement> data = values(element);
+            std::vector<size_type> keys;
+            keys.reserve(data.size());
+
+            for (const DataIndexMapElement &e : data)
+            {
+                keys.push_back(e.key);
+            }
+
+            return keys;
         }
 
-        return keys;
+        return {};
     }
 
     //! Removes all data associated  with the \a element.
-    constexpr void remove(size_type element)
+    constexpr auto remove(size_type element) -> void
     {
-        mData.remove(element);
+        validateElement(element);
+
+        if (isValid(element))
+        {
+            mData.remove(element);
+        }
     }
 
     //! Removes the single value associated with
     //! the \c element-key pair from the map.
-    constexpr void remove(size_type element, size_type key)
+    constexpr auto remove(size_type element, size_type key) -> void
     {
-        mData.remove(element, key);
+        validateElement(element);
+
+        if (isValid(element))
+        {
+            mData.remove(element, key);
+        }
     }
 
+    //! Releases all elements that no longer
+    //! have nay associated values. Call this
+    //! function to free up resources after
+    //! removing the elements at end of the
+    //! used range.
+    auto shrink_to_fit() -> void
+    {
+        mData.shrink_to_fit();
+    }
+
+    //! Returns the number of elements in the map.
+    //! Useful for iteration as it serves as the upper
+    //! bound to the elements' values.
     [[nodiscard]] constexpr auto size() const noexcept -> size_type
     {
         return mData.size();
@@ -139,7 +167,7 @@ public:
     //! Returns the mutable pointer to the instance
     //! of the \c Data template argument used as
     //! the internal storage.
-    [[nodiscard]] constexpr Data *storage() noexcept
+    [[nodiscard]] constexpr auto storage() noexcept -> Data *
     {
         return &mData;
     }
@@ -147,7 +175,7 @@ public:
     //! Returns the immutable pointer to the instance
     //! of the \c Data template argument used as
     //! the internal storage.
-    [[nodiscard]] constexpr const Data *storage() const noexcept
+    [[nodiscard]] constexpr auto storage() const noexcept -> const Data *
     {
         return &mData;
     }
@@ -155,16 +183,31 @@ public:
     //! Returns the \c value associated with the
     //! \c element-key pair or the acore::INVALID_INDEX
     //! if the \c element-key pair does not exist.
-    [[nodiscard]] constexpr size_type value(size_type element, size_type key) const
+    [[nodiscard]] constexpr auto value(size_type element, size_type key) const -> size_type
     {
-        return mData.value(element, key);
+        validateElement(element);
+
+        if (isValid(element))
+        {
+            return mData.value(element, key);
+        }
+
+        return INVALID_INDEX;
     }
 
     //! Returns the list of the DataIndexMapElement
     //! associated with the \a element.
-    [[nodiscard]] std::vector<DataIndexMapElement> values(size_type element) const
+    [[nodiscard]] auto values(size_type element) const -> std::vector<DataIndexMapElement>
     {
-        return mData.values(element);
+        validateElement(element);
+
+        if (isValid(element))
+        {
+
+            return mData.values(element);
+        }
+
+        return {};
     }
 
 protected:
@@ -183,6 +226,11 @@ private:
         {
             throw Exception{} << "The 'element' must not be negative ('" << element << "' given)";
         }
+    }
+
+    [[nodiscard]] constexpr auto isValid(size_type element) const noexcept -> bool
+    {
+        return element < size();
     }
 
     Data mData;
