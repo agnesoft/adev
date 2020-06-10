@@ -24,121 +24,123 @@ namespace acore
 class DataIndexMapData
 {
 public:
-    using const_iterator = std::unordered_multimap<size_type, DataIndexMapElement>::const_iterator;
-
-    [[nodiscard]] const_iterator begin() const
-    {
-        return mData.begin();
-    }
-
     void clear()
     {
         mData.clear();
+        mCount = 0;
     }
 
-    [[nodiscard]] size_type count() const noexcept
+    [[nodiscard]] constexpr size_type count() const noexcept
     {
-        return mData.size();
+        return mCount;
     }
 
     [[nodiscard]] size_type count(size_type element) const
     {
-        return mData.count(element);
-    }
-
-    [[nodiscard]] const_iterator end() const
-    {
-        return mData.end();
-    }
-
-    [[nodiscard]] const_iterator find(size_type element, size_type key) const
-    {
-        const auto range = mData.equal_range(element);
-
-        for (auto it = range.first; it != range.second; ++it)
+        if (isValid(element))
         {
-            if (it->second.key == key)
-            {
-                return it;
-            }
+            return static_cast<size_type>(mData[element].size());
         }
 
-        return end();
+        return 0;
     }
 
     void insert(size_type element, size_type key, size_type value)
     {
-        mData.insert(std::pair<size_type, DataIndexMapElement>{element, {key, value}});
+        if (element >= static_cast<size_type>(mData.size()))
+        {
+            mData.resize(element + 1);
+        }
+
+        const auto it = find(element, key);
+
+        if (it != mData[element].end())
+        {
+            it->value = value;
+        }
+        else
+        {
+            mData[element].emplace_back(DataIndexMapElement{key, value});
+            ++mCount;
+        }
     }
 
     void remove(size_type element)
     {
-        mData.erase(element);
+        if (isValid(element))
+        {
+            mCount -= mData[element].size();
+            mData[element].clear();
+        }
     }
 
     void remove(size_type element, size_type key)
     {
-        const auto it = find(element, key);
-
-        if (it != end())
+        if (isValid(element))
         {
-            mData.erase(it);
+            const auto it = find(element, key);
+
+            if (it != mData[element].end())
+            {
+                --mCount;
+                mData[element].erase(it);
+            }
         }
     }
 
-    void setValue(size_type element, size_type key, size_type value)
+    [[nodiscard]] auto size() const noexcept
     {
-        auto it = find(element, key);
-
-        if (it != end())
-        {
-            it->second.value = value;
-        }
+        return mData.size();
     }
 
     [[nodiscard]] size_type value(size_type element, size_type key) const
     {
-        const auto it = find(element, key);
-
-        if (it != end())
+        if (isValid(element))
         {
-            return it->second.value;
+            for (const DataIndexMapElement &e : mData[element])
+            {
+                if (e.key == key)
+                {
+                    return e.value;
+                }
+            }
         }
 
         return INVALID_INDEX;
     }
 
-    [[nodiscard]] std::vector<DataIndexMapElement> values(size_type element) const
+    [[nodiscard]] auto values(size_type element) const -> std::vector<DataIndexMapElement>
     {
-        const auto range = mData.equal_range(element);
-        std::vector<DataIndexMapElement> vals;
-        vals.reserve(std::distance(range.first, range.second));
-
-        for (auto it = range.first; it != range.second; ++it)
+        if (isValid(element))
         {
-            vals.push_back(it->second);
+            return mData[element];
         }
 
-        return vals;
+        return {};
     }
 
 private:
-    [[nodiscard]] std::unordered_multimap<size_type, DataIndexMapElement>::iterator find(size_type element, size_type key)
+    [[nodiscard]] auto isValid(size_type element) const noexcept -> bool
     {
-        const auto range = mData.equal_range(element);
-
-        for (auto it = range.first; it != range.second; ++it)
-        {
-            if (it->second.key == key)
-            {
-                return it;
-            }
-        }
-
-        return mData.end();
+        return element < static_cast<size_type>(mData.size());
     }
 
-    std::unordered_multimap<size_type, DataIndexMapElement> mData;
+    [[nodiscard]] auto find(size_type element, size_type key) -> std::vector<DataIndexMapElement>::iterator
+    {
+        return std::find_if(mData[element].begin(), mData[element].end(), [&](const DataIndexMapElement &e) {
+            return e.key == key;
+        });
+    }
+
+    [[nodiscard]] auto find(size_type element, size_type key) const -> std::vector<DataIndexMapElement>::const_iterator
+    {
+        return std::find_if(mData[element].begin(), mData[element].end(), [&](const DataIndexMapElement &e) {
+            return e.key == key;
+        });
+    }
+
+    std::vector<std::vector<DataIndexMapElement>> mData;
+    size_type mCount = 0;
 };
 }
 

@@ -16,6 +16,7 @@
 #define ACORE_ACOREDATAINDEXMAPBASE_HPP
 
 #include "DataIndexMapElement.hpp"
+#include "Exception.hpp"
 
 #include <vector>
 
@@ -65,42 +66,10 @@ template<typename Data>
 class DataIndexMapBase
 {
 public:
-    //! Immutable iterator type. When dereferenced
-    //! its \c key member holds the element id and
-    //! \c value member holds the associated DataIndexMapElement
-    using const_iterator = typename Data::const_iterator;
-
-    //! Returns the #const_iterator pointing to
-    //! the first \c element-key-value stored or end()
-    //! if the object is empty.
-    [[nodiscard]] constexpr const_iterator begin() const
-    {
-        return mData.begin();
-    }
-
-    //! Same as begin().
-    [[nodiscard]] constexpr const_iterator cbegin() const
-    {
-        return begin();
-    }
-
-    //! Same as end().
-    [[nodiscard]] constexpr const_iterator cend() const
-    {
-        return end();
-    }
-
     //! Clears all the data from this object.
     constexpr void clear()
     {
         mData.clear();
-    }
-
-    //! Returns \c true if the map contains a value
-    //! associated with the \c element-key pair.
-    [[nodiscard]] constexpr bool contains(size_type element, size_type key) const
-    {
-        return mData.find(element, key) != mData.end();
     }
 
     //! Returns the \c number of the \c element-key-value
@@ -117,33 +86,12 @@ public:
         return mData.count(element);
     }
 
-    //! Returns an invalid #const_iterator.
-    [[nodiscard]] constexpr const_iterator end() const
-    {
-        return mData.end();
-    }
-
-    //! Searches the data for the \c element-key
-    //! pair and returns the #const_iterator pointing
-    //! to it if found or end() otherwise.
-    [[nodiscard]] constexpr const_iterator find(size_type element, size_type key) const
-    {
-        return mData.find(element, key);
-    }
-
     //! Inserts or updates the \c element-key-value
     //! data. If there already is a value associated
     //! with the \c element-key pair it is updated.
     constexpr void insert(size_type element, size_type key, size_type value)
     {
-        if (contains(element, key))
-        {
-            mData.setValue(element, key, value);
-        }
-        else
-        {
-            mData.insert(element, key, value);
-        }
+        mData.insert(element, key, value);
     }
 
     //! Returns \c true if there is no \c element-key-value
@@ -158,11 +106,11 @@ public:
     //! has not data stored in the map.
     [[nodiscard]] std::vector<size_type> keys(size_type element) const
     {
-        std::vector<DataIndexMapElement> data = values(element);
+        const std::vector<DataIndexMapElement> data = values(element);
         std::vector<size_type> keys;
         keys.reserve(data.size());
 
-        for (DataIndexMapElement e : data)
+        for (const DataIndexMapElement &e : data)
         {
             keys.push_back(e.key);
         }
@@ -181,6 +129,11 @@ public:
     constexpr void remove(size_type element, size_type key)
     {
         mData.remove(element, key);
+    }
+
+    [[nodiscard]] constexpr auto size() const noexcept -> size_type
+    {
+        return mData.size();
     }
 
     //! Returns the mutable pointer to the instance
@@ -214,12 +167,6 @@ public:
         return mData.values(element);
     }
 
-    //! Same as values().
-    [[nodiscard]] std::vector<DataIndexMapElement> operator[](size_type element) const
-    {
-        return values(element);
-    }
-
 protected:
     //! Constructs the map and passes the \a args
     //! to the constructor of the internal \c Data.
@@ -230,6 +177,14 @@ protected:
     }
 
 private:
+    static auto validateElement(size_type element) -> void
+    {
+        if (element < 0)
+        {
+            throw Exception{} << "The 'element' must not be negative ('" << element << "' given)";
+        }
+    }
+
     Data mData;
 };
 }

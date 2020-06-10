@@ -109,7 +109,8 @@ target_link_libraries(ACoreTest ACore Catch2)
 # ABENCHMARKS #
 ###############
 #ABenchmarks
-add_executable(ABenchmarks projects/ABenchmarks/VariantBenchmark.cpp)
+add_executable(ABenchmarks projects/ABenchmarks/DataIndexMapBenchmark.cpp
+                           projects/ABenchmarks/VariantBenchmark.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
 endif()

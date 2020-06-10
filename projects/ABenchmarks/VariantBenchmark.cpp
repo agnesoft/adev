@@ -1,12 +1,3 @@
-#include "pch.hpp"
-
-#define CATCH_CONFIG_ENABLE_BENCHMARKING
-#include <catch2/catch.hpp>
-
-#include <any>
-#include <unordered_map>
-#include <variant>
-
 // Copyright 2020 Michael Vlach
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+#include "pch.hpp"
+
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
+#include <catch2/catch.hpp>
+
+#include <any>
+#include <unordered_map>
+#include <variant>
 
 namespace variantbenchmark
 {
