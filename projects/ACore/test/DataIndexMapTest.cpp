@@ -347,7 +347,7 @@ TEST_CASE("shrink_to_fit() -> void [acore::DataIndexMap")
     {
         const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         acore::DataIndexMap map{data};
-        map.remove(10);
+        map.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         map.shrink_to_fit();
         REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {5, {6, 7}}, {1, {4, 9}}, {1, {0, 2}}});
     }
@@ -387,14 +387,14 @@ TEST_CASE("size() const noexcept -> acore::size_type [acore::DataIndexMap")
         map.insert(1, 2, 3);
         map.insert(3, 1, 2);
         map.insert(5, 4, 4); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        map.remove(5);
+        map.remove(5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(map.size() == 6);
     }
 
     SECTION("[shrinked]")
     {
         acore::DataIndexMap map{{{1, {2, 3}}, {5, {6, 7}}, {10, {4, 3}}, {1, {4, 9}}, {1, {0, 2}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        map.remove(10);
+        map.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         map.shrink_to_fit();
         REQUIRE(map.size() == 6);
     }
