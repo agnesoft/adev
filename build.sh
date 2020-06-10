@@ -436,14 +436,13 @@ function benchmarks () {
 
     for benchmark in $EXECUTABLES
     do
-        LOG=$($benchmark)
+        $benchmark
         RETURN=$?
-        
+
         if test $RETURN -ne 0; then
             echo ""
             echo ""
             printError "ERROR: $benchmark failed. It is expected that the first benchmark of every case is the fastest (have the most runs). See the following log for details:"
-            echo "$LOG"
             BENCHMARKS_RESULT=1
         else
             printOK "$benchmark OK"
