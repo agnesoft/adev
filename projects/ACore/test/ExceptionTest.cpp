@@ -20,7 +20,9 @@ namespace exceptiontest
 {
 TEST_CASE("[acore::Exception]")
 {
+#if defined(MSVC) && !defined(DEBUG)
     REQUIRE(std::is_standard_layout_v<acore::Exception>);
+#endif
     REQUIRE(std::is_default_constructible_v<acore::Exception>);
     REQUIRE(std::is_copy_constructible_v<acore::Exception>);
     REQUIRE(std::is_nothrow_move_constructible_v<acore::Exception>);
