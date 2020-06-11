@@ -15,6 +15,7 @@
 #ifndef ACORE_ACORE_HPP
 #define ACORE_ACORE_HPP
 
+#include "ACore/DataIndexMap.hpp"
 #include "ACore/DataStream.hpp"
 #include "ACore/Endianness.hpp"
 #include "ACore/Exception.hpp"

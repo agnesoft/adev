@@ -60,6 +60,10 @@ target_include_directories(tiny-process-library PUBLIC projects)
 #ACore Static Library
 add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/ACoreModule.hpp
+                         projects/ACore/include/ACore/DataIndexMap.hpp
+                         projects/ACore/include/ACore/DataIndexMapBase.hpp
+                         projects/ACore/include/ACore/DataIndexMapData.hpp
+                         projects/ACore/include/ACore/DataIndexMapElement.hpp
                          projects/ACore/include/ACore/DataStream.hpp
                          projects/ACore/include/ACore/DataStreamBase.hpp
                          projects/ACore/include/ACore/DataStreamBuffer.hpp
@@ -73,6 +77,7 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
                          projects/ACore/Endianness.cpp
+                         projects/ACore/DataIndexMap.cpp
                          projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
 if(MSVC)
@@ -85,7 +90,9 @@ target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
 
 #ACoreTest
-add_executable(ACoreTest projects/ACore/test/DataStreamTest.cpp
+add_executable(ACoreTest projects/ACore/test/DataIndexMapElementTest.cpp
+                         projects/ACore/test/DataIndexMapTest.cpp
+                         projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
@@ -104,7 +111,8 @@ target_link_libraries(ACoreTest ACore Catch2)
 # ABENCHMARKS #
 ###############
 #ABenchmarks
-add_executable(ABenchmarks projects/ABenchmarks/VariantBenchmark.cpp)
+add_executable(ABenchmarks projects/ABenchmarks/DataIndexMapBenchmark.cpp
+                           projects/ABenchmarks/VariantBenchmark.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
 endif()
