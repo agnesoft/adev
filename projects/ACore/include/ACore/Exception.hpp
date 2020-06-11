@@ -17,8 +17,9 @@
 
 #include "ACoreModule.hpp"
 
-#include <memory>
 #include <sstream>
+#include <string>
+#include <utility>
 
 namespace acore
 {

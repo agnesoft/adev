@@ -14,6 +14,7 @@
 
 #include "Endianness.hpp"
 
+#include <cstdint>
 #include <cstring>
 
 namespace acore

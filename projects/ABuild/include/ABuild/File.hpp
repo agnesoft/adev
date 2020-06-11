@@ -16,6 +16,7 @@
 #define ABUILD_FILE_HPP
 
 #include <filesystem>
+#include <string>
 
 namespace abuild
 {

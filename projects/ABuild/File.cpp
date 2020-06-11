@@ -14,8 +14,10 @@
 
 #include "File.hpp"
 
+#include <filesystem>
 #include <fstream>
-#include <functional>
+#include <string>
+#include <utility>
 
 namespace abuild
 {

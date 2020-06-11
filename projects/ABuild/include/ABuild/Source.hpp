@@ -17,6 +17,7 @@
 
 #include "File.hpp"
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <vector>

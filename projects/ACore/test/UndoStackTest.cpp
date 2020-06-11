@@ -16,6 +16,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <type_traits>
+
 namespace undostacktest
 {
 struct CommandCounter
