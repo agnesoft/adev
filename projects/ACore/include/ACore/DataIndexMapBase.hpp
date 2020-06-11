@@ -15,6 +15,7 @@
 #ifndef ACORE_ACOREDATAINDEXMAPBASE_HPP
 #define ACORE_ACOREDATAINDEXMAPBASE_HPP
 
+#include "ACoreModule.hpp"
 #include "DataIndexMapElement.hpp"
 #include "Exception.hpp"
 

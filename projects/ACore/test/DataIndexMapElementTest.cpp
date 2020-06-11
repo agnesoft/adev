@@ -16,6 +16,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <type_traits>
+
 namespace dataindexmapelementtest
 {
 TEST_CASE("[acore::DataIndexMapElement]")
@@ -33,14 +35,14 @@ TEST_CASE("DataIndexMapElement [acore::DataIndexMapElement]")
 {
     SECTION("[default]")
     {
-        const acore::DataIndexMapElement element;
+        constexpr acore::DataIndexMapElement element;
         REQUIRE(element.key == acore::INVALID_INDEX);
         REQUIRE(element.value == acore::INVALID_INDEX);
     }
 
     SECTION("[data]")
     {
-        const acore::DataIndexMapElement element{10, 200}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement element{10, 200}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(element.key == 10);
         REQUIRE(element.value == 200);
     }
@@ -51,29 +53,29 @@ TEST_CASE("operator<(DataIndexMapElement left, DataIndexMapElement right) -> boo
     SECTION("[default]")
     {
         REQUIRE(noexcept(acore::DataIndexMapElement{} < acore::DataIndexMapElement{}));
-        acore::DataIndexMapElement left;
-        acore::DataIndexMapElement right;
+        constexpr acore::DataIndexMapElement left;
+        constexpr acore::DataIndexMapElement right;
         REQUIRE_FALSE(left < right);
     }
 
     SECTION("[less]")
     {
-        acore::DataIndexMapElement left{1, 1};
-        acore::DataIndexMapElement right{1, 2};
+        constexpr acore::DataIndexMapElement left{1, 1};
+        constexpr acore::DataIndexMapElement right{1, 2};
         REQUIRE(left < right);
     }
 
     SECTION("[equal]")
     {
-        acore::DataIndexMapElement left{1, 1};
-        acore::DataIndexMapElement right{1, 1};
+        constexpr acore::DataIndexMapElement left{1, 1};
+        constexpr acore::DataIndexMapElement right{1, 1};
         REQUIRE_FALSE(left < right);
     }
 
     SECTION("[greater]")
     {
-        acore::DataIndexMapElement left{2, 1};
-        acore::DataIndexMapElement right{1, 1};
+        constexpr acore::DataIndexMapElement left{2, 1};
+        constexpr acore::DataIndexMapElement right{1, 1};
         REQUIRE_FALSE(left < right);
     }
 }
@@ -83,22 +85,22 @@ TEST_CASE("operator==(DataIndexMapElement left, DataIndexMapElement right) -> bo
     SECTION("[default]")
     {
         REQUIRE(noexcept(acore::DataIndexMapElement{} == acore::DataIndexMapElement{}));
-        acore::DataIndexMapElement left;
-        acore::DataIndexMapElement right;
+        constexpr const acore::DataIndexMapElement left;
+        constexpr const acore::DataIndexMapElement right;
         REQUIRE(left == right);
     }
 
     SECTION("[equal]")
     {
-        acore::DataIndexMapElement left{10, 100}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        acore::DataIndexMapElement right{10, 100}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement left{10, 100}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement right{10, 100}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(left == right);
     }
 
     SECTION("[different]")
     {
-        acore::DataIndexMapElement left{12, -5}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        acore::DataIndexMapElement right{10, -7}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement left{12, -5}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement right{10, -7}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE_FALSE(left == right);
     }
 }
@@ -108,22 +110,22 @@ TEST_CASE("operator!=(DataIndexMapElement left, DataIndexMapElement right) -> bo
     SECTION("[default]")
     {
         REQUIRE(noexcept(acore::DataIndexMapElement{} == acore::DataIndexMapElement{}));
-        acore::DataIndexMapElement left;
-        acore::DataIndexMapElement right;
+        constexpr acore::DataIndexMapElement left;
+        constexpr acore::DataIndexMapElement right;
         REQUIRE_FALSE(left != right);
     }
 
     SECTION("[equal]")
     {
-        acore::DataIndexMapElement left{5, 222}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        acore::DataIndexMapElement right{5, 222}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement left{5, 222}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement right{5, 222}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE_FALSE(left != right);
     }
 
     SECTION("[different]")
     {
-        acore::DataIndexMapElement left{-67, 50}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        acore::DataIndexMapElement right{-67, 51}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement left{-67, 50}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        constexpr acore::DataIndexMapElement right{-67, 51}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(left != right);
     }
 }

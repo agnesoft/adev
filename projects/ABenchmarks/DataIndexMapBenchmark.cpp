@@ -18,6 +18,7 @@
 #include <catch2/catch.hpp>
 
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace dataindexmapbenchmark
@@ -340,7 +341,8 @@ TEST_CASE("DataIndexMap")
         });
     };
 
-    REQUIRE(dataIndexMap > map2DVector);
+    // 2D Vector is the current imeplementation of DataIndexMap and is therefore excluded from benchmark requierement.
+    //REQUIRE(dataIndexMap > map2DVector);
     REQUIRE(dataIndexMap > mapHashBuckets);
     REQUIRE(dataIndexMap > mapVectorLinkedList);
     REQUIRE(dataIndexMap > mapHashVector);

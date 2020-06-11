@@ -16,11 +16,17 @@
 
 #include <catch2/catch.hpp>
 
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 namespace acore
 {
 [[nodiscard]] auto operator==(const DataIndexMap &map, const std::vector<std::pair<size_type, DataIndexMapElement>> &values) -> bool
 {
-    if (values.size() != static_cast<size_t>(map.count()))
+    if (values.size() != static_cast<std::size_t>(map.count()))
     {
         return false;
     }

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "ACoreModule.hpp"
 #include "DataIndexMapBase.hpp"
 #include "DataIndexMapData.hpp"
 
+#include <utility>
 #include <vector>
 
 namespace acore
