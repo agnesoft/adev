@@ -16,6 +16,9 @@
 
 #include <catch2/catch.hpp>
 
+#include <string>
+#include <type_traits>
+
 namespace exceptiontest
 {
 TEST_CASE("[acore::Exception]")

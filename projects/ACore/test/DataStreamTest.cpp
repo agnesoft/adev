@@ -16,6 +16,11 @@
 
 #include <catch2/catch.hpp>
 
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 namespace datastreamtest
 {
 TEST_CASE("[acore::DataStream]")
@@ -34,7 +39,7 @@ TEST_CASE("DataStream() [acore::DataStream]")
     REQUIRE(stream.buffer().data() == std::vector<char>{}); //NOLINT(readability-container-size-empty)
 }
 
-TEST_CASE("DataStream(Vector<char> data) [acore::DataStream]")
+TEST_CASE("DataStream(std::vector<char> data) [acore::DataStream]")
 {
     acore::DataStream stream{{'a', 'b', 'c'}};
     REQUIRE(stream.buffer().data() == std::vector<char>{'a', 'b', 'c'});

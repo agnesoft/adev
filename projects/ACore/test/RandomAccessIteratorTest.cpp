@@ -17,6 +17,9 @@
 #include <catch2/catch.hpp>
 
 #include <sstream>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace randomaccessiteratortest
 {

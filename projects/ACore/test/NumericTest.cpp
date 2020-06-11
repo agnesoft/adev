@@ -16,6 +16,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <cstdint>
+
 namespace numerictest
 {
 TEST_CASE("nextPowerOfTwo(size_type value) -> size_type [ACore]")

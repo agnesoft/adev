@@ -15,8 +15,13 @@
 #ifndef ACORE_UNDOSTACK_HPP
 #define ACORE_UNDOSTACK_HPP
 
+#include "ACoreModule.hpp"
+
 #include <memory>
+#include <type_traits>
+#include <utility>
 #include <variant>
+#include <vector>
 
 namespace acore
 {
@@ -124,7 +129,7 @@ public:
     template<typename T>
     constexpr auto push(T &&command) -> void
     {
-        mCommands.resize(static_cast<size_t>(mIndex + 1));
+        mCommands.resize(static_cast<std::size_t>(mIndex + 1));
         mCommands.emplace_back(std::forward<T>(command));
         doRedo();
     }

@@ -15,13 +15,15 @@
 #ifndef ACORE_DATASTREAMBASE_HPP
 #define ACORE_DATASTREAMBASE_HPP
 
+#include "ACoreModule.hpp"
 #include "Endianness.hpp"
 #include "Exception.hpp"
 
 #include <array>
+#include <cstdint>
 #include <cstring>
-#include <exception>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace acore
@@ -174,7 +176,7 @@ auto load(DataStreamBase<Buffer> &stream, T &value) -> DataStreamBase<Buffer> &
 {
     std::array<char, sizeof(T)> bytes{};
     stream.read(bytes.data(), static_cast<size_type>(bytes.size()));
-    memcpy(&value, bytes.data(), bytes.size());
+    std::memcpy(&value, bytes.data(), bytes.size());
 
     if constexpr (sizeof(T) > 1)
     {
@@ -202,7 +204,7 @@ auto save(DataStreamBase<Buffer> &stream, T value) -> DataStreamBase<Buffer> &
     }
 
     std::array<char, sizeof(T)> bytes{};
-    memcpy(bytes.data(), &value, bytes.size());
+    std::memcpy(bytes.data(), &value, bytes.size());
     stream.write(bytes.data(), static_cast<size_type>(bytes.size()));
     return stream;
 }
@@ -404,7 +406,7 @@ template<typename Buffer>
 auto operator<<(DataStreamBase<Buffer> &stream, float value) -> DataStreamBase<Buffer> &
 {
     std::array<char, sizeof(value)> bytes{};
-    memcpy(bytes.data(), &value, bytes.size());
+    std::memcpy(bytes.data(), &value, bytes.size());
     stream.write(bytes.data(), static_cast<size_type>(bytes.size()));
     return stream;
 }
@@ -420,7 +422,7 @@ auto operator>>(DataStreamBase<Buffer> &stream, float &value) -> DataStreamBase<
 {
     std::array<char, sizeof(value)> bytes{};
     stream.read(bytes.data(), static_cast<size_type>(bytes.size()));
-    memcpy(&value, bytes.data(), bytes.size());
+    std::memcpy(&value, bytes.data(), bytes.size());
     return stream;
 }
 
@@ -434,7 +436,7 @@ template<typename Buffer>
 auto operator<<(DataStreamBase<Buffer> &stream, double value) -> DataStreamBase<Buffer> &
 {
     std::array<char, sizeof(value)> bytes{};
-    memcpy(bytes.data(), &value, bytes.size());
+    std::memcpy(bytes.data(), &value, bytes.size());
     stream.write(bytes.data(), static_cast<size_type>(bytes.size()));
     return stream;
 }
@@ -450,7 +452,7 @@ auto operator>>(DataStreamBase<Buffer> &stream, double &value) -> DataStreamBase
 {
     std::array<char, sizeof(value)> bytes{};
     stream.read(bytes.data(), static_cast<size_type>(bytes.size()));
-    memcpy(&value, bytes.data(), bytes.size());
+    std::memcpy(&value, bytes.data(), bytes.size());
     return stream;
 }
 
