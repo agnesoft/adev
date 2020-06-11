@@ -16,6 +16,7 @@
 
 #include <catch2/catch.hpp>
 
+#include <cstdint>
 #include <cstring>
 
 namespace endiannesstest

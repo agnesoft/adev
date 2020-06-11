@@ -15,9 +15,11 @@
 #ifndef ACORE_DATASTREAMBUFFER_HPP
 #define ACORE_DATASTREAMBUFFER_HPP
 
+#include "ACoreModule.hpp"
 #include "Numeric.hpp"
 
 #include <cstring>
+#include <utility>
 #include <vector>
 
 namespace acore
@@ -45,7 +47,7 @@ public:
 
     auto read(size_type offset, char *buffer, size_type count) -> void
     {
-        memcpy(buffer, &mData[offset], static_cast<size_t>(count));
+        std::memcpy(buffer, &mData[offset], static_cast<std::size_t>(count));
     }
 
     auto resize(size_type size) -> void
@@ -61,7 +63,7 @@ public:
 
     auto write(size_type offset, const char *buffer, size_type count) -> void
     {
-        memcpy(&mData[offset], buffer, static_cast<size_t>(count));
+        std::memcpy(&mData[offset], buffer, static_cast<std::size_t>(count));
     }
 
 private:

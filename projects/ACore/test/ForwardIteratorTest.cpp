@@ -17,6 +17,9 @@
 #include <catch2/catch.hpp>
 
 #include <sstream>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace forwarditeratortest
 {
@@ -28,12 +31,12 @@ public:
 
     [[nodiscard]] auto referenceAt(acore::size_type index) -> int &
     {
-        return mData[static_cast<size_t>(index)];
+        return mData[static_cast<std::size_t>(index)];
     }
 
     [[nodiscard]] auto referenceAt(acore::size_type index) const -> int
     {
-        return mData[static_cast<size_t>(index)];
+        return mData[static_cast<std::size_t>(index)];
     }
 
     [[nodiscard]] auto nextIndex(acore::size_type index) const noexcept -> acore::size_type
@@ -65,6 +68,7 @@ struct StringMaker<forwarditeratortest::Iterable::iterator>
     {
         std::stringstream os;
         os << '{' << it.index() << ", ";
+
         if (it.iterable() != nullptr)
         {
             os << it.iterable();
@@ -73,6 +77,7 @@ struct StringMaker<forwarditeratortest::Iterable::iterator>
         {
             os << "nullptr";
         }
+
         os << '}';
         return os.str();
     }
@@ -85,6 +90,7 @@ struct StringMaker<forwarditeratortest::Iterable::const_iterator>
     {
         std::stringstream os;
         os << '{' << it.index() << ", ";
+
         if (it.iterable() != nullptr)
         {
             os << it.iterable();
@@ -93,6 +99,7 @@ struct StringMaker<forwarditeratortest::Iterable::const_iterator>
         {
             os << "nullptr";
         }
+
         os << '}';
         return os.str();
     }
@@ -101,6 +108,16 @@ struct StringMaker<forwarditeratortest::Iterable::const_iterator>
 
 namespace forwarditeratortest
 {
+TEMPLATE_TEST_CASE("[acore::ForwardIterator]", "", Iterable::iterator, Iterable::const_iterator)
+{
+    REQUIRE(std::is_nothrow_default_constructible_v<TestType>);
+    REQUIRE(std::is_nothrow_copy_constructible_v<TestType>);
+    REQUIRE(std::is_nothrow_move_constructible_v<TestType>);
+    REQUIRE(std::is_nothrow_copy_assignable_v<TestType>);
+    REQUIRE(std::is_nothrow_move_assignable_v<TestType>);
+    REQUIRE(std::is_nothrow_destructible_v<TestType>);
+}
+
 TEMPLATE_TEST_CASE("ForwardIterator() noexcept [acore::ForwardIterator]", "", Iterable::iterator, Iterable::const_iterator)
 {
     Iterable iterable;

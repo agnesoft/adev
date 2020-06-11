@@ -17,6 +17,11 @@
 #include <catch2/catch.hpp>
 
 #include <ABuild.hpp>
+#include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <string>
+#include <vector>
 
 namespace sourcetest
 {

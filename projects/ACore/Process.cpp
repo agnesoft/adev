@@ -17,6 +17,8 @@
 #include <tiny-process-library/process.hpp>
 
 #include <filesystem>
+#include <string>
+#include <utility>
 
 namespace acore
 {
@@ -61,10 +63,10 @@ auto Process::executeProcess() -> int
 {
     TinyProcessLib::Process process{command(),
                                     workingDirectory(),
-                                    [&](const char *output, size_t len) {
+                                    [&](const char *output, std::size_t len) {
                                         mOutput = std::string(output, len);
                                     },
-                                    [&](const char *error, size_t len) {
+                                    [&](const char *error, std::size_t len) {
                                         mError = std::string(error, len);
                                     }};
     return process.get_exit_status();

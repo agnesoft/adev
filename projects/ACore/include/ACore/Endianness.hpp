@@ -17,6 +17,8 @@
 
 #include "ACoreModule.hpp"
 
+#include <cstdint>
+
 namespace acore
 {
 //! \cond IMPLEMENTAION_DETAIL

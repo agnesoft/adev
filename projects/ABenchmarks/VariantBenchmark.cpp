@@ -18,7 +18,7 @@
 #include <catch2/catch.hpp>
 
 #include <any>
-#include <unordered_map>
+#include <string>
 #include <variant>
 
 namespace variantbenchmark
