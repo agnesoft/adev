@@ -67,6 +67,9 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/DataStream.hpp
                          projects/ACore/include/ACore/DataStreamBase.hpp
                          projects/ACore/include/ACore/DataStreamBuffer.hpp
+                         projects/ACore/include/ACore/Dictionary.hpp
+                         projects/ACore/include/ACore/DictionaryBase.hpp
+                         projects/ACore/include/ACore/DictionaryData.hpp
                          projects/ACore/include/ACore/Endianness.hpp
                          projects/ACore/include/ACore/Exception.hpp
                          projects/ACore/include/ACore/ForwardIterator.hpp
@@ -78,6 +81,7 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/Variant.hpp
                          projects/ACore/Endianness.cpp
                          projects/ACore/DataIndexMap.cpp
+                         projects/ACore/DictionaryData.cpp
                          projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
 if(MSVC)
@@ -93,6 +97,7 @@ target_include_directories(ACore PUBLIC projects/ACore/include)
 add_executable(ACoreTest projects/ACore/test/DataIndexMapElementTest.cpp
                          projects/ACore/test/DataIndexMapTest.cpp
                          projects/ACore/test/DataStreamTest.cpp
+                         projects/ACore/test/DictionaryTest.cpp
                          projects/ACore/test/EndiannessTest.cpp
                          projects/ACore/test/ExceptionTest.cpp
                          projects/ACore/test/ForwardIteratorTest.cpp
@@ -112,6 +117,7 @@ target_link_libraries(ACoreTest ACore Catch2)
 ###############
 #ABenchmarks
 add_executable(ABenchmarks projects/ABenchmarks/DataIndexMapBenchmark.cpp
+                           projects/ABenchmarks/DictionaryBenchmark.cpp
                            projects/ABenchmarks/VariantBenchmark.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
