@@ -53,7 +53,7 @@ public:
 
 private:
     template<typename T, typename... Args>
-    void insertValues(const T &value, Args... values)
+    auto insertValues(const T &value, Args... values) -> void
     {
         this->insert(value);
 

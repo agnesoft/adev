@@ -16,6 +16,12 @@
 
 #include <catch2/catch.hpp>
 
+#include <algorithm>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 namespace dictionarytest
 {
 class DuplicateValue
@@ -28,25 +34,25 @@ public:
     {
     }
 
-    [[nodiscard]] bool operator==(const DuplicateValue &right) const noexcept
+    [[nodiscard]] auto operator==(const DuplicateValue &right) const noexcept -> bool
     {
         return mValue == right.mValue;
     }
 
-    [[nodiscard]] bool operator<(const DuplicateValue &right) const noexcept
+    [[nodiscard]] auto operator<(const DuplicateValue &right) const noexcept -> bool
     {
         return mValue < right.mValue;
     }
 
 private:
     template<typename Buffer>
-    friend acore::DataStreamBase<Buffer> &operator<<(acore::DataStreamBase<Buffer> &stream, const DuplicateValue &value)
+    friend auto operator<<(acore::DataStreamBase<Buffer> &stream, const DuplicateValue &value) -> acore::DataStreamBase<Buffer> &
     {
         return stream << value.mValue;
     }
 
     template<typename Buffer>
-    friend acore::DataStreamBase<Buffer> &operator>>(acore::DataStreamBase<Buffer> &stream, DuplicateValue &value)
+    friend auto operator>>(acore::DataStreamBase<Buffer> &stream, DuplicateValue &value) -> acore::DataStreamBase<Buffer> &
     {
         return stream >> value.mValue;
     }
@@ -64,7 +70,7 @@ struct hash<dictionarytest::DuplicateValue>
     using argument_type = dictionarytest::DuplicateValue;
     using result_type = std::size_t;
 
-    result_type operator()([[maybe_unused]] const argument_type &value) const noexcept
+    [[nodiscard]] auto operator()([[maybe_unused]] const argument_type &value) const noexcept -> result_type
     {
         return 1;
     }
@@ -73,7 +79,7 @@ struct hash<dictionarytest::DuplicateValue>
 
 namespace acore
 {
-[[nodiscard]] bool operator==(const Dictionary &dictionary, const std::vector<Variant> &values)
+[[nodiscard]] auto operator==(const Dictionary &dictionary, const std::vector<Variant> &values) -> bool
 {
     return std::equal(dictionary.begin(), dictionary.end(), values.begin());
 }
@@ -85,7 +91,6 @@ TEST_CASE("[acore::Dictionary]")
 {
     REQUIRE(std::is_default_constructible_v<acore::Dictionary>);
     REQUIRE(std::is_copy_constructible_v<acore::Dictionary>);
-    //REQUIRE(std::is_nothrow_move_constructible_v<acore::Dictionary>);
     REQUIRE(std::is_copy_assignable_v<acore::Dictionary>);
     REQUIRE(std::is_nothrow_move_assignable_v<acore::Dictionary>);
     REQUIRE(std::is_nothrow_destructible_v<acore::Dictionary>);
@@ -100,7 +105,7 @@ TEST_CASE("Dictionary() [acore::Dictionary]")
 TEST_CASE("Dictionary(Args... values) [acore::Dictionary]")
 {
     const acore::Dictionary dictionary{std::string{"Hello"},
-                                       std::vector<int>{1, 2, 3, 4, 5},
+                                       std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                        std::string{"Hello"},
                                        std::string{"World"},
                                        std::vector<char>{'a', 'b'}};
@@ -110,18 +115,18 @@ TEST_CASE("Dictionary(Args... values) [acore::Dictionary]")
 TEST_CASE("Dictionary(const Dictionary &other) [acore::Dictionary]")
 {
     const acore::Dictionary dictionary{std::string{"Hello"},
-                                       std::vector<int>{1, 2, 3, 4, 5},
+                                       std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                        std::string{"Hello"},
                                        std::string{"World"},
                                        std::vector<char>{'a', 'b'}};
-    const acore::Dictionary other{dictionary};
+    const acore::Dictionary other{dictionary}; //NOLINT(performance-unnecessary-copy-initialization)
     REQUIRE(other == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
 }
 
 TEST_CASE("Dictionary(Dictionary &&other) [acore::Dictionary]")
 {
     acore::Dictionary dictionary{std::string{"Hello"},
-                                 std::vector<int>{1, 2, 3, 4, 5},
+                                 std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                  std::string{"Hello"},
                                  std::string{"World"},
                                  std::vector<char>{'a', 'b'}};
@@ -141,7 +146,7 @@ TEST_CASE("begin() const noexcept -> const_iterator [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -162,7 +167,7 @@ TEST_CASE("clear() -> void [acore::Dictionary]")
 
     SECTION("[data]")
     {
-        acore::Dictionary dictionary{std::vector<int>{5, 7, 9}};
+        acore::Dictionary dictionary{std::vector<int>{5, 7, 9}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         dictionary.clear();
         REQUIRE(dictionary == std::vector<acore::Variant>{});
     }
@@ -209,7 +214,7 @@ TEST_CASE("containsValue(const T &value) const -> bool [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -250,7 +255,7 @@ TEST_CASE("count() const noexcept -> size_type [acore::Dictionary]")
     SECTION("[data]")
     {
         const acore::Dictionary dictionary{std::string{"Hello"},
-                                           std::vector<int>{1, 2, 3, 4, 5},
+                                           std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                            std::string{"Hello"},
                                            std::string{"World"},
                                            std::vector<char>{'a', 'b'}};
@@ -270,7 +275,7 @@ TEST_CASE("count(size_type index) const -> size_type [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -322,7 +327,7 @@ TEST_CASE("index(const T &value) const -> size_type [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -346,7 +351,7 @@ TEST_CASE("index(const T &value) const -> size_type [acore::Dictionary]")
         SECTION("[trivial]")
         {
             acore::size_type expected{};
-            std::memcpy(&expected, "Hello", 5);
+            std::memcpy(&expected, "Hello", 5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(std::as_const(dictionary).index("Hello") == expected);
         }
     }
@@ -364,7 +369,7 @@ TEST_CASE("insert(const T &value) -> size_type [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -399,7 +404,7 @@ TEST_CASE("insert(const T &value) -> size_type [acore::Dictionary]")
         SECTION("[trivial]")
         {
             acore::size_type expectedIndex{};
-            std::memcpy(&expectedIndex, "Hello", 5);
+            std::memcpy(&expectedIndex, "Hello", 5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(dictionary.insert("Hello") == expectedIndex);
             REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
         }
@@ -434,7 +439,7 @@ TEST_CASE("remove(size_type index) -> void [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -453,7 +458,7 @@ TEST_CASE("remove(size_type index) -> void [acore::Dictionary]")
 
         SECTION("[missing]")
         {
-            dictionary.remove(10);
+            dictionary.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
         }
     }
@@ -484,7 +489,7 @@ TEST_CASE("value(size_type index) const -> T [acore::Dictionary]")
     SECTION("[data]")
     {
         acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
+                                     std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                      std::string{"Hello"},
                                      std::string{"World"},
                                      std::vector<char>{'a', 'b'}};
@@ -518,55 +523,10 @@ TEST_CASE("value(size_type index) const -> T [acore::Dictionary]")
     }
 }
 
-TEST_CASE("operator[](size_type index) const -> Variant [acore::Dictionary]")
-{
-    SECTION("[empty]")
-    {
-        const acore::Dictionary dictionary;
-        REQUIRE(dictionary[0] == acore::Variant{});
-    }
-
-    SECTION("[data]")
-    {
-        acore::Dictionary dictionary{std::string{"Hello"},
-                                     std::vector<int>{1, 2, 3, 4, 5},
-                                     std::string{"Hello"},
-                                     std::string{"World"},
-                                     std::vector<char>{'a', 'b'}};
-
-        SECTION("[existing]")
-        {
-            REQUIRE(std::as_const(dictionary)[1] == acore::Variant{std::vector<int>{1, 2, 3, 4, 5}});
-        }
-
-        SECTION("[multi]")
-        {
-            REQUIRE(std::as_const(dictionary)[0] == acore::Variant{std::string{"Hello"}});
-        }
-
-        SECTION("[multi removed]")
-        {
-            dictionary.remove(0);
-            REQUIRE(std::as_const(dictionary)[0] == acore::Variant{std::string{"Hello"}});
-        }
-
-        SECTION("[removed]")
-        {
-            dictionary.remove(3);
-            REQUIRE(std::as_const(dictionary)[3] == acore::Variant{});
-        }
-
-        SECTION("[trivial]")
-        {
-            REQUIRE(std::as_const(dictionary)['A'] == acore::Variant{});
-        }
-    }
-}
-
 TEST_CASE("operator=(const Dictionary &other) -> Dictionary & [acore::Dictionary]")
 {
     const acore::Dictionary dictionary{std::string{"Hello"},
-                                       std::vector<int>{1, 2, 3, 4, 5},
+                                       std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                        std::string{"Hello"},
                                        std::string{"World"},
                                        std::vector<char>{'a', 'b'}};
@@ -578,7 +538,7 @@ TEST_CASE("operator=(const Dictionary &other) -> Dictionary & [acore::Dictionary
 TEST_CASE("operator=(Dictionary &&other) -> Dictionary & [acore::Dictionary]")
 {
     acore::Dictionary dictionary{std::string{"Hello"},
-                                 std::vector<int>{1, 2, 3, 4, 5},
+                                 std::vector<int>{1, 2, 3, 4, 5}, //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                  std::string{"Hello"},
                                  std::string{"World"},
                                  std::vector<char>{'a', 'b'}};
@@ -595,7 +555,7 @@ TEST_CASE("acore::Dictionary [examples]")
         //! [[Usage]]
 acore::Dictionary dictionary;
 
-const acore::size_type trivialId = dictionary.insert(10);
+const acore::size_type trivialId = dictionary.insert(4);
 const acore::size_type complexId = dictionary.insert(std::string{"Hello!"});
 dictionary.insert(std::string{"Hello!"}); //Only increments reference count of complexId
 
@@ -605,7 +565,7 @@ const acore::size_type count = dictionary.count(complexId); //== 2
         //! [[Usage]]
         // clang-format on
 
-        REQUIRE(i == 10);
+        REQUIRE(i == 4);
         REQUIRE(str == "Hello!");
         REQUIRE(!dictionary.contains(trivialId));
         REQUIRE(count == 2);
@@ -617,7 +577,7 @@ dictionary.remove(complexId); //count(complexId) == 0 and actually removes the v
         //! [[ReferenceCount]]
         // clang-format on
 
-        REQUIRE(!dictionary.containsValue(std::string("Hello!")));
+        REQUIRE(!dictionary.containsValue(std::string{"Hello!"}));
     }
 }
 }

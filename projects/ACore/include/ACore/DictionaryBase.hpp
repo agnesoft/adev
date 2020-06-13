@@ -15,12 +15,15 @@
 #ifndef ACORE_DICTIONARYBASE_HPP
 #define ACORE_DICTIONARYBASE_HPP
 
+#include "ACoreModule.hpp"
 #include "ForwardIterator.hpp"
 #include "Variant.hpp"
 
+#include <cstring>
 #include <functional>
 #include <string_view>
 #include <type_traits>
+#include <vector>
 
 namespace acore
 {
@@ -35,13 +38,13 @@ namespace acore
 //! argument type  must implement the following
 //! methods:
 //!
-//! - <tt> size_type %capacity() const </tt>
-//! - <tt> void %clear() </tt>
-//! - <tt> size_type %count() const </tt>
-//! - <tt> Vector<size_type> %indexes(size_type hash) const </tt>
-//! - <tt> size_type %insert(size_type hash, const Variant &value) </tt>
-//! - <tt> void %remove(size_type index, size_type hash) </tt>
-//! - <tt> Variant %value(size_type index) const </tt>
+//! - <tt> auto %capacity() const -> size_type</tt>
+//! - <tt> auto %clear() -> void </tt>
+//! - <tt> auto %count() const -> size_type </tt>
+//! - <tt> auto %indexes(size_type hash) const -> std::vector<size_type> </tt>
+//! - <tt> auto %insert(size_type hash, const Variant &value) -> size_type </tt>
+//! - <tt> auto %remove(size_type index, size_type hash) -> void </tt>
+//! - <tt> auto %value(size_type index) const -> Variant </tt>
 //!
 //! The size_type id representing the value reduces
 //! the storage costs and allows fast lookup.
@@ -84,20 +87,20 @@ public:
 
     //! Returns a #const_iterator pointing to the
     //! first value or end() if the dictionary is empty.
-    [[nodiscard]] constexpr const_iterator begin() const noexcept
+    [[nodiscard]] constexpr auto begin() const noexcept -> const_iterator
     {
         return ++end();
     }
 
     //! Removes all the values from the dictionary.
-    constexpr void clear()
+    constexpr auto clear() -> void
     {
         mData.clear();
     }
 
     //! Returns \c true if the \a index points to a
     //! stored value in the dictionary.
-    [[nodiscard]] constexpr bool contains(size_type index) const
+    [[nodiscard]] constexpr auto contains(size_type index) const -> bool
     {
         return 0 <= index && index < mData.capacity() && mData.count(index) > 0;
     }
@@ -105,14 +108,14 @@ public:
     //! Returns \c true if the \a value is stored in the
     //! dictionary.
     template<typename T>
-    [[nodiscard]] constexpr bool containsValue(const T &value) const
+    [[nodiscard]] constexpr auto containsValue(const T &value) const -> bool
     {
         return !std::is_trivially_copyable<T>::value && index(value) != INVALID_INDEX;
     }
 
     //! Returns \c number of values stored in the
     //! dictionary.
-    [[nodiscard]] constexpr size_type count() const noexcept
+    [[nodiscard]] constexpr auto count() const noexcept -> size_type
     {
         return mData.count();
     }
@@ -120,13 +123,20 @@ public:
     //! Returns \c reference \c count of a value associated
     //! with the \a index. If the \a index is not associated
     //! with a value \c 0 is returned.
-    [[nodiscard]] constexpr size_type count(size_type index) const
+    [[nodiscard]] constexpr auto count(size_type index) const -> size_type
     {
-        return contains(index) ? mData.count(index) : 0;
+        if (contains(index))
+        {
+            return mData.count(index);
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     //! Returns an invalid const_iterator.
-    [[nodiscard]] constexpr const_iterator end() const noexcept
+    [[nodiscard]] constexpr auto end() const noexcept -> const_iterator
     {
         return const_iterator(INVALID_INDEX, this);
     }
@@ -136,14 +146,14 @@ public:
     //! is not stored in the dictionary the
     //! acore::INVALID_INDEX is returned.
     template<typename T>
-    [[nodiscard]] constexpr size_type index(const T &value) const
+    [[nodiscard]] constexpr auto index(const T &value) const -> size_type
     {
         size_type idx = INVALID_INDEX;
 
         if constexpr (std::is_trivially_copyable<T>::value && sizeof(T) <= sizeof(size_type))
         {
             idx = 0;
-            memcpy(&idx, &value, sizeof(T));
+            std::memcpy(&idx, &value, sizeof(T));
         }
         else
         {
@@ -163,13 +173,13 @@ public:
     //! is simply embedded into the returned id
     //! and not actally stored.
     template<typename T>
-    constexpr size_type insert(const T &value)
+    constexpr auto insert(const T &value) -> size_type
     {
         size_type idx = 0;
 
         if constexpr (std::is_trivially_copyable<T>::value && sizeof(T) <= sizeof(size_type))
         {
-            memcpy(&idx, &value, sizeof(T));
+            std::memcpy(&idx, &value, sizeof(T));
         }
         else
         {
@@ -180,16 +190,17 @@ public:
     }
 
     //! Returns \c true if the dictionary has no values.
-    [[nodiscard]] constexpr bool isEmpty() const noexcept
+    [[nodiscard]] constexpr auto isEmpty() const noexcept -> bool
     {
         return count() == 0;
     }
 
     //! Decrements the \c reference \c counter of
-    //! the value associated with the \a index. If
-    //! the counter reaches \c 0 the value is also
-    //! removed from the dictioanry.
-    constexpr void remove(size_type index)
+    //! the value associated with the \a index if
+    //! it exists in the dictionary. If the counter
+    //! reaches \c 0 the value is also removed from
+    //! the dictioanry.
+    constexpr auto remove(size_type index) -> void
     {
         if (contains(index))
         {
@@ -205,13 +216,13 @@ public:
     }
 
     //! Returns mutable \c Data *.
-    [[nodiscard]] constexpr Data *storage() noexcept
+    [[nodiscard]] constexpr auto storage() noexcept -> Data *
     {
         return &mData;
     }
 
     //! Returns immutable \c Data *.
-    [[nodiscard]] constexpr const Data *storage() const noexcept
+    [[nodiscard]] constexpr auto storage() const noexcept -> const Data *
     {
         return &mData;
     }
@@ -229,13 +240,13 @@ public:
     //! If \a index does not point to a valid value
     //! a default constructed T is returned.
     template<typename T>
-    [[nodiscard]] constexpr T value(size_type index) const
+    [[nodiscard]] constexpr auto value(size_type index) const -> T
     {
         T val;
 
         if constexpr (std::is_trivially_copyable<T>::value)
         {
-            memcpy(&val, &index, sizeof(T));
+            std::memcpy(&val, &index, sizeof(T));
         }
         else if (contains(index))
         {
@@ -243,12 +254,6 @@ public:
         }
 
         return val;
-    }
-
-    //! Same as value<Variant>().
-    [[nodiscard]] Variant operator[](size_type index) const
-    {
-        return value<Variant>(index);
     }
 
 protected:
@@ -264,31 +269,28 @@ private:
     friend const_iterator;
 
     template<typename T>
-    [[nodiscard]] size_type findValue(const T &value) const
+    [[nodiscard]] auto findValue(const T &value) const -> size_type
     {
-        const Variant val = Variant(value);
+        const Variant val{value};
         return findValue(hash(val), val);
     }
 
-    [[nodiscard]] size_type findValue(size_type hashValue, const Variant &value) const
+    [[nodiscard]] auto findValue(size_type hashValue, const Variant &value) const -> size_type
     {
-        size_type idx = INVALID_INDEX;
-
         for (size_type i : mData.indexes(hashValue))
         {
-            const Variant val = mData.value(i);
+            const Variant val{mData.value(i)};
 
             if (val.isValid() && val == value)
             {
-                idx = i;
-                break;
+                return i;
             }
         }
 
-        return idx;
+        return INVALID_INDEX;
     }
 
-    [[nodiscard]] constexpr size_type insertValue(const Variant &value)
+    [[nodiscard]] constexpr auto insertValue(const Variant &value) -> size_type
     {
         size_type hashValue = hash(value);
         size_type idx = findValue(hashValue, value);
@@ -305,29 +307,26 @@ private:
         return idx;
     }
 
-    [[nodiscard]] constexpr size_type hash(const Variant &value) const
+    [[nodiscard]] constexpr auto hash(const Variant &value) const -> size_type
     {
-        const std::vector<char> &val = value.value<const std::vector<char> &>();
-        return static_cast<size_type>(std::hash<std::string_view>{}(std::string_view(val.data(), static_cast<size_t>(val.size()))));
+        const std::vector<char> &val{value.value<const std::vector<char> &>()};
+        return static_cast<size_type>(std::hash<std::string_view>{}(std::string_view(val.data(), static_cast<std::size_t>(val.size()))));
     }
 
-    [[nodiscard]] constexpr size_type nextIndex(size_type index) const
+    [[nodiscard]] constexpr auto nextIndex(size_type index) const -> size_type
     {
-        size_type idx = INVALID_INDEX;
-
         for (index++; index < mData.capacity(); index++)
         {
             if (mData.value(index).isValid())
             {
-                idx = index;
-                break;
+                return index;
             }
         }
 
-        return idx;
+        return INVALID_INDEX;
     }
 
-    [[nodiscard]] Variant referenceAt(size_type index) const
+    [[nodiscard]] auto referenceAt(size_type index) const -> Variant
     {
         return mData.value(index);
     }

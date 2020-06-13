@@ -80,8 +80,6 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
                          projects/ACore/Endianness.cpp
-                         projects/ACore/DataIndexMap.cpp
-                         projects/ACore/DictionaryData.cpp
                          projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
 if(MSVC)
@@ -117,7 +115,6 @@ target_link_libraries(ACoreTest ACore Catch2)
 ###############
 #ABenchmarks
 add_executable(ABenchmarks projects/ABenchmarks/DataIndexMapBenchmark.cpp
-                           projects/ABenchmarks/DictionaryBenchmark.cpp
                            projects/ABenchmarks/VariantBenchmark.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
