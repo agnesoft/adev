@@ -17,6 +17,7 @@
 
 #include "ACore/DataIndexMap.hpp"
 #include "ACore/DataStream.hpp"
+#include "ACore/Dictionary.hpp"
 #include "ACore/Endianness.hpp"
 #include "ACore/Exception.hpp"
 #include "ACore/ForwardIterator.hpp"
