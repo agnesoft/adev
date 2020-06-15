@@ -15,6 +15,7 @@
 #include "CommandLineOption.hpp"
 #include "Exception.hpp"
 
+#include <algorithm>
 #include <cstdint>
 #include <exception>
 #include <sstream>

@@ -14,6 +14,7 @@
 
 #include "CommandLine.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
