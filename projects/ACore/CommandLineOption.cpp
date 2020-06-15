@@ -16,6 +16,7 @@
 #include "Exception.hpp"
 
 #include <cstdint>
+#include <exception>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -264,14 +265,14 @@ auto CommandLineOption::setShortName(char name) -> void
     mShortName = name;
 }
 
-auto CommandLineOption::extractLongName(const std::string &argument) const -> std::string
+auto CommandLineOption::extractLongName(const std::string &argument) -> std::string
 {
     if (argument.size() > 3
         && argument[0] == '-'
         && argument[1] == '-')
     {
         const auto pos = argument.find('=', 3);
-        const std::string name = argument.substr(2, pos - 2);
+        std::string name = argument.substr(2, pos - 2);
 
         if (isLongName(name))
         {
@@ -282,7 +283,7 @@ auto CommandLineOption::extractLongName(const std::string &argument) const -> st
     return {};
 }
 
-auto CommandLineOption::extractName(const std::string &argument) const -> std::string
+auto CommandLineOption::extractName(const std::string &argument) -> std::string
 {
     std::string optionName = extractShortName(argument);
 
@@ -294,11 +295,11 @@ auto CommandLineOption::extractName(const std::string &argument) const -> std::s
     return optionName;
 }
 
-auto CommandLineOption::extractNamedValue(const std::string &argument) const -> std::string
+auto CommandLineOption::extractNamedValue(const std::string &argument) -> std::string
 {
     const size_t pos = argument.find('=');
 
-    if (pos != argument.npos)
+    if (pos != std::string::npos)
     {
         return argument.substr(pos + 1);
     }
@@ -306,7 +307,7 @@ auto CommandLineOption::extractNamedValue(const std::string &argument) const -> 
     return {};
 }
 
-auto CommandLineOption::extractShortName(const std::string &argument) const -> std::string
+auto CommandLineOption::extractShortName(const std::string &argument) -> std::string
 {
     if (argument.size() >= 2
         && argument[0] == '-'
@@ -329,20 +330,20 @@ auto CommandLineOption::extractValue(const std::string &argument) const -> std::
     return extractNamedValue(argument);
 }
 
-auto CommandLineOption::isLongName(const std::string &longName) const -> bool
+auto CommandLineOption::isLongName(const std::string &longName) -> bool
 {
-    const auto isAlphanumeric = [](char c) {
-        return !std::isalnum(c);
+    const auto isNotAlphanumeric = [](char c) {
+        return std::isalnum(c) == 0;
     };
-    return longName.size() > 1 && isShortName(longName[0]) && std::find_if(++longName.begin() + 1, longName.end(), isAlphanumeric) == longName.end();
+    return longName.size() > 1 && isShortName(longName[0]) && std::find_if(++longName.begin() + 1, longName.end(), isNotAlphanumeric) == longName.end();
 }
 
-auto CommandLineOption::isQuoted(const std::string &value) const noexcept -> bool
+auto CommandLineOption::isQuoted(const std::string &value) noexcept -> bool
 {
     return value.size() >= 2 && value.front() == '"' && value.back() == '"';
 }
 
-auto CommandLineOption::isShortName(unsigned char shortName) const noexcept -> bool
+auto CommandLineOption::isShortName(unsigned char shortName) noexcept -> bool
 {
     return std::isalpha(shortName) != 0;
 }
@@ -379,19 +380,16 @@ auto CommandLineOption::setValue(std::vector<std::string>::const_iterator *argum
 
 auto CommandLineOption::setValue(const std::string &value) const -> bool
 {
-    bool result = false;
+    try
+    {
+        std::visit([&](auto &&boundValue) {
+            using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
-    std::visit([&](auto &&boundValue) {
-        using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
-
-        if constexpr (std::is_same_v<BoundT, std::monostate>)
-        {
-            throw Exception{} << "Bind value undefined for option '" << name() << '\'';
-        }
-
-        try
-        {
-            if constexpr (std::is_same_v<BoundT, bool>)
+            if constexpr (std::is_same_v<BoundT, std::monostate>)
+            {
+                throw Exception{} << "Bind value undefined for option '" << name() << '\'';
+            }
+            else if constexpr (std::is_same_v<BoundT, bool>)
             {
                 *boundValue = true;
             }
@@ -419,23 +417,28 @@ auto CommandLineOption::setValue(const std::string &value) const -> bool
             {
                 (*boundValue).emplace_back(unquote(value));
             }
+        },
+                   boundValue());
 
-            result = true;
-        }
-        catch (...)
+        return true;
+    }
+    catch ([[maybe_unused]] std::exception &e)
+    {
+        if (!isPositional())
         {
-            if (!isPositional())
-            {
-                throw Exception{} << "Failed to set value of type '" << typeid(BoundT).name() << "' for option '" << name() << "' from value '" << value << '\'';
-            }
-        }
-    },
-               boundValue());
+            std::visit([&](auto &&boundValue) {
+                using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
-    return result;
+                throw Exception{} << "Failed to set value of type '" << typeid(BoundT).name() << "' for option '" << name() << "' from value '" << value << '\'';
+            },
+                       boundValue());
+        }
+    }
+
+    return false;
 }
 
-auto CommandLineOption::unquote(const std::string &value) const -> std::string
+auto CommandLineOption::unquote(const std::string &value) -> std::string
 {
     if (isQuoted(value))
     {

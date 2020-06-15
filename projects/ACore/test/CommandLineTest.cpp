@@ -17,6 +17,7 @@
 #include <catch2/catch.hpp>
 
 #include <cstdint>
+#include <iostream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -24,6 +25,36 @@
 
 namespace commandlinetest
 {
+class StdCoutSniffer
+{
+public:
+    StdCoutSniffer() :
+        mOrigBuf{std::cout.rdbuf()}
+    {
+        std::cout.set_rdbuf(&mBuf);
+    }
+
+    StdCoutSniffer(const StdCoutSniffer &other) = delete;
+    StdCoutSniffer(StdCoutSniffer &&other) = delete;
+
+    ~StdCoutSniffer()
+    {
+        std::cout.set_rdbuf(mOrigBuf);
+    }
+
+    [[nodiscard]] auto content() const -> std::string
+    {
+        return mBuf.str();
+    }
+
+    auto operator=(const StdCoutSniffer &other) -> StdCoutSniffer & = delete;
+    auto operator=(StdCoutSniffer &&other) -> StdCoutSniffer & = delete;
+
+private:
+    std::stringbuf mBuf;
+    std::streambuf *mOrigBuf = nullptr;
+};
+
 TEST_CASE("[acore::CommandLine]")
 {
     REQUIRE(std::is_default_constructible_v<acore::CommandLine>);
@@ -172,14 +203,28 @@ TEST_CASE("parse(int argc, char * const *argv) -> void -> CommandLineOption & [a
 
     SECTION("[default help]")
     {
+        StdCoutSniffer sniffer;
         commandLine.enableHelp();
         commandLine.parse(2, std::vector<const char *>{"app", "-?"}.data());
-    }
+        const std::string expected = "Usage:\n"
+                                     "    app [options]\n"
+                                     "Syntax:\n"
+                                     "  switch       --switch, -s\n"
+                                     "  named        --name=value, --n=value, --name value, --n value\n"
+                                     "  positional   value\n"
+                                     "Options:\n"
+                                     "    -?             [switch]       Prints this help.\n"
+                                     "  Required:\n"
+                                     "  Optional:\n"
+                                     "  Positional:\n";
 
-    commandLine.setPrintStream(&stream);
+        REQUIRE(sniffer.content() == expected);
+    }
 
     SECTION("[valid]")
     {
+        commandLine.setPrintStream(&stream);
+
         SECTION("[single positional option]")
         {
             std::string value;
@@ -299,6 +344,8 @@ TEST_CASE("parse(int argc, char * const *argv) -> void -> CommandLineOption & [a
 
     SECTION("[invalid]")
     {
+        commandLine.setPrintStream(&stream);
+
         SECTION("[no arguments]")
         {
             REQUIRE_THROWS_AS(commandLine.parse(0, std::vector<const char *>{"./app", "-v"}.data()), acore::Exception);

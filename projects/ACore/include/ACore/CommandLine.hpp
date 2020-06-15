@@ -163,8 +163,9 @@ private:
         bool matched = false;
     };
 
-    [[nodiscard]] auto countNameWidth(const std::vector<OptionHelpLine> &options) -> std::size_t;
-    [[nodiscard]] auto countAttributesWidth(const std::vector<OptionHelpLine> &options) -> std::size_t;
+    [[nodiscard]] static auto argument(const char *const *argv, int index) -> std::string;
+    [[nodiscard]] static auto countNameWidth(const std::vector<OptionHelpLine> &options) -> std::size_t;
+    [[nodiscard]] static auto countAttributesWidth(const std::vector<OptionHelpLine> &options) -> std::size_t;
     [[nodiscard]] auto helpRequested() const -> bool;
     [[nodiscard]] auto matchArg(std::vector<std::string>::const_iterator *arg, std::vector<Option> *options) const -> bool;
     [[nodiscard]] auto matchArgs() const -> std::vector<Option>;
@@ -183,7 +184,7 @@ private:
     auto printPositional(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void;
     auto printRequired(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void;
     [[nodiscard]] auto printStream() -> std::ostream &;
-    auto verifyOptions(const std::vector<Option> &options) const -> void;
+    static auto verifyOptions(const std::vector<Option> &options) -> void;
 
     std::string mCommand;
     std::string mAppName;

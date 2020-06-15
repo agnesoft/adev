@@ -165,14 +165,14 @@ private:
     class Value;
 
     auto bindTo(CommandLineOption::BoundValue value) -> void;
-    [[nodiscard]] auto extractLongName(const std::string &argument) const -> std::string;
-    [[nodiscard]] auto extractName(const std::string &argument) const -> std::string;
-    [[nodiscard]] auto extractShortName(const std::string &argument) const -> std::string;
+    [[nodiscard]] static auto extractLongName(const std::string &argument) -> std::string;
+    [[nodiscard]] static auto extractName(const std::string &argument) -> std::string;
+    [[nodiscard]] static auto extractShortName(const std::string &argument) -> std::string;
     [[nodiscard]] auto extractValue(const std::string &argument) const -> std::string;
-    [[nodiscard]] auto extractNamedValue(const std::string &argument) const -> std::string;
-    [[nodiscard]] auto isLongName(const std::string &longName) const -> bool;
-    [[nodiscard]] auto isQuoted(const std::string &value) const noexcept -> bool;
-    [[nodiscard]] auto isShortName(unsigned char shortName) const noexcept -> bool;
+    [[nodiscard]] static auto extractNamedValue(const std::string &argument) -> std::string;
+    [[nodiscard]] static auto isLongName(const std::string &longName) -> bool;
+    [[nodiscard]] static auto isQuoted(const std::string &value) noexcept -> bool;
+    [[nodiscard]] static auto isShortName(unsigned char shortName) noexcept -> bool;
     [[nodiscard]] auto matchOption(const std::string &name) const noexcept -> bool;
     auto setDefaultValue(CommandLineOption::DefaultValue value) noexcept -> void;
     auto setDescription(std::string description) noexcept -> void;
@@ -181,7 +181,7 @@ private:
     auto setShortName(char name) -> void;
     [[nodiscard]] auto setValue(std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> bool;
     [[nodiscard]] auto setValue(const std::string &value) const -> bool;
-    [[nodiscard]] auto unquote(const std::string &value) const -> std::string;
+    [[nodiscard]] static auto unquote(const std::string &value) -> std::string;
 
     std::string mLongName;
     std::string mDescription;
@@ -191,58 +191,98 @@ private:
     char mShortName{};
 };
 
+//! Base class for the command line option
+//! builder classes.
 class CommandLineOption::Base
 {
 public:
+    //! Constructs the option with \a option
+    //! as the internal option.
     explicit Base(CommandLineOption *option) noexcept;
 
 protected:
+    //! Returns the internal option.
     [[nodiscard]] auto option() const noexcept -> CommandLineOption *;
 
 private:
     CommandLineOption *mOption = nullptr;
 };
 
+//! The builder class for the command
+//! line option. It is the first entry
+//! point for defining an option. Obtain
+//! the instance of this class by calling
+//! the  CommandLine::option() method.
 class CommandLineOption::Option : public CommandLineOption::Base
 {
 public:
     using Base::Base;
 
+    //! Sets the long name of the option
+    //! to \a name.
     [[nodiscard]] auto longName(std::string name) -> Named;
+
+    //! Sets the option as positional (having no name).
     [[nodiscard]] auto positional() noexcept -> Value;
 };
 
+//! The builder class for the command
+//! line option. It represents the
+//! state of a defined option but without
+//! a description (that is required).
 class CommandLineOption::Defined : public CommandLineOption::Base
 {
 public:
     using Base::Base;
 
+    //! Sets the option's description to \a desc.
     [[nodiscard]] auto description(std::string desc) noexcept -> Described;
 };
 
+//! The builder class of the command line
+//! option allowing defining option's
+//! value.
 class CommandLineOption::Value : public CommandLineOption::Base
 {
 public:
     using Base::Base;
 
+    //! Sets the default value to be \a defaultValue.
+    //! The value will be set to the bound value if
+    //! no option comes from the command line.
+    //! Mutually exclusive with required().
     [[nodiscard]] auto defaultValue(DefaultValue defaultValue) noexcept -> Defined;
+
+    //! Sets the option's description to \a description.
     [[nodiscard]] auto description(std::string description) noexcept -> Described;
+
+    //! Sets this option as being required. Mutually
+    //! exclusive with defaultValue().
     [[nodiscard]] auto required() noexcept -> Defined;
 };
 
+//! The builder class of the command line
+//! option setting the short name of the
+//! option.
 class CommandLineOption::Named : public CommandLineOption::Value
 {
 public:
     using Value::Value;
 
+    //! Sets the short name of the option to
+    //! \a shortName.
     [[nodiscard]] auto shortName(char shortName) -> Value;
 };
 
+//! The builder class of the command line
+//! option settomg the bound value to load
+//! the option into during parsing.
 class CommandLineOption::Described : public CommandLineOption::Base
 {
 public:
     using Base::Base;
 
+    //! Binds the option to \a value.
     auto bindTo(BoundValue value) -> const CommandLineOption &;
 };
 }

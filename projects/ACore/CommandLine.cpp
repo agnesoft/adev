@@ -53,7 +53,7 @@ auto CommandLine::helpEnabled() const noexcept -> bool
     return mHelpEnabled;
 }
 
-CommandLineOption::Option CommandLine::option()
+auto CommandLine::option() -> CommandLineOption::Option
 {
     mOptions.emplace_back(CommandLineOption());
     return CommandLineOption::Option{&mOptions.back()};
@@ -70,7 +70,7 @@ auto CommandLine::parse(int argc, const char *const *argv) -> void
     catch (Exception &e)
     {
         printParsingError(e);
-        throw e;
+        throw;
     }
 }
 
@@ -79,9 +79,17 @@ auto CommandLine::setPrintStream(std::ostream *stream) -> void
     mStream = stream;
 }
 
+auto CommandLine::argument(const char *const *argv, int index) -> std::string
+{
+    const char *const *arg = argv;
+    std::advance(arg, index);
+    return *arg;
+}
+
 auto CommandLine::countNameWidth(const std::vector<OptionHelpLine> &options) -> std::size_t
 {
-    std::size_t width = 10;
+    constexpr std::size_t minimumWidth = 10;
+    std::size_t width = minimumWidth;
 
     for (const OptionHelpLine &line : options)
     {
@@ -96,7 +104,8 @@ auto CommandLine::countNameWidth(const std::vector<OptionHelpLine> &options) -> 
 
 auto CommandLine::countAttributesWidth(const std::vector<OptionHelpLine> &options) -> std::size_t
 {
-    std::size_t width = 10;
+    constexpr std::size_t minimumWidth = 10;
+    std::size_t width = minimumWidth;
 
     for (const OptionHelpLine &line : options)
     {
@@ -180,7 +189,7 @@ auto CommandLine::parseArgs(int argc, const char *const *argv) -> void
 
     for (int i = 1; i < argc; i++)
     {
-        mArgs.emplace_back(argv[i]);
+        mArgs.emplace_back(argument(argv, i));
     }
 }
 
@@ -191,7 +200,7 @@ auto CommandLine::parseCommand(int argc, const char *const *argv) -> void
         throw Exception{} << "Missing mandatory first command line argument";
     }
 
-    mCommand = argv[0];
+    mCommand = *argv;
     mAppName = std::filesystem::path{mCommand}.stem().string();
 }
 
@@ -216,13 +225,15 @@ auto CommandLine::printHelp() -> void
 
 auto CommandLine::printHelpHeader() -> void
 {
+    constexpr int width = 15;
+
     printStream() << "Usage:\n    " << mAppName << " [options]" << '\n';
     printStream() << "Syntax:\n";
-    printStream() << std::left << std::setw(15) << "  switch"
+    printStream() << std::left << std::setw(width) << "  switch"
                   << "--switch, -s\n";
-    printStream() << std::left << std::setw(15) << "  named"
+    printStream() << std::left << std::setw(width) << "  named"
                   << "--name=value, --n=value, --name value, --n value\n";
-    printStream() << std::left << std::setw(15) << "  positional"
+    printStream() << std::left << std::setw(width) << "  positional"
                   << "value\n";
     printStream() << "Options:" << '\n';
 }
@@ -301,7 +312,7 @@ auto CommandLine::printParsingError(const Exception &e) -> void
 
 auto CommandLine::printStream() -> std::ostream &
 {
-    if (mStream)
+    if (mStream != nullptr)
     {
         return *mStream;
     }
@@ -309,7 +320,7 @@ auto CommandLine::printStream() -> std::ostream &
     return std::cout;
 }
 
-auto CommandLine::verifyOptions(const std::vector<Option> &options) const -> void
+auto CommandLine::verifyOptions(const std::vector<Option> &options) -> void
 {
     for (Option opt : options)
     {
@@ -319,10 +330,8 @@ auto CommandLine::verifyOptions(const std::vector<Option> &options) const -> voi
             {
                 throw Exception{} << "Option '" << opt.option->name() << "' was set as required but did not match any arguments";
             }
-            else
-            {
-                opt.option->defaultBoundValue();
-            }
+
+            opt.option->defaultBoundValue();
         }
     }
 }
@@ -340,14 +349,13 @@ auto CommandLine::OptionHelpLine::getName() const -> std::string
     {
         return "[positional]";
     }
-    else if (mOption->shortName() == char{})
+
+    if (mOption->shortName() == char{})
     {
         return "--" + mOption->longName();
     }
-    else
-    {
-        return std::string{"-"} + mOption->shortName() + ", --" + mOption->longName();
-    }
+
+    return std::string{"-"} + mOption->shortName() + ", --" + mOption->longName();
 }
 
 auto CommandLine::OptionHelpLine::getAttributes() const -> std::string
