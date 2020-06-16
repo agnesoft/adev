@@ -15,6 +15,7 @@
 #ifndef ACORE_ACORE_HPP
 #define ACORE_ACORE_HPP
 
+#include "ACore/CommandLine.hpp"
 #include "ACore/DataIndexMap.hpp"
 #include "ACore/DataStream.hpp"
 #include "ACore/Dictionary.hpp"

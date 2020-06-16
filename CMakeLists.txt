@@ -60,6 +60,8 @@ target_include_directories(tiny-process-library PUBLIC projects)
 #ACore Static Library
 add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/ACoreModule.hpp
+                         projects/ACore/include/ACore/CommandLine.hpp
+                         projects/ACore/include/ACore/CommandLineOption.hpp
                          projects/ACore/include/ACore/DataIndexMap.hpp
                          projects/ACore/include/ACore/DataIndexMapBase.hpp
                          projects/ACore/include/ACore/DataIndexMapData.hpp
@@ -79,6 +81,8 @@ add_library(ACore STATIC projects/ACore/include/ACore.hpp
                          projects/ACore/include/ACore/Reference.hpp
                          projects/ACore/include/ACore/UndoStack.hpp
                          projects/ACore/include/ACore/Variant.hpp
+                         projects/ACore/CommandLine.cpp
+                         projects/ACore/CommandLineOption.cpp
                          projects/ACore/Endianness.cpp
                          projects/ACore/Process.cpp)
 target_compile_features(ACore PUBLIC cxx_std_17)
@@ -92,7 +96,9 @@ target_include_directories(ACore PRIVATE projects/ACore/include/ACore)
 target_include_directories(ACore PUBLIC projects/ACore/include)
 
 #ACoreTest
-add_executable(ACoreTest projects/ACore/test/DataIndexMapElementTest.cpp
+add_executable(ACoreTest projects/ACore/test/CommandLineTest.cpp
+                         projects/ACore/test/CommandLineOptionTest.cpp
+                         projects/ACore/test/DataIndexMapElementTest.cpp
                          projects/ACore/test/DataIndexMapTest.cpp
                          projects/ACore/test/DataStreamTest.cpp
                          projects/ACore/test/DictionaryTest.cpp
@@ -153,3 +159,4 @@ install(TARGETS ABuildTest ACoreTest DESTINATION bin/test)
 install(FILES LICENSE DESTINATION bin/LICENSE)
 install(FILES projects/Catch2/LICENSE.txt DESTINATION bin/LICENSE/Catch2)
 install(FILES projects/tiny-process-library/LICENSE DESTINATION bin/LICENSE/tiny-process-library)
+
