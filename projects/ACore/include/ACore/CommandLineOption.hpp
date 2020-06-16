@@ -128,7 +128,7 @@ public:
     //! it is bound to \c bool.
     [[nodiscard]] constexpr auto isSwitch() const noexcept -> bool
     {
-        return std::holds_alternative<bool *>(boundValue());
+        return std::holds_alternative<bool *>(mBoundValue);
     }
 
     //! Returns the option's long name. The string
