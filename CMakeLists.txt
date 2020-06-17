@@ -116,6 +116,32 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
 endif()
 target_link_libraries(ACoreTest ACore Catch2)
 
+#########
+# AFILE #
+#########
+#AFile Static Library
+add_library(AFile STATIC projects/AFile/include/AFile.hpp
+                         projects/AFile/include/AFile/AFileModule.hpp
+                         projects/AFile/include/AFile/FileStream.hpp
+                         projects/AFile/include/AFile/FileStreamBuffer.hpp
+                         projects/AFile/FileStream.cpp
+                         projects/AFile/FileStreamBuffer.cpp
+                         projects/AFile/FileStreamBufferPrivate.cpp
+                         projects/AFile/FileStreamBufferPrivate.hpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+ target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
+endif()
+target_link_libraries(AFile ACore)
+target_include_directories(AFile PRIVATE projects/AFile/include/AFile)
+target_include_directories(AFile PUBLIC projects/AFile/include)
+
+#AFileTest
+add_executable(AFileTest projects/AFile/test/FileStreamTest.cpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    target_precompile_headers(AFileTest PRIVATE projects/AFile/test/pch.hpp)
+endif()
+target_link_libraries(AFileTest AFile Catch2)
+
 ###############
 # ABENCHMARKS #
 ###############
@@ -153,7 +179,7 @@ target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
 install(TARGETS ABuild ABenchmarks DESTINATION bin)
-install(TARGETS ABuildTest ACoreTest DESTINATION bin/test)
+install(TARGETS ABuildTest ACoreTest AFileTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)
