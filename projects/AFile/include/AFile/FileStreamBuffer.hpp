@@ -17,34 +17,55 @@
 
 #include "AFileModule.hpp"
 
+#include <filesystem>
+#include <fstream>
 #include <string>
 
 namespace afile
 {
-class FileStreamBufferPrivate;
-
 class FileStreamBuffer
 {
 public:
+    enum class OpenMode : size_t
+    {
+        Binary = std::ios_base::binary,
+        In = std::ios_base::in,
+        Out = std::ios_base::out,
+        AtEnd = std::ios_base::ate,
+        Truncate = std::ios_base::trunc
+    };
+
     explicit FileStreamBuffer(const char *filename);
     FileStreamBuffer(const FileStreamBuffer &other) = delete;
-    FileStreamBuffer(FileStreamBuffer &&other) noexcept;
+    FileStreamBuffer(FileStreamBuffer &&other) = default;
     ~FileStreamBuffer() noexcept;
 
     [[nodiscard]] const char *filename() const noexcept;
     void flush();
     [[nodiscard]] bool isOpen() const;
     void read(acore::size_type index, char *buffer, acore::size_type count);
-    void resize(acore::size_type size);
-    [[nodiscard]] acore::size_type size() const noexcept;
+    constexpr void resize(acore::size_type size)
+    {
+        mSize = size;
+    }
+    [[nodiscard]] constexpr acore::size_type size() const noexcept
+    {
+        return mSize;
+    }
     void write(acore::size_type index, const char *buffer, acore::size_type count);
 
     FileStreamBuffer &operator=(const FileStreamBuffer &other) = delete;
-    FileStreamBuffer &operator=(FileStreamBuffer &&other) noexcept;
+    FileStreamBuffer &operator=(FileStreamBuffer &&other) = default;
 
 private:
-    FileStreamBufferPrivate *d = nullptr;
+    [[nodiscard]] std::ios_base::openmode openMode(const std::string &filename) const;
+
+    std::string mName;
+    std::fstream mFile;
+    acore::size_type mSize = 0;
 };
+
+[[nodiscard]] FileStreamBuffer::OpenMode operator|(FileStreamBuffer::OpenMode left, FileStreamBuffer::OpenMode right) noexcept;
 }
 
 #endif

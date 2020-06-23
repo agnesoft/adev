@@ -125,9 +125,7 @@ add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/include/AFile/FileStream.hpp
                          projects/AFile/include/AFile/FileStreamBuffer.hpp
                          projects/AFile/FileStream.cpp
-                         projects/AFile/FileStreamBuffer.cpp
-                         projects/AFile/FileStreamBufferPrivate.cpp
-                         projects/AFile/FileStreamBufferPrivate.hpp)
+                         projects/AFile/FileStreamBuffer.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
  target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
 endif()
