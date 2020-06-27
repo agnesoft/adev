@@ -32,7 +32,7 @@ function printHelp () {
     echo "  build[-analysis|-coverage|-sanitize-address|-sanitize-memory|-sanitize-ub]"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
-    echo "    * Builds using the either the default compiler and configuration (see above) or values from environment variables if set or predefined values based on requeste build flavor."
+    echo "    * Builds using the either the default compiler and configuration (see above) or values from the environment variables (see above) if set or predefined values based on the requested build flavor."
     echo "  coverage"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
