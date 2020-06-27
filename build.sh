@@ -84,7 +84,7 @@ function isLinux () {
 }
 
 function isAvailable () {
-    local CMD=`command -v $1`
+    local CMD=$(command -v $1)
     test "$CMD"
 }
 
@@ -384,6 +384,10 @@ function analysis() {
     detectClang
     build
     cd $BUILD_DIR
+
+    if test -f "clang_tidy_error"; then
+        rm "clang_tidy_error"
+    fi
     
     if ! test -f "compile_commands.json"; then
         printError "ERROR: 'compile_commands.json' cannot be found. Are you missing 'set(CMAKE_EXPORT_COMPILE_COMMANDS true)' in CMakeLists.txt?"
@@ -404,21 +408,11 @@ function analysis() {
 
     for source in $SOURCE_FILES
     do
-        LINT_RESULT=$($CLANG_TIDY "$source" -p "$(pwd)" 2>&1)
-
-        if test $? -ne 0; then
-            echo ""
-            echo "$LINT_RESULT"
-            echo ""
-            printError "Run 'clang-tidy --fix \"$source\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
-            echo ""
-            CLANG_TIDY_ERROR=1
-        else
-            printOK "$source (OK)"
-        fi
+        analyseFile "$source" &
     done
+    wait
 
-    if test $CLANG_TIDY_ERROR; then
+    if test -f "clang_tidy_error"; then
         printError "ERROR: Static analysis found issues. See the log above for details."
         exit 1
     else
@@ -426,11 +420,26 @@ function analysis() {
     fi
 }
 
+function analyseFile () {
+    LINT_RESULT=$($CLANG_TIDY "$1" -p "$(pwd)" 2>&1)
+
+    if test $? -ne 0; then
+        echo ""
+        echo "$LINT_RESULT"
+        echo ""
+        printError "Run 'clang-tidy --fix \"$1\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
+        echo ""
+        touch "clang_tidy_error"
+    else
+        printOK "$1 (OK)"
+    fi
+}
+
 function benchmarks () {
     detectTestProperties
 
     cd $BUILD_DIR/bin
-    local EXECUTABLES=`find . -name "*benchmark*" -o -name "*Benchmark*" -o -name "*benchmark*.exe" -o -name "*Benchmark*" -type f`
+    local EXECUTABLES=$(find . -name "*benchmark*" -o -name "*Benchmark*" -o -name "*benchmark*.exe" -o -name "*Benchmark*" -type f)
     local RETURN=0
     local BENCHMARKS_RESULT=0
 
@@ -614,11 +623,11 @@ function formatting () {
 
     echo "Formatting..."
 
-    local SOURCE_FILES=`find ./projects -name "*.cpp" -o -name "*.hpp" -type f`
+    local SOURCE_FILES=$(find ./projects -name "*.cpp" -o -name "*.hpp" -type f)
     for file in $SOURCE_FILES
     do
         if [[ $file != *"tiny-process-library"* ]] && [[ $file != *"Catch2"* ]]; then
-            local REPLACEMENTS=`$CLANG_FORMAT $file -output-replacements-xml | grep "<replacement "`
+            local REPLACEMENTS=$($CLANG_FORMAT $file -output-replacements-xml | grep "<replacement ")
 
             if test "$REPLACEMENTS"; then
                 printError "$file (ERROR: Incorrectly formatted file.)"
@@ -681,7 +690,7 @@ function tests () {
     detectTestProperties
 
     cd $BUILD_DIR/bin/test
-    local TESTS=`find . -name "*Test" -o -name "*Test.exe" -type f`
+    local TESTS=$(find . -name "*Test" -o -name "*Test.exe" -type f)
     local TEST_RUN_RESULT=0
     local TEST_OK=0
     local i=0
