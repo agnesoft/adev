@@ -23,6 +23,7 @@
 
 namespace afile
 {
+//! \cond IMPLEMENTAION_DETAIL
 class FileStreamBuffer
 {
 public:
@@ -38,27 +39,27 @@ public:
     explicit FileStreamBuffer(const char *filename);
     FileStreamBuffer(const FileStreamBuffer &other) = delete;
     FileStreamBuffer(FileStreamBuffer &&other) = default;
-    ~FileStreamBuffer() noexcept;
 
-    [[nodiscard]] const char *filename() const noexcept;
-    void flush();
-    [[nodiscard]] bool isOpen() const;
-    void read(acore::size_type index, char *buffer, acore::size_type count);
-    constexpr void resize(acore::size_type size)
+    [[nodiscard]] auto filename() const noexcept -> const char *;
+    auto read(acore::size_type index, char *buffer, acore::size_type count) -> void;
+
+    constexpr auto resize(acore::size_type size) noexcept -> void
     {
         mSize = size;
     }
-    [[nodiscard]] constexpr acore::size_type size() const noexcept
+
+    [[nodiscard]] constexpr auto size() const noexcept -> acore::size_type
     {
         return mSize;
     }
-    void write(acore::size_type index, const char *buffer, acore::size_type count);
 
-    FileStreamBuffer &operator=(const FileStreamBuffer &other) = delete;
-    FileStreamBuffer &operator=(FileStreamBuffer &&other) = default;
+    auto write(acore::size_type index, const char *buffer, acore::size_type count) -> void;
+
+    auto operator=(const FileStreamBuffer &other) -> FileStreamBuffer & = delete;
+    auto operator=(FileStreamBuffer &&other) -> FileStreamBuffer & = default;
 
 private:
-    [[nodiscard]] std::ios_base::openmode openMode(const std::string &filename) const;
+    [[nodiscard]] static std::ios_base::openmode openMode(const std::string &filename);
 
     std::string mName;
     std::fstream mFile;
@@ -66,6 +67,7 @@ private:
 };
 
 [[nodiscard]] FileStreamBuffer::OpenMode operator|(FileStreamBuffer::OpenMode left, FileStreamBuffer::OpenMode right) noexcept;
+//! \endcond
 }
 
 #endif

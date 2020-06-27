@@ -17,9 +17,17 @@
 #include <catch2/catch.hpp>
 
 #include <AFile.hpp>
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <limits>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 namespace filestreamtest
 {
@@ -30,34 +38,34 @@ class TestFile
 public:
     TestFile()
     {
-        removeFiles();
+        removeFile();
     }
 
-    TestFile(const char *filename) :
-        mFilename(filename)
+    explicit TestFile(const char *filename) :
+        mFile(filename)
     {
-        removeFiles();
+        removeFile();
     }
 
     explicit TestFile(const char *content, size_t size)
     {
-        std::fstream{TEST_FILE, std::ios::trunc | std::ios::in | std::ios::out}.write(content, size);
+        std::fstream{TEST_FILE, static_cast<std::ios::openmode>(static_cast<unsigned>(std::ios::trunc) | static_cast<unsigned>(std::ios::in) | static_cast<unsigned>(std::ios::out))}.write(content, size);
     }
 
     TestFile(const TestFile &other) = delete;
     TestFile(TestFile &&other) = delete;
 
-    ~TestFile() noexcept
+    ~TestFile()
     {
         try
         {
             try
             {
-                removeFiles();
+                removeFile();
             }
             catch (...)
             {
-                INFO("Unable to remove file in filestreamtest::TestFile::~TestFile()");
+                INFO("Unable to remove file '" + mFile + "' in filestreamtest::TestFile::~TestFile()");
             }
         }
         catch (...)
@@ -66,33 +74,33 @@ public:
         }
     }
 
-    [[nodiscard]] const char *filename() const noexcept
+    [[nodiscard]] auto filename() const noexcept -> const char *
     {
-        return mFilename.c_str();
+        return mFile.c_str();
     }
 
-    [[nodiscard]] std::vector<char> fileContent() const
+    [[nodiscard]] auto fileContent() const -> std::vector<char>
     {
-        std::vector<char> actual(std::filesystem::file_size(mFilename));
-        std::fstream{mFilename}.read(actual.data(), actual.size());
+        std::vector<char> actual(std::filesystem::file_size(mFile));
+        std::fstream{mFile}.read(actual.data(), actual.size());
         return actual;
     }
 
-    TestFile &operator=(const TestFile &other) = delete;
-    TestFile &operator=(TestFile &&other) = delete;
+    auto operator=(const TestFile &other) -> TestFile & = delete;
+    auto operator=(TestFile &&other) -> TestFile & = delete;
 
 private:
-    void removeFiles()
+    auto removeFile() -> void
     {
-        if (std::filesystem::exists(mFilename))
+        if (std::filesystem::exists(mFile))
         {
-            std::filesystem::permissions(mFilename, std::filesystem::perms::none | std::filesystem::perms::all);
+            std::filesystem::permissions(mFile, std::filesystem::perms::none | std::filesystem::perms::all);
         }
 
-        std::filesystem::remove(mFilename);
+        std::filesystem::remove(mFile);
     }
 
-    const std::string mFilename = TEST_FILE;
+    const std::string mFile = TEST_FILE;
 };
 
 TEST_CASE("FileStream(const char *filename) [afile::FileStream]")
@@ -156,7 +164,7 @@ TEST_CASE("pos() const noexcept -> size_type [afile::FileStream]")
     {
         TestFile testFile;
         afile::FileStream stream{TEST_FILE};
-        stream.write("Hello world!", 12);
+        stream.write("Hello world!", 12); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(std::as_const(stream).pos() == 12);
     }
 }
@@ -167,13 +175,13 @@ TEST_CASE("read(char *data, size_type count) -> void [afile::FileStream]")
     {
         TestFile testFile;
         afile::FileStream stream{TEST_FILE};
-        std::array<char, 10> buf{};
+        std::array<char, 10> buf{}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE_THROWS_AS(stream.read(buf.data(), 5), acore::Exception);
     }
 
     SECTION("[in bounds]")
     {
-        TestFile testFile{"AbcdefgH", 8};
+        TestFile testFile{"AbcdefgH", 8}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         afile::FileStream stream{TEST_FILE};
         std::vector<char> buf(3);
         stream.seek(2);
@@ -185,7 +193,7 @@ TEST_CASE("read(char *data, size_type count) -> void [afile::FileStream]")
     {
         TestFile testFile{"123", 3};
         afile::FileStream stream{TEST_FILE};
-        std::vector<char> buf(5);
+        std::vector<char> buf(5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE_THROWS_AS(stream.read(buf.data(), 5), acore::Exception);
     }
 }
@@ -194,7 +202,7 @@ TEST_CASE("reset() -> void [afile::FileStream]")
 {
     TestFile testFile;
     afile::FileStream stream{TEST_FILE};
-    stream.write("hello world", 11);
+    stream.write("hello world", 11); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     stream.reset();
     REQUIRE(stream.pos() == 0);
 }
@@ -203,7 +211,7 @@ TEST_CASE("seek(size_type) -> void [afile::FileStream]")
 {
     TestFile testFile;
     afile::FileStream stream{TEST_FILE};
-    stream.seek(11);
+    stream.seek(11); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(stream.pos() == 11);
 }
 
@@ -212,20 +220,20 @@ TEST_CASE("write(const char *data, size_type count) -> void [afile::FileStream]"
     SECTION("[empty]")
     {
         TestFile testFile;
-        afile::FileStream{TEST_FILE}.write("Hello World!", 12);
+        afile::FileStream{TEST_FILE}.write("Hello World!", 12); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(testFile.fileContent() == std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'});
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{"Hello World!", 12};
+        TestFile testFile{"Hello World!", 12}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
         SECTION("[in bounds]")
         {
             {
                 afile::FileStream stream{TEST_FILE};
-                stream.seek(6);
-                stream.write("There", 5);
+                stream.seek(6); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                stream.write("There", 5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             }
             REQUIRE(testFile.fileContent() == std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'T', 'h', 'e', 'r', 'e', '!'});
         }
@@ -234,8 +242,8 @@ TEST_CASE("write(const char *data, size_type count) -> void [afile::FileStream]"
         {
             {
                 afile::FileStream stream{TEST_FILE};
-                stream.seek(11);
-                stream.write(" Test!", 6);
+                stream.seek(11); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                stream.write(" Test!", 6); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             }
             REQUIRE(testFile.fileContent() == std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', ' ', 'T', 'e', 's', 't', '!'});
         }
@@ -424,6 +432,7 @@ TEST_CASE("operator<<(FileStream &stream, const T &value) -> FileStream &, opera
         std::pair pair1{4, str1};
         std::pair<int, std::string> pair2;
         stream << pair1 << pair2;
+
         REQUIRE(stream.buffer().size() == static_cast<acore::size_type>(sizeof(int) + sizeof(acore::size_type) + str1.size() + sizeof(int) + sizeof(acore::size_type)));
     }
 }
@@ -431,7 +440,7 @@ TEST_CASE("operator<<(FileStream &stream, const T &value) -> FileStream &, opera
 TEST_CASE("operator<<(FileStream &&stream, const T &value) -> FileStream &&, operator>>(FileStream &&stream, T &value) -> FileStream &&")
 {
     TestFile testFile;
-    afile::FileStream{testFile.filename()} << std::vector<int>{1, 2, 3, 4, 5} << std::string{"Hello World"};
+    afile::FileStream{testFile.filename()} << std::vector<int>{1, 2, 3, 4, 5} << std::string{"Hello World"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     const std::vector<char> data = testFile.fileContent();
     REQUIRE(data.size() == 47);
     std::string str;

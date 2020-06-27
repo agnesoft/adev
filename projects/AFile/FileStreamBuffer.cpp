@@ -1,3 +1,17 @@
+// Copyright 2020 Michael Vlach
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include "pch.hpp"
 
 #include "FileStreamBuffer.hpp"
@@ -5,50 +19,30 @@
 namespace afile
 {
 FileStreamBuffer::FileStreamBuffer(const char *filename) :
-    mName(filename),
-    mFile(filename, openMode(filename)),
-    mSize(static_cast<acore::size_type>(std::filesystem::file_size(filename)))
-
+    mName{filename},
+    mFile{filename, openMode(filename)},
+    mSize{static_cast<acore::size_type>(std::filesystem::file_size(filename))}
 {
 }
 
-FileStreamBuffer::~FileStreamBuffer() noexcept
-{
-    if (mFile.is_open())
-    {
-        mFile.close();
-        std::filesystem::resize_file(mName, static_cast<size_t>(mSize));
-    }
-}
-
-const char *FileStreamBuffer::filename() const noexcept
+auto FileStreamBuffer::filename() const noexcept -> const char *
 {
     return mName.c_str();
 }
 
-void FileStreamBuffer::flush()
-{
-    mFile.flush();
-}
-
-bool FileStreamBuffer::isOpen() const
-{
-    return mFile.is_open();
-}
-
-void FileStreamBuffer::read(acore::size_type index, char *buffer, acore::size_type count)
+auto FileStreamBuffer::read(acore::size_type index, char *buffer, acore::size_type count) -> void
 {
     mFile.seekg(index);
     mFile.read(buffer, count);
 }
 
-void FileStreamBuffer::write(acore::size_type index, const char *buffer, acore::size_type count)
+auto FileStreamBuffer::write(acore::size_type index, const char *buffer, acore::size_type count) -> void
 {
     mFile.seekp(index);
     mFile.write(buffer, count);
 }
 
-std::ios_base::openmode FileStreamBuffer::openMode(const std::string &filename) const
+auto FileStreamBuffer::openMode(const std::string &filename) -> std::ios_base::openmode
 {
     if (std::filesystem::exists(filename))
     {
@@ -58,8 +52,9 @@ std::ios_base::openmode FileStreamBuffer::openMode(const std::string &filename) 
     return static_cast<std::ios_base::openmode>(OpenMode::Binary | OpenMode::In | OpenMode::Out | OpenMode::Truncate);
 }
 
-FileStreamBuffer::OpenMode operator|(FileStreamBuffer::OpenMode left, FileStreamBuffer::OpenMode right) noexcept
+auto operator|(FileStreamBuffer::OpenMode left, FileStreamBuffer::OpenMode right) noexcept -> FileStreamBuffer::OpenMode
 {
-    return static_cast<FileStreamBuffer::OpenMode>(static_cast<std::underlying_type<FileStreamBuffer::OpenMode>::type>(left) | static_cast<std::underlying_type<FileStreamBuffer::OpenMode>::type>(right));
+    return static_cast<FileStreamBuffer::OpenMode>(static_cast<std::underlying_type<FileStreamBuffer::OpenMode>::type>(left)
+                                                   | static_cast<std::underlying_type<FileStreamBuffer::OpenMode>::type>(right));
 }
 }
