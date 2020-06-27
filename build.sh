@@ -29,10 +29,10 @@ function printHelp () {
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR"
     echo "    * Runs benchmark executables (.*[Bb]enchmark.*) found under \$BUILD_DIR/bin expecting first cases to be always the fastest."
-    echo "  build"
+    echo "  build[-analysis|-coverage|-sanitize-address|-sanitize-memory|-sanitize-ub]"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
-    echo "    * Builds using the either the default compiler and configuration (see above) or values from environment variables if set."
+    echo "    * Builds using the either the default compiler and configuration (see above) or values from environment variables if set or predefined values based on requeste build flavor."
     echo "  coverage"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
@@ -381,8 +381,7 @@ function detectTestProperties () {
 ###########
 function analysis() {
     detectClangTidy
-    detectClang
-    build
+    buildAnalysis
     cd $BUILD_DIR
 
     if test -f "clang_tidy_error"; then
@@ -480,6 +479,35 @@ function build () {
     fi
 }
 
+function buildAnalysis () {
+    detectClang
+    build
+}
+
+function buildCoverage () {
+    detectClang
+    BUILD_TYPE="Coverage"
+    build
+}
+
+function buildSanitizeAddress () {
+    detectClang
+    BUILD_TYPE="SanitizeAddress"
+    build
+}
+
+function buildSanitizeUB () {
+    detectClang
+    BUILD_TYPE="SanitizeUB"
+    build
+}
+
+function buildSanitizeMemory () {
+    buildLibCppWithMemorySanitizer
+    BUILD_TYPE="SanitizeMemory"
+    build
+}
+
 function buildLibCppWithMemorySanitizer () {
     detectCMake
     detectNinja
@@ -532,9 +560,7 @@ function buildWindows () {
 function coverage () {
     detectLLVMCov
     detectLLVMProfdata
-    detectClang
-    BUILD_TYPE="Coverage"
-    build
+    buildCoverage
 
     cd $BUILD_DIR/bin/test
 
@@ -654,9 +680,7 @@ function sanitizeAddress () {
     fi
 
     detectLLVMSymbolizer
-    detectClang
-    BUILD_TYPE="SanitizeAddress"
-    build
+    buildSanitizeAddress
     tests
 }
 
@@ -667,9 +691,7 @@ function sanitizeMemory () {
     fi
 
     detectLLVMSymbolizer
-    buildLibCppWithMemorySanitizer
-    BUILD_TYPE="SanitizeMemory"
-    build
+    buildSanitizeMemory
     tests
 }
 
@@ -680,9 +702,7 @@ function sanitizeUB () {
     fi
 
     detectLLVMSymbolizer
-    detectClang
-    BUILD_TYPE="SanitizeUB"
-    build
+    buildSanitizeUB
     tests
 }
 
@@ -742,6 +762,16 @@ elif test "$ACTION" == "benchmarks"; then
     benchmarks
 elif test "$ACTION" == "build"; then
     build
+elif test "$ACTION" == "build-analysis"; then
+    buildAnalysis
+elif test "$ACTION" == "build-coverage"; then
+    buildCoverage
+elif test "$ACTION" == "build-sanitize-address"; then
+    buildSanitizeAddress
+elif test "$ACTION" == "build-sanitize-memory"; then
+    buildSanitizeMemory
+elif test "$ACTION" == "build-sanitize-ub"; then
+    buildSanitizeUB
 elif test "$ACTION" == "coverage"; then
     coverage
 elif test "$ACTION" == "documentation"; then

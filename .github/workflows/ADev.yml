@@ -16,6 +16,8 @@ jobs:
         run: ./build.sh install-ninja
       - name: Install Clang-Tidy
         run: ./build.sh install-clang-tidy
+      - name: Build
+        run: ./build.sh build-analysis
       - name: Analysis
         run: ./build.sh analysis
 
@@ -30,6 +32,10 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
+      - name: Build
+        run: |
+          export BUILD_DIR=build
+          ./build.sh build-coverage
       - name: Coverage
         run: |
           export BUILD_DIR=build
@@ -77,6 +83,8 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
+      - name: Build
+        run: ./build.sh build-sanitize-address
       - name: Sanitize Address
         run: ./build.sh sanitize-address
 
@@ -91,6 +99,8 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
+      - name: Build
+        run: ./build.sh build-sanitize-memory
       - name: Sanitize Memory
         run: ./build.sh sanitize-memory
 
@@ -105,6 +115,8 @@ jobs:
         run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
+      - name: Build
+        run: ./build.sh build-sanitize-ub
       - name: Sanitize Undefined Behavior
         run: ./build.sh sanitize-ub
 
