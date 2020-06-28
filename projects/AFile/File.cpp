@@ -596,7 +596,7 @@ auto File::saveRecordsCount(acore::size_type count) -> void
 {
     recordLog(0, static_cast<acore::size_type>(count));
     mFile.reset();
-    mFile << mRecords.size();
+    mFile << static_cast<acore::size_type>(mRecords.size());
 }
 
 auto File::seekToEnd(acore::size_type idx) -> void

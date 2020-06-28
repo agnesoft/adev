@@ -399,7 +399,7 @@ private:
     template<typename Buffer>
     friend constexpr auto operator<<(acore::DataStreamBase<Buffer> &stream, const Log &log) -> acore::DataStreamBase<Buffer> &
     {
-        stream << log.pos << log.data.size();
+        stream << log.pos << static_cast<acore::size_type>(log.data.size());
         stream.write(log.data.data(), log.data.size());
         stream.buffer().flush();
         return stream;
