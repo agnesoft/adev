@@ -39,8 +39,11 @@ public:
     explicit FileStreamBuffer(const char *filename);
     FileStreamBuffer(const FileStreamBuffer &other) = delete;
     FileStreamBuffer(FileStreamBuffer &&other) = default;
+    ~FileStreamBuffer();
 
     [[nodiscard]] auto filename() const noexcept -> const char *;
+    auto flush() -> void;
+    [[nodiscard]] auto isOpen() const -> bool;
     auto read(acore::size_type index, char *buffer, acore::size_type count) -> void;
 
     constexpr auto resize(acore::size_type size) noexcept -> void
