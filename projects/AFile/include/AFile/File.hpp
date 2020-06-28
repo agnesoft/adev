@@ -16,6 +16,7 @@
 #define AFILE_FILE_HPP
 
 #include "FileStream.hpp"
+#include "WAL.hpp"
 
 #include <iterator>
 
@@ -378,12 +379,6 @@ private:
         acore::size_type size = acore::INVALID_INDEX;
     };
 
-    struct Log
-    {
-        acore::size_type pos = acore::INVALID_INDEX;
-        std::vector<char> data;
-    };
-
     template<typename Buffer>
     friend constexpr auto operator<<(acore::DataStreamBase<Buffer> &stream, const Index &recordIndex) -> acore::DataStreamBase<Buffer> &
     {
@@ -396,32 +391,12 @@ private:
         return stream >> recordIndex.pos >> recordIndex.size;
     }
 
-    template<typename Buffer>
-    friend constexpr auto operator<<(acore::DataStreamBase<Buffer> &stream, const Log &log) -> acore::DataStreamBase<Buffer> &
-    {
-        stream << log.pos << static_cast<acore::size_type>(log.data.size());
-        stream.write(log.data.data(), log.data.size());
-        stream.buffer().flush();
-        return stream;
-    }
-
-    template<typename Buffer>
-    friend constexpr auto operator>>(acore::DataStreamBase<Buffer> &stream, Log &log) -> acore::DataStreamBase<Buffer> &
-    {
-        acore::size_type size = 0;
-        stream >> log.pos >> size;
-        log.data.resize(size);
-        stream.read(log.data.data(), size);
-        return stream;
-    }
-
     auto append(acore::size_type remaining) -> void;
     [[nodiscard]] auto beginRead(acore::size_type index, acore::size_type offset) const -> FileStream &;
     [[nodiscard]] auto beginWrite(acore::size_type index, acore::size_type offset) -> acore::DataStream &;
     [[nodiscard]] auto bufferExtendsValue(acore::size_type index, acore::size_type offset) const -> bool;
     auto buildFreeList() -> void;
     auto createIndex() -> void;
-    auto doResetWAL() -> void;
     [[nodiscard]] static auto emptyValue(acore::size_type size) -> std::vector<char>;
     [[nodiscard]] auto endPos(acore::size_type index) const noexcept -> acore::size_type;
     auto endRead(acore::size_type index) const -> void;
@@ -429,37 +404,28 @@ private:
     [[nodiscard]] static auto filesInUse() -> std::vector<std::filesystem::path> *;
     auto initialize() -> void;
     auto invalidateIndex(acore::size_type idx) -> void;
-    auto initializeWAL() -> void;
     [[nodiscard]] auto isLast(acore::size_type idx) const -> bool;
     [[nodiscard]] static auto isValid(Index idx) noexcept -> bool;
     auto loadFile() -> void;
     auto loadIndex() -> void;
-    [[nodiscard]] auto loadWAL() -> std::vector<Log>;
     [[nodiscard]] static auto logicalRecordPos(acore::size_type pos) noexcept -> acore::size_type;
-    [[nodiscard]] auto logWithData(acore::size_type pos, acore::size_type count) -> Log;
     auto moveData(acore::size_type to, acore::size_type from, acore::size_type remainingSize) -> void;
     auto moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void;
     auto moveRecordToEnd(acore::size_type index, acore::size_type size) -> void;
     [[nodiscard]] auto newIndex() -> acore::size_type;
     auto optimizeRecord(acore::size_type index) -> void;
     auto processIndex(Index index) -> void;
-    auto processLog(const Log &log) -> void;
-    auto processWAL() -> void;
-    auto processWAL(const std::vector<Log> &logs) -> void;
+    auto processLog(const WAL::Log &log) -> void;
     [[nodiscard]] auto read(acore::size_type readPos, acore::size_type remainingSize) -> std::vector<char>;
     [[nodiscard]] auto readIndex() -> Index;
-    [[nodiscard]] auto readLog() -> Log;
     auto recordIndex(const Index *idx) const noexcept -> acore::size_type;
     [[nodiscard]] auto recordPos(acore::size_type index) const noexcept -> acore::size_type;
     auto removeData(acore::size_type idx) -> void;
     auto removeIndex(acore::size_type recordIndex) -> void;
     auto resetBuffer() -> void;
-    auto resetWAL() -> void;
     auto resize(acore::size_type newSize) -> void;
     auto resizeAt(acore::size_type recordIndex, acore::size_type newSize) -> void;
     auto resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void;
-    auto recordLog(acore::size_type pos, acore::size_type count) -> void;
-    auto recordLog(const Log &log) -> void;
     auto saveRecordsCount(acore::size_type count) -> void;
     auto seekToEnd(acore::size_type idx) -> void;
     auto seekToEnd(Index index) -> void;
@@ -480,14 +446,12 @@ private:
     static constexpr acore::size_type BUFFER_SIZE = 16384;
     static constexpr acore::size_type MAX_STEP_SIZE = 2147483648;
     acore::size_type mCount = 0;
-    acore::size_type mWALCount = 0;
-    acore::size_type mWALLevel = 0;
     acore::size_type mFreeIndex = acore::INVALID_INDEX;
     acore::size_type mOffset = 0;
     mutable FileStream mFile;
-    FileStream mWAL;
     std::vector<Index> mRecords;
     acore::DataStream mBufferStream;
+    WAL mWAL;
 };
 }
 
