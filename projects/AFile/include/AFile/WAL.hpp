@@ -15,6 +15,7 @@
 #ifndef AFILE_WAL_HPP
 #define AFILE_WAL_HPP
 
+#include "AFileModule.hpp"
 #include "FileStream.hpp"
 
 #include <vector>
@@ -32,13 +33,18 @@ public:
     };
 
     explicit WAL(FileStream *file);
+    WAL(const WAL &other) = delete;
+    WAL(WAL &&other) = default;
+    ~WAL();
 
     auto begin() noexcept -> void;
     auto end() -> void;
-    auto initialize() -> void;
     auto process() -> void;
     auto recordLog(acore::size_type pos, acore::size_type count) -> void;
     auto reset() -> void;
+
+    auto operator=(const WAL &other) -> WAL & = delete;
+    auto operator=(WAL &&other) -> WAL & = default;
 
 private:
     template<typename Buffer>

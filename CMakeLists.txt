@@ -123,10 +123,12 @@ target_link_libraries(ACoreTest ACore Catch2)
 add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/include/AFile/AFileModule.hpp
                          projects/AFile/include/AFile/File.hpp
+                         projects/AFile/include/AFile/FileRecords.hpp
                          projects/AFile/include/AFile/FileStream.hpp
                          projects/AFile/include/AFile/FileStreamBuffer.hpp
                          projects/AFile/include/AFile/WAL.hpp
                          projects/AFile/File.cpp
+                         projects/AFile/FileRecords.cpp
                          projects/AFile/FileStream.cpp
                          projects/AFile/FileStreamBuffer.cpp
                          projects/AFile/WAL.cpp)
