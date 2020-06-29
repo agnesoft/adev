@@ -16,13 +16,16 @@
 
 #include "WAL.hpp"
 
+#include <string>
+#include <vector>
+
 namespace afile
 {
-WAL::WAL(FileStream *file) :
-    mFile{file},
-    mWAL{("." + std::string(file->buffer().filename())).c_str()}
+WAL::WAL(FileData *data) :
+    mData{data},
+    mWAL{("." + std::string(mData->filename())).c_str()}
 {
-    if (mFile->buffer().isOpen() && mWAL.buffer().isOpen())
+    if (mWAL.buffer().isOpen())
     {
         process();
     }
@@ -82,24 +85,18 @@ auto WAL::loadWAL() -> std::vector<WAL::Log>
 
 auto WAL::logWithData(acore::size_type pos, acore::size_type count) -> Log
 {
-    Log log;
-    log.pos = pos;
-    log.data.resize(count);
-    mFile->seek(pos);
-    mFile->read(log.data.data(), count);
-    return log;
+    return Log{pos, mData->read(pos, count)};
 }
 
 auto WAL::processLog(const Log &log) -> void
 {
     if (log.pos < 0)
     {
-        mFile->buffer().resize(-log.pos);
+        mData->resize(-log.pos);
     }
     else
     {
-        mFile->seek(log.pos);
-        mFile->write(log.data.data(), log.data.size());
+        mData->write(log.pos, log.data);
     }
 }
 
@@ -142,16 +139,16 @@ auto WAL::recordLog(const Log &log) -> void
 
 auto WAL::recordLog(acore::size_type pos, acore::size_type count) -> void
 {
-    if ((pos + count) > mFile->buffer().size())
+    if ((pos + count) > mData->size())
     {
-        acore::size_type actualCount = mFile->buffer().size() - pos;
+        acore::size_type actualCount = mData->size() - pos;
 
         if (actualCount > 0)
         {
             recordLog(logWithData(pos, actualCount));
         }
 
-        recordLog(Log{-mFile->buffer().size(), {}});
+        recordLog(Log{-mData->size(), {}});
     }
     else if (count != 0)
     {

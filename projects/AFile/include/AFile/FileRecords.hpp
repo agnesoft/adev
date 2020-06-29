@@ -16,6 +16,7 @@
 #define AFILE_FILE_RECORDS_HPP
 
 #include "AFileModule.hpp"
+#include "FileData.hpp"
 #include "FileStream.hpp"
 #include "WAL.hpp"
 
@@ -33,11 +34,12 @@ public:
         acore::size_type size = acore::INVALID_INDEX;
     };
 
-    explicit FileRecords(FileStream *file, WAL *wal);
+    explicit FileRecords(FileData *data, WAL *wal);
 
     auto clear() -> void;
     [[nodiscard]] auto contains(acore::size_type index) const -> bool;
     [[nodiscard]] auto count() const noexcept -> acore::size_type;
+    [[nodiscard]] auto endPos(acore::size_type index) const noexcept -> acore::size_type;
     [[nodiscard]] auto indexes() const -> std::vector<acore::size_type>;
     auto invalidateIndex(acore::size_type idx) -> void;
     [[nodiscard]] auto isLast(acore::size_type idx) const -> bool;
@@ -54,7 +56,6 @@ public:
     [[nodiscard]] auto sortedIndexes() -> std::vector<acore::size_type>;
     auto updateIndex(FileRecords::Index index) -> void;
     auto updateIndex(acore::size_type pos, FileRecords::Index index) -> void;
-    auto validatePos(acore::size_type index, acore::size_type pos) const -> void;
 
 private:
     template<typename Buffer>
@@ -71,7 +72,6 @@ private:
 
     auto buildFreeList() -> void;
     auto createIndex() -> void;
-    [[nodiscard]] auto endPos(acore::size_type index) const noexcept -> acore::size_type;
     auto initialize() -> void;
     auto loadIndex() -> void;
     auto loadRecords() -> void;
@@ -85,7 +85,7 @@ private:
 
     acore::size_type mCount = 0;
     acore::size_type mFreeIndex = acore::INVALID_INDEX;
-    FileStream *mFile = nullptr;
+    FileData *mData = nullptr;
     WAL *mWAL = nullptr;
     std::vector<Index> mRecords;
 };

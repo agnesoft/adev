@@ -16,22 +16,18 @@
 
 #include "FileRecords.hpp"
 
+#include <algorithm>
+#include <iterator>
 #include <numeric>
+#include <vector>
 
 namespace afile
 {
-FileRecords::FileRecords(FileStream *file, WAL *wal) :
-    mFile{file},
+FileRecords::FileRecords(FileData *data, WAL *wal) :
+    mData{data},
     mWAL{wal}
 {
-    if (mFile->buffer().isOpen())
-    {
-        initialize();
-    }
-    else
-    {
-        throw acore::Exception() << "File '" << file->buffer().filename() << "' could not be opened";
-    }
+    initialize();
 }
 
 auto FileRecords::clear() -> void
@@ -54,6 +50,11 @@ auto FileRecords::contains(acore::size_type index) const -> bool
 auto FileRecords::count() const noexcept -> acore::size_type
 {
     return mCount;
+}
+
+auto FileRecords::endPos(acore::size_type index) const noexcept -> acore::size_type
+{
+    return mRecords[index].pos + mRecords[index].size;
 }
 
 auto FileRecords::indexes() const -> std::vector<acore::size_type>
@@ -79,7 +80,7 @@ auto FileRecords::invalidateIndex(acore::size_type idx) -> void
 
 auto FileRecords::isLast(acore::size_type idx) const -> bool
 {
-    return mFile->buffer().size() == endPos(idx);
+    return mData->size() == endPos(idx);
 }
 
 auto FileRecords::isValid(acore::size_type idx) const noexcept -> bool
@@ -95,7 +96,7 @@ auto FileRecords::isValid(Index idx) noexcept -> bool
 auto FileRecords::newIndex() -> acore::size_type
 {
     acore::size_type index = mFreeIndex;
-    Index recordIndex{logicalRecordPos(mFile->buffer().size()), 0};
+    Index recordIndex{logicalRecordPos(mData->size()), 0};
 
     if (index == acore::INVALID_INDEX)
     {
@@ -109,7 +110,7 @@ auto FileRecords::newIndex() -> acore::size_type
         mRecords[index] = recordIndex;
     }
 
-    updateIndex(mFile->buffer().size(), Index{index, 0});
+    updateIndex(mData->size(), Index{index, 0});
     mCount++;
     return index;
 }
@@ -160,16 +161,8 @@ auto FileRecords::updateIndex(FileRecords::Index index) -> void
 auto FileRecords::updateIndex(acore::size_type pos, Index index) -> void
 {
     mWAL->recordLog(pos, static_cast<acore::size_type>(sizeof(FileRecords::Index)));
-    mFile->seek(pos);
-    (*mFile) << index;
-}
-
-auto FileRecords::validatePos(acore::size_type index, acore::size_type position) const -> void
-{
-    if (endPos(index) < position)
-    {
-        throw acore::Exception() << "Pos '" << position << "' is out of bounds of record '" << index << "' (" << pos(index) << '-' << endPos(index) << ')';
-    }
+    mData->seek(pos);
+    mData->file() << index;
 }
 
 auto FileRecords::buildFreeList() -> void
@@ -187,8 +180,8 @@ auto FileRecords::buildFreeList() -> void
 auto FileRecords::createIndex() -> void
 {
     acore::size_type count = 0;
-    mFile->reset();
-    (*mFile) >> count;
+    mData->file().reset();
+    mData->file() >> count;
 
     if (count < 0)
     {
@@ -198,26 +191,21 @@ auto FileRecords::createIndex() -> void
     mRecords.resize(count);
 }
 
-auto FileRecords::endPos(acore::size_type index) const noexcept -> acore::size_type
-{
-    return mRecords[index].pos + mRecords[index].size;
-}
-
 auto FileRecords::initialize() -> void
 {
-    if (mFile->buffer().size() != 0)
+    if (mData->size() != 0)
     {
         loadRecords();
     }
     else
     {
-        (*mFile) << acore::size_type(0);
+        mData->file() << acore::size_type(0);
     }
 }
 
 auto FileRecords::loadIndex() -> void
 {
-    while (mFile->pos() != mFile->buffer().size())
+    while (mData->pos() != mData->size())
     {
         processIndex(readIndex());
     }
@@ -246,17 +234,17 @@ auto FileRecords::processIndex(Index index) -> void
 {
     if (isValid(index))
     {
-        mRecords[index.pos] = Index{mFile->pos(), index.size};
+        mRecords[index.pos] = Index{mData->pos(), index.size};
         mCount++;
     }
 
-    mFile->seek(recordEnd(Index{mFile->pos(), index.size}));
+    mData->seek(recordEnd(Index{mData->pos(), index.size}));
 }
 
 auto FileRecords::readIndex() -> Index
 {
     Index index;
-    (*mFile) >> index;
+    mData->file() >> index;
     return index;
 }
 
@@ -268,8 +256,8 @@ auto FileRecords::recordIndex(const Index *idx) const noexcept -> acore::size_ty
 auto FileRecords::saveRecordsCount(acore::size_type count) -> void
 {
     mWAL->recordLog(0, static_cast<acore::size_type>(count));
-    mFile->reset();
-    (*mFile) << static_cast<acore::size_type>(mRecords.size());
+    mData->file().reset();
+    mData->file() << static_cast<acore::size_type>(mRecords.size());
 }
 
 auto FileRecords::recordEnd(Index index) -> acore::size_type

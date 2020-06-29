@@ -16,11 +16,13 @@
 #define AFILE_FILE_HPP
 
 #include "AFileModule.hpp"
+#include "FileData.hpp"
 #include "FileRecords.hpp"
 #include "FileStream.hpp"
 #include "WAL.hpp"
 
-#include <iterator>
+#include <filesystem>
+#include <vector>
 
 namespace afile
 {
@@ -108,7 +110,7 @@ namespace afile
 //! of the File. That can occur for example if a write
 //! operation threw an exception or in case of a manual
 //! WAL control. If the destructor did not run (e.g.
-//! a hardware failure, call to std::terminate) the
+//! a hardware failure, call to std::terminate etc.) the
 //! WAL is used during construction of File to get
 //! it into a valid state.
 //!
@@ -375,21 +377,16 @@ public:
     auto operator=(File &&other) -> File & = default;
 
 private:
-    auto append(acore::size_type remaining) -> void;
     [[nodiscard]] auto beginRead(acore::size_type index, acore::size_type offset) const -> FileStream &;
     [[nodiscard]] auto beginWrite(acore::size_type index, acore::size_type offset) -> acore::DataStream &;
-    [[nodiscard]] auto bufferExtendsValue(acore::size_type index, acore::size_type offset) const -> bool;
-    [[nodiscard]] static auto emptyValue(acore::size_type size) -> std::vector<char>;
+    [[nodiscard]] auto bufferExtendsValue(acore::size_type index) const -> bool;
     auto endRead(acore::size_type index) const -> void;
     auto endWrite(acore::size_type index) -> void;
     [[nodiscard]] static auto filesInUse() -> std::vector<std::filesystem::path> *;
-    auto moveData(acore::size_type to, acore::size_type from, acore::size_type remainingSize) -> void;
     auto moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void;
     auto moveRecordToEnd(acore::size_type index, acore::size_type size) -> void;
     auto optimizeRecord(acore::size_type index) -> void;
-    [[nodiscard]] auto read(acore::size_type readPos, acore::size_type remainingSize) -> std::vector<char>;
     auto removeData(acore::size_type idx) -> void;
-    auto resetBuffer() -> void;
     auto resize(acore::size_type newSize) -> void;
     auto resizeAt(acore::size_type recordIndex, acore::size_type newSize) -> void;
     auto resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void;
@@ -400,14 +397,11 @@ private:
     auto validateMoveInput(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) const -> void;
     auto validateOffset(acore::size_type index, acore::size_type offset) const -> void;
     static auto validateOffset(acore::size_type offset) -> void;
+    auto validatePos(acore::size_type index, acore::size_type pos) const -> void;
     static auto validateSize(acore::size_type size) -> void;
     auto write(acore::size_type pos, const std::vector<char> &data) -> void;
 
-    static constexpr acore::size_type BUFFER_SIZE = 16384;
-    static constexpr acore::size_type MAX_STEP_SIZE = 2147483648;
-    acore::size_type mOffset = 0;
-    acore::DataStream mBufferStream;
-    mutable FileStream mFile;
+    FileData mData;
     WAL mWAL;
     FileRecords mRecords;
 };

@@ -16,25 +16,25 @@
 
 #include "File.hpp"
 
+#include <algorithm>
 #include <filesystem>
-#include <iostream>
-#include <numeric>
+#include <memory>
+#include <vector>
 
 namespace afile
 {
 
 File::File(const char *filename) :
-    mFile{validateFileNotInUse(filename)},
-    mWAL{&mFile},
-    mRecords{&mFile, &mWAL}
+    mData{validateFileNotInUse(filename)},
+    mWAL{&mData},
+    mRecords{&mData, &mWAL}
 {
-    mBufferStream.buffer().data().reserve(BUFFER_SIZE);
     File::filesInUse()->emplace_back(filename);
 }
 
 File::~File() //NOLINT(bugprone-exception-escape)
 {
-    const auto it = std::find(File::filesInUse()->begin(), File::filesInUse()->end(), mFile.buffer().filename());
+    const auto it = std::find(File::filesInUse()->begin(), File::filesInUse()->end(), mData.filename());
 
     if (it != File::filesInUse()->end())
     {
@@ -51,9 +51,7 @@ auto File::clear() -> void
 {
     mWAL.reset();
     mRecords.clear();
-    mFile.buffer().resize(static_cast<acore::size_type>(sizeof(acore::size_type)));
-    mFile.reset();
-    mFile << acore::size_type(0);
+    mData.clear();
 }
 
 auto File::contains(acore::size_type index) const -> bool
@@ -73,7 +71,7 @@ auto File::endWAL() -> void
 
 auto File::filename() const noexcept -> const char *
 {
-    return mFile.buffer().filename();
+    return mData.filename();
 }
 
 auto File::indexes() const -> std::vector<acore::size_type>
@@ -89,24 +87,21 @@ auto File::isEmpty() const noexcept -> bool
 auto File::move(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void
 {
     validateMoveInput(index, offset, newOffset, size);
-    mOffset = newOffset;
-    mBufferStream.buffer().resize(std::max(mBufferStream.buffer().size(), size));
-    mFile.seek(mRecords.pos(index) + offset);
-    mFile.read(mBufferStream.buffer().data().data(), size);
+    mData.move(mRecords.pos(index), offset, newOffset, size);
     endWrite(index);
 }
 
 auto File::optimize() -> void
 {
     mWAL.reset();
-    mFile.seek(static_cast<acore::size_type>(sizeof(acore::size_type)));
+    mData.seek(static_cast<acore::size_type>(sizeof(acore::size_type)));
 
     for (acore::size_type idx : mRecords.sortedIndexes())
     {
         optimizeRecord(idx);
     }
 
-    resize(mFile.pos());
+    resize(mData.pos());
     mWAL.reset();
 }
 
@@ -134,7 +129,7 @@ auto File::resize(acore::size_type index, acore::size_type size) -> void
 
 auto File::size() const noexcept -> acore::size_type
 {
-    return mFile.buffer().size();
+    return mData.size();
 }
 
 auto File::size(acore::size_type index) const -> acore::size_type
@@ -147,60 +142,43 @@ auto File::size(acore::size_type index) const -> acore::size_type
     return 0;
 }
 
-auto File::append(acore::size_type remaining) -> void
-{
-    while (remaining > 0)
-    {
-        const std::vector<char> data = emptyValue(remaining);
-        remaining -= data.size();
-        write(mFile.buffer().size(), data);
-    }
-}
-
 auto File::beginRead(acore::size_type index, acore::size_type offset) const -> FileStream &
 {
     validateReadInput(index, offset);
-    mFile.seek(mRecords.pos(index) + offset);
-    return mFile;
+    mData.seek(mRecords.pos(index) + offset);
+    return mData.file();
 }
 
 auto File::beginWrite(acore::size_type index, acore::size_type offset) -> acore::DataStream &
 {
     validateWriteInput(index, offset);
-    mOffset = offset;
-    return mBufferStream;
+    return mData.beginWrite(offset);
 }
 
-auto afile::File::bufferExtendsValue(acore::size_type index, acore::size_type offset) const -> bool
+auto afile::File::bufferExtendsValue(acore::size_type index) const -> bool
 {
-    return (offset + mBufferStream.buffer().size()) > mRecords.size(index);
-}
-
-auto File::emptyValue(acore::size_type size) -> std::vector<char>
-{
-    return std::vector<char>(std::min(MAX_STEP_SIZE, size));
+    return mData.bufferSize() > mRecords.size(index);
 }
 
 auto File::endRead(acore::size_type index) const -> void
 {
-    mRecords.validatePos(index, mFile.pos());
+    validatePos(index, mData.pos());
 }
 
 auto File::endWrite(acore::size_type index) -> void
 {
-    if (bufferExtendsValue(index, mOffset))
+    if (bufferExtendsValue(index))
     {
         if (!mRecords.isLast(index))
         {
-            moveRecordToEnd(index, mOffset);
+            moveRecordToEnd(index, mData.offset());
         }
 
-        mRecords.setSize(index, mOffset + mBufferStream.buffer().size());
+        mRecords.setSize(index, mData.bufferSize());
         mRecords.updateIndex(FileRecords::Index{index, mRecords.size(index)});
     }
 
-    write(mRecords.pos(index) + mOffset, mBufferStream.buffer().data());
-    resetBuffer();
+    mData.endWrite(mRecords.pos(index));
     mWAL.reset();
 }
 
@@ -210,30 +188,18 @@ auto File::filesInUse() -> std::vector<std::filesystem::path> *
     return files;
 }
 
-auto File::moveData(acore::size_type to, acore::size_type from, acore::size_type remainingSize) -> void
-{
-    while (remainingSize > 0)
-    {
-        const std::vector<char> data = read(from, remainingSize);
-        from = mFile.pos();
-        remainingSize -= data.size();
-        write(to, data);
-        to = mFile.pos();
-    }
-}
-
 auto File::moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void
 {
     mRecords.updateIndex(to, FileRecords::Index{index, sizeToMove});
-    acore::size_type newPos = mFile.pos();
-    moveData(newPos, mRecords.pos(index), sizeToMove);
+    const acore::size_type newPos = mData.pos();
+    mData.moveData(newPos, mRecords.pos(index), sizeToMove);
     mRecords.setRecord(index, FileRecords::Index{newPos, sizeToMove});
 }
 
 auto File::moveRecordToEnd(acore::size_type index, acore::size_type size) -> void
 {
     mRecords.invalidateIndex(index);
-    moveRecord(index, mFile.buffer().size(), std::min(size, mRecords.size(index)));
+    moveRecord(index, mData.size(), std::min(size, mRecords.size(index)));
 
     if (mRecords.size(index) != size)
     {
@@ -245,23 +211,15 @@ auto File::optimizeRecord(acore::size_type index) -> void
 {
     if (mRecords.isValid(index))
     {
-        if (mFile.pos() != mRecords.recordPos(index))
+        if (mData.pos() != mRecords.recordPos(index))
         {
-            moveRecord(index, mFile.pos(), mRecords.size(index));
+            moveRecord(index, mData.pos(), mRecords.size(index));
         }
         else
         {
-            mFile.seek(mRecords.recordEnd(index));
+            mData.seek(mRecords.recordEnd(index));
         }
     }
-}
-
-auto File::read(acore::size_type readPos, acore::size_type remainingSize) -> std::vector<char>
-{
-    mFile.seek(readPos);
-    std::vector<char> data(std::min(MAX_STEP_SIZE, remainingSize));
-    mFile.read(data.data(), data.size());
-    return data;
 }
 
 auto File::removeData(acore::size_type idx) -> void
@@ -269,8 +227,8 @@ auto File::removeData(acore::size_type idx) -> void
     if (mRecords.isLast(idx))
     {
         const acore::size_type pos = mRecords.recordPos(idx);
-        mWAL.recordLog(pos, mFile.buffer().size() - pos);
-        mFile.buffer().resize(pos);
+        mWAL.recordLog(pos, mData.size() - pos);
+        mData.resize(pos);
     }
     else
     {
@@ -278,22 +236,10 @@ auto File::removeData(acore::size_type idx) -> void
     }
 }
 
-auto File::resetBuffer() -> void
-{
-    if (mBufferStream.buffer().size() > BUFFER_SIZE)
-    {
-        mBufferStream.buffer().data().clear();
-        mBufferStream.buffer().data().reserve(BUFFER_SIZE);
-    }
-
-    mBufferStream.buffer().resize(0);
-    mBufferStream.reset();
-}
-
 auto File::resize(acore::size_type newSize) -> void
 {
-    mWAL.recordLog(newSize, mFile.buffer().size() - newSize);
-    mFile.buffer().resize(newSize);
+    mWAL.recordLog(newSize, mData.size() - newSize);
+    mData.resize(newSize);
 }
 
 auto File::resizeAt(acore::size_type index, acore::size_type newSize) -> void
@@ -314,11 +260,11 @@ auto File::resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void
 
     if (newSize < oldSize)
     {
-        resize(mFile.buffer().size() - (oldSize - newSize));
+        resize(mData.size() - (oldSize - newSize));
     }
     else
     {
-        append(newSize - oldSize);
+        mData.append(newSize - oldSize);
     }
 
     mRecords.setSize(idx, newSize);
@@ -362,14 +308,14 @@ auto File::validateMoveInput(acore::size_type index, acore::size_type offset, ac
     validateIndex(index);
     validateOffset(index, offset);
     validateOffset(newOffset);
-    mRecords.validatePos(index, offset + size);
+    validatePos(index, offset + size);
     validateSize(size);
 }
 
 auto File::validateOffset(acore::size_type index, acore::size_type offset) const -> void
 {
     validateOffset(offset);
-    mRecords.validatePos(index, mRecords.pos(index) + offset);
+    validatePos(index, mRecords.pos(index) + offset);
 }
 
 auto File::validateOffset(acore::size_type offset) -> void
@@ -377,6 +323,14 @@ auto File::validateOffset(acore::size_type offset) -> void
     if (offset < 0)
     {
         throw acore::Exception() << "Invalid offset: '" << offset << "'";
+    }
+}
+
+auto File::validatePos(acore::size_type index, acore::size_type pos) const -> void
+{
+    if (mRecords.endPos(index) < pos)
+    {
+        throw acore::Exception() << "Pos '" << pos << "' is out of bounds of record '" << index << "' (" << mRecords.pos(index) << '-' << mRecords.endPos(index) << ')';
     }
 }
 
@@ -391,7 +345,6 @@ auto File::validateSize(acore::size_type size) -> void
 auto File::write(acore::size_type pos, const std::vector<char> &data) -> void
 {
     mWAL.recordLog(pos, data.size());
-    mFile.seek(pos);
-    mFile.write(data.data(), data.size());
+    mData.write(pos, data);
 }
 }
