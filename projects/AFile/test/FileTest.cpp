@@ -104,6 +104,7 @@ private:
 
 struct SerializationThrower
 {
+    explicit SerializationThrower() = default;
 };
 }
 
@@ -1081,7 +1082,7 @@ const auto vec = file.value<std::vector<int>>(index);
 //! [[extend_vector]]
 const auto newValueOffset = static_cast<acore::size_type>(sizeof(size_t) + vec.size() * sizeof(int));
 file.insert(index, newValueOffset, 3);
-file.insert(index, 0, vec.size() + 1); //updates the vector's size
+file.insert(index, 0, static_cast<acore::size_type>(vec.size() + 1)); //updates the vector's size
 auto extendedVec = file.value<std::vector<int>>(index);
 //{1, 2, 10, 4, 5, 50}
 //! [[extend_vector]]
