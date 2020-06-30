@@ -18,7 +18,6 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <memory>
 #include <vector>
 
 namespace afile
@@ -59,7 +58,7 @@ auto File::contains(acore::size_type index) const -> bool
 
 auto File::copy(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void
 {
-    validateMoveInput(index, offset, newOffset, size);
+    validateCopyInput(index, offset, newOffset, size);
     beginWAL();
     write(index, newOffset, mData.read(mRecords.pos(index) + offset, size));
     endWAL();
@@ -95,9 +94,9 @@ auto File::optimize() -> void
     beginWAL();
     auto pos = static_cast<acore::size_type>(sizeof(acore::size_type));
 
-    for (acore::size_type idx : mRecords.sortedIndexes())
+    for (acore::size_type index : mRecords.sortedIndexes())
     {
-        pos = optimizeRecord(idx, pos);
+        pos = optimizeRecord(index, pos);
     }
 
     mData.resize(pos);
@@ -148,39 +147,23 @@ auto File::extendsValue(acore::size_type index, acore::size_type offset, acore::
     return (offset + valueSize) > mRecords.size(index);
 }
 
-auto File::write(acore::size_type index, acore::size_type offset, const std::vector<char> &data) -> void
-{
-    if (extendsValue(index, offset, static_cast<acore::size_type>(data.size())))
-    {
-        if (!mRecords.isLast(index))
-        {
-            moveRecordToEnd(index, offset);
-        }
-
-        mRecords.setSize(index, offset + static_cast<acore::size_type>(data.size()));
-        mRecords.updateIndex(FileRecords::Index{index, mRecords.size(index)});
-    }
-
-    mData.write(mRecords.pos(index) + offset, data);
-}
-
 auto File::filesInUse() -> std::vector<std::filesystem::path> *
 {
-    static auto *files = std::make_unique<std::vector<std::filesystem::path>>().release();
-    return files;
+    static std::vector<std::filesystem::path> files;
+    return &files;
 }
 
 auto File::moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void
 {
-    mRecords.updateIndex(to, FileRecords::Index{index, sizeToMove});
+    mRecords.update(to, FileRecords::Index{index, sizeToMove});
     const acore::size_type newPos = mData.pos();
     mData.write(newPos, mData.read(mRecords.pos(index), sizeToMove));
-    mRecords.setRecord(index, FileRecords::Index{newPos, sizeToMove});
+    mRecords.set(index, FileRecords::Index{newPos, sizeToMove});
 }
 
 auto File::moveRecordToEnd(acore::size_type index, acore::size_type size) -> void
 {
-    mRecords.invalidateIndex(index);
+    mRecords.invalidate(index);
     moveRecord(index, mData.size(), std::min(size, mRecords.size(index)));
 
     if (mRecords.size(index) != size)
@@ -198,22 +181,22 @@ auto File::optimizeRecord(acore::size_type index, acore::size_type pos) -> acore
             moveRecord(index, pos, mRecords.size(index));
         }
 
-        return mRecords.recordEnd(index);
+        return mRecords.endPos(index);
     }
 
     return pos;
 }
 
-auto File::removeData(acore::size_type idx) -> void
+auto File::removeData(acore::size_type index) -> void
 {
-    if (mRecords.isLast(idx))
+    if (mRecords.isLast(index))
     {
-        const acore::size_type pos = mRecords.recordPos(idx);
+        const acore::size_type pos = mRecords.recordPos(index);
         mData.resize(pos);
     }
     else
     {
-        mRecords.invalidateIndex(idx);
+        mRecords.invalidate(index);
     }
 }
 
@@ -229,9 +212,9 @@ auto File::resizeAt(acore::size_type index, acore::size_type newSize) -> void
     }
 }
 
-auto File::resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void
+auto File::resizeAtEnd(acore::size_type index, acore::size_type newSize) -> void
 {
-    acore::size_type oldSize = mRecords.size(idx);
+    acore::size_type oldSize = mRecords.size(index);
 
     if (newSize < oldSize)
     {
@@ -242,13 +225,21 @@ auto File::resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void
         mData.write(mData.size(), std::vector<char>(newSize - oldSize));
     }
 
-    mRecords.setSize(idx, newSize);
-    mRecords.updateIndex(FileRecords::Index{idx, newSize});
+    mRecords.update(FileRecords::Index{index, newSize});
+}
+
+auto File::validateCopyInput(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) const -> void
+{
+    validateIndex(index);
+    validateOffset(index, offset);
+    validateOffset(newOffset);
+    validatePos(index, offset + size);
+    validateSize(size);
 }
 
 auto File::validateFileNotInUse(const char *filename) -> const char *
 {
-    const std::filesystem::path file(filename);
+    const std::filesystem::path file{filename};
 
     if (std::find(File::filesInUse()->begin(), File::filesInUse()->end(), file) != File::filesInUse()->end())
     {
@@ -264,27 +255,6 @@ auto File::validateIndex(acore::size_type index) const -> void
     {
         throw acore::Exception() << "Invalid index '" << index << "'";
     }
-}
-
-auto File::validateReadInput(acore::size_type index, acore::size_type offset) const -> void
-{
-    validateIndex(index);
-    validateOffset(index, offset);
-}
-
-auto File::validateWriteInput(acore::size_type index, acore::size_type offset) const -> void
-{
-    validateIndex(index);
-    validateOffset(offset);
-}
-
-auto File::validateMoveInput(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) const -> void
-{
-    validateIndex(index);
-    validateOffset(index, offset);
-    validateOffset(newOffset);
-    validatePos(index, offset + size);
-    validateSize(size);
 }
 
 auto File::validateOffset(acore::size_type index, acore::size_type offset) const -> void
@@ -309,11 +279,38 @@ auto File::validatePos(acore::size_type index, acore::size_type pos) const -> vo
     }
 }
 
+auto File::validateReadInput(acore::size_type index, acore::size_type offset) const -> void
+{
+    validateIndex(index);
+    validateOffset(index, offset);
+}
+
 auto File::validateSize(acore::size_type size) -> void
 {
     if (size < 0)
     {
         throw acore::Exception() << "Invalid size '" << size << "'";
     }
+}
+
+auto File::validateWriteInput(acore::size_type index, acore::size_type offset) const -> void
+{
+    validateIndex(index);
+    validateOffset(offset);
+}
+
+auto File::write(acore::size_type index, acore::size_type offset, const std::vector<char> &data) -> void
+{
+    if (extendsValue(index, offset, static_cast<acore::size_type>(data.size())))
+    {
+        if (!mRecords.isLast(index))
+        {
+            moveRecordToEnd(index, offset);
+        }
+
+        mRecords.update(FileRecords::Index{index, offset + static_cast<acore::size_type>(data.size())});
+    }
+
+    mData.write(mRecords.pos(index) + offset, data);
 }
 }

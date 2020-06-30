@@ -39,7 +39,6 @@ public:
 
     auto begin() noexcept -> void;
     auto end() -> void;
-    auto process() -> void;
     auto recordLog() -> void;
     auto recordLog(acore::size_type pos, acore::size_type count) -> void;
     auto reset() -> void;
@@ -68,6 +67,7 @@ private:
     }
 
     auto doReset() -> void;
+    auto initialize() -> void;
     [[nodiscard]] auto loadWAL() -> std::vector<Log>;
     [[nodiscard]] auto logWithData(acore::size_type pos, acore::size_type count) -> Log;
     auto processLog(const Log &log) -> void;

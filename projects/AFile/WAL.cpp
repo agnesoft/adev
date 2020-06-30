@@ -27,7 +27,7 @@ WAL::WAL(FileStream *file) :
 {
     if (mWAL.buffer().isOpen())
     {
-        process();
+        initialize();
     }
     else
     {
@@ -35,7 +35,7 @@ WAL::WAL(FileStream *file) :
     }
 }
 
-WAL::~WAL()
+WAL::~WAL() //NOLINT(bugprone-exception-escape)
 {
     processWAL(loadWAL());
 }
@@ -49,6 +49,30 @@ auto WAL::end() -> void
 {
     mWALLevel--;
     reset();
+}
+
+void WAL::recordLog()
+{
+    saveLog(Log{-mFile->buffer().size(), {}});
+}
+
+auto WAL::recordLog(acore::size_type pos, acore::size_type count) -> void
+{
+    if ((pos + count) > mFile->buffer().size())
+    {
+        acore::size_type actualCount = mFile->buffer().size() - pos;
+
+        if (actualCount > 0)
+        {
+            saveLog(logWithData(pos, actualCount));
+        }
+
+        recordLog();
+    }
+    else if (count != 0)
+    {
+        saveLog(logWithData(pos, count));
+    }
 }
 
 auto WAL::reset() -> void
@@ -66,6 +90,18 @@ auto WAL::doReset() -> void
     mWALCount = 0;
     mWAL << mWALCount;
     mWAL.buffer().flush();
+}
+
+void WAL::initialize()
+{
+    if (mWAL.buffer().size() != 0)
+    {
+        processWAL(loadWAL());
+    }
+    else
+    {
+        mWAL << mWALCount;
+    }
 }
 
 auto WAL::loadWAL() -> std::vector<WAL::Log>
@@ -105,23 +141,6 @@ auto WAL::processLog(const Log &log) -> void
     }
 }
 
-void WAL::process()
-{
-    if (mWAL.buffer().size() != 0)
-    {
-        processWAL(loadWAL());
-    }
-    else
-    {
-        mWAL << mWALCount;
-    }
-}
-
-void WAL::recordLog()
-{
-    saveLog(Log{-mFile->buffer().size(), {}});
-}
-
 void WAL::processWAL(const std::vector<Log> &logs)
 {
     for (auto it = logs.rbegin(); it != logs.rend(); ++it)
@@ -145,24 +164,5 @@ auto WAL::saveLog(const Log &log) -> void
     mWAL << log;
     mWAL.reset();
     mWAL << (++mWALCount);
-}
-
-auto WAL::recordLog(acore::size_type pos, acore::size_type count) -> void
-{
-    if ((pos + count) > mFile->buffer().size())
-    {
-        acore::size_type actualCount = mFile->buffer().size() - pos;
-
-        if (actualCount > 0)
-        {
-            saveLog(logWithData(pos, actualCount));
-        }
-
-        recordLog();
-    }
-    else if (count != 0)
-    {
-        saveLog(logWithData(pos, count));
-    }
 }
 }

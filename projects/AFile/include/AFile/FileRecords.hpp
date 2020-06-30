@@ -17,8 +17,6 @@
 
 #include "AFileModule.hpp"
 #include "FileData.hpp"
-#include "FileStream.hpp"
-#include "WAL.hpp"
 
 #include <vector>
 
@@ -41,21 +39,18 @@ public:
     [[nodiscard]] auto count() const noexcept -> acore::size_type;
     [[nodiscard]] auto endPos(acore::size_type index) const noexcept -> acore::size_type;
     [[nodiscard]] auto indexes() const -> std::vector<acore::size_type>;
-    auto invalidateIndex(acore::size_type idx) -> void;
-    [[nodiscard]] auto isLast(acore::size_type idx) const -> bool;
-    [[nodiscard]] auto isValid(acore::size_type idx) const noexcept -> bool;
-    [[nodiscard]] static auto isValid(Index idx) noexcept -> bool;
+    auto invalidate(acore::size_type index) -> void;
+    [[nodiscard]] auto isLast(acore::size_type index) const -> bool;
+    [[nodiscard]] auto isValid(acore::size_type index) const noexcept -> bool;
     [[nodiscard]] auto newIndex() -> acore::size_type;
     [[nodiscard]] auto pos(acore::size_type index) const noexcept -> acore::size_type;
     [[nodiscard]] auto recordPos(acore::size_type index) const noexcept -> acore::size_type;
-    [[nodiscard]] auto recordEnd(acore::size_type index) const noexcept -> acore::size_type;
     auto remove(acore::size_type recordIndex) -> void;
-    auto setRecord(acore::size_type index, Index record) -> void;
-    auto setSize(acore::size_type index, acore::size_type size) -> void;
+    auto set(acore::size_type index, Index record) -> void;
     [[nodiscard]] auto size(acore::size_type index) const noexcept -> acore::size_type;
     [[nodiscard]] auto sortedIndexes() -> std::vector<acore::size_type>;
-    auto updateIndex(FileRecords::Index index) -> void;
-    auto updateIndex(acore::size_type pos, FileRecords::Index index) -> void;
+    auto update(Index index) -> void;
+    auto update(acore::size_type pos, Index index) -> void;
 
 private:
     template<typename Buffer>
@@ -73,11 +68,12 @@ private:
     auto buildFreeList() -> void;
     auto createIndex() -> void;
     auto initialize() -> void;
+    [[nodiscard]] static auto isValid(Index index) noexcept -> bool;
     auto loadIndex() -> void;
     auto loadRecords() -> void;
     [[nodiscard]] static auto logicalRecordPos(acore::size_type pos) noexcept -> acore::size_type;
     [[nodiscard]] auto processIndex(Index index) -> acore::size_type;
-    [[nodiscard]] auto recordEnd(Index index) -> acore::size_type;
+    [[nodiscard]] static auto recordEnd(Index index) -> acore::size_type;
     [[nodiscard]] auto recordIndex(const Index *idx) const noexcept -> acore::size_type;
     auto saveRecordsCount() -> void;
     auto updateRemovedIndex(acore::size_type recordIndex) -> void;

@@ -18,8 +18,6 @@
 #include "AFileModule.hpp"
 #include "FileData.hpp"
 #include "FileRecords.hpp"
-#include "FileStream.hpp"
-#include "WAL.hpp"
 
 #include <filesystem>
 #include <vector>
@@ -387,18 +385,18 @@ private:
     auto moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void;
     auto moveRecordToEnd(acore::size_type index, acore::size_type size) -> void;
     [[nodiscard]] auto optimizeRecord(acore::size_type index, acore::size_type pos) -> acore::size_type;
-    auto removeData(acore::size_type idx) -> void;
+    auto removeData(acore::size_type index) -> void;
     auto resizeAt(acore::size_type recordIndex, acore::size_type newSize) -> void;
-    auto resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void;
+    auto resizeAtEnd(acore::size_type index, acore::size_type newSize) -> void;
+    auto validateCopyInput(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) const -> void;
     [[nodiscard]] static auto validateFileNotInUse(const char *filename) -> const char *;
     auto validateIndex(acore::size_type recordIndex) const -> void;
-    auto validateReadInput(acore::size_type index, acore::size_type offset) const -> void;
-    auto validateWriteInput(acore::size_type index, acore::size_type offset) const -> void;
-    auto validateMoveInput(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) const -> void;
     auto validateOffset(acore::size_type index, acore::size_type offset) const -> void;
     static auto validateOffset(acore::size_type offset) -> void;
     auto validatePos(acore::size_type index, acore::size_type pos) const -> void;
+    auto validateReadInput(acore::size_type index, acore::size_type offset) const -> void;
     static auto validateSize(acore::size_type size) -> void;
+    auto validateWriteInput(acore::size_type index, acore::size_type offset) const -> void;
     auto write(acore::size_type index, acore::size_type offset, const std::vector<char> &data) -> void;
 
     FileData mData;

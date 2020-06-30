@@ -72,24 +72,19 @@ auto FileRecords::indexes() const -> std::vector<acore::size_type>
     return idxs;
 }
 
-auto FileRecords::invalidateIndex(acore::size_type idx) -> void
+auto FileRecords::invalidate(acore::size_type index) -> void
 {
-    updateIndex(recordPos(idx), FileRecords::Index{acore::INVALID_INDEX, -mRecords[idx].size});
+    update(recordPos(index), Index{acore::INVALID_INDEX, -mRecords[index].size});
 }
 
-auto FileRecords::isLast(acore::size_type idx) const -> bool
+auto FileRecords::isLast(acore::size_type index) const -> bool
 {
-    return mData->size() == endPos(idx);
+    return mData->size() == endPos(index);
 }
 
-auto FileRecords::isValid(acore::size_type idx) const noexcept -> bool
+auto FileRecords::isValid(acore::size_type index) const noexcept -> bool
 {
-    return isValid(mRecords[idx]);
-}
-
-auto FileRecords::isValid(Index idx) noexcept -> bool
-{
-    return 0 <= idx.size;
+    return isValid(mRecords[index]);
 }
 
 auto FileRecords::newIndex() -> acore::size_type
@@ -109,7 +104,7 @@ auto FileRecords::newIndex() -> acore::size_type
         mRecords[index] = recordIndex;
     }
 
-    updateIndex(mData->size(), Index{index, 0});
+    update(mData->size(), Index{index, 0});
     mCount++;
     return index;
 }
@@ -119,20 +114,20 @@ auto FileRecords::pos(acore::size_type index) const noexcept -> acore::size_type
     return mRecords[index].pos;
 }
 
+auto FileRecords::recordPos(acore::size_type index) const noexcept -> acore::size_type
+{
+    return mRecords[index].pos - static_cast<acore::size_type>(sizeof(Index));
+}
+
 auto FileRecords::remove(acore::size_type index) -> void
 {
     updateRemovedIndex(index);
     mCount--;
 }
 
-auto FileRecords::setRecord(acore::size_type index, Index record) -> void
+auto FileRecords::set(acore::size_type index, Index record) -> void
 {
     mRecords[index] = record;
-}
-
-auto FileRecords::setSize(acore::size_type index, acore::size_type size) -> void
-{
-    mRecords[index].size = size;
 }
 
 auto FileRecords::size(acore::size_type index) const noexcept -> acore::size_type
@@ -151,12 +146,13 @@ auto FileRecords::sortedIndexes() -> std::vector<acore::size_type>
     return indexes;
 }
 
-auto FileRecords::updateIndex(FileRecords::Index index) -> void
+auto FileRecords::update(Index index) -> void
 {
-    updateIndex(recordPos(index.pos), index);
+    mRecords[index.pos].size = index.size;
+    update(recordPos(index.pos), index);
 }
 
-auto FileRecords::updateIndex(acore::size_type pos, Index index) -> void
+auto FileRecords::update(acore::size_type pos, Index index) -> void
 {
     mData->write(pos, (acore::DataStream{} << index).buffer().data());
 }
@@ -195,6 +191,11 @@ auto FileRecords::initialize() -> void
     {
         mData->save(0, acore::size_type{0});
     }
+}
+
+auto FileRecords::isValid(Index index) noexcept -> bool
+{
+    return 0 <= index.size;
 }
 
 auto FileRecords::loadIndex() -> void
@@ -237,16 +238,6 @@ auto FileRecords::processIndex(Index index) -> acore::size_type
     return recordEnd(Index{mData->pos(), index.size});
 }
 
-auto FileRecords::recordIndex(const Index *idx) const noexcept -> acore::size_type
-{
-    return std::distance(mRecords.data(), idx);
-}
-
-auto FileRecords::saveRecordsCount() -> void
-{
-    mData->save(0, static_cast<acore::size_type>(mRecords.size()));
-}
-
 auto FileRecords::recordEnd(Index index) -> acore::size_type
 {
     if (0 <= index.size)
@@ -257,19 +248,14 @@ auto FileRecords::recordEnd(Index index) -> acore::size_type
     return index.pos - index.size;
 }
 
-auto FileRecords::recordPos(acore::size_type index) const noexcept -> acore::size_type
+auto FileRecords::recordIndex(const Index *idx) const noexcept -> acore::size_type
 {
-    return mRecords[index].pos - static_cast<acore::size_type>(sizeof(Index));
+    return std::distance(mRecords.data(), idx);
 }
 
-auto FileRecords::recordEnd(acore::size_type index) const noexcept -> acore::size_type
+auto FileRecords::saveRecordsCount() -> void
 {
-    if (isValid(index))
-    {
-        return pos(index) + size(index);
-    }
-
-    return pos(index) - size(index);
+    mData->save(0, static_cast<acore::size_type>(mRecords.size()));
 }
 
 auto FileRecords::updateRemovedIndex(acore::size_type recordIndex) -> void

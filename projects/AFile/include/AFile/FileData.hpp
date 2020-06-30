@@ -19,7 +19,6 @@
 #include "FileStream.hpp"
 #include "WAL.hpp"
 
-#include <algorithm>
 #include <vector>
 
 namespace afile
@@ -45,7 +44,7 @@ public:
 
     [[nodiscard]] auto pos() const noexcept -> acore::size_type;
     [[nodiscard]] auto read(acore::size_type readPos) const -> FileStream &;
-    [[nodiscard]] auto read(acore::size_type readPos, acore::size_type remainingSize) const -> std::vector<char>;
+    [[nodiscard]] auto read(acore::size_type readPos, acore::size_type size) const -> std::vector<char>;
     auto reset() -> void;
     auto resize(acore::size_type newSize) -> void;
 
@@ -59,8 +58,8 @@ public:
     auto write(acore::size_type pos, const std::vector<char> &data) -> void;
 
 private:
-    static constexpr acore::size_type BUFFER_SIZE = 16384;
-    static constexpr acore::size_type MAX_STEP_SIZE = 2147483648;
+    [[nodiscard]] auto validateFile() const -> FileStream *;
+
     mutable FileStream mFile;
     WAL mWAL;
 };

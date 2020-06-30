@@ -153,6 +153,13 @@ TEST_CASE("File(const char *filename) [afile::File]")
         REQUIRE_THROWS_AS(afile::File{testFile.filename()}, acore::Exception);
     }
 
+    SECTION("[locked]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{0};
+        std::filesystem::permissions(testFile.filename(), std::filesystem::perms::none | std::filesystem::perms::owner_read);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}, acore::Exception);
+    }
+
     SECTION("[write ahead log]")
     {
         afile::FileStream{testFile.filename()} << acore::size_type{2}

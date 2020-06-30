@@ -16,7 +16,6 @@
 
 #include "FileData.hpp"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -24,12 +23,8 @@ namespace afile
 {
 FileData::FileData(const char *filename) :
     mFile{filename},
-    mWAL{&mFile}
+    mWAL{validateFile()}
 {
-    if (!mFile.buffer().isOpen())
-    {
-        throw acore::Exception() << "Could not open file '." << std::string{mFile.buffer().filename()} << '\'';
-    }
 }
 
 auto FileData::beginWAL() -> void
@@ -66,10 +61,10 @@ auto FileData::read(acore::size_type readPos) const -> FileStream &
     return mFile;
 }
 
-auto FileData::read(acore::size_type readPos, acore::size_type remainingSize) const -> std::vector<char>
+auto FileData::read(acore::size_type readPos, acore::size_type size) const -> std::vector<char>
 {
     mFile.seek(readPos);
-    std::vector<char> data(std::min(MAX_STEP_SIZE, remainingSize));
+    std::vector<char> data(size);
     mFile.read(data.data(), data.size());
     return data;
 }
@@ -90,5 +85,15 @@ auto FileData::write(acore::size_type pos, const std::vector<char> &data) -> voi
     mWAL.recordLog(pos, static_cast<acore::size_type>(data.size()));
     mFile.seek(pos);
     mFile.write(data.data(), data.size());
+}
+
+auto FileData::validateFile() const -> FileStream *
+{
+    if (!mFile.buffer().isOpen())
+    {
+        throw acore::Exception() << "Could not open file '" << std::string{mFile.buffer().filename()} << '\'';
+    }
+
+    return &mFile;
 }
 }
