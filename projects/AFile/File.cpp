@@ -59,6 +59,13 @@ auto File::contains(acore::size_type index) const -> bool
     return mRecords.contains(index);
 }
 
+auto File::copy(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void
+{
+    validateMoveInput(index, offset, newOffset, size);
+    mData.move(mRecords.pos(index), offset, newOffset, size);
+    endWrite(index);
+}
+
 auto File::count() const noexcept -> acore::size_type
 {
     return mRecords.count();
@@ -82,13 +89,6 @@ auto File::indexes() const -> std::vector<acore::size_type>
 auto File::isEmpty() const noexcept -> bool
 {
     return mRecords.count() == 0;
-}
-
-auto File::move(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void
-{
-    validateMoveInput(index, offset, newOffset, size);
-    mData.move(mRecords.pos(index), offset, newOffset, size);
-    endWrite(index);
 }
 
 auto File::optimize() -> void
@@ -227,8 +227,7 @@ auto File::removeData(acore::size_type idx) -> void
     if (mRecords.isLast(idx))
     {
         const acore::size_type pos = mRecords.recordPos(idx);
-        mWAL.recordLog(pos, mData.size() - pos);
-        mData.resize(pos);
+        resize(pos);
     }
     else
     {

@@ -267,6 +267,84 @@ TEST_CASE("beginWAL() -> void [afile::File]")
         REQUIRE(testFile.fileContent() == expected);
     }
 
+    SECTION("[unended value update]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{2}
+                                               << acore::size_type{0} << acore::size_type{11} << std::string{"abc"} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{1} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        {
+            afile::File file{testFile.filename()};
+            file.beginWAL();
+            file.insert(0, static_cast<acore::size_type>(sizeof(size_t)) + 1, 'B');
+        }
+
+        const std::vector<char> expected = (acore::DataStream{} << acore::size_type{2}
+                                                                << acore::size_type{0} << acore::size_type{11} << std::string{"abc"} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                                                << acore::size_type{1} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               .buffer()
+                                               .data();
+        REQUIRE(testFile.fileContent() == expected);
+    }
+
+    SECTION("[unended resize]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{1}
+                                               << acore::size_type{0} << acore::size_type{11} << std::string{"abc"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        {
+            afile::File file{testFile.filename()};
+            file.beginWAL();
+            file.resize(0, 19); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        }
+
+        const std::vector<char> expected = (acore::DataStream{} << acore::size_type{1}
+                                                                << acore::size_type{0} << acore::size_type{19} << std::string{"abc"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               .buffer()
+                                               .data();
+        REQUIRE(testFile.fileContent() == expected);
+    }
+
+    SECTION("[unended copy]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{2}
+                                               << acore::size_type{0} << acore::size_type{11} << std::string{"abc"} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{1} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        {
+            afile::File file{testFile.filename()};
+            file.beginWAL();
+            file.copy(1, 8, 14, 5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        }
+
+        const std::vector<char> expected = (acore::DataStream{} << acore::size_type{2}
+                                                                << acore::size_type{0} << acore::size_type{11} << std::string{"abc"} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                                                << acore::size_type{1} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               .buffer()
+                                               .data();
+        REQUIRE(testFile.fileContent() == expected);
+    }
+
+    SECTION("[unended copy beyond size]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{2}
+                                               << acore::size_type{0} << acore::size_type{20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{1} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+        {
+            afile::File file{testFile.filename()};
+            file.beginWAL();
+            file.copy(0, 12, 24, 4); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        }
+
+        const std::vector<char> expected = (acore::DataStream{} << acore::size_type{2}
+                                                                << acore::size_type{0} << acore::size_type{20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                                                << acore::size_type{1} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               .buffer()
+                                               .data();
+        REQUIRE(testFile.fileContent() == expected);
+    }
+
     SECTION("[exception]")
     {
         const std::vector<char> fileContent = (acore::DataStream{} << acore::size_type{2}
@@ -596,7 +674,7 @@ TEST_CASE("loadValue(size_type index, size_type offset, T &value) const -> void 
     }
 }
 
-TEST_CASE("move(size_type index, size_type offset, size_type newOffset, size_type size) -> void [afile::File]")
+TEST_CASE("copy(size_type index, size_type offset, size_type newOffset, size_type size) -> void [afile::File]")
 {
     const TestFile testFile;
     afile::FileStream{testFile.filename()} << acore::size_type{3}
@@ -606,10 +684,10 @@ TEST_CASE("move(size_type index, size_type offset, size_type newOffset, size_typ
 
     SECTION("[missing index]")
     {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.move(10, 8, 16, 8), acore::Exception);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.copy(10, 8, 16, 8), acore::Exception);
     }
 
-    SECTION("[move left]")
+    SECTION("[copy left]")
     {
         const std::vector<char> expected = (acore::DataStream{} << acore::size_type{3}
                                                                 << acore::size_type{0} << acore::size_type{28} << std::vector<int>{3, 4, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
@@ -617,11 +695,11 @@ TEST_CASE("move(size_type index, size_type offset, size_type newOffset, size_typ
                                                                 << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                                .buffer()
                                                .data();
-        afile::File{testFile.filename()}.move(0, 16, 8, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        afile::File{testFile.filename()}.copy(0, 16, 8, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(testFile.fileContent() == expected);
     }
 
-    SECTION("[move right]")
+    SECTION("[copy right]")
     {
         const std::vector<char> expected = (acore::DataStream{} << acore::size_type{3}
                                                                 << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 1, 2, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
@@ -629,11 +707,11 @@ TEST_CASE("move(size_type index, size_type offset, size_type newOffset, size_typ
                                                                 << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                                .buffer()
                                                .data();
-        afile::File{testFile.filename()}.move(0, 8, 16, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        afile::File{testFile.filename()}.copy(0, 8, 16, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(testFile.fileContent() == expected);
     }
 
-    SECTION("[move outside of value size]")
+    SECTION("[copy outside of value size]")
     {
         const std::vector<char> expected = (acore::DataStream{} << acore::size_type{3}
                                                                 << acore::INVALID_INDEX << acore::size_type{-28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
@@ -642,7 +720,7 @@ TEST_CASE("move(size_type index, size_type offset, size_type newOffset, size_typ
                                                                 << acore::size_type{0} << acore::size_type{40} << std::vector<int>{1, 2, 3, 4, 5} << 0 << 1 << 2) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                                .buffer()
                                                .data();
-        afile::File{testFile.filename()}.move(0, 8, 32, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        afile::File{testFile.filename()}.copy(0, 8, 32, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(testFile.fileContent() == expected);
     }
 
@@ -654,28 +732,28 @@ TEST_CASE("move(size_type index, size_type offset, size_type newOffset, size_typ
                                                                 << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                                .buffer()
                                                .data();
-        afile::File{testFile.filename()}.move(0, 12, 12, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        afile::File{testFile.filename()}.copy(0, 12, 12, 8); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         REQUIRE(testFile.fileContent() == expected);
     }
 
     SECTION("[negative offset]")
     {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.move(0, -8, 16, 8), acore::Exception);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.copy(0, -8, 16, 8), acore::Exception);
     }
 
     SECTION("[negative new offset]")
     {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.move(0, 8, -16, 8), acore::Exception);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.copy(0, 8, -16, 8), acore::Exception);
     }
 
     SECTION("[negative size]")
     {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.move(0, 8, 16, -8), acore::Exception);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.copy(0, 8, 16, -8), acore::Exception);
     }
 
     SECTION("[size over value size]")
     {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.move(0, 8, 16, 50), acore::Exception);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.copy(0, 8, 16, 50), acore::Exception);
     }
 }
 

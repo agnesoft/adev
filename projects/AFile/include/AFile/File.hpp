@@ -185,6 +185,21 @@ public:
     //! or \c false otherwise.
     [[nodiscard]] auto contains(acore::size_type index) const -> bool;
 
+    //! Copies the \a size bytes inside a value identified
+    //! by the \a index from the \a offset to the
+    //! \a newOffset. The \a offset and the \c offset
+    //! + \c size must be within the current value's
+    //! size. The \a newOffset or the \c newOffset
+    //! + \c size however can be outside of the current
+    //! value's size or even within the \c offset
+    //! + \c size range. If the \a newOffset is outside
+    //! of the current value's size the bytes between
+    //! the old size and the \a newOffset will be
+    //! zeroed out. On the other hand the original
+    //! range \c {offset + size} will \c NOT be zeroed
+    //! out.
+    auto copy(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void;
+
     //! Returns the <tt> current number </tt> of
     //! valid indexes stored in the File.
     [[nodiscard]] auto count() const noexcept -> acore::size_type;
@@ -281,21 +296,6 @@ public:
         beginRead(index, offset) >> value;
         endRead(index);
     }
-
-    //! Moves the \a size bytes inside a value identified
-    //! by the \a index from the \a offset to the
-    //! \a newOffset. The \a offset and the \c offset
-    //! + \c size must be within the current value's
-    //! size. The \a newOffset or the \c newOffset
-    //! + \c size however can be outside of the current
-    //! value's size or even within the \c offset
-    //! + \c size range. If the \a newOffset is outside
-    //! of the current value's size the bytes between
-    //! the old size and the \a newOffset will be
-    //! zeroed out. On the other hand the original
-    //! range \c {offset + size} will \c NOT be zeroed
-    //! out.
-    auto move(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void;
 
     //! Reclaims the unused parts of the file moving
     //! all the values next to each other. Call this
