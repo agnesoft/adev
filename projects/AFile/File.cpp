@@ -26,8 +26,7 @@ namespace afile
 
 File::File(const char *filename) :
     mData{validateFileNotInUse(filename)},
-    mWAL{&mData},
-    mRecords{&mData, &mWAL}
+    mRecords{&mData}
 {
     File::filesInUse()->emplace_back(filename);
 }
@@ -44,14 +43,13 @@ File::~File() //NOLINT(bugprone-exception-escape)
 
 auto File::beginWAL() noexcept -> void
 {
-    mWAL.begin();
+    mData.beginWAL();
 }
 
 auto File::clear() -> void
 {
-    mWAL.reset();
     mRecords.clear();
-    mData.clear();
+    mData.reset();
 }
 
 auto File::contains(acore::size_type index) const -> bool
@@ -62,8 +60,9 @@ auto File::contains(acore::size_type index) const -> bool
 auto File::copy(acore::size_type index, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void
 {
     validateMoveInput(index, offset, newOffset, size);
-    mData.move(mRecords.pos(index), offset, newOffset, size);
-    endWrite(index);
+    beginWAL();
+    write(index, newOffset, mData.read(mRecords.pos(index) + offset, size));
+    endWAL();
 }
 
 auto File::count() const noexcept -> acore::size_type
@@ -73,7 +72,7 @@ auto File::count() const noexcept -> acore::size_type
 
 auto File::endWAL() -> void
 {
-    mWAL.end();
+    mData.endWAL();
 }
 
 auto File::filename() const noexcept -> const char *
@@ -93,25 +92,26 @@ auto File::isEmpty() const noexcept -> bool
 
 auto File::optimize() -> void
 {
-    mWAL.reset();
-    mData.seek(static_cast<acore::size_type>(sizeof(acore::size_type)));
+    beginWAL();
+    auto pos = static_cast<acore::size_type>(sizeof(acore::size_type));
 
     for (acore::size_type idx : mRecords.sortedIndexes())
     {
-        optimizeRecord(idx);
+        pos = optimizeRecord(idx, pos);
     }
 
-    resize(mData.pos());
-    mWAL.reset();
+    mData.resize(pos);
+    endWAL();
 }
 
 auto File::remove(acore::size_type index) -> void
 {
     if (contains(index))
     {
+        beginWAL();
         removeData(index);
         mRecords.remove(index);
-        mWAL.reset();
+        endWAL();
     }
 }
 
@@ -122,8 +122,9 @@ auto File::resize(acore::size_type index, acore::size_type size) -> void
 
     if (mRecords.size(index) != size)
     {
+        beginWAL();
         resizeAt(index, size);
-        mWAL.reset();
+        endWAL();
     }
 }
 
@@ -142,44 +143,25 @@ auto File::size(acore::size_type index) const -> acore::size_type
     return 0;
 }
 
-auto File::beginRead(acore::size_type index, acore::size_type offset) const -> FileStream &
+auto File::extendsValue(acore::size_type index, acore::size_type offset, acore::size_type valueSize) const noexcept -> bool
 {
-    validateReadInput(index, offset);
-    mData.seek(mRecords.pos(index) + offset);
-    return mData.file();
+    return (offset + valueSize) > mRecords.size(index);
 }
 
-auto File::beginWrite(acore::size_type index, acore::size_type offset) -> acore::DataStream &
+auto File::write(acore::size_type index, acore::size_type offset, const std::vector<char> &data) -> void
 {
-    validateWriteInput(index, offset);
-    return mData.beginWrite(offset);
-}
-
-auto afile::File::bufferExtendsValue(acore::size_type index) const -> bool
-{
-    return mData.bufferSize() > mRecords.size(index);
-}
-
-auto File::endRead(acore::size_type index) const -> void
-{
-    validatePos(index, mData.pos());
-}
-
-auto File::endWrite(acore::size_type index) -> void
-{
-    if (bufferExtendsValue(index))
+    if (extendsValue(index, offset, static_cast<acore::size_type>(data.size())))
     {
         if (!mRecords.isLast(index))
         {
-            moveRecordToEnd(index, mData.offset());
+            moveRecordToEnd(index, offset);
         }
 
-        mRecords.setSize(index, mData.bufferSize());
+        mRecords.setSize(index, offset + static_cast<acore::size_type>(data.size()));
         mRecords.updateIndex(FileRecords::Index{index, mRecords.size(index)});
     }
 
-    mData.endWrite(mRecords.pos(index));
-    mWAL.reset();
+    mData.write(mRecords.pos(index) + offset, data);
 }
 
 auto File::filesInUse() -> std::vector<std::filesystem::path> *
@@ -192,7 +174,7 @@ auto File::moveRecord(acore::size_type index, acore::size_type to, acore::size_t
 {
     mRecords.updateIndex(to, FileRecords::Index{index, sizeToMove});
     const acore::size_type newPos = mData.pos();
-    mData.moveData(newPos, mRecords.pos(index), sizeToMove);
+    mData.write(newPos, mData.read(mRecords.pos(index), sizeToMove));
     mRecords.setRecord(index, FileRecords::Index{newPos, sizeToMove});
 }
 
@@ -207,19 +189,19 @@ auto File::moveRecordToEnd(acore::size_type index, acore::size_type size) -> voi
     }
 }
 
-auto File::optimizeRecord(acore::size_type index) -> void
+auto File::optimizeRecord(acore::size_type index, acore::size_type pos) -> acore::size_type
 {
     if (mRecords.isValid(index))
     {
-        if (mData.pos() != mRecords.recordPos(index))
+        if (pos != mRecords.recordPos(index))
         {
-            moveRecord(index, mData.pos(), mRecords.size(index));
+            moveRecord(index, pos, mRecords.size(index));
         }
-        else
-        {
-            mData.seek(mRecords.recordEnd(index));
-        }
+
+        return mRecords.recordEnd(index);
     }
+
+    return pos;
 }
 
 auto File::removeData(acore::size_type idx) -> void
@@ -227,18 +209,12 @@ auto File::removeData(acore::size_type idx) -> void
     if (mRecords.isLast(idx))
     {
         const acore::size_type pos = mRecords.recordPos(idx);
-        resize(pos);
+        mData.resize(pos);
     }
     else
     {
         mRecords.invalidateIndex(idx);
     }
-}
-
-auto File::resize(acore::size_type newSize) -> void
-{
-    mWAL.recordLog(newSize, mData.size() - newSize);
-    mData.resize(newSize);
 }
 
 auto File::resizeAt(acore::size_type index, acore::size_type newSize) -> void
@@ -259,11 +235,11 @@ auto File::resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void
 
     if (newSize < oldSize)
     {
-        resize(mData.size() - (oldSize - newSize));
+        mData.resize(mData.size() - (oldSize - newSize));
     }
     else
     {
-        mData.append(newSize - oldSize);
+        mData.write(mData.size(), std::vector<char>(newSize - oldSize));
     }
 
     mRecords.setSize(idx, newSize);
@@ -339,11 +315,5 @@ auto File::validateSize(acore::size_type size) -> void
     {
         throw acore::Exception() << "Invalid size '" << size << "'";
     }
-}
-
-auto File::write(acore::size_type pos, const std::vector<char> &data) -> void
-{
-    mWAL.recordLog(pos, data.size());
-    mData.write(pos, data);
 }
 }

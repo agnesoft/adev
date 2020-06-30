@@ -17,6 +17,7 @@
 
 #include "AFileModule.hpp"
 #include "FileStream.hpp"
+#include "WAL.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -29,32 +30,39 @@ class FileData
 public:
     explicit FileData(const char *filename);
 
-    auto append(acore::size_type remaining) -> void;
-    auto beginWrite(acore::size_type offset) -> acore::DataStream &;
-    [[nodiscard]] auto bufferSize() const noexcept -> acore::size_type;
-    auto clear() -> void;
-    auto endWrite(acore::size_type pos) -> void;
-    [[nodiscard]] auto file() const noexcept -> FileStream &;
+    auto beginWAL() -> void;
+    auto endWAL() -> void;
     [[nodiscard]] auto filename() const noexcept -> const char *;
-    auto move(acore::size_type pos, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void;
-    auto moveData(acore::size_type to, acore::size_type from, acore::size_type remainingSize) -> void;
-    [[nodiscard]] auto offset() const noexcept -> acore::size_type;
+
+    template<typename T>
+    [[nodiscard]] auto load(acore::size_type pos) -> T
+    {
+        T v{};
+        mFile.seek(pos);
+        mFile >> v;
+        return v;
+    }
+
     [[nodiscard]] auto pos() const noexcept -> acore::size_type;
-    [[nodiscard]] auto read(acore::size_type readPos, acore::size_type remainingSize) -> std::vector<char>;
+    [[nodiscard]] auto read(acore::size_type readPos) const -> FileStream &;
+    [[nodiscard]] auto read(acore::size_type readPos, acore::size_type remainingSize) const -> std::vector<char>;
+    auto reset() -> void;
     auto resize(acore::size_type newSize) -> void;
-    auto seek(acore::size_type pos) const -> void;
+
+    template<typename T>
+    auto save(acore::size_type pos, const T &value)
+    {
+        write(pos, (acore::DataStream{} << value).buffer().data());
+    }
+
     [[nodiscard]] auto size() const noexcept -> acore::size_type;
     auto write(acore::size_type pos, const std::vector<char> &data) -> void;
 
 private:
-    [[nodiscard]] static auto emptyData(acore::size_type size) -> std::vector<char>;
-    auto resetBuffer() -> void;
-
     static constexpr acore::size_type BUFFER_SIZE = 16384;
     static constexpr acore::size_type MAX_STEP_SIZE = 2147483648;
-    acore::size_type mOffset = 0;
-    acore::DataStream mBufferStream;
     mutable FileStream mFile;
+    WAL mWAL;
 };
 //! \endcond
 }

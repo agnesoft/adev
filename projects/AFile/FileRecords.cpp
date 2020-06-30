@@ -23,9 +23,8 @@
 
 namespace afile
 {
-FileRecords::FileRecords(FileData *data, WAL *wal) :
-    mData{data},
-    mWAL{wal}
+FileRecords::FileRecords(FileData *data) :
+    mData{data}
 {
     initialize();
 }
@@ -102,7 +101,7 @@ auto FileRecords::newIndex() -> acore::size_type
     {
         index = static_cast<acore::size_type>(mRecords.size());
         mRecords.push_back(recordIndex);
-        saveRecordsCount(static_cast<acore::size_type>(mRecords.size()));
+        saveRecordsCount();
     }
     else
     {
@@ -145,7 +144,6 @@ auto FileRecords::sortedIndexes() -> std::vector<acore::size_type>
 {
     std::vector<acore::size_type> indexes(mRecords.size());
     std::iota(indexes.begin(), indexes.end(), 0);
-
     std::sort(indexes.begin(), indexes.end(), [&](acore::size_type left, acore::size_type right) {
         return mRecords[left].pos < mRecords[right].pos;
     });
@@ -160,9 +158,7 @@ auto FileRecords::updateIndex(FileRecords::Index index) -> void
 
 auto FileRecords::updateIndex(acore::size_type pos, Index index) -> void
 {
-    mWAL->recordLog(pos, static_cast<acore::size_type>(sizeof(FileRecords::Index)));
-    mData->seek(pos);
-    mData->file() << index;
+    mData->write(pos, (acore::DataStream{} << index).buffer().data());
 }
 
 auto FileRecords::buildFreeList() -> void
@@ -179,9 +175,7 @@ auto FileRecords::buildFreeList() -> void
 
 auto FileRecords::createIndex() -> void
 {
-    acore::size_type count = 0;
-    mData->file().reset();
-    mData->file() >> count;
+    const auto count = mData->load<acore::size_type>(0);
 
     if (count < 0)
     {
@@ -199,15 +193,17 @@ auto FileRecords::initialize() -> void
     }
     else
     {
-        mData->file() << acore::size_type(0);
+        mData->save(0, acore::size_type{0});
     }
 }
 
 auto FileRecords::loadIndex() -> void
 {
-    while (mData->pos() != mData->size())
+    acore::size_type pos = mData->pos();
+
+    while (pos != mData->size())
     {
-        processIndex(readIndex());
+        pos = processIndex(mData->load<Index>(pos));
     }
 }
 
@@ -230,7 +226,7 @@ auto FileRecords::logicalRecordPos(acore::size_type pos) noexcept -> acore::size
     return pos + static_cast<acore::size_type>(sizeof(Index));
 }
 
-auto FileRecords::processIndex(Index index) -> void
+auto FileRecords::processIndex(Index index) -> acore::size_type
 {
     if (isValid(index))
     {
@@ -238,14 +234,7 @@ auto FileRecords::processIndex(Index index) -> void
         mCount++;
     }
 
-    mData->seek(recordEnd(Index{mData->pos(), index.size}));
-}
-
-auto FileRecords::readIndex() -> Index
-{
-    Index index;
-    mData->file() >> index;
-    return index;
+    return recordEnd(Index{mData->pos(), index.size});
 }
 
 auto FileRecords::recordIndex(const Index *idx) const noexcept -> acore::size_type
@@ -253,11 +242,9 @@ auto FileRecords::recordIndex(const Index *idx) const noexcept -> acore::size_ty
     return std::distance(mRecords.data(), idx);
 }
 
-auto FileRecords::saveRecordsCount(acore::size_type count) -> void
+auto FileRecords::saveRecordsCount() -> void
 {
-    mWAL->recordLog(0, static_cast<acore::size_type>(count));
-    mData->file().reset();
-    mData->file() << static_cast<acore::size_type>(mRecords.size());
+    mData->save(0, static_cast<acore::size_type>(mRecords.size()));
 }
 
 auto FileRecords::recordEnd(Index index) -> acore::size_type

@@ -23,55 +23,31 @@
 namespace afile
 {
 FileData::FileData(const char *filename) :
-    mFile{filename}
+    mFile{filename},
+    mWAL{&mFile}
 {
-    if (mFile.buffer().isOpen())
-    {
-        mBufferStream.buffer().data().reserve(BUFFER_SIZE);
-    }
-    else
+    if (!mFile.buffer().isOpen())
     {
         throw acore::Exception() << "Could not open file '." << std::string{mFile.buffer().filename()} << '\'';
     }
 }
 
-auto FileData::append(acore::size_type remaining) -> void
+auto FileData::beginWAL() -> void
 {
-    while (remaining > 0)
-    {
-        const std::vector<char> data = emptyData(remaining);
-        remaining -= data.size();
-        write(size(), data);
-    }
+    mWAL.begin();
 }
 
-auto FileData::beginWrite(acore::size_type offset) -> acore::DataStream &
+void FileData::endWAL()
 {
-    mOffset = offset;
-    return mBufferStream;
+    mWAL.end();
 }
 
-auto FileData::bufferSize() const noexcept -> acore::size_type
+auto FileData::reset() -> void
 {
-    return mOffset + mBufferStream.buffer().size();
-}
-
-auto FileData::clear() -> void
-{
+    mWAL.reset();
     mFile.buffer().resize(static_cast<acore::size_type>(sizeof(acore::size_type)));
     mFile.reset();
     mFile << acore::size_type(0);
-}
-
-void FileData::endWrite(acore::size_type pos)
-{
-    write(pos + mOffset, mBufferStream.buffer().data());
-    resetBuffer();
-}
-
-auto FileData::file() const noexcept -> FileStream &
-{
-    return mFile;
 }
 
 auto FileData::filename() const noexcept -> const char *
@@ -79,37 +55,18 @@ auto FileData::filename() const noexcept -> const char *
     return mFile.buffer().filename();
 }
 
-auto FileData::move(acore::size_type pos, acore::size_type offset, acore::size_type newOffset, acore::size_type size) -> void
-{
-    mOffset = newOffset;
-    mBufferStream.buffer().resize(std::max(mBufferStream.buffer().size(), size));
-    mFile.seek(pos + offset);
-    mFile.read(mBufferStream.buffer().data().data(), size);
-}
-
-auto FileData::moveData(acore::size_type to, acore::size_type from, acore::size_type remainingSize) -> void
-{
-    while (remainingSize > 0)
-    {
-        const std::vector<char> data = read(from, remainingSize);
-        from = pos();
-        remainingSize -= data.size();
-        write(to, data);
-        to = pos();
-    }
-}
-
-auto FileData::offset() const noexcept -> acore::size_type
-{
-    return mOffset;
-}
-
 auto FileData::pos() const noexcept -> acore::size_type
 {
     return mFile.pos();
 }
 
-auto FileData::read(acore::size_type readPos, acore::size_type remainingSize) -> std::vector<char>
+auto FileData::read(acore::size_type readPos) const -> FileStream &
+{
+    mFile.seek(readPos);
+    return mFile;
+}
+
+auto FileData::read(acore::size_type readPos, acore::size_type remainingSize) const -> std::vector<char>
 {
     mFile.seek(readPos);
     std::vector<char> data(std::min(MAX_STEP_SIZE, remainingSize));
@@ -119,12 +76,8 @@ auto FileData::read(acore::size_type readPos, acore::size_type remainingSize) ->
 
 auto FileData::resize(acore::size_type newSize) -> void
 {
+    mWAL.recordLog();
     mFile.buffer().resize(newSize);
-}
-
-auto FileData::seek(acore::size_type pos) const -> void
-{
-    mFile.seek(pos);
 }
 
 auto FileData::size() const noexcept -> acore::size_type
@@ -134,24 +87,8 @@ auto FileData::size() const noexcept -> acore::size_type
 
 auto FileData::write(acore::size_type pos, const std::vector<char> &data) -> void
 {
+    mWAL.recordLog(pos, static_cast<acore::size_type>(data.size()));
     mFile.seek(pos);
     mFile.write(data.data(), data.size());
-}
-
-auto FileData::emptyData(acore::size_type size) -> std::vector<char>
-{
-    return std::vector<char>(std::min(MAX_STEP_SIZE, size));
-}
-
-auto FileData::resetBuffer() -> void
-{
-    if (mBufferStream.buffer().size() > BUFFER_SIZE)
-    {
-        mBufferStream.buffer().data().clear();
-        mBufferStream.buffer().data().reserve(BUFFER_SIZE);
-    }
-
-    mBufferStream.buffer().resize(0);
-    mBufferStream.reset();
 }
 }

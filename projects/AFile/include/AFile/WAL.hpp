@@ -16,7 +16,6 @@
 #define AFILE_WAL_HPP
 
 #include "AFileModule.hpp"
-#include "FileData.hpp"
 #include "FileStream.hpp"
 
 #include <vector>
@@ -33,7 +32,7 @@ public:
         std::vector<char> data;
     };
 
-    explicit WAL(FileData *fileData);
+    explicit WAL(FileStream *file);
     WAL(const WAL &other) = delete;
     WAL(WAL &&other) = default;
     ~WAL();
@@ -41,6 +40,7 @@ public:
     auto begin() noexcept -> void;
     auto end() -> void;
     auto process() -> void;
+    auto recordLog() -> void;
     auto recordLog(acore::size_type pos, acore::size_type count) -> void;
     auto reset() -> void;
 
@@ -73,11 +73,11 @@ private:
     auto processLog(const Log &log) -> void;
     auto processWAL(const std::vector<Log> &logs) -> void;
     [[nodiscard]] auto readLog() -> Log;
-    auto recordLog(const Log &log) -> void;
+    auto saveLog(const Log &log) -> void;
 
     acore::size_type mWALCount = 0;
     acore::size_type mWALLevel = 0;
-    FileData *mData = nullptr;
+    FileStream *mFile = nullptr;
     FileStream mWAL;
 };
 //! \endcond

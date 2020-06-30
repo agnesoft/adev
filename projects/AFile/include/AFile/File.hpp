@@ -235,8 +235,10 @@ public:
     template<typename T>
     constexpr auto insert(const T &value) -> acore::size_type
     {
+        beginWAL();
         const acore::size_type index = mRecords.newIndex();
         insert(index, 0, value);
+        endWAL();
         return index;
     }
 
@@ -265,8 +267,10 @@ public:
     template<typename T>
     constexpr auto insert(acore::size_type index, acore::size_type offset, const T &value) -> void
     {
-        beginWrite(index, offset) << value;
-        endWrite(index);
+        validateWriteInput(index, offset);
+        beginWAL();
+        write(index, offset, (acore::DataStream{} << value).buffer().data());
+        endWAL();
     }
 
     //! Returns \c true if there are no valid indexes
@@ -293,8 +297,9 @@ public:
     template<typename T>
     constexpr auto loadValue(acore::size_type index, acore::size_type offset, T &value) const -> void
     {
-        beginRead(index, offset) >> value;
-        endRead(index);
+        validateReadInput(index, offset);
+        mData.read(mRecords.pos(index) + offset) >> value;
+        validatePos(index, mData.pos());
     }
 
     //! Reclaims the unused parts of the file moving
@@ -377,17 +382,12 @@ public:
     auto operator=(File &&other) -> File & = default;
 
 private:
-    [[nodiscard]] auto beginRead(acore::size_type index, acore::size_type offset) const -> FileStream &;
-    [[nodiscard]] auto beginWrite(acore::size_type index, acore::size_type offset) -> acore::DataStream &;
-    [[nodiscard]] auto bufferExtendsValue(acore::size_type index) const -> bool;
-    auto endRead(acore::size_type index) const -> void;
-    auto endWrite(acore::size_type index) -> void;
+    [[nodiscard]] auto extendsValue(acore::size_type index, acore::size_type offset, acore::size_type valueSize) const noexcept -> bool;
     [[nodiscard]] static auto filesInUse() -> std::vector<std::filesystem::path> *;
     auto moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void;
     auto moveRecordToEnd(acore::size_type index, acore::size_type size) -> void;
-    auto optimizeRecord(acore::size_type index) -> void;
+    [[nodiscard]] auto optimizeRecord(acore::size_type index, acore::size_type pos) -> acore::size_type;
     auto removeData(acore::size_type idx) -> void;
-    auto resize(acore::size_type newSize) -> void;
     auto resizeAt(acore::size_type recordIndex, acore::size_type newSize) -> void;
     auto resizeAtEnd(acore::size_type idx, acore::size_type newSize) -> void;
     [[nodiscard]] static auto validateFileNotInUse(const char *filename) -> const char *;
@@ -399,10 +399,9 @@ private:
     static auto validateOffset(acore::size_type offset) -> void;
     auto validatePos(acore::size_type index, acore::size_type pos) const -> void;
     static auto validateSize(acore::size_type size) -> void;
-    auto write(acore::size_type pos, const std::vector<char> &data) -> void;
+    auto write(acore::size_type index, acore::size_type offset, const std::vector<char> &data) -> void;
 
     FileData mData;
-    WAL mWAL;
     FileRecords mRecords;
 };
 }

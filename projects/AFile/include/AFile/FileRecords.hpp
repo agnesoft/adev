@@ -34,7 +34,7 @@ public:
         acore::size_type size = acore::INVALID_INDEX;
     };
 
-    explicit FileRecords(FileData *data, WAL *wal);
+    explicit FileRecords(FileData *data);
 
     auto clear() -> void;
     [[nodiscard]] auto contains(acore::size_type index) const -> bool;
@@ -76,17 +76,15 @@ private:
     auto loadIndex() -> void;
     auto loadRecords() -> void;
     [[nodiscard]] static auto logicalRecordPos(acore::size_type pos) noexcept -> acore::size_type;
-    auto processIndex(Index index) -> void;
+    [[nodiscard]] auto processIndex(Index index) -> acore::size_type;
     [[nodiscard]] auto recordEnd(Index index) -> acore::size_type;
-    [[nodiscard]] auto readIndex() -> Index;
     [[nodiscard]] auto recordIndex(const Index *idx) const noexcept -> acore::size_type;
-    auto saveRecordsCount(acore::size_type count) -> void;
+    auto saveRecordsCount() -> void;
     auto updateRemovedIndex(acore::size_type recordIndex) -> void;
 
     acore::size_type mCount = 0;
     acore::size_type mFreeIndex = acore::INVALID_INDEX;
     FileData *mData = nullptr;
-    WAL *mWAL = nullptr;
     std::vector<Index> mRecords;
 };
 //! \endcond

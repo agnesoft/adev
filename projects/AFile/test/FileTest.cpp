@@ -299,7 +299,7 @@ TEST_CASE("beginWAL() -> void [afile::File]")
         }
 
         const std::vector<char> expected = (acore::DataStream{} << acore::size_type{1}
-                                                                << acore::size_type{0} << acore::size_type{19} << std::string{"abc"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                                                << acore::size_type{0} << acore::size_type{11} << std::string{"abc"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
                                                .buffer()
                                                .data();
         REQUIRE(testFile.fileContent() == expected);

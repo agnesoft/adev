@@ -21,9 +21,9 @@
 
 namespace afile
 {
-WAL::WAL(FileData *data) :
-    mData{data},
-    mWAL{("." + std::string(mData->filename())).c_str()}
+WAL::WAL(FileStream *file) :
+    mFile{file},
+    mWAL{("." + std::string(mFile->buffer().filename())).c_str()}
 {
     if (mWAL.buffer().isOpen())
     {
@@ -31,7 +31,7 @@ WAL::WAL(FileData *data) :
     }
     else
     {
-        throw acore::Exception() << "Could not open Write Ahead Log file '." << mWAL.buffer().filename() << '\'';
+        throw acore::Exception() << "Could not open Write Ahead Log file '" << mWAL.buffer().filename() << '\'';
     }
 }
 
@@ -85,18 +85,23 @@ auto WAL::loadWAL() -> std::vector<WAL::Log>
 
 auto WAL::logWithData(acore::size_type pos, acore::size_type count) -> Log
 {
-    return Log{pos, mData->read(pos, count)};
+    Log log{pos, {}};
+    log.data.resize(static_cast<size_t>(count));
+    mFile->seek(pos);
+    mFile->read(log.data.data(), count);
+    return log;
 }
 
 auto WAL::processLog(const Log &log) -> void
 {
     if (log.pos < 0)
     {
-        mData->resize(-log.pos);
+        mFile->buffer().resize(-log.pos);
     }
     else
     {
-        mData->write(log.pos, log.data);
+        mFile->seek(log.pos);
+        mFile->write(log.data.data(), static_cast<acore::size_type>(log.data.size()));
     }
 }
 
@@ -110,6 +115,11 @@ void WAL::process()
     {
         mWAL << mWALCount;
     }
+}
+
+void WAL::recordLog()
+{
+    saveLog(Log{-mFile->buffer().size(), {}});
 }
 
 void WAL::processWAL(const std::vector<Log> &logs)
@@ -129,7 +139,7 @@ auto WAL::readLog() -> Log
     return log;
 }
 
-auto WAL::recordLog(const Log &log) -> void
+auto WAL::saveLog(const Log &log) -> void
 {
     mWAL.seek(mWAL.buffer().size());
     mWAL << log;
@@ -139,20 +149,20 @@ auto WAL::recordLog(const Log &log) -> void
 
 auto WAL::recordLog(acore::size_type pos, acore::size_type count) -> void
 {
-    if ((pos + count) > mData->size())
+    if ((pos + count) > mFile->buffer().size())
     {
-        acore::size_type actualCount = mData->size() - pos;
+        acore::size_type actualCount = mFile->buffer().size() - pos;
 
         if (actualCount > 0)
         {
-            recordLog(logWithData(pos, actualCount));
+            saveLog(logWithData(pos, actualCount));
         }
 
-        recordLog(Log{-mData->size(), {}});
+        recordLog();
     }
     else if (count != 0)
     {
-        recordLog(logWithData(pos, count));
+        saveLog(logWithData(pos, count));
     }
 }
 }
