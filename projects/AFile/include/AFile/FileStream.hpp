@@ -15,6 +15,7 @@
 #ifndef AFILE_FILE_STREAM_HPP
 #define AFILE_FILE_STREAM_HPP
 
+#include "AFileModule.hpp"
 #include "FileStreamBuffer.hpp"
 
 namespace afile

@@ -25,9 +25,28 @@ FileStreamBuffer::FileStreamBuffer(const char *filename) :
 {
 }
 
+FileStreamBuffer::~FileStreamBuffer() //NOLINT(bugprone-exception-escape)
+{
+    if (mFile.is_open())
+    {
+        mFile.close();
+        std::filesystem::resize_file(mName, static_cast<size_t>(mSize));
+    }
+}
+
 auto FileStreamBuffer::filename() const noexcept -> const char *
 {
     return mName.c_str();
+}
+
+auto FileStreamBuffer::flush() -> void
+{
+    mFile.flush();
+}
+
+auto FileStreamBuffer::isOpen() const -> bool
+{
+    return mFile.is_open();
 }
 
 auto FileStreamBuffer::read(acore::size_type index, char *buffer, acore::size_type count) -> void

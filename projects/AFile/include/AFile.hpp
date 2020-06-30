@@ -16,6 +16,7 @@
 #define AFILE_AFILE_HPP
 
 #include "AFile/AFileModule.hpp"
+#include "AFile/File.hpp"
 #include "AFile/FileStream.hpp"
 
 #endif

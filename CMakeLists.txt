@@ -122,10 +122,18 @@ target_link_libraries(ACoreTest ACore Catch2)
 #AFile Static Library
 add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/include/AFile/AFileModule.hpp
+                         projects/AFile/include/AFile/File.hpp
+                         projects/AFile/include/AFile/FileData.hpp
+                         projects/AFile/include/AFile/FileRecords.hpp
                          projects/AFile/include/AFile/FileStream.hpp
                          projects/AFile/include/AFile/FileStreamBuffer.hpp
+                         projects/AFile/include/AFile/WAL.hpp
+                         projects/AFile/File.cpp
+                         projects/AFile/FileData.cpp
+                         projects/AFile/FileRecords.cpp
                          projects/AFile/FileStream.cpp
-                         projects/AFile/FileStreamBuffer.cpp)
+                         projects/AFile/FileStreamBuffer.cpp
+                         projects/AFile/WAL.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
  target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
 endif()
@@ -134,7 +142,8 @@ target_include_directories(AFile PRIVATE projects/AFile/include/AFile)
 target_include_directories(AFile PUBLIC projects/AFile/include)
 
 #AFileTest
-add_executable(AFileTest projects/AFile/test/FileStreamTest.cpp)
+add_executable(AFileTest projects/AFile/test/FileTest.cpp
+                         projects/AFile/test/FileStreamTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AFileTest PRIVATE projects/AFile/test/pch.hpp)
 endif()
