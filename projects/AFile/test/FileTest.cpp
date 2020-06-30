@@ -353,6 +353,27 @@ TEST_CASE("beginWAL() -> void [afile::File]")
         REQUIRE(testFile.fileContent() == expected);
     }
 
+    SECTION("[unended optimize]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{3}
+                                               << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::INVALID_INDEX << acore::size_type{-20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        {
+            afile::File file{testFile.filename()};
+            file.beginWAL();
+            file.optimize();
+        }
+
+        const std::vector<char> expected = (acore::DataStream{} << acore::size_type{3}
+                                                                << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                                                << acore::INVALID_INDEX << acore::size_type{-20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                                                << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}) //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               .buffer()
+                                               .data();
+        REQUIRE(testFile.fileContent() == expected);
+    }
+
     SECTION("[exception]")
     {
         const std::vector<char> fileContent = (acore::DataStream{} << acore::size_type{2}
