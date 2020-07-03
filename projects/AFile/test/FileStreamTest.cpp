@@ -426,6 +426,16 @@ TEST_CASE("operator<<(FileStream &stream, const T &value) -> FileStream &, opera
         REQUIRE(v4 == v2);
     }
 
+    SECTION("std::initializer_list<int>")
+    {
+        stream << std::initializer_list<int>{1, 2, 3, 4};
+        REQUIRE(stream.buffer().size() == static_cast<acore::size_type>(sizeof(acore::size_type) + sizeof(int) * 4));
+        stream.reset();
+        std::vector<int> v;
+        stream >> v;
+        REQUIRE(v == std::vector<int>{1, 2, 3, 4});
+    }
+
     SECTION("std::pair<int, std::string>")
     {
         const std::string str1{"Hi"};

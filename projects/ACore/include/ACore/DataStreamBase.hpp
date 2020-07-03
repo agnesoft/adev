@@ -22,6 +22,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <initializer_list>
 #include <string>
 #include <utility>
 #include <vector>
@@ -480,7 +481,7 @@ auto operator<<(DataStreamBase<Buffer> &stream, const char *value) -> DataStream
 
 //! \relates DataStreamBase
 //! Serializes an std::string \a value into the stream
-//! as \c std::int64_t value representing the string's
+//! as acore::size_type value representing the string's
 //! size obtained by the call to \c size() followed
 //! by the string data. Returns the \a stream.
 template<typename Buffer>
@@ -494,7 +495,7 @@ auto operator<<(DataStreamBase<Buffer> &stream, const std::string &value) -> Dat
 
 //! \relates DataStreamBase
 //! Deserializes the std::string \a value from the
-//! \a stream by reading the \c std::int64_t size,
+//! \a stream by reading the acore::size_type size,
 //! resizing the \a value to it and reading the data
 //! from the stream into the \a value 's internal
 //! buffer. Returns the \a stream.
@@ -538,7 +539,7 @@ auto operator>>(DataStreamBase<Buffer> &stream, std::pair<First, Second> &value)
 //! \relates DataStreamBase
 //! Serializes an std::vector \a value into the
 //! \a stream by storing first its size as
-//! \c std::int64_t followed by the elements.
+//! acore::size_type followed by the elements.
 //! Returns the \a stream.
 //!
 //! \note There needs to be the \c operator<<() for
@@ -557,8 +558,29 @@ auto operator<<(DataStreamBase<Buffer> &stream, const std::vector<T> &value) -> 
 }
 
 //! \relates DataStreamBase
+//! Serializes an std::initializer_list \a value into the
+//! \a stream by storing first its size as
+//! acore::size_type followed by the elements.
+//! Returns the \a stream.
+//!
+//! \note There needs to be the \c operator<<() for
+//! the type \c T.
+template<typename Buffer, typename T>
+auto operator<<(DataStreamBase<Buffer> &stream, std::initializer_list<T> value) -> DataStreamBase<Buffer> &
+{
+    stream << static_cast<size_type>(value.size());
+
+    for (const T &v : value)
+    {
+        stream << v;
+    }
+
+    return stream;
+}
+
+//! \relates DataStreamBase
 //! Deserializes an std::vector \a value from the
-//! \a stream by reading the size as \c std::int64_t,
+//! \a stream by reading the size as acore::size_type,
 //! resizing the vector to that size and reading
 //! the elements' values into it. Returns the \a stream.
 //!
