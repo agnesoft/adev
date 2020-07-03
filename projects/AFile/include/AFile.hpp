@@ -18,5 +18,6 @@
 #include "AFile/AFileModule.hpp"
 #include "AFile/File.hpp"
 #include "AFile/FileStream.hpp"
+#include "AFile/PersistentVector.hpp"
 
 #endif
