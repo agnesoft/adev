@@ -47,7 +47,7 @@ public:
     PersistentDictionary(const PersistentDictionary &other) = delete;
 
     //! Move constructor.
-    PersistentDictionary(PersistentDictionary &&other) noexcept = default;
+    PersistentDictionary(PersistentDictionary &&other) = default;
 
     //! Destructor.
     ~PersistentDictionary() noexcept = default;

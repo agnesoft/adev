@@ -17,6 +17,7 @@
 
 #include "AFileModule.hpp"
 #include "File.hpp"
+#include "PersistentVector.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -26,12 +27,6 @@ namespace afile
 class PersistentDictionaryData
 {
 public:
-    struct FileIndex
-    {
-        acore::size_type index = acore::INVALID_INDEX;
-        acore::size_type data = acore::INVALID_INDEX;
-    };
-
     struct Value
     {
         acore::size_type count = 0;
@@ -41,18 +36,18 @@ public:
     explicit PersistentDictionaryData(File *file);
     PersistentDictionaryData(File *file, acore::size_type index);
     PersistentDictionaryData(const PersistentDictionaryData &other) = delete;
-    PersistentDictionaryData(PersistentDictionaryData &&other) noexcept = default;
+    PersistentDictionaryData(PersistentDictionaryData &&other) = default;
     ~PersistentDictionaryData() noexcept = default;
 
     [[nodiscard]] constexpr acore::size_type capacity() const noexcept
     {
-        return mData.count();
+        return mPersistentData.size();
     }
 
-    constexpr void clear()
+    void clear()
     {
         mIndexData.clear();
-        mData.clear();
+        mPersistentData.clear();
         mFree.clear();
         mCount = 0;
     }
@@ -64,7 +59,7 @@ public:
 
     [[nodiscard]] constexpr acore::size_type count(acore::size_type index) const
     {
-        return mFile->value<acore::size_type>(mData[index]);
+        return mFile->value<acore::size_type>(mPersistentData[index]);
     }
 
     [[nodiscard]] constexpr File *file() const noexcept
@@ -74,24 +69,24 @@ public:
 
     [[nodiscard]] constexpr acore::size_type fileIndex() const noexcept
     {
-        return mIndex;
+        return mPersistentData.fileIndex();
     }
 
     [[nodiscard]] std::vector<acore::size_type> indexes(acore::size_type hash) const;
     acore::size_type insert(acore::size_type hash, const acore::Variant &value);
 
-    constexpr void insert(acore::size_type index)
+    void insert(acore::size_type index)
     {
-        const acore::size_type fileIndex = mData[index];
+        const acore::size_type fileIndex = mPersistentData[index];
         const auto valueCount = mFile->value<acore::size_type>(fileIndex);
         mFile->insert(fileIndex, 0, valueCount + 1);
     }
 
     void remove(acore::size_type index, acore::size_type hash);
 
-    constexpr void remove(acore::size_type index)
+    void remove(acore::size_type index)
     {
-        const acore::size_type idx = mData[index];
+        const acore::size_type idx = mPersistentData[index];
         const auto count = mFile->value<acore::size_type>(idx);
         mFile->insert(idx, 0, count - 1);
     }
@@ -104,31 +99,26 @@ public:
 private:
     void insert(acore::size_type index, acore::size_type hash, const acore::Variant &value);
 
-    [[nodiscard]] constexpr acore::size_type freeIndex()
+    [[nodiscard]] acore::size_type freeIndex()
     {
-        return mFree.empty() ? count() : mFree.takeLast();
+        if (mFree.empty())
+        {
+            return count();
+        }
+
+        const acore::size_type index = mFree.back();
+        mFree.pop_back();
+        return index;
     }
 
+    [[nodiscard]] auto loadData() -> void;
+
     File *mFile = nullptr;
-    acore::size_type mIndex = acore::INVALID_INDEX;
-    FileIndex mIdx;
-    std::unordered_map<acore::size_type, acore::size_type> mIndexData;
-    PersistentVector<acore::size_type> mData;
+    PersistentVector<acore::size_type> mPersistentData;
+    std::unordered_multimap<acore::size_type, acore::size_type> mIndexData;
     std::vector<acore::size_type> mFree;
     acore::size_type mCount = 0;
 };
-
-template<typename Buffer>
-constexpr acore::DataStreamBase<Buffer> &operator<<(acore::DataStreamBase<Buffer> &stream, const PersistentDictionaryData::FileIndex &index)
-{
-    return stream << index.index << index.data;
-}
-
-template<typename Buffer>
-constexpr acore::DataStreamBase<Buffer> &operator>>(acore::DataStreamBase<Buffer> &stream, PersistentDictionaryData::FileIndex &index)
-{
-    return stream >> index.index >> index.data;
-}
 
 template<typename Buffer>
 constexpr acore::DataStreamBase<Buffer> &operator<<(acore::DataStreamBase<Buffer> &stream, const PersistentDictionaryData::Value &value)

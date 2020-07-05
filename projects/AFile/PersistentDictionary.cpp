@@ -33,7 +33,7 @@ File *PersistentDictionary::file() const noexcept
     return storage()->file();
 }
 
-size_type PersistentDictionary::fileIndex() const noexcept
+acore::size_type PersistentDictionary::fileIndex() const noexcept
 {
     return storage()->fileIndex();
 }
