@@ -96,14 +96,14 @@ TEST_CASE("dictionaryHashValue(const Variant &value) -> acore::size_type [acore]
 
     SECTION("[empty]")
     {
-        acore::Variant var;
+        const acore::Variant var;
 
         REQUIRE(acore::dictionaryValueHash(var) == hash(var));
     }
 
     SECTION("[string]")
     {
-        acore::Variant var{std::string{"Hello, World!"}};
+        const acore::Variant var{std::string{"Hello, World!"}};
 
         REQUIRE(acore::dictionaryValueHash(var) == hash(var));
     }
