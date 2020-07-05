@@ -27,6 +27,15 @@
 
 namespace acore
 {
+//! Returns the hash of the value. This free function is
+//! used in DictionaryBase and can be used in its \c Data
+//! template argument implementations for consitency.
+[[nodiscard]] static inline auto dictionaryValueHash(const Variant &value) -> size_type
+{
+    const std::vector<char> &val{value.value<const std::vector<char> &>()};
+    return static_cast<size_type>(std::hash<std::string_view>{}(std::string_view(val.data(), static_cast<std::size_t>(val.size()))));
+}
+
 //! The DictionaryBase<Data> is a template class
 //! that provides the reference counted size_type -
 //! \c T dictionary.
@@ -169,7 +178,7 @@ public:
     //! is incremented and its index is returned.
     //!
     //! If the \a value is <a href="https://en.cppreference.com/w/cpp/types/is_trivially_copyable">trivially-copyable</a>
-    //! and sizeof(T) <= sizeof(#size_type) the value
+    //! and sizeof(T) <= sizeof(#acore::size_type) the value
     //! is simply embedded into the returned id
     //! and not actally stored.
     template<typename T>
@@ -206,7 +215,7 @@ public:
         {
             if (mData.count(index) == 1)
             {
-                mData.remove(index, hash(mData.value(index)));
+                mData.remove(index, dictionaryValueHash(mData.value(index)));
             }
             else
             {
@@ -231,7 +240,7 @@ public:
     //! the \a index.
     //!
     //! If the \c T is the <a href="https://en.cppreference.com/w/cpp/types/is_trivially_copyable">trivially-copyable</a>
-    //! type and sizeof(T) <= sizeof(#size_type)
+    //! type and sizeof(T) <= sizeof(#acore::size_type)
     //! it is simply reconstructed from the \a index.
     //!
     //! Otherwise is is retrieved as Variant and
@@ -272,7 +281,7 @@ private:
     [[nodiscard]] auto findValue(const T &value) const -> size_type
     {
         const Variant val{value};
-        return findValue(hash(val), val);
+        return findValue(dictionaryValueHash(val), val);
     }
 
     [[nodiscard]] auto findValue(size_type hashValue, const Variant &value) const -> size_type
@@ -292,7 +301,7 @@ private:
 
     [[nodiscard]] constexpr auto insertValue(const Variant &value) -> size_type
     {
-        size_type hashValue = hash(value);
+        size_type hashValue = dictionaryValueHash(value);
         size_type idx = findValue(hashValue, value);
 
         if (idx == INVALID_INDEX)
@@ -305,12 +314,6 @@ private:
         }
 
         return idx;
-    }
-
-    [[nodiscard]] constexpr auto hash(const Variant &value) const -> size_type
-    {
-        const std::vector<char> &val{value.value<const std::vector<char> &>()};
-        return static_cast<size_type>(std::hash<std::string_view>{}(std::string_view(val.data(), static_cast<std::size_t>(val.size()))));
     }
 
     [[nodiscard]] constexpr auto nextIndex(size_type index) const -> size_type

@@ -37,11 +37,17 @@ class PersistentDictionary : public acore::DictionaryBase<PersistentDictionaryDa
 public:
     //! Constructs a new dictionary in the \a file.
     //! The map is assigned a new index().
-    explicit PersistentDictionary(File *file);
+    explicit PersistentDictionary(File *file) :
+        acore::DictionaryBase<PersistentDictionaryData>{file}
+    {
+    }
 
     //! Constructs a dictionary with existing data
     //! in the \a file at the \a index.
-    PersistentDictionary(File *file, acore::size_type index);
+    PersistentDictionary(File *file, acore::size_type index) :
+        acore::DictionaryBase<PersistentDictionaryData>{file, index}
+    {
+    }
 
     //! Deleted copy constructor.
     PersistentDictionary(const PersistentDictionary &other) = delete;
@@ -53,21 +59,27 @@ public:
     ~PersistentDictionary() noexcept = default;
 
     //! Returns the file this dictionary operates on.
-    [[nodiscard]] File *file() const noexcept;
+    [[nodiscard]] constexpr auto file() const noexcept -> File *
+    {
+        return storage()->file();
+    }
 
     //! Returns the index of the data of this dictionary
     //! in the file().
-    [[nodiscard]] acore::size_type fileIndex() const noexcept;
+    [[nodiscard]] constexpr auto fileIndex() const noexcept -> acore::size_type
+    {
+        return storage()->fileIndex();
+    }
 
     //! Converts the dictionary to the memory based
     //! acore::Dictionary.
-    [[nodiscard]] acore::Dictionary toDictionary() const;
+    [[nodiscard]] auto toDictionary() const -> acore::Dictionary;
 
     //! Deleted copy assignment operator.
-    PersistentDictionary &operator=(const PersistentDictionary &other) = delete;
+    auto operator=(const PersistentDictionary &other) -> PersistentDictionary & = delete;
 
     //! Move assignment operator.
-    PersistentDictionary &operator=(PersistentDictionary &&other) noexcept = default;
+    auto operator=(PersistentDictionary &&other) noexcept -> PersistentDictionary & = default;
 };
 }
 

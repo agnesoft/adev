@@ -16,6 +16,10 @@
 
 #include "PersistentDictionaryData.hpp"
 
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
 namespace afile
 {
 PersistentDictionaryData::PersistentDictionaryData(File *file) :
@@ -26,15 +30,29 @@ PersistentDictionaryData::PersistentDictionaryData(File *file) :
 
 PersistentDictionaryData::PersistentDictionaryData(File *file, acore::size_type index) :
     mFile{file},
-    mPersistentData{mFile, index}
+    mPersistentData{mFile, index},
+    mDataIndex{mFile->value<std::vector<Index>>(index)}
 {
     loadData();
+}
+
+auto PersistentDictionaryData::clear() -> void
+{
+    mHashToIndex.clear();
+    mPersistentData.clear();
+    mFree.clear();
+    mCount = 0;
+}
+
+auto PersistentDictionaryData::count(acore::size_type index) const -> acore::size_type
+{
+    return mDataIndex[index].count;
 }
 
 auto PersistentDictionaryData::indexes(acore::size_type hash) const -> std::vector<acore::size_type>
 {
     std::vector<acore::size_type> values;
-    const auto range = mIndexData.equal_range(hash);
+    const auto range = mHashToIndex.equal_range(hash);
     values.reserve(std::distance(range.first, range.second));
 
     for (auto it = range.first; it != range.second; ++it)
@@ -45,87 +63,124 @@ auto PersistentDictionaryData::indexes(acore::size_type hash) const -> std::vect
     return values;
 }
 
-void PersistentDictionaryData::remove(acore::size_type index, acore::size_type hash)
+auto PersistentDictionaryData::insert(acore::size_type index) -> void
 {
-    mFile->beginWAL();
-
-    const auto range = mIndexData.equal_range(hash);
-    for (auto it = range.first; it != range.second; ++it)
-    {
-        if (it->second == index)
-        {
-            mIndexData.erase(it);
-            break;
-        }
-    }
-
-    mFile->remove(mPersistentData[index]);
-
-    if (index < (mPersistentData.size() - 1))
-    {
-        mPersistentData[index] = acore::INVALID_INDEX;
-        mFree.push_back(index);
-    }
-    else
-    {
-        mPersistentData.pop_back();
-    }
-
-    mCount--;
-    mFile->endWAL();
+    mDataIndex[index].count++;
+    mPersistentData[index] = mDataIndex[index];
 }
 
-acore::Variant PersistentDictionaryData::value(acore::size_type index) const
-{
-    return mFile->value<acore::Variant>(mPersistentData[index], sizeof(acore::size_type));
-}
-
-acore::size_type PersistentDictionaryData::insert(acore::size_type hash, const acore::Variant &value)
+auto PersistentDictionaryData::insert(acore::size_type hash, const acore::Variant &value) -> acore::size_type
 {
     acore::size_type index = freeIndex();
     insert(index, hash, value);
     return index;
 }
 
-void PersistentDictionaryData::insert(acore::size_type index, acore::size_type hash, const acore::Variant &value)
+auto PersistentDictionaryData::remove(acore::size_type index) -> void
+{
+    mDataIndex[index].count--;
+    mPersistentData[index] = mDataIndex[index];
+}
+
+auto PersistentDictionaryData::remove(acore::size_type index, acore::size_type hash) -> void
 {
     mFile->beginWAL();
-    mIndexData.insert({hash, index});
-
-    if (index == mPersistentData.size())
-    {
-        mPersistentData.push_back(mFile->insert(Value{1, value}));
-    }
-    else
-    {
-        mPersistentData[index] = mFile->insert(Value{1, value});
-    }
-
-    mCount++;
+    removeHashMapping(index, hash);
+    mFile->remove(mDataIndex[index].valueIndex);
+    removeDataIndex(index);
+    --mCount;
     mFile->endWAL();
 }
 
-[[nodiscard]] auto doHash(const acore::Variant &value) -> acore::size_type
+auto PersistentDictionaryData::value(acore::size_type index) const -> acore::Variant
 {
-    const std::vector<char> &val{value.value<const std::vector<char> &>()};
-    return static_cast<acore::size_type>(std::hash<std::string_view>{}(std::string_view(val.data(), static_cast<std::size_t>(val.size()))));
+    return mFile->value<acore::Variant>(mDataIndex[index].valueIndex);
+}
+
+auto PersistentDictionaryData::freeIndex() -> acore::size_type
+{
+    if (mFree.empty())
+    {
+        return count();
+    }
+
+    const acore::size_type index = mFree.back();
+    mFree.pop_back();
+    return index;
+}
+
+auto PersistentDictionaryData::insert(acore::size_type index, acore::size_type hash, const acore::Variant &value) -> void
+{
+    mFile->beginWAL();
+    mHashToIndex.insert({hash, index});
+    const acore::size_type valueIndex = mFile->insert(value);
+    insertDataIndex(index, valueIndex);
+    ++mCount;
+    mFile->endWAL();
+}
+
+auto PersistentDictionaryData::insertDataIndex(acore::size_type index, acore::size_type valueIndex) -> void
+{
+    if (index == mPersistentData.size())
+    {
+        mDataIndex.push_back(Index{valueIndex, 1});
+        mPersistentData.push_back(mDataIndex.back());
+    }
+    else
+    {
+        mDataIndex[index] = (Index{valueIndex, 1});
+        mPersistentData[index] = mDataIndex.back();
+    }
+}
+
+auto PersistentDictionaryData::isLast(acore::size_type index) const -> bool
+{
+    return index < (static_cast<acore::size_type>(mDataIndex.size()) - 1);
 }
 
 auto PersistentDictionaryData::loadData() -> void
 {
-    for (acore::size_type i = 0; i < mPersistentData.size(); ++i)
+    for (acore::size_type i = 0; i < static_cast<acore::size_type>(mDataIndex.size()); ++i)
     {
-        const acore::size_type index = mPersistentData[i];
-
-        if (index == acore::INVALID_INDEX)
-        {
-            mFree.push_back(i);
-        }
-        else
-        {
-            const acore::Variant val = mFile->value<acore::Variant>(index, static_cast<acore::size_type>(sizeof(acore::size_type)));
-            mIndexData.insert({doHash(val), i});
-        }
+        loadIndex(i, mDataIndex[i].valueIndex);
     }
+}
+
+void PersistentDictionaryData::loadIndex(acore::size_type index, acore::size_type valueIndex)
+{
+    if (valueIndex == acore::INVALID_INDEX)
+    {
+        mFree.push_back(index);
+    }
+    else
+    {
+        const auto val = mFile->value<acore::Variant>(valueIndex);
+        mHashToIndex.insert({acore::dictionaryValueHash(val), index});
+        ++mCount;
+    }
+}
+
+auto PersistentDictionaryData::removeDataIndex(acore::size_type index) -> void
+{
+    if (isLast(index))
+    {
+        mDataIndex[index] = Index{acore::INVALID_INDEX, 0};
+        mPersistentData[index] = mDataIndex[index];
+        mFree.push_back(index);
+    }
+    else
+    {
+        mDataIndex.pop_back();
+        mPersistentData.pop_back();
+    }
+}
+
+auto PersistentDictionaryData::removeHashMapping(acore::size_type index, acore::size_type hash) -> void
+{
+    const auto range = mHashToIndex.equal_range(hash);
+    const auto it = std::find_if(range.first, range.second, [&](const auto &val) {
+        return val.second == index;
+    });
+    mHashToIndex.erase(it);
 }
 }

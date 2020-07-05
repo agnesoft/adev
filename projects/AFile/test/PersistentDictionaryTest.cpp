@@ -6,7 +6,7 @@
 
 namespace acore
 {
-[[nodiscard]] bool operator==(const Dictionary &left, const Dictionary &right)
+[[nodiscard]] auto operator==(const Dictionary &left, const Dictionary &right) -> bool
 {
     return std::equal(left.begin(), left.end(), right.begin());
 }
@@ -24,25 +24,25 @@ public:
     {
     }
 
-    [[nodiscard]] bool operator==(const DuplicateValue &right) const noexcept
+    [[nodiscard]] auto operator==(const DuplicateValue &right) const noexcept -> bool
     {
         return mValue == right.mValue;
     }
 
-    [[nodiscard]] bool operator<(const DuplicateValue &right) const noexcept
+    [[nodiscard]] auto operator<(const DuplicateValue &right) const noexcept -> bool
     {
         return mValue < right.mValue;
     }
 
 private:
     template<typename Buffer>
-    friend acore::DataStreamBase<Buffer> &operator<<(acore::DataStreamBase<Buffer> &stream, const DuplicateValue &value)
+    friend auto operator<<(acore::DataStreamBase<Buffer> &stream, const DuplicateValue &value) -> acore::DataStreamBase<Buffer> &
     {
         return stream << value.mValue;
     }
 
     template<typename Buffer>
-    friend acore::DataStreamBase<Buffer> &operator>>(acore::DataStreamBase<Buffer> &stream, DuplicateValue &value)
+    friend auto operator>>(acore::DataStreamBase<Buffer> &stream, DuplicateValue &value) -> acore::DataStreamBase<Buffer> &
     {
         return stream >> value.mValue;
     }
@@ -60,7 +60,7 @@ struct hash<persistentdictionarytest::DuplicateValue>
     using argument_type = persistentdictionarytest::DuplicateValue;
     using result_type = std::size_t;
 
-    result_type operator()([[maybe_unused]] const argument_type &value) const noexcept
+    [[nodiscard]] auto operator()([[maybe_unused]] const argument_type &value) const noexcept -> result_type
     {
         return 1;
     }
@@ -69,7 +69,7 @@ struct hash<persistentdictionarytest::DuplicateValue>
 
 namespace afile
 {
-[[nodiscard]] bool operator==(const PersistentDictionary &dictionary, const std::vector<acore::Variant> &values)
+[[nodiscard]] auto operator==(const PersistentDictionary &dictionary, const std::vector<acore::Variant> &values) -> bool
 {
     return std::equal(dictionary.begin(), dictionary.end(), values.begin());
 }
@@ -89,7 +89,7 @@ public:
     }
 
     template<typename... Args>
-    TestFile(Args... args) :
+    explicit TestFile(Args... args) :
         TestFile()
     {
         afile::PersistentDictionary dictionary{file()};
@@ -100,7 +100,7 @@ public:
     TestFile(const TestFile &other) = delete;
     TestFile(TestFile &&other) = delete;
 
-    ~TestFile() noexcept
+    ~TestFile()
     {
         try
         {
@@ -120,21 +120,21 @@ public:
         }
     }
 
-    [[nodiscard]] afile::File *file() noexcept
+    [[nodiscard]] auto file() const noexcept -> afile::File *
     {
         return mFile.get();
     }
 
-    [[nodiscard]] acore::size_type index() const noexcept
+    [[nodiscard]] auto index() const noexcept -> acore::size_type
     {
         return mIndex;
     }
 
-    TestFile &operator=(const TestFile &other) = delete;
-    TestFile &operator=(TestFile &&other) = delete;
+    auto operator=(const TestFile &other) -> TestFile & = delete;
+    auto operator=(TestFile &&other) -> TestFile & = delete;
 
 private:
-    void removeFiles()
+    static auto removeFiles() -> void
     {
         if (std::filesystem::exists(TEST_FILE))
         {
@@ -148,7 +148,7 @@ private:
     }
 
     template<typename T, typename... Args>
-    void insertValues(afile::PersistentDictionary &dictionary, const T &value, Args... values)
+    auto insertValues(afile::PersistentDictionary &dictionary, const T &value, Args... values) -> void
     {
         dictionary.insert(value);
 
@@ -164,7 +164,7 @@ private:
 
 TEST_CASE("PersistentDictionary(File *file) [afile::PersistentDictionary]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentDictionary dictionary{testFile.file()};
     REQUIRE(dictionary == std::vector<acore::Variant>{});
 }
@@ -173,25 +173,25 @@ TEST_CASE("PersistentDictionary(File *file, size_type index) [afile::PersistentD
 {
     SECTION("[valid]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         const afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
         REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
     }
 
     SECTION("[removed values]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
 
         afile::PersistentDictionary{testFile.file(), testFile.index()}.remove(2);
-        testFile.file()->insert(std::vector<int>{1, 2, 3, 4, 5});
+        testFile.file()->insert(std::vector<int>{1, 2, 3, 4, 5}); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         const afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
         REQUIRE_FALSE(dictionary.contains(2));
         REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::vector<char>{'a', 'b'}}});
@@ -200,11 +200,11 @@ TEST_CASE("PersistentDictionary(File *file, size_type index) [afile::PersistentD
 
 TEST_CASE("Dictionary(Dictionary &&other) [afile::PersistentDictionary]")
 {
-    TestFile testFile{std::string{"Hello"},
-                      std::vector<int>{1, 2, 3, 4, 5},
-                      std::string{"Hello"},
-                      std::string{"World"},
-                      std::vector<char>{'a', 'b'}};
+    const TestFile testFile{std::string{"Hello"},
+                            std::vector<int>{1, 2, 3, 4, 5},
+                            std::string{"Hello"},
+                            std::string{"World"},
+                            std::vector<char>{'a', 'b'}};
     afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
     const afile::PersistentDictionary other{std::move(dictionary)};
     REQUIRE(other == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
@@ -214,7 +214,7 @@ TEST_CASE("begin() const noexcept -> const_iterator [afile::PersistentDictionary
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(noexcept(dictionary.begin()));
         REQUIRE(dictionary.begin() == dictionary.end());
@@ -222,11 +222,11 @@ TEST_CASE("begin() const noexcept -> const_iterator [afile::PersistentDictionary
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
         REQUIRE(dictionary.begin() != dictionary.end());
         REQUIRE(*dictionary.begin() == acore::Variant{std::string{"Hello"}});
@@ -237,7 +237,7 @@ TEST_CASE("clear() -> void [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         afile::PersistentDictionary dictionary{testFile.file()};
         dictionary.clear();
         REQUIRE(dictionary == std::vector<acore::Variant>{});
@@ -245,7 +245,7 @@ TEST_CASE("clear() -> void [afile::PersistentDictionary]")
 
     SECTION("[data]")
     {
-        TestFile testFile{std::vector<int>{5, 7, 9}};
+        const TestFile testFile{std::vector<int>{5, 7, 9}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
         dictionary.clear();
         REQUIRE(dictionary == std::vector<acore::Variant>{});
@@ -256,14 +256,14 @@ TEST_CASE("contains(size_type index) const -> bool [afile::PersistentDictionary]
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE_FALSE(dictionary.contains(1));
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"}, std::string{"World"}, std::vector<char>{'a', 'b', 'c'}};
+        const TestFile testFile{std::string{"Hello"}, std::string{"World"}, std::vector<char>{'a', 'b', 'c'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[existing]")
@@ -288,18 +288,18 @@ TEST_CASE("containsValue(const T &value) const -> bool [afile::PersistentDiction
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE_FALSE(dictionary.containsValue(std::string{"Helo"}));
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[existing]")
@@ -330,7 +330,7 @@ TEST_CASE("count() const noexcept -> size_type [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(noexcept(dictionary.count()));
         REQUIRE(dictionary.count() == 0);
@@ -338,11 +338,11 @@ TEST_CASE("count() const noexcept -> size_type [afile::PersistentDictionary]")
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         const afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         REQUIRE(dictionary.count() == 4);
@@ -353,18 +353,18 @@ TEST_CASE("count(size_type index) const -> size_type [afile::PersistentDictionar
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(dictionary.count(1) == 0);
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[single]")
@@ -398,7 +398,7 @@ TEST_CASE("count(size_type index) const -> size_type [afile::PersistentDictionar
 
 TEST_CASE("end() const noexcept -> const_iterator [afile::PersistentDictionary]")
 {
-    TestFile testFile{std::string{"A"}};
+    const TestFile testFile{std::string{"A"}};
     const afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
     REQUIRE(noexcept(dictionary.end()));
     REQUIRE(dictionary.end() != dictionary.begin());
@@ -406,32 +406,32 @@ TEST_CASE("end() const noexcept -> const_iterator [afile::PersistentDictionary]"
 
 TEST_CASE("file() const noexcept -> File * [afile::PersistentDictionary]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     REQUIRE(afile::PersistentDictionary{testFile.file()}.file() == testFile.file());
 }
 
 TEST_CASE("fileIndex() const noexcept -> size_type [afile::PersistentDictionary]")
 {
-    TestFile testFile;
-    REQUIRE(afile::PersistentDictionary{testFile.file()}.fileIndex() == 2);
+    const TestFile testFile;
+    REQUIRE(afile::PersistentDictionary{testFile.file()}.fileIndex() == 0);
 }
 
 TEST_CASE("index(const T &value) const -> size_type [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(dictionary.index(std::string{"Hello"}) == acore::INVALID_INDEX);
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[existing]")
@@ -453,7 +453,7 @@ TEST_CASE("index(const T &value) const -> size_type [afile::PersistentDictionary
         SECTION("[trivial]")
         {
             acore::size_type expected{};
-            std::memcpy(&expected, "Hello", 5);
+            std::memcpy(&expected, "Hello", 5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(std::as_const(dictionary).index("Hello") == expected);
         }
     }
@@ -463,7 +463,7 @@ TEST_CASE("insert(const T &value) -> size_type [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(dictionary.insert(std::string{"Hello"}) == 0);
         REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}});
@@ -471,11 +471,11 @@ TEST_CASE("insert(const T &value) -> size_type [afile::PersistentDictionary]")
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[existing]")
@@ -508,7 +508,7 @@ TEST_CASE("insert(const T &value) -> size_type [afile::PersistentDictionary]")
         SECTION("[trivial]")
         {
             acore::size_type expectedIndex{};
-            std::memcpy(&expectedIndex, "Hello", 5);
+            std::memcpy(&expectedIndex, "Hello", 5); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(dictionary.insert("Hello") == expectedIndex);
             REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
         }
@@ -519,7 +519,7 @@ TEST_CASE("isEmpty() const noexcept -> bool [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(noexcept(dictionary.isEmpty()));
         REQUIRE(dictionary.isEmpty());
@@ -527,7 +527,7 @@ TEST_CASE("isEmpty() const noexcept -> bool [afile::PersistentDictionary]")
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Value"}};
+        const TestFile testFile{std::string{"Value"}};
         const afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
         REQUIRE_FALSE(dictionary.isEmpty());
     }
@@ -537,7 +537,7 @@ TEST_CASE("remove(size_type index) -> void [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         afile::PersistentDictionary dictionary{testFile.file()};
         dictionary.remove(0);
         REQUIRE(dictionary == std::vector<acore::Variant>{});
@@ -545,11 +545,11 @@ TEST_CASE("remove(size_type index) -> void [afile::PersistentDictionary]")
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[single]")
@@ -566,7 +566,7 @@ TEST_CASE("remove(size_type index) -> void [afile::PersistentDictionary]")
 
         SECTION("[missing]")
         {
-            dictionary.remove(10);
+            dictionary.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(dictionary == std::vector<acore::Variant>{acore::Variant{std::string{"Hello"}}, acore::Variant{std::vector<int>{1, 2, 3, 4, 5}}, acore::Variant{std::string{"World"}}, acore::Variant{std::vector<char>{'a', 'b'}}});
         }
     }
@@ -574,7 +574,7 @@ TEST_CASE("remove(size_type index) -> void [afile::PersistentDictionary]")
 
 TEST_CASE("storage() noexcept -> Storage * [afile::PersistentDictionary]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentDictionary dictionary{testFile.file()};
     REQUIRE(noexcept(dictionary.storage()));
     REQUIRE(dictionary.storage());
@@ -582,7 +582,7 @@ TEST_CASE("storage() noexcept -> Storage * [afile::PersistentDictionary]")
 
 TEST_CASE("storage() const noexcept -> const Storage * [afile::PersistentDictionary]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentDictionary dictionary{testFile.file()};
     REQUIRE(noexcept(dictionary.storage()));
     REQUIRE(dictionary.storage());
@@ -592,18 +592,18 @@ TEST_CASE("toDictionary() const -> acore::Dictionary [afile::PersistentDataIndex
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(dictionary.toDictionary() == acore::Dictionary{});
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
         REQUIRE(dictionary.toDictionary() == acore::Dictionary{std::string{"Hello"}, std::vector<int>{1, 2, 3, 4, 5}, std::string{"Hello"}, std::string{"World"}, std::vector<char>{'a', 'b'}});
     }
@@ -613,18 +613,18 @@ TEST_CASE("value(size_type index) const -> T [afile::PersistentDictionary]")
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(dictionary.value<std::string>(0) == std::string{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[existing]")
@@ -660,18 +660,18 @@ TEST_CASE("operator[](size_type index) const -> Variant [afile::PersistentDictio
 {
     SECTION("[empty]")
     {
-        TestFile testFile;
+        const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
         REQUIRE(dictionary.value<acore::Variant>(0) == acore::Variant{});
     }
 
     SECTION("[data]")
     {
-        TestFile testFile{std::string{"Hello"},
-                          std::vector<int>{1, 2, 3, 4, 5},
-                          std::string{"Hello"},
-                          std::string{"World"},
-                          std::vector<char>{'a', 'b'}};
+        const TestFile testFile{std::string{"Hello"},
+                                std::vector<int>{1, 2, 3, 4, 5},
+                                std::string{"Hello"},
+                                std::string{"World"},
+                                std::vector<char>{'a', 'b'}};
         afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
 
         SECTION("[existing]")
@@ -705,11 +705,11 @@ TEST_CASE("operator[](size_type index) const -> Variant [afile::PersistentDictio
 
 TEST_CASE("operator=(PersistentDictionary &&other) -> PersistentDictionary & [afile::PersistentDictionary]")
 {
-    TestFile testFile{std::string{"Hello"},
-                      std::vector<int>{1, 2, 3, 4, 5},
-                      std::string{"Hello"},
-                      std::string{"World"},
-                      std::vector<char>{'a', 'b'}};
+    const TestFile testFile{std::string{"Hello"},
+                            std::vector<int>{1, 2, 3, 4, 5},
+                            std::string{"Hello"},
+                            std::string{"World"},
+                            std::vector<char>{'a', 'b'}};
     afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
     afile::PersistentDictionary other{testFile.file()};
     other = std::move(dictionary);

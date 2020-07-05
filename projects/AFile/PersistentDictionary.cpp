@@ -18,27 +18,7 @@
 
 namespace afile
 {
-PersistentDictionary::PersistentDictionary(File *file) :
-    acore::DictionaryBase<PersistentDictionaryData>{file}
-{
-}
-
-PersistentDictionary::PersistentDictionary(File *file, acore::size_type index) :
-    acore::DictionaryBase<PersistentDictionaryData>(file, index)
-{
-}
-
-File *PersistentDictionary::file() const noexcept
-{
-    return storage()->file();
-}
-
-acore::size_type PersistentDictionary::fileIndex() const noexcept
-{
-    return storage()->fileIndex();
-}
-
-acore::Dictionary PersistentDictionary::toDictionary() const
+auto PersistentDictionary::toDictionary() const -> acore::Dictionary
 {
     acore::Dictionary dictionary;
 
