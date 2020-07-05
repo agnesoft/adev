@@ -12,13 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AFILE_AFILE_HPP
-#define AFILE_AFILE_HPP
+#include "pch.hpp"
 
-#include "AFile/AFileModule.hpp"
-#include "AFile/File.hpp"
-#include "AFile/FileStream.hpp"
-#include "AFile/PersistentDictionary.hpp"
-#include "AFile/PersistentVector.hpp"
+#include "PersistentDictionary.hpp"
 
-#endif
+namespace afile
+{
+auto PersistentDictionary::toDictionary() const -> acore::Dictionary
+{
+    acore::Dictionary dictionary;
+
+    for (auto it = begin(); it != end(); ++it)
+    {
+        for (acore::size_type i = 0; i < count(it.index()); i++)
+        {
+            dictionary.insert(*it);
+        }
+    }
+
+    return dictionary;
+}
+}

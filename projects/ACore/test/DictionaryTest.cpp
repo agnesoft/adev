@@ -87,6 +87,28 @@ namespace acore
 
 namespace dictionarytest
 {
+TEST_CASE("dictionaryHashValue(const Variant &value) -> acore::size_type [acore]")
+{
+    auto hash = [](const acore::Variant &var) {
+        auto data = var.value<std::string>();
+        return static_cast<acore::size_type>(std::hash<decltype(data)>{}(data));
+    };
+
+    SECTION("[empty]")
+    {
+        const acore::Variant var;
+
+        REQUIRE(acore::dictionaryValueHash(var) == hash(var));
+    }
+
+    SECTION("[string]")
+    {
+        const acore::Variant var{std::string{"Hello, World!"}};
+
+        REQUIRE(acore::dictionaryValueHash(var) == hash(var));
+    }
+}
+
 TEST_CASE("[acore::Dictionary]")
 {
     REQUIRE(std::is_default_constructible_v<acore::Dictionary>);

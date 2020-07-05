@@ -127,6 +127,8 @@ add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/include/AFile/FileRecords.hpp
                          projects/AFile/include/AFile/FileStream.hpp
                          projects/AFile/include/AFile/FileStreamBuffer.hpp
+                         projects/AFile/include/AFile/PersistentDictionary.hpp
+                         projects/AFile/include/AFile/PersistentDictionaryData.hpp
                          projects/AFile/include/AFile/PersistentVector.hpp
                          projects/AFile/include/AFile/WAL.hpp
                          projects/AFile/File.cpp
@@ -134,6 +136,8 @@ add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/FileRecords.cpp
                          projects/AFile/FileStream.cpp
                          projects/AFile/FileStreamBuffer.cpp
+                         projects/AFile/PersistentDictionary.cpp
+                         projects/AFile/PersistentDictionaryData.cpp
                          projects/AFile/WAL.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
  target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
@@ -145,6 +149,7 @@ target_include_directories(AFile PUBLIC projects/AFile/include)
 #AFileTest
 add_executable(AFileTest projects/AFile/test/FileTest.cpp
                          projects/AFile/test/FileStreamTest.cpp
+                         projects/AFile/test/PersistentDictionaryTest.cpp
                          projects/AFile/test/PersistentVectorTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AFileTest PRIVATE projects/AFile/test/pch.hpp)
