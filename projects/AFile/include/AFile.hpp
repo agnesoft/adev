@@ -18,6 +18,7 @@
 #include "AFile/AFileModule.hpp"
 #include "AFile/File.hpp"
 #include "AFile/FileStream.hpp"
+#include "AFile/PersistentDataIndexMap.hpp"
 #include "AFile/PersistentDictionary.hpp"
 #include "AFile/PersistentVector.hpp"
 
