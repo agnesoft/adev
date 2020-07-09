@@ -94,14 +94,7 @@ auto PersistentDictionaryData::remove(acore::size_type index, acore::size_type h
 
 auto PersistentDictionaryData::value(acore::size_type index) const -> acore::Variant
 {
-    const acore::size_type valueIndex = mDataIndex[index].valueIndex;
-
-    if (mFile->contains(valueIndex))
-    {
-        return mFile->value<acore::Variant>(mDataIndex[index].valueIndex);
-    }
-
-    return {};
+    return mFile->value<acore::Variant>(mDataIndex[index].valueIndex);
 }
 
 auto PersistentDictionaryData::freeIndex() -> acore::size_type
