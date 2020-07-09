@@ -45,7 +45,7 @@ public:
 
     auto insert(size_type element, size_type key, size_type value) -> void
     {
-        if (element >= static_cast<size_type>(mData.size()))
+        if (static_cast<size_type>(mData.size()) <= element)
         {
             mData.resize(element + 1);
         }

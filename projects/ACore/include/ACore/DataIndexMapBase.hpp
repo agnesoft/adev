@@ -50,6 +50,7 @@ namespace acore
 //! - <tt> auto %insert(acore::size_type element, acore::size_type key, acore::size_type value) -> void </tt>
 //! - <tt> auto %remove(acore::size_type element) -> void </tt>
 //! - <tt> auto %remove(acore::size_type element, acore::size_type key) -> void </tt>
+//! - <tt> auto %size() const -> acore::size_type </tt>
 //! - <tt> auto shrink_to_fit() -> void </tt>
 //! - <tt> auto %value(acore::size_type element, acore::size_type key) const -> acore::size_type </tt>
 //! - <tt> auto %values(acore::size_type element) const -> acore::std::vector<#acore::DataIndexMapElement> </tt>
