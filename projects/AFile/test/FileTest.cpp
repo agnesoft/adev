@@ -624,85 +624,6 @@ TEST_CASE("isEmpty() const noexcept -> bool [afile::File]")
     }
 }
 
-TEST_CASE("loadValue(size_type index, T &value) const -> void [afile::File]")
-{
-    const TestFile testFile;
-    afile::FileStream{testFile.filename()} << acore::size_type{3}
-                                           << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-                                           << acore::INVALID_INDEX << acore::size_type{-20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-                                           << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-
-    SECTION("[missing]")
-    {
-        std::string str;
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.loadValue(1, str), acore::Exception);
-    }
-
-    SECTION("[existing]")
-    {
-        std::string str;
-        afile::File{testFile.filename()}.loadValue(2, str);
-        REQUIRE(str == std::string{"Hello World!"});
-    }
-
-    SECTION("[partial]")
-    {
-        acore::size_type i = 0;
-        afile::File{testFile.filename()}.loadValue(2, i);
-        REQUIRE(i == 12);
-    }
-
-    SECTION("[different type]")
-    {
-        std::vector<char> value;
-        afile::File{testFile.filename()}.loadValue(2, value);
-        REQUIRE(value == std::vector<char>{'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'});
-    }
-
-    SECTION("[wrong type]")
-    {
-        std::vector<int> value;
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.loadValue(2, value), acore::Exception);
-    }
-}
-
-TEST_CASE("loadValue(size_type index, size_type offset, T &value) const -> void [afile::File]")
-{
-    const TestFile testFile;
-    afile::FileStream{testFile.filename()} << acore::size_type{3}
-                                           << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-                                           << acore::INVALID_INDEX << acore::size_type{-20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-                                           << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-
-    int value = 0;
-
-    SECTION("[missing index]")
-    {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.loadValue(10, 8, value), acore::Exception);
-    }
-
-    SECTION("[valid]")
-    {
-        afile::File{testFile.filename()}.loadValue(0, 8, value); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        REQUIRE(value == 1);
-    }
-
-    SECTION("[negative offset]")
-    {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.loadValue(0, -1, value), acore::Exception);
-    }
-
-    SECTION("[offset beyond value size]")
-    {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.loadValue(0, 100, value), acore::Exception);
-    }
-
-    SECTION("[size overrun]")
-    {
-        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.loadValue(0, 26, value), acore::Exception);
-    }
-}
-
 TEST_CASE("copy(size_type index, size_type offset, size_type newOffset, size_type size) -> void [afile::File]")
 {
     const TestFile testFile;
@@ -1012,7 +933,7 @@ TEST_CASE("value(size_type index) const -> T [afile::File]")
 
     SECTION("[missing]")
     {
-        REQUIRE(afile::File{testFile.filename()}.value<std::vector<int>>(1) == std::vector<int>{}); //NOLINT(readability-container-size-empty
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.value<std::vector<int>>(1), acore::Exception);
     }
 
     SECTION("[partial]")
@@ -1027,7 +948,7 @@ TEST_CASE("value(size_type index) const -> T [afile::File]")
 
     SECTION("[wrong type]")
     {
-        REQUIRE(afile::File{testFile.filename()}.value<std::vector<int>>(2) == std::vector<int>{}); //NOLINT(readability-container-size-empty
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.value<std::vector<int>>(2), acore::Exception);
     }
 }
 
@@ -1041,7 +962,7 @@ TEST_CASE("value(size_type index, size_type offset) const -> T [afile::File]")
 
     SECTION("[missing index]")
     {
-        REQUIRE(afile::File{testFile.filename()}.value<int>(10, 8) == 0);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.value<int>(10, 8), acore::Exception);
     }
 
     SECTION("[valid]")
@@ -1051,17 +972,17 @@ TEST_CASE("value(size_type index, size_type offset) const -> T [afile::File]")
 
     SECTION("[negative offset]")
     {
-        REQUIRE(afile::File{testFile.filename()}.value<int>(0, -1) == 0);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.value<int>(0, -1), acore::Exception);
     }
 
     SECTION("[offset beyond value size]")
     {
-        REQUIRE(afile::File{testFile.filename()}.value<int>(0, 100) == 0);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.value<int>(0, 100), acore::Exception);
     }
 
     SECTION("[size overrun]")
     {
-        REQUIRE(afile::File{testFile.filename()}.value<int>(0, 26) == 0);
+        REQUIRE_THROWS_AS(afile::File{testFile.filename()}.value<int>(0, 26), acore::Exception);
     }
 }
 

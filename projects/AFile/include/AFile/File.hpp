@@ -275,31 +275,6 @@ public:
     //! stored in the File or \c false otherwise.
     [[nodiscard]] auto isEmpty() const noexcept -> bool;
 
-    //! Deserializes a value of type \c T into the
-    //! \a value using the data stored under the
-    //! \a index. If the \a index is not valid or
-    //! if the deserialization overruns the value's
-    //! size an acore::Exception is thrown.
-    template<typename T>
-    constexpr auto loadValue(acore::size_type index, T &value) const -> void
-    {
-        loadValue(index, 0, value);
-    }
-
-    //! Deserializes a value of type \c T into the
-    //! \a value using the data stored with the index
-    //! \a index at the \a offset. If the \a index
-    //! or the \a offset are not valid or if the
-    //! deserialization overruns the value's size
-    //! an acore::Exception is thrown.
-    template<typename T>
-    constexpr auto loadValue(acore::size_type index, acore::size_type offset, T &value) const -> void
-    {
-        validateReadInput(index, offset);
-        mData.read(mRecords.pos(index) + offset) >> value;
-        validatePos(index, mData.pos());
-    }
-
     //! Reclaims the unused parts of the file moving
     //! all the values next to each other. Call this
     //! function to avoid bloating of the file.
@@ -343,7 +318,7 @@ public:
     //! from the data associated with the \a index.
     //! If the \a index is not valid or if the
     //! deserialization overruns the value's size
-    //! a default-constructed value is returned.
+    //! an exception is thrown.
     template<typename T>
     [[nodiscard]] constexpr auto value(acore::size_type index) const -> T
     {
@@ -354,22 +329,12 @@ public:
     //! from the data associated with the \a index
     //! at the \a offset. If the \a index or the
     //! \a offset are not valid or if the deserialization
-    //! overruns the value's size a default-constructed
-    //! value is returned.
+    //! overruns the value's size an exception is thrown.
     template<typename T>
     [[nodiscard]] auto value(acore::size_type index, acore::size_type offset) const -> T
     {
         T val{};
-
-        try
-        {
-            loadValue(index, offset, val);
-        }
-        catch (acore::Exception &)
-        {
-            return T{};
-        }
-
+        loadValue(index, offset, val);
         return val;
     }
 
@@ -382,6 +347,15 @@ public:
 private:
     [[nodiscard]] auto extendsValue(acore::size_type index, acore::size_type offset, acore::size_type valueSize) const noexcept -> bool;
     [[nodiscard]] static auto filesInUse() -> std::vector<std::filesystem::path> *;
+
+    template<typename T>
+    constexpr auto loadValue(acore::size_type index, acore::size_type offset, T &value) const -> void
+    {
+        validateReadInput(index, offset);
+        mData.read(mRecords.pos(index) + offset) >> value;
+        validatePos(index, mData.pos());
+    }
+
     auto moveRecord(acore::size_type index, acore::size_type to, acore::size_type sizeToMove) -> void;
     auto moveRecordToEnd(acore::size_type index, acore::size_type size) -> void;
     [[nodiscard]] auto optimizeRecord(acore::size_type index, acore::size_type pos) -> acore::size_type;
