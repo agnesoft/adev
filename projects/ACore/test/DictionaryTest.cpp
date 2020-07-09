@@ -505,7 +505,7 @@ TEST_CASE("value(size_type index) const -> T [acore::Dictionary]")
     SECTION("[empty]")
     {
         const acore::Dictionary dictionary;
-        REQUIRE(dictionary.value<std::string>(0) == std::string{}); //NOLINT(readability-container-size-empty)
+        REQUIRE_THROWS_AS(dictionary.value<std::string>(0), acore::Exception);
     }
 
     SECTION("[data]")
@@ -535,7 +535,7 @@ TEST_CASE("value(size_type index) const -> T [acore::Dictionary]")
         SECTION("[removed]")
         {
             dictionary.remove(3);
-            REQUIRE(std::as_const(dictionary).value<std::vector<char>>(3) == std::vector<char>{}); //NOLINT(readability-container-size-empty)
+            REQUIRE_THROWS_AS(std::as_const(dictionary).value<std::vector<char>>(3), acore::Exception);
         }
 
         SECTION("[trivial]")

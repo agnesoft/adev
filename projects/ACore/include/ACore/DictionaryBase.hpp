@@ -16,6 +16,7 @@
 #define ACORE_DICTIONARYBASE_HPP
 
 #include "ACoreModule.hpp"
+#include "Exception.hpp"
 #include "ForwardIterator.hpp"
 #include "Variant.hpp"
 
@@ -247,22 +248,24 @@ public:
     //! then converted to type \c T.
     //!
     //! If \a index does not point to a valid value
-    //! a default constructed T is returned.
+    //! an exception is thrown.
     template<typename T>
     [[nodiscard]] constexpr auto value(size_type index) const -> T
     {
-        T val;
-
         if constexpr (std::is_trivially_copyable<T>::value)
         {
+            T val;
             std::memcpy(&val, &index, sizeof(T));
+            return val;
         }
         else if (contains(index))
         {
-            val = mData.value(index).template value<T>();
+            return mData.value(index).template value<T>();
         }
-
-        return val;
+        else
+        {
+            throw Exception{} << "Index '" << index << "' does not exist in the dictionary.";
+        }
     }
 
 protected:
@@ -320,7 +323,7 @@ private:
     {
         for (index++; index < mData.capacity(); index++)
         {
-            if (mData.value(index).isValid())
+            if (contains(index))
             {
                 return index;
             }

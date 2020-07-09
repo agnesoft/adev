@@ -635,7 +635,7 @@ TEST_CASE("value(size_type index) const -> T [afile::PersistentDictionary]")
     {
         const TestFile testFile;
         const afile::PersistentDictionary dictionary{testFile.file()};
-        REQUIRE(dictionary.value<std::string>(0) == std::string{}); //NOLINT(readability-container-size-empty)
+        REQUIRE_THROWS_AS(dictionary.value<std::string>(0), acore::Exception);
     }
 
     SECTION("[data]")
@@ -666,59 +666,12 @@ TEST_CASE("value(size_type index) const -> T [afile::PersistentDictionary]")
         SECTION("[removed]")
         {
             dictionary.remove(3);
-            REQUIRE(std::as_const(dictionary).value<std::vector<char>>(3) == std::vector<char>{}); //NOLINT(readability-container-size-empty)
+            REQUIRE_THROWS_AS(std::as_const(dictionary).value<std::vector<char>>(3), acore::Exception);
         }
 
         SECTION("[trivial]")
         {
             REQUIRE(std::as_const(dictionary).value<char>('A') == 'A');
-        }
-    }
-}
-
-TEST_CASE("operator[](size_type index) const -> Variant [afile::PersistentDictionary]")
-{
-    SECTION("[empty]")
-    {
-        const TestFile testFile;
-        const afile::PersistentDictionary dictionary{testFile.file()};
-        REQUIRE(dictionary.value<acore::Variant>(0) == acore::Variant{});
-    }
-
-    SECTION("[data]")
-    {
-        const TestFile testFile{std::string{"Hello"},
-                                std::vector<int>{1, 2, 3, 4, 5},
-                                std::string{"Hello"},
-                                std::string{"World"},
-                                std::vector<char>{'a', 'b'}};
-        afile::PersistentDictionary dictionary{testFile.file(), testFile.index()};
-
-        SECTION("[existing]")
-        {
-            REQUIRE(std::as_const(dictionary).value<acore::Variant>(1) == acore::Variant{std::vector<int>{1, 2, 3, 4, 5}});
-        }
-
-        SECTION("[multi]")
-        {
-            REQUIRE(std::as_const(dictionary).value<acore::Variant>(0) == acore::Variant{std::string{"Hello"}});
-        }
-
-        SECTION("[multi removed]")
-        {
-            dictionary.remove(0);
-            REQUIRE(std::as_const(dictionary).value<acore::Variant>(0) == acore::Variant{std::string{"Hello"}});
-        }
-
-        SECTION("[removed]")
-        {
-            dictionary.remove(3);
-            REQUIRE(std::as_const(dictionary).value<acore::Variant>(3) == acore::Variant{});
-        }
-
-        SECTION("[trivial]")
-        {
-            REQUIRE(std::as_const(dictionary).value<acore::Variant>('A') == acore::Variant{});
         }
     }
 }
