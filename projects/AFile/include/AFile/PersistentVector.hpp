@@ -93,11 +93,6 @@ public:
         mIndex{index},
         mSize{mFile->value<acore::size_type>(mIndex, 0)}
     {
-        if (!mFile->contains(mIndex))
-        {
-            throw acore::Exception() << "File '" << mFile->filename() << "' does not contain index '" << mIndex << "'";
-        }
-
         if (mSize < 0)
         {
             throw acore::Exception() << "Data at index '" << mIndex << "' in file '" << mFile->filename() << "' is invalid";
