@@ -980,8 +980,8 @@ TEST_CASE("operator=(VectorType &&other) noexcept -> Vector & [afile::Persistent
     {
         afile::PersistentVector<int> vector{testFile.file()};
         afile::PersistentVector<int> other{testFile.file()};
-        other = std::move(vector);
-        REQUIRE(noexcept(other == std::array<int, 0>{}));
+        REQUIRE(noexcept(other = std::move(vector))); //NOLINT(bugprone-use-after-move, hicpp-invalid-access-moved)
+        other = std::move(vector); //NOLINT(bugprone-use-after-move, hicpp-invalid-access-moved)
         REQUIRE(other == std::array<int, 0>{});
     }
 
