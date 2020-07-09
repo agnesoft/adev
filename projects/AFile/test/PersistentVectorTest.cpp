@@ -21,13 +21,13 @@
 namespace afile
 {
 template<typename T, typename Container>
-[[nodiscard]] constexpr auto operator==(const PersistentVector<T> &left, const Container &right) noexcept -> bool
+[[nodiscard]] constexpr auto operator==(const PersistentVector<T> &left, const Container &right) -> bool
 {
     return std::equal(left.cbegin(), left.cend(), right.begin(), right.end());
 }
 
 template<typename T, typename Container>
-[[nodiscard]] constexpr auto operator!=(const PersistentVector<T> &left, const Container &right) noexcept -> bool
+[[nodiscard]] constexpr auto operator!=(const PersistentVector<T> &left, const Container &right) -> bool
 {
     return !(left == right);
 }
