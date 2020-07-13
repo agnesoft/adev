@@ -184,7 +184,7 @@ public:
     }
 
     //! Returns the \c value associated with the
-    //! \c element-key pair or throws an #Exception
+    //! \c element-key pair or throws an #acore::Exception
     //! if there is no value associated with the
     //! \a key - \a value pair.
     [[nodiscard]] constexpr auto value(size_type element, size_type key) const -> size_type
