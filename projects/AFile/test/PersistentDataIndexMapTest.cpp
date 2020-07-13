@@ -18,6 +18,12 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace acore
 {
