@@ -240,14 +240,16 @@ private:
     std::unordered_multimap<acore::size_type, acore::DataIndexMapElement> mData;
 };
 
-[[nodiscard]] constexpr auto elements() noexcept
+[[nodiscard]] constexpr auto elements() noexcept -> acore::size_type
 {
-    return 1000;
+    constexpr acore::size_type value = 1000;
+    return value;
 }
 
-[[nodiscard]] constexpr auto keys() noexcept
+[[nodiscard]] constexpr auto keys() noexcept -> acore::size_type
 {
-    return 100;
+    constexpr acore::size_type value = 100;
+    return value;
 }
 
 [[nodiscard]] auto data() -> const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &
