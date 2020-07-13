@@ -17,6 +17,7 @@
 
 #include "ACoreModule.hpp"
 #include "DataIndexMapElement.hpp"
+#include "Exception.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -45,7 +46,7 @@ public:
 
     auto insert(size_type element, size_type key, size_type value) -> void
     {
-        if (element >= static_cast<size_type>(mData.size()))
+        if (static_cast<size_type>(mData.size()) <= element)
         {
             mData.resize(element + 1);
         }
@@ -107,7 +108,7 @@ public:
             }
         }
 
-        return INVALID_INDEX;
+        throw Exception{} << "Element-key pair '" << element << "' : '" << key << "' must be in the map.";
     }
 
     [[nodiscard]] auto values(size_type element) const -> std::vector<DataIndexMapElement>

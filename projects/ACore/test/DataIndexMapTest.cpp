@@ -21,6 +21,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace acore
 {
@@ -94,6 +95,7 @@ TEST_CASE("[acore::DataIndexMap]")
     REQUIRE(std::is_default_constructible_v<acore::DataIndexMap>);
     REQUIRE(std::is_copy_constructible_v<acore::DataIndexMap>);
     REQUIRE(std::is_copy_assignable_v<acore::DataIndexMap>);
+    REQUIRE(std::is_nothrow_move_constructible_v<acore::DataIndexMap>);
     REQUIRE(std::is_nothrow_move_assignable_v<acore::DataIndexMap>);
     REQUIRE(std::is_nothrow_destructible_v<acore::DataIndexMap>);
 }
@@ -204,6 +206,14 @@ TEST_CASE("insert(size_type element, size_type key, size_type value) -> void [ac
             map.insert(69, 42, 0); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{69, {42, 0}}, {100, {99, 98}}, {99, {98, 97}}, {6, {7, 8}}, {9, {10, 11}}});
         }
+
+        SECTION("[reinsert]")
+        {
+            map.remove(100); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            map.remove(6); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            map.insert(5, 15, 155); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{5, {15, 155}}, {99, {98, 97}}, {9, {10, 11}}});
+        }
     }
 
     SECTION("[invalid]")
@@ -291,6 +301,12 @@ TEST_CASE("remove(size_type element) -> void [acore::DataIndexMap]")
             map.remove(10); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {100, {3, 5}}});
         }
+
+        SECTION("[missing]")
+        {
+            map.remove(4);
+            REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {10, {2, 3}}, {100, {3, 5}}, {10, {3, 4}}});
+        }
     }
 
     SECTION("[invalid]")
@@ -312,8 +328,18 @@ TEST_CASE("remove(size_type element, size_type key) -> void [acore::DataIndexMap
     SECTION("[data]")
     {
         acore::DataIndexMap map{{{100, {-101, -102}}, {200, {15, 20}}, {0, {1, 2}}, {200, {-300, -1}}, {5, {17, 58}}, {69, {42, 0}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        map.remove(200, -300); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{100, {-101, -102}}, {200, {15, 20}}, {0, {1, 2}}, {5, {17, 58}}, {69, {42, 0}}});
+
+        SECTION("[single]")
+        {
+            map.remove(200, -300); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{100, {-101, -102}}, {200, {15, 20}}, {0, {1, 2}}, {5, {17, 58}}, {69, {42, 0}}});
+        }
+
+        SECTION("[multiple]")
+        {
+            map.remove(200, 15); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            REQUIRE(map == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{100, {-101, -102}}, {200, {-300, -1}}, {0, {1, 2}}, {5, {17, 58}}, {69, {42, 0}}});
+        }
     }
 
     SECTION("[invalid]")
@@ -425,7 +451,7 @@ TEST_CASE("value(size_type element, size_type key) -> size_type [acore::DataInde
     SECTION("[empty]")
     {
         const acore::DataIndexMap map;
-        REQUIRE(map.value(1, 2) == acore::INVALID_INDEX);
+        REQUIRE_THROWS_AS(map.value(1, 2), acore::Exception);
     }
 
     SECTION("[data]")
@@ -439,13 +465,13 @@ TEST_CASE("value(size_type element, size_type key) -> size_type [acore::DataInde
 
         SECTION("[missing]")
         {
-            REQUIRE(std::as_const(map).value(1, 10) == acore::INVALID_INDEX);
+            REQUIRE_THROWS_AS(std::as_const(map).value(1, 10), acore::Exception);
         }
 
         SECTION("[removed]")
         {
             map.remove(256); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-            REQUIRE(std::as_const(map).value(256, 512) == acore::INVALID_INDEX);
+            REQUIRE_THROWS_AS(std::as_const(map).value(256, 512), acore::Exception);
         }
     }
 
@@ -511,14 +537,10 @@ map.insert(1, 2, 3);
 map.insert(1, 3, 4);
 map.insert(2, 3, 4);
 
-map.remove(1, 3);
-
 const acore::size_type value1 = map.value(1, 2); //== 3
-const acore::size_type value2 = map.value(1, 3); //== acore::INVALID_INDEX since the value was removed
         //! [[Usage]]
         // clang-format on;
         REQUIRE(value1 == 3);
-        REQUIRE(value2 == acore::INVALID_INDEX);
     }
 }
 }

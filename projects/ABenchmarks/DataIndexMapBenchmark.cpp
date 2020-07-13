@@ -240,6 +240,40 @@ private:
     std::unordered_multimap<acore::size_type, acore::DataIndexMapElement> mData;
 };
 
+[[nodiscard]] constexpr auto elements() noexcept -> acore::size_type
+{
+    constexpr acore::size_type value = 1000;
+    return value;
+}
+
+[[nodiscard]] constexpr auto keys() noexcept -> acore::size_type
+{
+    constexpr acore::size_type value = 100;
+    return value;
+}
+
+[[nodiscard]] auto data() -> const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> &
+{
+    static const std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> values = []() {
+        std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> vals;
+        vals.reserve(elements() * keys());
+
+        for (int k = 0; k < keys(); ++k)
+        {
+            for (int e = 0; e < elements(); ++e)
+            {
+                vals.emplace_back(std::pair<acore::size_type, acore::DataIndexMapElement>{e, {k, e * k}});
+            }
+        }
+
+        return vals;
+    }();
+
+    return values;
+}
+
+static int counter = 0;
+
 TEST_CASE("DataIndexMap")
 {
     int dataIndexMap = 0;
@@ -249,29 +283,16 @@ TEST_CASE("DataIndexMap")
     int mapHashBuckets = 0;
     int mapMultiHash = 0;
 
-    constexpr int elements = 1000;
-    constexpr int keys = 100;
-
-    std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>> data;
-    data.reserve(elements * keys);
-
-    for (int k = 0; k < keys; ++k)
-    {
-        for (int e = 0; e < elements; ++e)
-        {
-            data.emplace_back(std::pair<acore::size_type, acore::DataIndexMapElement>{e, {k, e * k}});
-        }
-    }
-
     BENCHMARK_ADVANCED("[acore::DataIndexMap]")
     (Catch::Benchmark::Chronometer meter)
     {
         dataIndexMap = meter.runs();
 
-        acore::DataIndexMap map{data};
+        acore::DataIndexMap map{data()};
+        ++counter;
 
         meter.measure([&] {
-            const acore::size_type val = map.value(elements / 2, keys / 2);
+            const acore::size_type val = map.value(elements() / 2, keys() / 2);
             return val;
         });
     };
@@ -281,10 +302,10 @@ TEST_CASE("DataIndexMap")
     {
         map2DVector = meter.runs();
 
-        Map2DVector map{data};
+        Map2DVector map{data()};
 
         meter.measure([&] {
-            const acore::size_type val = map.value(elements / 2, keys / 2);
+            const acore::size_type val = map.value(elements() / 2, keys() / 2);
             return val;
         });
     };
@@ -294,10 +315,10 @@ TEST_CASE("DataIndexMap")
     {
         mapHashBuckets = meter.runs();
 
-        MapHashBuckets map{data};
+        MapHashBuckets map{data()};
 
         meter.measure([&] {
-            const acore::size_type val = map.value(elements / 2, keys / 2);
+            const acore::size_type val = map.value(elements() / 2, keys() / 2);
             return val;
         });
     };
@@ -307,10 +328,10 @@ TEST_CASE("DataIndexMap")
     {
         mapVectorLinkedList = meter.runs();
 
-        MapVectorLinkedList map{data};
+        MapVectorLinkedList map{data()};
 
         meter.measure([&] {
-            const acore::size_type val = map.value(elements / 2, keys / 2);
+            const acore::size_type val = map.value(elements() / 2, keys() / 2);
             return val;
         });
     };
@@ -320,10 +341,10 @@ TEST_CASE("DataIndexMap")
     {
         mapHashVector = meter.runs();
 
-        MapHashVector map{data};
+        MapHashVector map{data()};
 
         meter.measure([&] {
-            const acore::size_type val = map.value(elements / 2, keys / 2);
+            const acore::size_type val = map.value(elements() / 2, keys() / 2);
             return val;
         });
     };
@@ -333,10 +354,10 @@ TEST_CASE("DataIndexMap")
     {
         mapMultiHash = meter.runs();
 
-        MapMultiHash map{data};
+        MapMultiHash map{data()};
 
         meter.measure([&] {
-            const acore::size_type val = map.value(elements / 2, keys / 2);
+            const acore::size_type val = map.value(elements() / 2, keys() / 2);
             return val;
         });
     };

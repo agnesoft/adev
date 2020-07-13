@@ -12,14 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AFILE_AFILE_HPP
-#define AFILE_AFILE_HPP
+#include "pch.hpp"
 
-#include "AFile/AFileModule.hpp"
-#include "AFile/File.hpp"
-#include "AFile/FileStream.hpp"
-#include "AFile/PersistentDataIndexMap.hpp"
-#include "AFile/PersistentDictionary.hpp"
-#include "AFile/PersistentVector.hpp"
+#include "PersistentDataIndexMap.hpp"
 
-#endif
+namespace afile
+{
+auto PersistentDataIndexMap::toDataIndexMap() const -> acore::DataIndexMap
+{
+    acore::DataIndexMap map;
+
+    for (acore::size_type index = 0; index < size(); ++index)
+    {
+        for (const acore::DataIndexMapElement &element : values(index))
+        {
+            map.insert(index, element.key, element.value);
+        }
+    }
+
+    return map;
+}
+}
