@@ -17,7 +17,6 @@
 #define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch2/catch.hpp>
 
-#include <iostream>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -367,7 +366,6 @@ TEST_CASE("DataIndexMap")
     // Hash buckets can be sometimes very slightly faster than current implementation
     //REQUIRE(dataIndexMap > mapHashBuckets);
 
-    std::cout << counter << '\n\n';
     REQUIRE(dataIndexMap > mapVectorLinkedList);
     REQUIRE(dataIndexMap > mapHashVector);
     REQUIRE(dataIndexMap > mapMultiHash);
