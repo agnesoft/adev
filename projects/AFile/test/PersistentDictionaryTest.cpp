@@ -182,6 +182,15 @@ private:
     acore::size_type mIndex = 0;
 };
 
+TEST_CASE("[afile::PersistentDictionary]")
+{
+    REQUIRE_FALSE(std::is_copy_constructible_v<afile::PersistentDictionary>);
+    REQUIRE_FALSE(std::is_copy_assignable_v<afile::PersistentDictionary>);
+    //REQUIRE(std::is_nothrow_move_constructible_v<afile::PersistentDictionary>);
+    REQUIRE(std::is_nothrow_move_assignable_v<afile::PersistentDictionary>);
+    REQUIRE(std::is_nothrow_destructible_v<afile::PersistentDictionary>);
+}
+
 TEST_CASE("PersistentDictionary(File *file) [afile::PersistentDictionary]")
 {
     const TestFile testFile;

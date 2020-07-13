@@ -56,7 +56,7 @@ public:
     PersistentDictionary(PersistentDictionary &&other) = default;
 
     //! Destructor.
-    ~PersistentDictionary() noexcept = default;
+    ~PersistentDictionary() = default;
 
     //! Returns the file this dictionary operates on.
     [[nodiscard]] constexpr auto file() const noexcept -> File *

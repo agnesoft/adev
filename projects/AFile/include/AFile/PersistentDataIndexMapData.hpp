@@ -19,59 +19,30 @@
 #include "File.hpp"
 #include "PersistentVector.hpp"
 
+#include <utility>
 #include <vector>
 
 namespace afile
 {
+//! \cond IMPLEMENTAION_DETAIL
 class PersistentDataIndexMapData
 {
 public:
-    explicit PersistentDataIndexMapData(File *file) :
-        mFile{file},
-        mDataIndex{file},
-        mData{file}
-    {
-        mFileIndex.index = mDataIndex.fileIndex();
-        mFileIndex.data = mData.fileIndex();
-        mIndex = mFile->insert(mFileIndex);
-    }
-
-    PersistentDataIndexMapData(File *file, acore::size_type index) :
-        mFile{file},
-        mFileIndex{mFile->value<FileIndex>(index)},
-        mDataIndex{file, mFileIndex.index},
-        mData{file, mFileIndex.data}
-    {
-        //TODO count the values, build free list
-    }
+    explicit PersistentDataIndexMapData(File *file);
+    PersistentDataIndexMapData(File *file, acore::size_type index);
 
     PersistentDataIndexMapData(const PersistentDataIndexMapData &other) = delete;
     PersistentDataIndexMapData(PersistentDataIndexMapData &&other) noexcept = default;
     ~PersistentDataIndexMapData() = default;
 
-    void clear()
-    {
-        mData.clear();
-    }
+    auto clear() -> void;
 
     [[nodiscard]] constexpr auto count() const -> acore::size_type
     {
-        return mCount;
+        return mIndex.count;
     }
 
-    [[nodiscard]] auto count(acore::size_type element) const -> acore::size_type
-    {
-        acore::size_type result = 0;
-        Value val = mData[element];
-
-        while (isValid(val))
-        {
-            ++result;
-            val = next(val);
-        }
-
-        return result;
-    }
+    [[nodiscard]] auto count(acore::size_type element) const -> acore::size_type;
 
     [[nodiscard]] constexpr auto file() const noexcept -> File *
     {
@@ -80,86 +51,32 @@ public:
 
     [[nodiscard]] constexpr auto fileIndex() const noexcept -> acore::size_type
     {
-        return mIndex;
+        return mFileIndex;
     }
 
-    auto insert(acore::size_type element, acore::size_type key, acore::size_type value) -> void
-    {
-        if (mData.size() <= element)
-        {
-            mData.resize(element + 1);
-        }
-
-        const auto it = find(element, key);
-
-        if (it != mData.end())
-        {
-            *it = Value{{key, value}, (**it).next};
-        }
-        else
-        {
-            ++mCount;
-        }
-    }
-
-    auto remove(acore::size_type element) -> void
-    {
-        (void)element;
-        //TODO
-    }
-
-    auto remove(acore::size_type element, acore::size_type key) -> void
-    {
-        (void)element;
-        (void)key;
-        //TODO
-        --mCount;
-    }
-
-    auto shrink_to_fit() -> void
-    {
-        mData.shrink_to_fit();
-    }
+    auto insert(acore::size_type element, acore::size_type key, acore::size_type value) -> void;
+    auto remove(acore::size_type element) -> void;
+    auto remove(acore::size_type element, acore::size_type key) -> void;
+    auto shrink_to_fit() -> void;
 
     [[nodiscard]] auto size() const noexcept -> acore::size_type
     {
-        return mData.size();
+        return mDataIndex.size();
     }
 
-    [[nodiscard]] auto value(acore::size_type element, acore::size_type key) const -> acore::size_type
-    {
-        Value val = mData[element];
+    [[nodiscard]] auto value(acore::size_type element, acore::size_type key) const -> acore::size_type;
+    [[nodiscard]] auto values(acore::size_type element) const -> std::vector<acore::DataIndexMapElement>;
 
-        while (isValid(val) && val.element.key != key)
-        {
-            val = next(val);
-        }
-
-        return val.element.value;
-    }
-
-    [[nodiscard]] auto values(acore::size_type element) const -> std::vector<acore::DataIndexMapElement>
-    {
-        std::vector<acore::DataIndexMapElement> elements;
-        Value val = mData[element];
-
-        while (isValid(val))
-        {
-            elements.push_back(val.element);
-            val = next(val);
-        }
-
-        return elements;
-    }
-
-    PersistentDataIndexMapData &operator=(const PersistentDataIndexMapData &other) = delete;
-    PersistentDataIndexMapData &operator=(PersistentDataIndexMapData &&other) noexcept = default;
+    auto operator=(const PersistentDataIndexMapData &other) -> PersistentDataIndexMapData & = delete;
+    auto operator=(PersistentDataIndexMapData &&other) noexcept -> PersistentDataIndexMapData & = default;
 
 private:
     struct FileIndex
     {
         acore::size_type index = acore::INVALID_INDEX;
         acore::size_type data = acore::INVALID_INDEX;
+        acore::size_type free = acore::INVALID_INDEX;
+        acore::size_type count = 0;
     };
 
     struct Value
@@ -171,13 +88,13 @@ private:
     template<typename Buffer>
     friend auto operator<<(acore::DataStreamBase<Buffer> &stream, const FileIndex &index) -> acore::DataStreamBase<Buffer> &
     {
-        return stream << index.index << index.data;
+        return stream << index.index << index.data << index.free << index.count;
     }
 
     template<typename Buffer>
     friend auto operator>>(acore::DataStreamBase<Buffer> &stream, FileIndex &index) -> acore::DataStreamBase<Buffer> &
     {
-        return stream >> index.index >> index.data;
+        return stream >> index.index >> index.data >> index.free >> index.count;
     }
 
     template<typename Buffer>
@@ -192,64 +109,28 @@ private:
         return stream >> value.element >> value.next;
     }
 
-    [[nodiscard]] auto find(acore::size_type element, acore::size_type key) -> PersistentVector<Value>::iterator
-    {
-        acore::size_type index = element;
-        Value val = mData[index];
+    [[nodiscard]] static auto beginInit(File *file) -> File *;
+    [[nodiscard]] auto countToLast(acore::size_type index) const -> std::pair<acore::size_type, acore::size_type>;
+    auto decrementCount(acore::size_type count) -> void;
+    auto decrementCount() -> void;
+    static auto endInit(File *file) -> void;
+    [[nodiscard]] auto find(acore::size_type element, acore::size_type key) const -> acore::size_type;
+    [[nodiscard]] auto freeIndex() -> acore::size_type;
+    auto incrementCount() -> void;
+    auto insertExisting(acore::size_type element, acore::size_type key, acore::size_type value) -> void;
+    auto insertNew(acore::size_type element, acore::size_type key, acore::size_type value) -> void;
+    [[nodiscard]] auto insertValue(acore::DataIndexMapElement element, acore::size_type next) -> acore::size_type;
+    auto removeValue(acore::size_type element, const Value &value, acore::size_type dataIndex, acore::size_type previousIndex) -> void;
+    auto removeValues(acore::size_type element, acore::size_type dataIndex, acore::size_type last, acore::size_type count) -> void;
+    auto updateFree(acore::size_type value) -> void;
 
-        while (isValid(val))
-        {
-            if (val.element.key == key)
-            {
-                auto it = mData.begin();
-                std::advance(it, index);
-                return it;
-            }
-
-            index = val.next;
-            val = next(val);
-        }
-
-        return mData.end();
-    }
-
-    [[nodiscard]] auto isValid(const Value &value) const noexcept -> bool
-    {
-        return value.element != acore::DataIndexMapElement{} && value.next != acore::INVALID_INDEX;
-    }
-
-    [[nodiscard]] auto last(acore::size_type element) -> acore::size_type
-    {
-        acore::size_type index = element;
-        Value val = mData[index];
-
-        while (isValid(val) && val.next != acore::INVALID_INDEX)
-        {
-            index = val.next;
-            val = mData[index];
-        }
-
-        return index;
-    }
-
-    [[nodiscard]] auto next(const Value &value) const -> Value
-    {
-        if (value.next != acore::INVALID_INDEX)
-        {
-            return mData[value.next];
-        }
-
-        return {};
-    }
-
-    acore::size_type mCount = 0;
-    acore::size_type mFree = acore::INVALID_INDEX;
-    acore::size_type mIndex = acore::INVALID_INDEX;
     File *mFile = nullptr;
-    FileIndex mFileIndex;
+    acore::size_type mFileIndex = acore::INVALID_INDEX;
+    FileIndex mIndex;
     PersistentVector<acore::size_type> mDataIndex;
     PersistentVector<Value> mData;
 };
+//! \endcond
 }
 
 #endif

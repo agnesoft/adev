@@ -77,7 +77,7 @@ public:
     {
         validateElement(element);
 
-        if (isValid(element))
+        if (isInBounds(element))
         {
             return mData.count(element);
         }
@@ -103,12 +103,13 @@ public:
 
     //! Returns \c list of keys associated with the
     //! \a element or empty list if the \a element
-    //! has not data stored in the map.
+    //! has no data stored in the map. The \a element
+    //! must be 0 or positive value.
     [[nodiscard]] auto keys(size_type element) const -> std::vector<size_type>
     {
         validateElement(element);
 
-        if (isValid(element))
+        if (isInBounds(element))
         {
             const std::vector<DataIndexMapElement> data = values(element);
             std::vector<size_type> keys;
@@ -130,7 +131,7 @@ public:
     {
         validateElement(element);
 
-        if (isValid(element))
+        if (isInBounds(element))
         {
             mData.remove(element);
         }
@@ -142,7 +143,7 @@ public:
     {
         validateElement(element);
 
-        if (isValid(element))
+        if (isInBounds(element))
         {
             mData.remove(element, key);
         }
@@ -183,29 +184,24 @@ public:
     }
 
     //! Returns the \c value associated with the
-    //! \c element-key pair or the acore::INVALID_INDEX
-    //! if the \c element-key pair does not exist.
+    //! \c element-key pair or throws an #Exception
+    //! if there is no value associated with the
+    //! \a key - \a value pair.
     [[nodiscard]] constexpr auto value(size_type element, size_type key) const -> size_type
     {
-        validateElement(element);
-
-        if (isValid(element))
-        {
-            return mData.value(element, key);
-        }
-
-        return INVALID_INDEX;
+        validateElementBounds(element);
+        return mData.value(element, key);
     }
 
     //! Returns the list of the DataIndexMapElement
-    //! associated with the \a element.
+    //! associated with the \a element. The \a element
+    //! must be 0 or positive value.
     [[nodiscard]] auto values(size_type element) const -> std::vector<DataIndexMapElement>
     {
         validateElement(element);
 
-        if (isValid(element))
+        if (isInBounds(element))
         {
-
             return mData.values(element);
         }
 
@@ -230,7 +226,17 @@ private:
         }
     }
 
-    [[nodiscard]] constexpr auto isValid(size_type element) const noexcept -> bool
+    auto validateElementBounds(size_type element) const -> void
+    {
+        validateElement(element);
+
+        if (!isInBounds(element))
+        {
+            throw Exception{} << "The 'element' must be in bounds (0 - " << size() << ')';
+        }
+    }
+
+    [[nodiscard]] constexpr auto isInBounds(size_type element) const noexcept -> bool
     {
         return element < size();
     }

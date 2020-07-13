@@ -32,11 +32,17 @@ class PersistentDataIndexMap : public acore::DataIndexMapBase<PersistentDataInde
 public:
     //! Constructs a new map in the \a file. The map
     //! is assigned a new index().
-    explicit PersistentDataIndexMap(File *file);
+    explicit PersistentDataIndexMap(File *file) :
+        acore::DataIndexMapBase<PersistentDataIndexMapData>{file}
+    {
+    }
 
     //! Constructs a map with existing data in the
     //! \a file at the \a index.
-    PersistentDataIndexMap(File *file, acore::size_type index);
+    PersistentDataIndexMap(File *file, acore::size_type index) :
+        acore::DataIndexMapBase<PersistentDataIndexMapData>{file, index}
+    {
+    }
 
     //! Deleted copy constructor.
     PersistentDataIndexMap(const PersistentDataIndexMap &other) = delete;
@@ -45,17 +51,23 @@ public:
     PersistentDataIndexMap(PersistentDataIndexMap &&other) noexcept = default;
 
     //! Destructor.
-    ~PersistentDataIndexMap() noexcept = default;
+    ~PersistentDataIndexMap() = default;
 
     //! Returns the file this map operates on.
-    [[nodiscard]] File *file() const noexcept;
+    [[nodiscard]] constexpr auto file() const noexcept -> File *
+    {
+        return storage()->file();
+    }
 
     //! Returns the index of the data of this map
     //! in the file().
-    [[nodiscard]] acore::size_type fileIndex() const noexcept;
+    [[nodiscard]] constexpr auto fileIndex() const noexcept -> acore::size_type
+    {
+        return storage()->fileIndex();
+    }
 
     //! Converts the map to the memory based acore::DataIndexMap.
-    [[nodiscard]] acore::DataIndexMap toDataIndexMap() const;
+    [[nodiscard]] auto toDataIndexMap() const -> acore::DataIndexMap;
 
     //! Deleted copy assignment operator.
     PersistentDataIndexMap &operator=(const PersistentDataIndexMap &other) = delete;
