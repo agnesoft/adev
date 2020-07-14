@@ -144,7 +144,7 @@ add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/PersistentDictionaryData.cpp
                          projects/AFile/WAL.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
- target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
+    target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
 endif()
 target_link_libraries(AFile ACore)
 target_include_directories(AFile PRIVATE projects/AFile/include/AFile)
@@ -160,6 +160,33 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AFileTest PRIVATE projects/AFile/test/pch.hpp)
 endif()
 target_link_libraries(AFileTest AFile Catch2)
+
+##########
+# AGRAPH #
+##########
+add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
+                          projects/AGraph/include/AGraph/AGraphModule.hpp
+                          projects/AGraph/include/AGraph/Common.hpp
+                          projects/AGraph/include/AGraph/Edge.hpp
+                          projects/AGraph/include/AGraph/Element.hpp
+                          projects/AGraph/include/AGraph/Node.hpp
+                          projects/AGraph/Graph.cpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    target_precompile_headers(AGraph PRIVATE projects/AGraph/pch.hpp)
+endif()
+target_link_libraries(AGraph ACore AFile)
+target_include_directories(AGraph PRIVATE projects/AGraph/include/AGraph)
+target_include_directories(AGraph PUBLIC projects/AGraph/include)
+
+#AGraphTest
+add_executable(AGraphTest projects/AGraph/test/CommonTest.cpp
+                          projects/AGraph/test/EdgeTest.cpp
+                          projects/AGraph/test/ElementTest.cpp
+                          projects/AGraph/test/NodeTest.cpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    target_precompile_headers(AGraphTest PRIVATE projects/AGraph/test/pch.hpp)
+endif()
+target_link_libraries(AGraphTest AGraph Catch2)
 
 ###############
 # ABENCHMARKS #
