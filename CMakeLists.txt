@@ -169,6 +169,9 @@ add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/Common.hpp
                           projects/AGraph/include/AGraph/Edge.hpp
                           projects/AGraph/include/AGraph/Element.hpp
+                          projects/AGraph/include/AGraph/Graph.hpp
+                          projects/AGraph/include/AGraph/GraphBase.hpp
+                          projects/AGraph/include/AGraph/GraphData.hpp
                           projects/AGraph/include/AGraph/Node.hpp
                           projects/AGraph/Graph.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
@@ -182,6 +185,7 @@ target_include_directories(AGraph PUBLIC projects/AGraph/include)
 add_executable(AGraphTest projects/AGraph/test/CommonTest.cpp
                           projects/AGraph/test/EdgeTest.cpp
                           projects/AGraph/test/ElementTest.cpp
+                          projects/AGraph/test/GraphTest.cpp
                           projects/AGraph/test/NodeTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AGraphTest PRIVATE projects/AGraph/test/pch.hpp)
@@ -225,7 +229,7 @@ target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
 install(TARGETS ABuild ABenchmarks DESTINATION bin)
-install(TARGETS ABuildTest ACoreTest AFileTest DESTINATION bin/test)
+install(TARGETS ABuildTest ACoreTest AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)

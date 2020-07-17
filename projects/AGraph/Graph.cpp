@@ -14,7 +14,8 @@
 
 #include "pch.hpp"
 
-#include "Common.hpp"
-#include "Edge.hpp"
-#include "Element.hpp"
-#include "Node.hpp"
+#include "Graph.hpp"
+
+namespace agraph
+{
+}

@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AGRAPH_AGRAPH_HPP
-#define AGRAPH_AGRAPH_HPP
+#ifndef AGRAPH_GRAPH_HPP
+#define AGRAPH_GRAPH_HPP
 
-#include "AGraph/Graph.hpp"
+#include "GraphBase.hpp"
+#include "GraphData.hpp"
+
+namespace agraph
+{
+class Graph : public GraphBase<GraphData, Graph>
+{
+};
+}
 
 #endif

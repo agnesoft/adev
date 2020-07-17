@@ -42,8 +42,8 @@ public:
 
 protected:
     constexpr Element(acore::size_type index, const GraphType *graph) noexcept :
-        mIndex(index),
-        mGraph(graph)
+        mIndex{index},
+        mGraph{graph}
     {
     }
 

@@ -13,3 +13,28 @@
 // limitations under the License.
 
 #include "pch.hpp"
+
+#include <catch2/catch.hpp>
+
+namespace edgetest
+{
+TEST_CASE("[agraph::Edge]")
+{
+}
+
+TEST_CASE("Edge() [agraph::Edge]")
+{
+}
+
+TEST_CASE("from() const -> Node [agraph::Edge]")
+{
+}
+
+TEST_CASE("to() const -> Node [agraph::Edge]")
+{
+}
+
+TEST_CASE("Edge(acore::size_type index, const GraphType *graph) [agraph::Edge]")
+{
+}
+}
