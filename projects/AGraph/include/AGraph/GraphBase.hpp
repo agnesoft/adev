@@ -15,25 +15,117 @@
 #ifndef AGRAPH_GRAPHBASE_HPP
 #define AGRAPH_GRAPHBASE_HPP
 
+#include "AGraphModule.hpp"
 #include "Common.hpp"
 #include "Edge.hpp"
 #include "Node.hpp"
 
 namespace agraph
 {
+//! The GraphBase<Data, GraphType> provides
+//! directional graph implementation.
+//!
+//! The graph is a kind of data structure that stores
+//! nodes (sometimes called vertices, points) that are
+//! connected with edges (sometimes called arcs, lines).
+//!
+//! The GraphBase needs a storage class to be passsed
+//! as the template argument. The #GraphBase::Node
+//! and the #GraphBase::Edge classes act like indexes/iterators
+//! for the graph itself. They need to be created
+//! from the graph either with insertNode() and
+//! insertEdge() methods or with node() and edge()
+//! methods passing the index of a graph element.
+//!
+//! While the graph checks the validity of the passed
+//! in indexes the operations on the GraphBase::Node
+//! and GraphBase::Edge are not subsequently checked
+//! for validity of the element. Call #agraph::Element::isValid() if
+//! the element might not be actually valid.
+//!
+//! The graph can be iterated in a convenient manner
+//! using the ranged based for loop on the graph itself
+//! to iterate over nodes and on each #GraphBase::Node
+//! to iterate over its outgoing edges.
+//!
+//! The nodes and edges can be removed from the graph.
+//! When nodes are removed both outgoing and incoming
+//! edges will also be removed possibly invalidating
+//! any GraphBase::Edge objects previously created
+//! for those edges.
+//!
+//! Each element of the graph has an index (unique
+//! for nodes and edges separately). It can be used
+//! to query the respective objects representing a
+//! node or an edge and or to associate external data
+//! with these elements.
+//!
+//! The key properties of this graph implementation are:
+//!
+//! \b Directed
+//!
+//! The GraphBase is a directed graph meaning the
+//! edges do have a sense of origin and destination.
+//! The implementation guarantees that walking through
+//! the graph is as efficient in both directions.
+//!
+//! \b Sparse
+//!
+//! The GraphBase is a sparse graph that does not
+//! require connections between all nodes. It is
+//! implemented as the adjacency list.
+//!
+//! \b Incomplete
+//!
+//! The GraphBase can represent incomplete graphs
+//! and multiple unconnected sub-graphs. It does not
+//! require there to be a path that connects all the
+//! node.
+//!
+//! \b Circular
+//!
+//! The circular connections - node being connected by
+//! an edge to itself - are allowed.
+//!
+//! \b Constant Algorithmic Complexity
+//!
+//! The GraphBase is implemented so that operations:
+//!
+//! - inserting a node
+//! - inserting an edge
+//! - removing an edge
+//!
+//! are constant time. Removing nodes have linear
+//! algorithmic complexity proportional to the number
+//! of edges coming from/to that node. Each edge removal
+//! in such a case has constant complexity. As such
+//! the implementation is infinitely scalable without
+//! performance degradation and is limited only by
+//! the storage capacity.
 template<typename Data, typename GraphType>
 class GraphBase
 {
 public:
+    //! The type representing the graph's edge.
     using Edge = Edge<GraphType, GraphBase>;
+
+    //! The type representing teh graph's node.
     using Node = Node<GraphType, GraphBase>;
+
+    //! Immutable iterator over the graph's nodes.
     using const_iterator = acore::ForwardIterator<Node, Node, const GraphBase>;
 
+    //! Returns an const_iterator pointing to the
+    //! first node in the graph based on its index
+    //! (not necessarily the first created). If the
+    //! graph is empty end() is returned.
     [[nodiscard]] constexpr auto begin() const noexcept -> const_iterator
     {
         return ++end();
     }
 
+    //! Return \c true if the \a edge is part of
+    //! the graph.
     [[nodiscard]] constexpr auto contains(const Edge &edge) const -> bool
     {
         return edge.graph() == this
@@ -41,6 +133,8 @@ public:
             && mData.edge(edgeToIndex(edge.index())).to > acore::INVALID_INDEX;
     }
 
+    //! Return \c true if the \a node is part of
+    //! the graph.
     [[nodiscard]] constexpr auto contains(const Node &node) const -> bool
     {
         return node.graph() == this
@@ -48,6 +142,13 @@ public:
             && mData.node(node.index()).fromCount > acore::INVALID_INDEX;
     }
 
+    //! Inserts an edge between the \a from and the
+    //! \a to nodes. Both nodes must be part of the
+    //! graph otherwise an exception of type #acore::Exception
+    //! is thrown. The index assigned might be that
+    //! of a previously removed edge. Returns the
+    //! object of type #GraphBase::Edge representing
+    //! the newly created edge.
     constexpr auto insertEdge(const Node &from, const Node &to) -> Edge
     {
         validateNodes(from, to);
@@ -56,6 +157,10 @@ public:
         return Edge{edge, static_cast<const GraphType *>(this)};
     }
 
+    //! Inserts a new node in the graph. The index
+    //! assigned might be that of a previously removed
+    //! node. Returns the object of type #GraphBase::Node
+    //! representing the newly created node.
     constexpr auto insertNode() -> Node
     {
         const acore::size_type index = getFreeNode();
@@ -64,6 +169,10 @@ public:
         return Node{index, static_cast<const GraphType *>(this)};
     }
 
+    //! Returns the #GraphBase::Edge representing
+    //! the edge at the \a index if the \a index is
+    //! part of the graph. Otherwise returns a default
+    //! constructed (invalid) edge object.
     [[nodiscard]] constexpr auto edge(acore::size_type index) const -> Edge
     {
         const acore::size_type realIndex = edgeToIndex(index);
@@ -78,16 +187,21 @@ public:
         return Edge{acore::INVALID_INDEX, static_cast<const GraphType *>(this)};
     }
 
+    //! Returns the total number of edges in the graph.
     [[nodiscard]] constexpr auto edgeCount() const -> acore::size_type
     {
         return mData.edgeCount();
     }
 
+    //! Returns the invalid iterator serving as the
+    //! end of the range of the graph's nodes.
     [[nodiscard]] constexpr auto end() const noexcept -> const_iterator
     {
         return const_iterator{acore::INVALID_INDEX, this};
     }
 
+    //! Returns the next available edge id that will
+    //! be used on the next call to insertEdge().
     [[nodiscard]] constexpr auto nextEdgeIndex() const noexcept -> acore::size_type
     {
         if (mData.freeEdge() == acore::INVALID_INDEX)
@@ -98,6 +212,8 @@ public:
         return mData.freeEdge();
     }
 
+    //! Returns the next available node id that will
+    //! be used on the next call to insertNode().
     [[nodiscard]] constexpr auto nextNodeIndex() const noexcept -> acore::size_type
     {
         if (mData.freeNode() == acore::INVALID_INDEX)
@@ -108,6 +224,10 @@ public:
         return mData.freeNode();
     }
 
+    //! Returns the #GraphBase::Node representing
+    //! the node at the \a index if the \a index is
+    //! part of the graph. Otherwise returns a default
+    //! constructed (invalid) node object.
     [[nodiscard]] constexpr auto node(acore::size_type index) const -> Node
     {
         if (index > acore::INVALID_INDEX
@@ -120,11 +240,14 @@ public:
         return Node{acore::INVALID_INDEX, static_cast<const GraphType *>(this)};
     }
 
+    //! Returns the total number of nodes in the graph.
     [[nodiscard]] constexpr auto nodeCount() const -> acore::size_type
     {
         return mData.nodeCount();
     }
 
+    //! Removes the \a edge from the graph if it is
+    //! part of the graph otherwise does nothing.
     constexpr auto removeEdge(const Edge &edge) -> void
     {
         if (contains(edge))
@@ -133,6 +256,15 @@ public:
         }
     }
 
+    //! Removes the \a node from the graph if it is
+    //! part of the graph otherwise does nothing.
+    //! If the node has any outgoing and/or incoming
+    //! edges they will be removed from the graph
+    //! as well.
+    //!
+    //! \note Removing nodes might invalidate #GraphBase::Edge
+    //! objects represnting the edges connected to the removed
+    //! node.
     constexpr auto removeNode(const Node &node) -> void
     {
         if (contains(node))
@@ -157,20 +289,29 @@ public:
         }
     }
 
+    //! Returns modifiable \c Data * pointing to the instance
+    //! of \c Data template argument used by the GraphBase
+    //! as the internal storage.
     [[nodiscard]] constexpr auto storage() noexcept -> Data *
     {
         return &mData;
     }
 
+    //! Returns \c const Data * pointing to the instance
+    //! of \c Data template argument used by the GraphBase
+    //! as internal storage.
     [[nodiscard]] constexpr auto storage() const noexcept -> const Data *
     {
         return &mData;
     }
 
 protected:
+    //! Constructs the graph passing the expanded
+    //! \a args to the constructor of the \c Data
+    //! template argument.
     template<typename... Args>
     explicit constexpr GraphBase(Args... args) :
-        mData(args...)
+        mData{args...}
     {
     }
 
@@ -199,15 +340,15 @@ private:
         return Node{index, static_cast<const GraphType *>(this)};
     }
 
-    constexpr auto addEdge(acore::size_type edge, acore::size_type from, acore::size_type nextFrom, acore::size_type to, acore::size_type nextTo) -> void
+    constexpr auto addEdge(acore::size_type edge, EdgeData data) -> void
     {
-        updateEdge(edge, from, nextFrom, to, nextTo);
+        updateEdge(edge, data);
         mData.setEdgeCount(mData.edgeCount() + 1);
     }
 
     constexpr auto doRemoveEdge(acore::size_type edge) -> void
     {
-        EdgeData edgeData = mData.edge(edgeToIndex(edge));
+        const EdgeData edgeData = mData.edge(edgeToIndex(edge));
         updateElementsWithRemovedEdge(edge, edgeData, mData.node(edgeData.from), mData.node(edgeData.to));
         updateRemovedEdgeData(edge, mData.freeEdge());
     }
@@ -248,17 +389,16 @@ private:
         return index;
     }
 
-    template<typename NodeDataType>
-    constexpr auto saveNodeData(acore::size_type from, NodeDataType *fromData, acore::size_type to, NodeDataType *toData) -> void
+    constexpr auto saveNodeData(acore::size_type from, NodeData fromData, acore::size_type to, NodeData toData) -> void
     {
         if (from == to)
         {
-            mData.setNode(from, {fromData->from, fromData->fromCount, toData->to, toData->toCount});
+            mData.setNode(from, NodeData{fromData.from, fromData.fromCount, toData.to, toData.toCount});
         }
         else
         {
-            mData.setNode(from, *fromData);
-            mData.setNode(to, *toData);
+            mData.setNode(from, fromData);
+            mData.setNode(to, toData);
         }
     }
 
@@ -292,91 +432,89 @@ private:
 
     constexpr auto updateRemovedEdgeData(acore::size_type edge, acore::size_type freeIndex) -> void
     {
-        updateEdge(edge, freeIndex, acore::INVALID_INDEX, acore::INVALID_INDEX, acore::INVALID_INDEX);
+        updateEdge(edge, EdgeData{freeIndex, acore::INVALID_INDEX, acore::INVALID_INDEX, acore::INVALID_INDEX});
         mData.setEdgeCount(mData.edgeCount() - 1);
         mData.setFreeEdge(edge);
     }
 
     constexpr auto updateRemovedNodeData(acore::size_type node, acore::size_type freeIndex) -> void
     {
-        updateNode(node, freeIndex, acore::INVALID_INDEX, acore::INVALID_INDEX, acore::INVALID_INDEX);
+        updateNode(node, NodeData{freeIndex, acore::INVALID_INDEX, acore::INVALID_INDEX, acore::INVALID_INDEX});
         mData.setNodeCount(mData.nodeCount() - 1);
         mData.setFreeNode(node);
     }
 
-    constexpr auto updateEdge(acore::size_type edge, acore::size_type from, acore::size_type nextFrom, acore::size_type to, acore::size_type nextTo) -> void
+    constexpr auto updateEdge(acore::size_type edge, EdgeData data) -> void
     {
-        mData.setEdge(edgeToIndex(edge), {from, nextFrom, to, nextTo});
+        mData.setEdge(edgeToIndex(edge), data);
     }
 
-    constexpr auto updateElementsWithNewEdge(const Node &from, const Node &to, acore::size_type edge) -> void
+    constexpr auto updateElementsWithNewEdge(Node from, Node to, acore::size_type edge) -> void
     {
         NodeData fromData = mData.node(from.index());
         NodeData toData = mData.node(to.index());
-        addEdge(edge, from.index(), fromData.from, to.index(), toData.to);
-        updateNodesWithNewEdge(from.index(), &fromData, to.index(), &toData, edge);
+        addEdge(edge, EdgeData{from.index(), fromData.from, to.index(), toData.to});
+        updateNodesWithNewEdge(from.index(), fromData, to.index(), toData, edge);
     }
 
-    template<typename NodeDataType, typename EdgeDataType>
-    constexpr auto updateElementsWithRemovedEdge(acore::size_type edge, EdgeDataType edgeData, NodeDataType fromData, NodeDataType toData) -> void
+    constexpr auto updateElementsWithRemovedEdge(acore::size_type edge, EdgeData edgeData, NodeData fromData, NodeData toData) -> void
     {
-        updateFromWithRemovedEdge(edge, edgeData.nextFrom, &fromData);
-        updateToWithRemovedEdge(edge, edgeData.nextTo, &toData);
-        saveNodeData(edgeData.from, &fromData, edgeData.to, &toData);
+        saveNodeData(edgeData.from,
+                     updateFromWithRemovedEdge(edge, edgeData.nextFrom, fromData),
+                     edgeData.to,
+                     updateToWithRemovedEdge(edge, edgeData.nextTo, toData));
     }
 
-    template<typename NodeDataType>
-    constexpr auto updateFromWithRemovedEdge(acore::size_type edge, acore::size_type nextFrom, NodeDataType *fromData) -> void
+    [[nodiscard]] constexpr auto updateFromWithRemovedEdge(acore::size_type edge, acore::size_type nextFrom, NodeData fromData) -> NodeData
     {
-        if (fromData->from != edge)
+        if (fromData.from != edge)
         {
-            setPreviousFrom(edge, fromData->from, nextFrom);
+            setPreviousFrom(edge, fromData.from, nextFrom);
         }
         else
         {
-            fromData->from = nextFrom;
+            fromData.from = nextFrom;
         }
 
-        fromData->fromCount--;
+        --fromData.fromCount;
+        return fromData;
     }
 
-    constexpr auto updateNode(acore::size_type node, acore::size_type from, acore::size_type fromCount, acore::size_type to, acore::size_type toCount) -> void
+    constexpr auto updateNode(acore::size_type node, NodeData data) -> void
     {
-        mData.setNode(node, {from, fromCount, to, toCount});
+        mData.setNode(node, data);
     }
 
-    template<typename NodeDataType>
-    constexpr auto updateNodeData(NodeDataType *fromData, NodeDataType *toData, acore::size_type edge) -> void
+    constexpr auto updateNodeData(NodeData *fromData, NodeData *toData, acore::size_type edge) -> void
     {
         fromData->from = edge;
-        fromData->fromCount++;
+        ++fromData->fromCount;
         toData->to = edge;
-        toData->toCount++;
+        ++toData->toCount;
     }
 
-    template<typename NodeDataType>
-    constexpr auto updateNodesWithNewEdge(acore::size_type from, NodeDataType *fromData, acore::size_type to, NodeDataType *toData, acore::size_type edge) -> void
+    constexpr auto updateNodesWithNewEdge(acore::size_type from, NodeData fromData, acore::size_type to, NodeData toData, acore::size_type edge) -> void
     {
-        updateNodeData(fromData, toData, edge);
+        updateNodeData(&fromData, &toData, edge);
         saveNodeData(from, fromData, to, toData);
     }
 
-    template<typename NodeDataType>
-    constexpr auto updateToWithRemovedEdge(acore::size_type edge, acore::size_type nextTo, NodeDataType *toData) -> void
+    [[nodiscard]] constexpr auto updateToWithRemovedEdge(acore::size_type edge, acore::size_type nextTo, NodeData toData) -> NodeData
     {
-        if (toData->to != edge)
+        if (toData.to != edge)
         {
-            setPreviousTo(edge, toData->to, nextTo);
+            setPreviousTo(edge, toData.to, nextTo);
         }
         else
         {
-            toData->to = nextTo;
+            toData.to = nextTo;
         }
 
-        toData->toCount--;
+        --toData.toCount;
+        return toData;
     }
 
-    constexpr auto validateNodes(const Node &from, const Node &to) const -> void
+    constexpr auto validateNodes(Node from, Node to) const -> void
     {
         if (!contains(from))
         {

@@ -15,6 +15,7 @@
 #ifndef AGRAPH_EDGE_HPP
 #define AGRAPH_EDGE_HPP
 
+#include "AGraphModule.hpp"
 #include "Common.hpp"
 #include "Element.hpp"
 
@@ -23,33 +24,43 @@ namespace agraph
 template<typename GraphType, typename GraphImpl>
 class Node;
 
+//! The Edge<GraphType, typename GraphImpl> is a
+//! template that represents an edge of a graph in
+//! a given \c GraphType.
+//!
+//! The edge (also known as arc, line) is an element
+//! of a graph that connects two nodes. The Edge class
+//! provides methods to access the origin and the
+//! destination nodes.
+//!
+//! The basic functionality is provided by the
+//! #agraph::Element base class.
 template<typename GraphType, typename GraphImpl>
 class Edge : public Element<Edge<GraphType, GraphImpl>, GraphType>
 {
 public:
-    constexpr Edge() = default;
+    //! Default constructor.
+    constexpr Edge() noexcept = default;
 
+    //! Returns the #agraph::Node representing the
+    //! origin node of this edge. The edge must
+    //! be valid.
     [[nodiscard]] constexpr auto from() const -> Node<GraphType, GraphImpl>
     {
-        if (this->index() != acore::INVALID_INDEX)
-        {
-            return this->graph()->node(this->graph()->mData.edge(edgeToIndex(this->index())).from);
-        }
-
-        return this->graph()->node(acore::INVALID_INDEX);
+        return this->graph()->node(this->graph()->mData.edge(edgeToIndex(this->index())).from);
     }
 
+    //! Returns the #agraph::Node representing the
+    //! destination node of this edge. The edge must
+    //! be valid.
     [[nodiscard]] constexpr auto to() const -> Node<GraphType, GraphImpl>
     {
-        if (this->index() != acore::INVALID_INDEX)
-        {
-            return this->graph()->node(this->graph()->mData.edge(edgeToIndex(this->index())).to);
-        }
-
-        return this->graph()->node(acore::INVALID_INDEX);
+        return this->graph()->node(this->graph()->mData.edge(edgeToIndex(this->index())).to);
     }
 
 protected:
+    //! Concstructs the edge with the \a index and
+    //! the \a graph.
     constexpr Edge(acore::size_type index, const GraphType *graph) noexcept :
         Element<Edge<GraphType, GraphImpl>, GraphType>{index, graph}
     {

@@ -17,6 +17,8 @@
 #include <catch2/catch.hpp>
 
 #include <sstream>
+#include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -862,5 +864,54 @@ TEST_CASE("storage() const noexcept -> const Data * [agraph::Graph]")
     const agraph::Graph graph;
     REQUIRE(noexcept(graph.storage()));
     REQUIRE(std::as_const(graph).storage());
+}
+
+TEST_CASE("agraph::Graph [examples]")
+{
+    SECTION("[usage]")
+    {
+        // clang-format off
+        //! [[Usage]]
+agraph::Graph graph;
+
+//creating nodes & edges
+const auto node1 = graph.insertNode(); //0
+const auto node2 = graph.insertNode(); //1
+const auto node3 = graph.insertNode(); //2
+graph.insertEdge(node1, node2); //-2
+graph.insertEdge(node2, node3); //-3
+
+//exploring the graph depth first (simplified)
+std::vector<acore::size_type> elementIds;
+auto node = *graph.begin();
+
+while (true)
+{
+    elementIds.push_back(node.index());
+    auto it = node.begin();
+
+    if (it != node.end())
+    {
+        const auto edge = (*it);
+        elementIds.push_back(edge.index());
+        node = edge.to();
+    }
+    else
+    {
+        break;
+    }
+}
+
+//elementIds == {0, -2, 1, -3, 2};
+        //! [[Usage]]
+        // clang-format on;
+
+        REQUIRE(elementIds == std::vector<acore::size_type>{0, -2, 1, -3, 2});
+    }
+
+    SECTION("[navigation]")
+    {
+
+    }
 }
 }

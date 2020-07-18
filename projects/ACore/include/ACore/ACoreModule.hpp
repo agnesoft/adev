@@ -20,7 +20,7 @@
 #include <cstdint>
 
 //! \ingroup ACoreModule
-//! Contains basic containers and utilities.
+//! The module provides basic containers and utilities.
 namespace acore
 {
 //! Integer type alias that is guaranteed to be

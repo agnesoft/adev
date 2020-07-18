@@ -15,7 +15,16 @@
 #ifndef AGRAPH_AGRAPHMODULE_HPP
 #define AGRAPH_AGRAPHMODULE_HPP
 
+//! \defgroup AGraphModule AGraph Module
+
 #include <ACore.hpp>
 #include <AFile.hpp>
+
+//! \ingroup AGraphModule
+//! The module provides a directional graph implementation,
+//! graph algorithms and related classes.
+namespace agraph
+{
+}
 
 #endif

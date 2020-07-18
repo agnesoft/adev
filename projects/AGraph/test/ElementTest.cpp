@@ -16,6 +16,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <type_traits>
+
 namespace elementtest
 {
 class Graph;

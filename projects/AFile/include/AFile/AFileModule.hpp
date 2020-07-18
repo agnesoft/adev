@@ -15,6 +15,15 @@
 #ifndef AFILE_AFILEMODULE_HPP
 #define AFILE_AFILEMODULE_HPP
 
+//! \defgroup AFileModule AFile Module
+
 #include <ACore.hpp>
+
+//! \ingroup AFileModule
+//! The module provides file based (persistent)
+//! containers.
+namespace afile
+{
+}
 
 #endif

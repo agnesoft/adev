@@ -15,11 +15,21 @@
 #ifndef AGRAPH_GRAPH_HPP
 #define AGRAPH_GRAPH_HPP
 
+#include "AGraphModule.hpp"
 #include "GraphBase.hpp"
 #include "GraphData.hpp"
 
 namespace agraph
 {
+//! The Graph provides in-memory directional
+//! graph implementation.
+//!
+//! The class is a specialization of the GraphBase.
+//! It provides in memory graph representation to be
+//! used for graph algorithms.
+//!
+//! Example of usage:
+//! \snippet GraphTest.cpp [Usage]
 class Graph : public GraphBase<GraphData, Graph>
 {
 };

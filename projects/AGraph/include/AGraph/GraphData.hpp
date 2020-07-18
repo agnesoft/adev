@@ -15,10 +15,12 @@
 #ifndef AGRAPH_GRAPHDATA_HPP
 #define AGRAPH_GRAPHDATA_HPP
 
+#include "AGraphModule.hpp"
 #include "Common.hpp"
 
 namespace agraph
 {
+//! \cond IMPLEMENTAION_DETAIL
 class GraphData
 {
 public:
@@ -110,6 +112,7 @@ private:
     std::vector<NodeData> mNodes;
     std::vector<EdgeData> mEdges;
 };
+//! \endcond
 }
 
 #endif
