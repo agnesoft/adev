@@ -133,8 +133,6 @@ private:
     friend const_iterator;
     friend GraphImpl;
 
-    //! \private
-    //! NEEDED BECAUSE OF THE BUG IN DOXYGEN 1.8.13
     [[nodiscard]] constexpr auto nextIndex(acore::size_type index) const -> acore::size_type
     {
         if (index < acore::INVALID_INDEX)
@@ -150,8 +148,6 @@ private:
         throw acore::Exception{} << "Cannot incrementing invalid 'agraph::Node::iterator'.";
     }
 
-    //! \private
-    //! NEEDED BECAUSE OF THE BUG IN DOXYGEN 1.8.13
     [[nodiscard]] constexpr auto referenceAt(acore::size_type index) const -> Edge<GraphType, GraphImpl>
     {
         if (acore::INVALID_INDEX < index)
