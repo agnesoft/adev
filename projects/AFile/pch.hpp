@@ -15,6 +15,6 @@
 #ifndef AFILE_PCH_HPP
 #define AFILE_PCH_HPP
 
-#include "ACore.hpp"
+#include <ACore.hpp>
 
 #endif
