@@ -12,18 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AFILE_AFILEMODULE_HPP
-#define AFILE_AFILEMODULE_HPP
+#include "pch.hpp"
 
-//! \defgroup AFileModule AFile Module
+#include "Graph.hpp"
 
-#include <ACore.hpp>
-
-//! \ingroup AFileModule
-//! The module provides file based (persistent)
-//! containers.
-namespace afile
+namespace agraph
 {
 }
-
-#endif

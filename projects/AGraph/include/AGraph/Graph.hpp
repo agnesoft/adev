@@ -12,18 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AFILE_AFILEMODULE_HPP
-#define AFILE_AFILEMODULE_HPP
+#ifndef AGRAPH_GRAPH_HPP
+#define AGRAPH_GRAPH_HPP
 
-//! \defgroup AFileModule AFile Module
+#include "AGraphModule.hpp"
+#include "GraphBase.hpp"
+#include "GraphData.hpp"
 
-#include <ACore.hpp>
-
-//! \ingroup AFileModule
-//! The module provides file based (persistent)
-//! containers.
-namespace afile
+namespace agraph
 {
+//! The Graph provides in-memory directional
+//! graph implementation.
+//!
+//! The class is a specialization of the GraphBase.
+//! It provides in memory graph representation to be
+//! used for graph algorithms.
+//!
+//! Example of usage:
+//! \snippet GraphTest.cpp [Usage]
+class Graph : public GraphBase<GraphData, Graph>
+{
+};
 }
 
 #endif

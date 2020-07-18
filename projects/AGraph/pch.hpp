@@ -12,18 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AFILE_AFILEMODULE_HPP
-#define AFILE_AFILEMODULE_HPP
-
-//! \defgroup AFileModule AFile Module
+#ifndef AGRAPH_PCH_HPP
+#define AGRAPH_PCH_HPP
 
 #include <ACore.hpp>
-
-//! \ingroup AFileModule
-//! The module provides file based (persistent)
-//! containers.
-namespace afile
-{
-}
+#include <AFile.hpp>
 
 #endif

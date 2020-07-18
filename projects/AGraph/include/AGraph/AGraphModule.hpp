@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AFILE_AFILEMODULE_HPP
-#define AFILE_AFILEMODULE_HPP
+#ifndef AGRAPH_AGRAPHMODULE_HPP
+#define AGRAPH_AGRAPHMODULE_HPP
 
-//! \defgroup AFileModule AFile Module
+//! \defgroup AGraphModule AGraph Module
 
 #include <ACore.hpp>
+#include <AFile.hpp>
 
-//! \ingroup AFileModule
-//! The module provides file based (persistent)
-//! containers.
-namespace afile
+//! \ingroup AGraphModule
+//! The module provides a directional graph implementation,
+//! graph algorithms and related classes.
+namespace agraph
 {
 }
 
