@@ -9,7 +9,7 @@ on:
 jobs:
   analysis:
     name: Analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Ninja
@@ -23,7 +23,7 @@ jobs:
 
   coverage:
     name: Coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Ninja
@@ -49,7 +49,7 @@ jobs:
 
   documentation:
     name: Documentation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Doxygen
@@ -64,7 +64,7 @@ jobs:
 
   formatting:
     name: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Clang-Format
@@ -74,7 +74,7 @@ jobs:
 
   sanitize-address:
     name: Sanitize Address
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Ninja
@@ -90,7 +90,7 @@ jobs:
 
   sanitize-memory:
     name: Sanitize Memory
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Ninja
@@ -106,7 +106,7 @@ jobs:
 
   sanitize-ub:
     name: Sanitize Undefined Behavior
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Ninja
@@ -134,7 +134,7 @@ jobs:
             }
           - {
               name: "Linux GCC x64",
-              os: ubuntu-latest,
+              os: ubuntu-20.04,
               platform: linux-gcc9-x64,
             }
           - {
