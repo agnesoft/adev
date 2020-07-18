@@ -17,6 +17,7 @@
 #include <catch2/catch.hpp>
 
 #include <filesystem>
+#include <type_traits>
 
 namespace afile
 {
@@ -69,7 +70,7 @@ public:
         }
     }
 
-    [[nodiscard]] auto file() noexcept -> afile::File *
+    [[nodiscard]] auto file() const noexcept -> afile::File *
     {
         return mFile.get();
     }
@@ -94,16 +95,25 @@ private:
     std::unique_ptr<afile::File> mFile;
 };
 
+TEST_CASE("[afile::PersistentVector]")
+{
+    REQUIRE_FALSE(std::is_copy_constructible_v<afile::PersistentVector<int>>);
+    REQUIRE_FALSE(std::is_copy_assignable_v<afile::PersistentVector<int>>);
+    REQUIRE(std::is_nothrow_move_constructible_v<afile::PersistentVector<int>>);
+    REQUIRE(std::is_nothrow_move_assignable_v<afile::PersistentVector<int>>);
+    REQUIRE(std::is_nothrow_destructible_v<afile::PersistentVector<int>>);
+}
+
 TEST_CASE("PersistentVector(File *file) [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<int> vector{testFile.file()};
     REQUIRE(vector == std::array<int, 0>{});
 }
 
 TEST_CASE("PersistentVector(File *file, size_type index) [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[valid]")
     {
@@ -128,21 +138,21 @@ TEST_CASE("PersistentVector(File *file, size_type index) [afile::PersistentVecto
 
 TEST_CASE("PersistentVector(size_type size, File *file) [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<char> vector(5, testFile.file());
     REQUIRE(vector == std::array<char, 5>{char{}, char{}, char{}, char{}, char{}});
 }
 
 TEST_CASE("PersistentVector(size_type, const T &value, File *file) [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<float> vector(4, 1.1F, testFile.file()); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector == std::array<float, 4>{1.1F, 1.1F, 1.1F, 1.1F}); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
 
 TEST_CASE("PersistenVector(It first, It last, File *file) [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     std::array<double, 6> container{-1.0, -3.0, -4.5, 3.14, 6.67, -111.9}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     const afile::PersistentVector<double> vector{container.begin(), container.end(), testFile.file()};
     REQUIRE(vector == container);
@@ -150,14 +160,14 @@ TEST_CASE("PersistenVector(It first, It last, File *file) [afile::PersistentVect
 
 TEST_CASE("PersistentVector(std::initializer_list<T> list, File *file) [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<double> vector{{-1.0, -3.0, -4.5, 3.14, 6.67, -111.9}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector == std::array<double, 6>{-1.0, -3.0, -4.5, 3.14, 6.67, -111.9}); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
 
 TEST_CASE("PersistentVector(Vector &&other [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -176,7 +186,7 @@ TEST_CASE("PersistentVector(Vector &&other [afile::PersistentVector]")
 
 TEST_CASE("assign(IteratorType first, IteratorType last) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -197,7 +207,7 @@ TEST_CASE("assign(IteratorType first, IteratorType last) -> void [afile::Persist
 
 TEST_CASE("assign(std::initializer_list<T> list) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -218,7 +228,7 @@ TEST_CASE("assign(std::initializer_list<T> list) -> void [afile::PersistentVecto
 
 TEST_CASE("at(size_type index) -> reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[data]")
     {
@@ -245,7 +255,7 @@ TEST_CASE("at(size_type index) -> reference [afile::PersistentVector]")
 
 TEST_CASE("at(size_type index) const -> const_reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[data]")
     {
@@ -271,7 +281,7 @@ TEST_CASE("at(size_type index) const -> const_reference [afile::PersistentVector
 
 TEST_CASE("back() -> reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<float> vector{{0.0F, 1.1F, 2.2F, 3.3F}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     vector.back() = 4.4F; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector == std::array<float, 4>{0.0F, 1.1F, 2.2F, 4.4F}); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
@@ -279,14 +289,14 @@ TEST_CASE("back() -> reference [afile::PersistentVector]")
 
 TEST_CASE("back() const -> const_reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<double> vector{{10.0, -11.0, 12.2, -13.3}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector.back() == -13.3); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
 
 TEST_CASE("begin() noexcept -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -305,7 +315,7 @@ TEST_CASE("begin() noexcept -> iterator [afile::PersistentVector]")
 
 TEST_CASE("begin() const noexcept -> const_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -323,7 +333,7 @@ TEST_CASE("begin() const noexcept -> const_iterator [afile::PersistentVector]")
 
 TEST_CASE("capacity() const noexcept -> size_type [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -363,7 +373,7 @@ TEST_CASE("capacity() const noexcept -> size_type [afile::PersistentVector]")
 
 TEST_CASE("cbegin() const noexcept -> const_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -381,7 +391,7 @@ TEST_CASE("cbegin() const noexcept -> const_iterator [afile::PersistentVector]")
 
 TEST_CASE("cend() const noexcept -> const_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<int> vector{{-99, 100, 1000}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(noexcept(vector.cend()));
     REQUIRE(vector.cbegin() != vector.cend());
@@ -389,7 +399,7 @@ TEST_CASE("cend() const noexcept -> const_iterator [afile::PersistentVector]")
 
 TEST_CASE("clear() noexcept -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -409,7 +419,7 @@ TEST_CASE("clear() noexcept -> void [afile::PersistentVector]")
 
 TEST_CASE("crbegin() const noexcept -> const_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -427,7 +437,7 @@ TEST_CASE("crbegin() const noexcept -> const_iterator [afile::PersistentVector]"
 
 TEST_CASE("crend() const noexcept -> const_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<int> vector{{-99, 100, 1000}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(noexcept(vector.crend()));
     REQUIRE(vector.crbegin() != vector.crend());
@@ -435,7 +445,7 @@ TEST_CASE("crend() const noexcept -> const_iterator [afile::PersistentVector]")
 
 TEST_CASE("emplace(const_iterator before, T &&value) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -454,7 +464,7 @@ TEST_CASE("emplace(const_iterator before, T &&value) -> iterator [afile::Persist
 
 TEST_CASE("emplace_back(T &&value) -> reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -473,7 +483,7 @@ TEST_CASE("emplace_back(T &&value) -> reference [afile::PersistentVector]")
 
 TEST_CASE("empty() const noexcept -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -491,7 +501,7 @@ TEST_CASE("empty() const noexcept -> bool [afile::PersistentVector]")
 
 TEST_CASE("end() noexcept -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<int> vector{{-1000, -10000, -100000}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(noexcept(vector.end()));
     REQUIRE(vector.begin() != vector.end());
@@ -499,7 +509,7 @@ TEST_CASE("end() noexcept -> iterator [afile::PersistentVector]")
 
 TEST_CASE("end() const noexcept -> const_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<double> vector{{-10.34, -1.0001, 0.0, 9.9900000}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(noexcept(vector.end()));
     REQUIRE(vector.begin() != vector.end());
@@ -507,7 +517,7 @@ TEST_CASE("end() const noexcept -> const_iterator [afile::PersistentVector]")
 
 TEST_CASE("erase(const_iterator it) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<int> vector{{-57, -654, -2, 0, -45, -58}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(*vector.erase(vector.begin() + 3) == -45);
     REQUIRE(vector == std::array<int, 5>{-57, -654, -2, -45, -58});
@@ -515,7 +525,7 @@ TEST_CASE("erase(const_iterator it) -> iterator [afile::PersistentVector]")
 
 TEST_CASE("erase(const_iterator first, const_iterator last) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -549,19 +559,19 @@ TEST_CASE("erase(const_iterator first, const_iterator last) -> iterator [afile::
 
 TEST_CASE("file() const noexcept -> File * [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     REQUIRE(afile::PersistentVector<int>{testFile.file()}.file() == testFile.file());
 }
 
 TEST_CASE("fileIndex() const noexcept -> size_type [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     REQUIRE(afile::PersistentVector<int>{testFile.file()}.fileIndex() == 0);
 }
 
 TEST_CASE("front() -> reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<int> vector{{5, 4, 3, 2, 1, 0}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     vector.front() = 10; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector == std::array<int, 6>{10, 4, 3, 2, 1, 0});
@@ -569,14 +579,14 @@ TEST_CASE("front() -> reference [afile::PersistentVector]")
 
 TEST_CASE("front() const -> const_reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<double> vector{{9.999, -4.25}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector.front() == 9.999); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
 
 TEST_CASE("insert(const_iterator before, const T &value) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -597,7 +607,7 @@ TEST_CASE("insert(const_iterator before, const T &value) -> iterator [afile::Per
 
 TEST_CASE("insert(const_iterator before, T &&value) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -616,7 +626,7 @@ TEST_CASE("insert(const_iterator before, T &&value) -> iterator [afile::Persiste
 
 TEST_CASE("insert(const_iterator pos, size_type count, const T &value) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -637,7 +647,7 @@ TEST_CASE("insert(const_iterator pos, size_type count, const T &value) -> iterat
 
 TEST_CASE("insert(const_iterator pos, It first, It last) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -658,7 +668,7 @@ TEST_CASE("insert(const_iterator pos, It first, It last) -> iterator [afile::Per
 
 TEST_CASE("insert(const_iterator before, std::initializer_list<T> list) -> iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -677,7 +687,7 @@ TEST_CASE("insert(const_iterator before, std::initializer_list<T> list) -> itera
 
 TEMPLATE_TEST_CASE("max_size() const noexcept -> size_type [afile::PersistentVector]", "", int, std::string) //NOLINT(modernize-avoid-c-arrays, cppcoreguidelines-pro-bounds-pointer-arithmetic, cert-err58-cpp)
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<TestType> vector{testFile.file()};
     REQUIRE(vector.max_size());
     REQUIRE(vector.max_size() == std::numeric_limits<acore::size_type>::max());
@@ -685,7 +695,7 @@ TEMPLATE_TEST_CASE("max_size() const noexcept -> size_type [afile::PersistentVec
 
 TEST_CASE("pop_back() -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<int> vector{{6584, -6584, 9874, 3652, -4514}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     vector.pop_back();
     REQUIRE(vector == std::array<int, 4>{6584, -6584, 9874, 3652});
@@ -693,7 +703,7 @@ TEST_CASE("pop_back() -> void [afile::PersistentVector]")
 
 TEST_CASE("push_back(T &&value) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     SECTION("[empty]")
     {
         afile::PersistentVector<char> vector{testFile.file()};
@@ -711,7 +721,7 @@ TEST_CASE("push_back(T &&value) -> void [afile::PersistentVector]")
 
 TEST_CASE("push_back(const T &value) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     SECTION("[empty]")
     {
         afile::PersistentVector<int> vector{testFile.file()};
@@ -731,7 +741,7 @@ TEST_CASE("push_back(const T &value) -> void [afile::PersistentVector]")
 
 TEST_CASE("rbegin() noexcept -> reverse_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -750,7 +760,7 @@ TEST_CASE("rbegin() noexcept -> reverse_iterator [afile::PersistentVector]")
 
 TEST_CASE("rbegin() const noexcept -> const_reverse_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -768,7 +778,7 @@ TEST_CASE("rbegin() const noexcept -> const_reverse_iterator [afile::PersistentV
 
 TEST_CASE("rend() noexcept -> reverse_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<int> vector{{-1000, -10000, -100000}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(noexcept(vector.rend()));
     REQUIRE(vector.rbegin() != vector.rend());
@@ -776,7 +786,7 @@ TEST_CASE("rend() noexcept -> reverse_iterator [afile::PersistentVector]")
 
 TEST_CASE("rend() const noexcept -> const_reverse_iterator [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<double> vector{{-10.34, -1.0001, 0.0, 9.9900000}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(noexcept(vector.rend()));
     REQUIRE(vector.rbegin() != vector.rend());
@@ -784,7 +794,7 @@ TEST_CASE("rend() const noexcept -> const_reverse_iterator [afile::PersistentVec
 
 TEST_CASE("reserve(size_type size) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -823,7 +833,7 @@ TEST_CASE("reserve(size_type size) -> void [afile::PersistentVector]")
 
 TEST_CASE("resize(size_type newSize) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -865,7 +875,7 @@ TEST_CASE("resize(size_type newSize) -> void [afile::PersistentVector]")
 
 TEST_CASE("resize(size_type newSize, const T &value) -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -907,7 +917,7 @@ TEST_CASE("resize(size_type newSize, const T &value) -> void [afile::PersistentV
 
 TEST_CASE("shrink_to_fit() -> void [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -941,7 +951,7 @@ TEST_CASE("shrink_to_fit() -> void [afile::PersistentVector]")
 
 TEST_CASE("size() const noexcept -> size_type [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -959,7 +969,7 @@ TEST_CASE("size() const noexcept -> size_type [afile::PersistentVector]")
 
 TEST_CASE("operator[](size_type index) -> reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     afile::PersistentVector<int> vector{{-25, -20, -30}, testFile.file()}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     vector[1] = 10; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     REQUIRE(vector == std::array<int, 3>{-25, 10, -30});
@@ -967,14 +977,14 @@ TEST_CASE("operator[](size_type index) -> reference [afile::PersistentVector]")
 
 TEST_CASE("operator[](size_type index) const -> const_reference [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
     const afile::PersistentVector<char> vector{{'H', 'W', '!', '\n'}, testFile.file()};
     REQUIRE(*vector.at(2) == '!');
 }
 
 TEST_CASE("operator=(VectorType &&other) noexcept -> Vector & [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -996,7 +1006,7 @@ TEST_CASE("operator=(VectorType &&other) noexcept -> Vector & [afile::Persistent
 
 TEST_CASE("operator==(const PersistentVector<T> &left, const Container &right) -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -1037,7 +1047,7 @@ TEST_CASE("operator==(const PersistentVector<T> &left, const Container &right) -
 
 TEST_CASE("operator!=(const Vector<T> &left, const Container &right) -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -1078,7 +1088,7 @@ TEST_CASE("operator!=(const Vector<T> &left, const Container &right) -> bool [af
 
 TEST_CASE("operator<(const Vector<T> &left, const Vector<T> &right) -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -1125,7 +1135,7 @@ TEST_CASE("operator<(const Vector<T> &left, const Vector<T> &right) -> bool [afi
 
 TEST_CASE("operator<=(const Vector<T> &left, const Vector<T> &right) -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -1172,7 +1182,7 @@ TEST_CASE("operator<=(const Vector<T> &left, const Vector<T> &right) -> bool [af
 
 TEST_CASE("operator>(const Vector<T> &left, const Vector<T> &right) -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {
@@ -1220,7 +1230,7 @@ TEST_CASE("operator>(const Vector<T> &left, const Vector<T> &right) -> bool [afi
 
 TEST_CASE("operator>=(const Vector &left, const Vector &right) -> bool [afile::PersistentVector]")
 {
-    TestFile testFile;
+    const TestFile testFile;
 
     SECTION("[empty]")
     {

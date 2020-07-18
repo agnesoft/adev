@@ -18,6 +18,8 @@
 
 #include <filesystem>
 #include <sstream>
+#include <type_traits>
+#include <vector>
 
 namespace filetest
 {
@@ -119,6 +121,13 @@ template<typename Buffer>
 
 namespace filetest
 {
+TEST_CASE("[afile::File]")
+{
+    REQUIRE_FALSE(std::is_copy_constructible_v<afile::File>);
+    REQUIRE_FALSE(std::is_copy_assignable_v<afile::File>);
+    REQUIRE(std::is_nothrow_destructible_v<afile::File>);
+}
+
 TEST_CASE("File(const char *filename) [afile::File]")
 {
     const TestFile testFile;
@@ -183,7 +192,7 @@ TEST_CASE("File(const char *filename) [afile::File]")
     }
 }
 
-TEST_CASE("File(File &&other) noexcept [afile::File]")
+TEST_CASE("File(File &&other) [afile::File]")
 {
     const TestFile testFile;
     afile::FileStream{testFile.filename()} << acore::size_type{3}
@@ -986,7 +995,7 @@ TEST_CASE("value(size_type index, size_type offset) const -> T [afile::File]")
     }
 }
 
-TEST_CASE("operator=(File &&other) noexcept -> File & [afile::File]")
+TEST_CASE("operator=(File &&other) -> File & [afile::File]")
 {
     const TestFile testFile;
     const TestFile otherFile{"other.test.file"};

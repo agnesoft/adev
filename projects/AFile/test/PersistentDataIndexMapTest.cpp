@@ -218,6 +218,7 @@ TEST_CASE("PersistentDataIndexMap(PersistentDataIndexMap &&other) noexcept -> Pe
 {
     TestFile testFile{{{1, {2, 3}}, {100, {3, 5}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     afile::PersistentDataIndexMap map{testFile.file(), testFile.index()};
+    REQUIRE(noexcept(afile::PersistentDataIndexMap{std::move(map)}));
     const afile::PersistentDataIndexMap other{std::move(map)};
     REQUIRE(other == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {100, {3, 5}}});
 }
@@ -674,6 +675,7 @@ TEST_CASE("operator=(PersistentDataIndexMap &&other) noexcept -> PersistentDataI
     TestFile testFile{{{1, {2, 3}}, {100, {3, 5}}}}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     afile::PersistentDataIndexMap map{testFile.file(), testFile.index()};
     afile::PersistentDataIndexMap other{testFile.file()};
+    REQUIRE(noexcept(other = std::move(map)));
     other = std::move(map);
     REQUIRE(other == std::vector<std::pair<acore::size_type, acore::DataIndexMapElement>>{{1, {2, 3}}, {100, {3, 5}}});
 }
