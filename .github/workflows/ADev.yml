@@ -140,7 +140,7 @@ jobs:
           - {
               name: "macOS Clang x64",
               os: macos-latest,
-              platform: macOS-clang9-x64,
+              platform: macOS-clang11-x64,
             }
     steps:
       - uses: actions/checkout@v2
