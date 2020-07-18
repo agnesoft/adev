@@ -107,10 +107,10 @@ class GraphBase
 {
 public:
     //! The type representing the graph's edge.
-    using Edge = Edge<GraphType, GraphBase>;
+    using Edge = agraph::Edge<GraphType, GraphBase>;
 
     //! The type representing teh graph's node.
-    using Node = Node<GraphType, GraphBase>;
+    using Node = agraph::Node<GraphType, GraphBase>;
 
     //! Immutable iterator over the graph's nodes.
     using const_iterator = acore::ForwardIterator<Node, Node, const GraphBase>;
