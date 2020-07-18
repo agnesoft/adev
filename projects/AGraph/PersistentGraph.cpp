@@ -15,8 +15,14 @@
 #include "pch.hpp"
 
 #include "AGraphModule.hpp"
-#include "Graph.hpp"
+#include "PersistentGraph.hpp"
 
 namespace agraph
 {
+auto PersistentGraph::toGraph() const -> Graph
+{
+    Graph graph;
+    *graph.storage() = storage()->toGraphData();
+    return graph;
+}
 }

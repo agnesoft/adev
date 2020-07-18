@@ -173,7 +173,11 @@ add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/GraphBase.hpp
                           projects/AGraph/include/AGraph/GraphData.hpp
                           projects/AGraph/include/AGraph/Node.hpp
-                          projects/AGraph/Graph.cpp)
+                          projects/AGraph/include/AGraph/PersistentGraph.hpp
+                          projects/AGraph/include/AGraph/PersistentGraphData.hpp
+                          projects/AGraph/Graph.cpp
+                          projects/AGraph/PersistentGraph.cpp
+                          projects/AGraph/PersistentGraphData.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AGraph PRIVATE projects/AGraph/pch.hpp)
 endif()
@@ -186,7 +190,8 @@ add_executable(AGraphTest projects/AGraph/test/CommonTest.cpp
                           projects/AGraph/test/EdgeTest.cpp
                           projects/AGraph/test/ElementTest.cpp
                           projects/AGraph/test/GraphTest.cpp
-                          projects/AGraph/test/NodeTest.cpp)
+                          projects/AGraph/test/NodeTest.cpp
+                          projects/AGraph/test/PersistentGraphTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AGraphTest PRIVATE projects/AGraph/test/pch.hpp)
 endif()

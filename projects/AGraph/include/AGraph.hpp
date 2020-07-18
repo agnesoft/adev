@@ -16,5 +16,6 @@
 #define AGRAPH_AGRAPH_HPP
 
 #include "AGraph/Graph.hpp"
+#include "AGraph/PersistentGraph.hpp"
 
 #endif
