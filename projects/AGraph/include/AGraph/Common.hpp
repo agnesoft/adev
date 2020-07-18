@@ -103,7 +103,7 @@ constexpr auto operator>>(acore::DataStreamBase<Buffer> &stream, EdgeData &edge)
 //! typically for accessing data stored in arrays.
 //!
 //! \note The \a index must be less than
-//! #acore::INVALID_INDEX.
+//! acore::INVALID_INDEX.
 [[nodiscard]] constexpr auto edgeToIndex(acore::size_type index) noexcept -> acore::size_type
 {
     return -(index + 2);
@@ -113,14 +113,14 @@ constexpr auto operator>>(acore::DataStreamBase<Buffer> &stream, EdgeData &edge)
 //! represents an element on a graph.
 //!
 //! \note The \a index must be greater than
-//! #acore::INVALID_INDEX.
+//! acore::INVALID_INDEX.
 [[nodiscard]] constexpr auto indexToEdge(acore::size_type index) noexcept -> acore::size_type
 {
     return edgeToIndex(index);
 }
 
 //! Returns \c true if the \a index is less than
-//! #acore::INVALID_INDEX representing an edge
+//! acore::INVALID_INDEX representing an edge
 //! on a graph.
 [[nodiscard]] constexpr auto isEdge(acore::size_type index) noexcept -> bool
 {
@@ -128,7 +128,7 @@ constexpr auto operator>>(acore::DataStreamBase<Buffer> &stream, EdgeData &edge)
 }
 
 //! Returns \c true if the \a index is greater than
-//! #acore::INVALID_INDEX representing a node
+//! acore::INVALID_INDEX representing a node
 //! on a graph.
 [[nodiscard]] constexpr auto isNode(acore::size_type index) noexcept -> bool
 {

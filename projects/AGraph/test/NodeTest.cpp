@@ -174,7 +174,7 @@ TEST_CASE("begin() const -> const_iterator [agraph::Node]")
         const auto to = graph.insertNode();
         graph.insertEdge(from, to);
         graph.insertEdge(from, to);
-        const auto edge = graph.insertEdge(from, to);
+        graph.insertEdge(from, to);
 
         REQUIRE(to.begin() == to.end());
     }
@@ -330,7 +330,7 @@ TEST_CASE("rbegin() const -> const_iterator [agraph::Node]")
         const auto to = graph.insertNode();
         graph.insertEdge(from, to);
         graph.insertEdge(from, to);
-        const auto edge = graph.insertEdge(from, to);
+        graph.insertEdge(from, to);
 
         REQUIRE(from.rbegin() == from.rend());
     }

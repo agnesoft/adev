@@ -623,7 +623,7 @@ TEST_CASE("node(acore::size_type index) const -> Node [agraph::Graph]")
         const auto to = graph.insertNode();
         graph.insertEdge(from, to);
         graph.insertEdge(to, from);
-        const auto edge = graph.insertEdge(from, to);
+        graph.insertEdge(from, to);
 
         REQUIRE(graph.node(1) == node);
     }

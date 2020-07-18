@@ -42,7 +42,7 @@ public:
     }
 
     //! Returns the \c index of the element or
-    //! #acore::INVALID_INDEX if the element was
+    //! acore::INVALID_INDEX if the element was
     //! default constructed.
     [[nodiscard]] constexpr auto index() const noexcept -> acore::size_type
     {

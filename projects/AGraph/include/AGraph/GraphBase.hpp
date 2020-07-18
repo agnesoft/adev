@@ -30,8 +30,8 @@ namespace agraph
 //! connected with edges (sometimes called arcs, lines).
 //!
 //! The GraphBase needs a storage class to be passsed
-//! as the template argument. The #GraphBase::Node
-//! and the #GraphBase::Edge classes act like indexes/iterators
+//! as the template argument. The #Node
+//! and the #Edge classes act like indexes/iterators
 //! for the graph itself. They need to be created
 //! from the graph either with insertNode() and
 //! insertEdge() methods or with node() and edge()
@@ -39,19 +39,19 @@ namespace agraph
 //!
 //! While the graph checks the validity of the passed
 //! in indexes the operations on the GraphBase::Node
-//! and GraphBase::Edge are not subsequently checked
+//! and #Edge are not subsequently checked
 //! for validity of the element. Call #agraph::Element::isValid() if
 //! the element might not be actually valid.
 //!
 //! The graph can be iterated in a convenient manner
 //! using the ranged based for loop on the graph itself
-//! to iterate over nodes and on each #GraphBase::Node
+//! to iterate over nodes and on each #Node
 //! to iterate over its outgoing edges.
 //!
 //! The nodes and edges can be removed from the graph.
 //! When nodes are removed both outgoing and incoming
 //! edges will also be removed possibly invalidating
-//! any GraphBase::Edge objects previously created
+//! any #Edge objects previously created
 //! for those edges.
 //!
 //! Each element of the graph has an index (unique
@@ -147,7 +147,7 @@ public:
     //! graph otherwise an exception of type #acore::Exception
     //! is thrown. The index assigned might be that
     //! of a previously removed edge. Returns the
-    //! object of type #GraphBase::Edge representing
+    //! object of type #Edge representing
     //! the newly created edge.
     constexpr auto insertEdge(const Node &from, const Node &to) -> Edge
     {
@@ -159,7 +159,7 @@ public:
 
     //! Inserts a new node in the graph. The index
     //! assigned might be that of a previously removed
-    //! node. Returns the object of type #GraphBase::Node
+    //! node. Returns the object of type #Node
     //! representing the newly created node.
     constexpr auto insertNode() -> Node
     {
@@ -169,7 +169,7 @@ public:
         return Node{index, static_cast<const GraphType *>(this)};
     }
 
-    //! Returns the #GraphBase::Edge representing
+    //! Returns the #Edge representing
     //! the edge at the \a index if the \a index is
     //! part of the graph. Otherwise returns a default
     //! constructed (invalid) edge object.
@@ -224,7 +224,7 @@ public:
         return mData.freeNode();
     }
 
-    //! Returns the #GraphBase::Node representing
+    //! Returns the #Node representing
     //! the node at the \a index if the \a index is
     //! part of the graph. Otherwise returns a default
     //! constructed (invalid) node object.
@@ -262,7 +262,7 @@ public:
     //! edges they will be removed from the graph
     //! as well.
     //!
-    //! \note Removing nodes might invalidate #GraphBase::Edge
+    //! \note Removing nodes might invalidate #Edge
     //! objects represnting the edges connected to the removed
     //! node.
     constexpr auto removeNode(const Node &node) -> void
