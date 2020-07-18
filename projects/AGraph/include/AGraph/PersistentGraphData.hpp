@@ -30,10 +30,7 @@ public:
     PersistentGraphData(PersistentGraphData &&other) noexcept = default;
     ~PersistentGraphData() = default;
 
-    [[nodiscard]] constexpr auto edge(acore::size_type index) const -> EdgeData
-    {
-        return mEdges[index];
-    }
+    [[nodiscard]] auto edge(acore::size_type index) const -> EdgeData;
 
     [[nodiscard]] constexpr auto edgeCapacity() const noexcept -> acore::size_type
     {
@@ -65,10 +62,7 @@ public:
         return mFileIndex.freeNode;
     }
 
-    [[nodiscard]] constexpr auto node(acore::size_type index) const -> NodeData
-    {
-        return mNodes[index];
-    }
+    [[nodiscard]] auto node(acore::size_type index) const -> NodeData;
 
     [[nodiscard]] constexpr auto nodeCapacity() const noexcept -> acore::size_type
     {
@@ -80,43 +74,14 @@ public:
         return mFileIndex.nodeCount;
     }
 
-    constexpr auto setEdge(acore::size_type index, EdgeData edge) -> void
-    {
-        mEdges[index] = edge;
-    }
-
+    auto setEdge(acore::size_type index, EdgeData edge) -> void;
     auto setEdgeCapacity(acore::size_type capacity) -> void;
-
-    constexpr auto setEdgeCount(acore::size_type count) -> void
-    {
-        mFileIndex.edgeCount = count;
-        mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, edgeCount)), mFileIndex.edgeCount);
-    }
-
-    constexpr auto setFreeEdge(acore::size_type index) -> void
-    {
-        mFileIndex.freeEdge = index;
-        mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, freeEdge)), mFileIndex.freeEdge);
-    }
-
-    constexpr auto setFreeNode(acore::size_type index) -> void
-    {
-        mFileIndex.freeNode = index;
-        mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, freeNode)), mFileIndex.freeNode);
-    }
-    constexpr auto setNode(acore::size_type index, NodeData node) -> void
-    {
-        mNodes[index] = node;
-    }
-
+    auto setEdgeCount(acore::size_type count) -> void;
+    auto setFreeEdge(acore::size_type index) -> void;
+    auto setFreeNode(acore::size_type index) -> void;
+    auto setNode(acore::size_type index, NodeData node) -> void;
     auto setNodeCapacity(acore::size_type capacity) -> void;
-
-    constexpr auto setNodeCount(acore::size_type count) -> void
-    {
-        mFileIndex.nodeCount = count;
-        mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, nodeCount)), mFileIndex.nodeCount);
-    }
-
+    auto setNodeCount(acore::size_type count) -> void;
     [[nodiscard]] auto toGraphData() const -> GraphData;
 
     auto operator=(const PersistentGraphData &other) -> PersistentGraphData & = delete;

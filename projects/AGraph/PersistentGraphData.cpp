@@ -40,14 +40,58 @@ PersistentGraphData::PersistentGraphData(afile::File *file, acore::size_type ind
 {
 }
 
+auto PersistentGraphData::edge(acore::size_type index) const -> EdgeData
+{
+    return mEdges[index];
+}
+
+auto PersistentGraphData::node(acore::size_type index) const -> NodeData
+{
+    return mNodes[index];
+}
+
+auto PersistentGraphData::setEdge(acore::size_type index, EdgeData edge) -> void
+{
+    mEdges[index] = edge;
+}
+
 auto PersistentGraphData::setEdgeCapacity(acore::size_type capacity) -> void
 {
     mEdges.resize(capacity, EdgeData{});
 }
 
+auto PersistentGraphData::setEdgeCount(acore::size_type count) -> void
+{
+    mFileIndex.edgeCount = count;
+    mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, edgeCount)), mFileIndex.edgeCount);
+}
+
+auto PersistentGraphData::setFreeEdge(acore::size_type index) -> void
+{
+    mFileIndex.freeEdge = index;
+    mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, freeEdge)), mFileIndex.freeEdge);
+}
+
+auto PersistentGraphData::setFreeNode(acore::size_type index) -> void
+{
+    mFileIndex.freeNode = index;
+    mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, freeNode)), mFileIndex.freeNode);
+}
+
+auto PersistentGraphData::setNode(acore::size_type index, NodeData node) -> void
+{
+    mNodes[index] = node;
+}
+
 auto PersistentGraphData::setNodeCapacity(acore::size_type capacity) -> void
 {
     mNodes.resize(capacity, NodeData{});
+}
+
+auto PersistentGraphData::setNodeCount(acore::size_type count) -> void
+{
+    mFileIndex.nodeCount = count;
+    mFile->insert(mIndex, static_cast<acore::size_type>(offsetof(struct FileIndex, nodeCount)), mFileIndex.nodeCount);
 }
 
 auto PersistentGraphData::toGraphData() const -> GraphData
