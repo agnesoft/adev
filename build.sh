@@ -570,7 +570,6 @@ function buildVuejs () {
     cd projects/ADbStudio
     npm install
     npm run build
-    cd ../..
 }
 
 function buildWindows () {
@@ -786,7 +785,6 @@ function tests () {
 function testsVuejs () {
     cd projects/ADbStudio
     npm run test:unit
-    cd ../..
 }
 
 ###############
@@ -809,8 +807,8 @@ elif test "$ACTION" == "build-sanitize-memory"; then
     buildSanitizeMemory
 elif test "$ACTION" == "build-sanitize-ub"; then
     buildSanitizeUB
-elif test "$ACTION" == "build-vue"; then
-    buildVue
+elif test "$ACTION" == "build-vuejs"; then
+    buildVuejs
 elif test "$ACTION" == "coverage"; then
     coverage
 elif test "$ACTION" == "documentation"; then

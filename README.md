@@ -111,3 +111,11 @@ _Binaries are part of the build artifacts._
 For each build configuration the tests are run 100x times to detect flaky tests. Therefore all tests must run as fast as possible.
 
 For each build configuration the benchmarks are run. Every benchmark has preset requirements and they can fail if the performance of the benchmarked code deteriorates.
+
+#### Vue.js build & tests
+
+Requirements: Builds and tests pass.
+
+Build Vue.js applications and run their tests.
+
+_Compiled and production ready applications are part of the build artifacts._
