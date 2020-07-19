@@ -23,6 +23,7 @@ For simply building all of ADev you will require CMake generator, Ninja build sy
 - [ABenchmarks](projects/ABenchmarks/README.md) Collection of benchmarks from other projects.
 - [ABuild](projects/ABuild/README.md) C++ automatic build system.
 - [ACore](projects/ACore/README.md) C++ basic containers and utilities.
+- [ADbStudio](projects/ADbStudio/README.md) Vue.js app to view & edit ADb database.
 - [AFile](projects/AFile/README.md) C++ file based containers.
 - [AGraph](proejcts/AFile/README.md) C++ graph implementation.
 
@@ -110,3 +111,11 @@ _Binaries are part of the build artifacts._
 For each build configuration the tests are run 100x times to detect flaky tests. Therefore all tests must run as fast as possible.
 
 For each build configuration the benchmarks are run. Every benchmark has preset requirements and they can fail if the performance of the benchmarked code deteriorates.
+
+#### Vue.js build & tests
+
+Requirements: Builds and tests pass.
+
+Build Vue.js applications and run their tests.
+
+_Compiled and production ready applications are part of the build artifacts._

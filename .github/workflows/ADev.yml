@@ -168,3 +168,20 @@ jobs:
         with:
           name: adev-${{ matrix.config.platform }}
           path: build/bin/
+
+  build-vue:
+    name: "Build Vue.js"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vue.js
+        run: ./build.sh install-vuejs
+      - name: Build
+        run: ./build.sh build-vuejs
+      - name: Tests
+        run: ./build.sh tests-vuejs
+      - name: Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-adbstudio
+          path: projects/ADbStudio/dist
