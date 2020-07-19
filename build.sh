@@ -49,7 +49,7 @@ function printHelp () {
     echo "    * Requires: clang-format"
     echo "    * Environment Variables: None"
     echo "    * Checks formatting of the source files with Clang-Format."
-    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja|nodejs|vue]"
+    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja|vue]"
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
@@ -200,14 +200,19 @@ function installNodeJS() {
     elif isLinux; then
         sudo apt-get update -y
         sudo apt-get install -y nodejs
+        sudo apt-get install -y npm
     else
         brew install node
     fi
 }
 
 function installVue {
-    detectNpm
+    if ! isAvailable "npm"; then
+        installNodeJS
+    fi
+
     npm install -g @vue/cli
+    npm install -g serve
 }
 
 ##########
@@ -382,13 +387,6 @@ function detectNinja () {
     fi
 
     echo "ninja $(ninja --version)"
-}
-
-function detectNpm () {
-    if ! isAvailable "npm"; then
-        printError "ERROR: 'npm' is not available. Try installing it with './build.sh install-nodejs'"
-        exit 1
-    fi
 }
 
 function detectTestProperties () {
@@ -569,7 +567,8 @@ function buildUnix () {
 
 function buildVue () {
     cd projects/ADbStudio
-    
+    npm run build
+    cd ../..
 }
 
 function buildWindows () {
@@ -826,8 +825,6 @@ elif test "$ACTION" == "install-msvc"; then
     installMSVC
 elif test "$ACTION" == "install-ninja"; then
     installNinja
-elif test "$ACTION" == "install-nodejs"; then
-    installNodeJS
 elif test "$ACTION" == "install-vue"; then
     installVue
 elif test "$ACTION" == "sanitize-address"; then
