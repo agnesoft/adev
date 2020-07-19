@@ -211,8 +211,9 @@ function installVue {
         installNodeJS
     fi
 
-    npm install -g @vue/cli
-    npm install -g serve
+    sudo npm install -g @vue/cli
+    sudo npm install -g @vue/cli-service
+    sudo npm install -g serve
 }
 
 ##########
@@ -567,6 +568,7 @@ function buildUnix () {
 
 function buildVue () {
     cd projects/ADbStudio
+    npm install
     npm run build
     cd ../..
 }
