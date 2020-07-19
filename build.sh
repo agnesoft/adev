@@ -33,7 +33,7 @@ function printHelp () {
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds using the either the default compiler and configuration (see above) or values from the environment variables (see above) if set or predefined values based on the requested build flavor."
-    echo "  build-vue"
+    echo "  build-vuejs"
     echo "    * Require: node.js, vue"
     echo "    * Environment Variables: None"
     echo "    * Build Vue.js applications."
@@ -49,7 +49,7 @@ function printHelp () {
     echo "    * Requires: clang-format"
     echo "    * Environment Variables: None"
     echo "    * Checks formatting of the source files with Clang-Format."
-    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja|vue]"
+    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja|vuejs]"
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
@@ -69,8 +69,8 @@ function printHelp () {
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
     echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used. If \$REPEAT is specified each test will be run that many times/"
-    echo "  tests-vue"
-    echo "    * Requires: node.js, vue"
+    echo "  tests-vuejjs"
+    echo "    * Requires: node.js, Vue.js"
     echo "    * Environment Variables: None"
     echo "    * Run Vue.js tests."
 }
@@ -206,7 +206,7 @@ function installNodeJS() {
     fi
 }
 
-function installVue {
+function installVuejs {
     if ! isAvailable "npm"; then
         installNodeJS
     fi
@@ -566,7 +566,7 @@ function buildUnix () {
     $NINJA install
 }
 
-function buildVue () {
+function buildVuejs () {
     cd projects/ADbStudio
     npm install
     npm run build
@@ -783,7 +783,7 @@ function tests () {
     exit $TEST_RUN_RESULT
 }
 
-function testsVue () {
+function testsVuejs () {
     cd projects/ADbStudio
     npm run test:unit
     cd ../..
@@ -833,8 +833,8 @@ elif test "$ACTION" == "install-msvc"; then
     installMSVC
 elif test "$ACTION" == "install-ninja"; then
     installNinja
-elif test "$ACTION" == "install-vue"; then
-    installVue
+elif test "$ACTION" == "install-vuejs"; then
+    installVuejs
 elif test "$ACTION" == "sanitize-address"; then
     sanitizeAddress
 elif test "$ACTION" == "sanitize-memory"; then
@@ -843,8 +843,8 @@ elif test "$ACTION" == "sanitize-ub"; then
     sanitizeUB
 elif test "$ACTION" == "tests"; then
     tests
-elif test "$ACTION" == "tests-vue"; then
-    testsVue
+elif test "$ACTION" == "tests-vuejs"; then
+    testsVuejs
 else
     printHelp
 fi
