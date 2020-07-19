@@ -783,6 +783,12 @@ function tests () {
     exit $TEST_RUN_RESULT
 }
 
+function testsVue () {
+    cd projects/ADbStudio
+    npm run test:unit
+    cd ../..
+}
+
 ###############
 # Main Script #
 ###############
