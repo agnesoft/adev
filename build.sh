@@ -33,6 +33,10 @@ function printHelp () {
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds using the either the default compiler and configuration (see above) or values from the environment variables (see above) if set or predefined values based on the requested build flavor."
+    echo "  build-vue"
+    echo "    * Require: node.js, vue"
+    echo "    * Environment Variables: None"
+    echo "    * Build Vue.js applications."
     echo "  coverage"
     echo "    * Requires: llvm-cov, llvm-profdata, Clang"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, [MSVC_ENV_SCRIPT]"
@@ -45,7 +49,7 @@ function printHelp () {
     echo "    * Requires: clang-format"
     echo "    * Environment Variables: None"
     echo "    * Checks formatting of the source files with Clang-Format."
-    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja]"
+    echo "  install-[clang|clang-format|clang-tidy|cmake|doxygen|llvm|msvc|ninja|nodejs|vue]"
     echo "    * Requires: Chocolatey [Windows], apt-get [Linux], Homebrew [macOS]"
     echo "    * Environment Variables: None"
     echo "    * Installs one of the packages required by the other actions. Useful if you do not have them already. NOTE: 'msvc' can only be installed on Windows."
@@ -65,6 +69,10 @@ function printHelp () {
     echo "    * Requires: None"
     echo "    * Environment Variables: BUILD_DIR, TEST_REPEAT"
     echo "    * Run tests in \$BUILD_DIR/bin/test. If \$BUILD_DIR is not specified first found build_* directory is used. If \$REPEAT is specified each test will be run that many times/"
+    echo "  tests-vue"
+    echo "    * Requires: node.js, vue"
+    echo "    * Environment Variables: None"
+    echo "    * Run Vue.js tests."
 }
 
 function printError () {
@@ -184,6 +192,22 @@ function installNinja () {
     else
         brew install ninja
     fi
+}
+
+function installNodeJS() {
+    if isWindows; then
+        choco install -y nodejs
+    elif isLinux; then
+        sudo apt-get update -y
+        sudo apt-get install -y nodejs
+    else
+        brew install node
+    fi
+}
+
+function installVue {
+    detectNpm
+    npm install -g @vue/cli
 }
 
 ##########
@@ -360,6 +384,13 @@ function detectNinja () {
     echo "ninja $(ninja --version)"
 }
 
+function detectNpm () {
+    if ! isAvailable "npm"; then
+        printError "ERROR: 'npm' is not available. Try installing it with './build.sh install-nodejs'"
+        exit 1
+    fi
+}
+
 function detectTestProperties () {
     if ! test "$BUILD_DIR"; then
         BUILD_DIR=$(find . -name "build_*" -type d | head -n 1)
@@ -534,6 +565,11 @@ function buildUnix () {
     $CMAKE .. -G Ninja -D CMAKE_BUILD_TYPE=$BUILD_TYPE -D CMAKE_INSTALL_PREFIX=.
     $NINJA
     $NINJA install
+}
+
+function buildVue () {
+    cd projects/ADbStudio
+    
 }
 
 function buildWindows () {
@@ -766,6 +802,8 @@ elif test "$ACTION" == "build-sanitize-memory"; then
     buildSanitizeMemory
 elif test "$ACTION" == "build-sanitize-ub"; then
     buildSanitizeUB
+elif test "$ACTION" == "build-vue"; then
+    buildVue
 elif test "$ACTION" == "coverage"; then
     coverage
 elif test "$ACTION" == "documentation"; then
@@ -788,6 +826,10 @@ elif test "$ACTION" == "install-msvc"; then
     installMSVC
 elif test "$ACTION" == "install-ninja"; then
     installNinja
+elif test "$ACTION" == "install-nodejs"; then
+    installNodeJS
+elif test "$ACTION" == "install-vue"; then
+    installVue
 elif test "$ACTION" == "sanitize-address"; then
     sanitizeAddress
 elif test "$ACTION" == "sanitize-memory"; then
@@ -796,6 +838,8 @@ elif test "$ACTION" == "sanitize-ub"; then
     sanitizeUB
 elif test "$ACTION" == "tests"; then
     tests
+elif test "$ACTION" == "tests-vue"; then
+    testsVue
 else
     printHelp
 fi

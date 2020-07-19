@@ -23,6 +23,7 @@ For simply building all of ADev you will require CMake generator, Ninja build sy
 - [ABenchmarks](projects/ABenchmarks/README.md) Collection of benchmarks from other projects.
 - [ABuild](projects/ABuild/README.md) C++ automatic build system.
 - [ACore](projects/ACore/README.md) C++ basic containers and utilities.
+- [ADbStudio](projects/ADbStudio/README.md) Vue.js app to view & edit ADb database.
 - [AFile](projects/AFile/README.md) C++ file based containers.
 - [AGraph](proejcts/AFile/README.md) C++ graph implementation.
 
