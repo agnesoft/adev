@@ -23,7 +23,6 @@ struct PathSearchHandler
 {
 public:
     [[nodiscard]] constexpr auto operator()([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) const -> acore::size_type
-
     {
         return 1;
     }

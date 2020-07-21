@@ -28,7 +28,7 @@ public:
     using GraphSearchBase<GraphType, Handler>::GraphSearchBase;
 
     explicit constexpr PathSearch(const GraphType *graph) :
-        GraphSearchBase<GraphType, Handler>(graph, Handler())
+        GraphSearchBase<GraphType, Handler>(graph, Handler{})
     {
     }
 
@@ -61,9 +61,9 @@ private:
 
     constexpr auto expandPath(acore::size_type index, acore::size_type cost, Path &&path) -> void
     {
-        mPaths.append(std::move(path));
-        mPaths.last().elements << index;
-        mPaths.last().cost += cost;
+        mPaths.emplace_back(std::move(path));
+        mPaths.back().elements.push_back(index);
+        mPaths.back().cost += cost;
     }
 
     constexpr auto finish() -> void
@@ -132,9 +132,9 @@ private:
 
     constexpr auto processLastPath() -> void
     {
-        mCurrentPath = std::move(mPaths.last());
+        mCurrentPath = std::move(mPaths.back());
         mPaths.resize(mPaths.size() - 1);
-        processIndex(mCurrentPath.elements.last());
+        processIndex(mCurrentPath.elements.back());
     }
 
     constexpr auto processPaths() -> void
@@ -147,7 +147,7 @@ private:
     {
         validateNodes(from, to);
         GraphSearchBase<GraphType, Handler>::reset();
-        mPaths.append({{from.index()}, 0});
+        mPaths.emplace_back(Path{{from.index()}, 0});
         mTo = to.index();
     }
 
