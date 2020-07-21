@@ -12,13 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AGRAPH_AGRAPH_HPP
-#define AGRAPH_AGRAPH_HPP
+#ifndef AGRAPH_GRAPHSEARCHCONTROL_HPP
+#define AGRAPH_GRAPHSEARCHCONTROL_HPP
 
-#include "AGraph/BreadthFirstSearch.hpp"
-#include "AGraph/DepthFirstSearch.hpp"
-#include "AGraph/Graph.hpp"
-#include "AGraph/PathSearch.hpp"
-#include "AGraph/PersistentGraph.hpp"
+#include "AGraphModule.hpp"
+
+namespace agraph
+{
+enum class SearchControl : acore::size_type
+{
+    Continue = 0,
+    Finish = 1,
+    Skip = 2,
+    Stop = 3
+};
+}
 
 #endif

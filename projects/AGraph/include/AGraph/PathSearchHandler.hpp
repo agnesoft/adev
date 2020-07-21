@@ -12,13 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef AGRAPH_AGRAPH_HPP
-#define AGRAPH_AGRAPH_HPP
+#ifndef AGRAPH_PATHSEARCHHANDLER_HPP
+#define AGRAPH_PATHSEARCHHANDLER_HPP
 
-#include "AGraph/BreadthFirstSearch.hpp"
-#include "AGraph/DepthFirstSearch.hpp"
-#include "AGraph/Graph.hpp"
-#include "AGraph/PathSearch.hpp"
-#include "AGraph/PersistentGraph.hpp"
+#include "AGraphModule.hpp"
+
+namespace agraph
+{
+struct PathSearchHandler
+{
+public:
+    [[nodiscard]] constexpr auto operator()([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) const -> acore::size_type
+
+    {
+        return 1;
+    }
+};
+}
 
 #endif

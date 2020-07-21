@@ -166,13 +166,20 @@ target_link_libraries(AFileTest AFile Catch2)
 ##########
 add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/AGraphModule.hpp
+                          projects/AGraph/include/AGraph/BreadthFirstSearch.hpp
                           projects/AGraph/include/AGraph/Common.hpp
+                          projects/AGraph/include/AGraph/DepthFirstSearch.hpp
                           projects/AGraph/include/AGraph/Edge.hpp
                           projects/AGraph/include/AGraph/Element.hpp
                           projects/AGraph/include/AGraph/Graph.hpp
                           projects/AGraph/include/AGraph/GraphBase.hpp
                           projects/AGraph/include/AGraph/GraphData.hpp
+                          projects/AGraph/include/AGraph/GraphSearch.hpp
+                          projects/AGraph/include/AGraph/GraphSearchBase.hpp
+                          projects/AGraph/include/AGraph/GraphSearchControl.hpp
                           projects/AGraph/include/AGraph/Node.hpp
+                          projects/AGraph/include/AGraph/PathSearch.hpp
+                          projects/AGraph/include/AGraph/PathSearchHandler.hpp
                           projects/AGraph/include/AGraph/PersistentGraph.hpp
                           projects/AGraph/include/AGraph/PersistentGraphData.hpp
                           projects/AGraph/Graph.cpp
@@ -186,11 +193,15 @@ target_include_directories(AGraph PRIVATE projects/AGraph/include/AGraph)
 target_include_directories(AGraph PUBLIC projects/AGraph/include)
 
 #AGraphTest
-add_executable(AGraphTest projects/AGraph/test/CommonTest.cpp
+add_executable(AGraphTest projects/AGraph/test/BreadthFirstSearchTest.cpp
+                          projects/AGraph/test/CommonTest.cpp
+                          projects/AGraph/test/DepthFirstSearchTest.cpp
                           projects/AGraph/test/EdgeTest.cpp
                           projects/AGraph/test/ElementTest.cpp
                           projects/AGraph/test/GraphTest.cpp
                           projects/AGraph/test/NodeTest.cpp
+                          projects/AGraph/test/PathSearchHandlerTest.cpp
+                          projects/AGraph/test/PathSearchTest.cpp
                           projects/AGraph/test/PersistentGraphTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(AGraphTest PRIVATE projects/AGraph/test/pch.hpp)
