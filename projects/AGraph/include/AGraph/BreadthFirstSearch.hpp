@@ -80,13 +80,6 @@ private:
         processNodesTo();
         processEdgesOrigins();
     }
-
-    [[nodiscard]] constexpr static auto takeLast(std::vector<acore::size_type> *vec) -> acore::size_type
-    {
-        const acore::size_type value = vec->back();
-        vec->pop_back();
-        return value;
-    }
 };
 }
 

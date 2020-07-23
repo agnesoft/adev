@@ -81,31 +81,43 @@ protected:
     {
         mDistance = mDistances[mStack.size() - 1];
         mDistances.pop_back();
-        return mStack.takeLast();
+        return takeLast(&mStack);
     }
 
     [[nodiscard]] auto takeAll() -> std::vector<acore::size_type>
     {
-        mDistance = mDistances[mStack.size() - 1];
-        mDistances.clear();
         std::vector<acore::size_type> stack;
-        stack.swap(mStack);
+
+        if (!mStack.empty())
+        {
+            mDistance = mDistances[mStack.size() - 1];
+            mDistances.clear();
+            stack.swap(mStack);
+        }
+
         return stack;
+    }
+
+    [[nodiscard]] constexpr static auto takeLast(std::vector<acore::size_type> *vec) -> acore::size_type
+    {
+        const acore::size_type value = vec->back();
+        vec->pop_back();
+        return value;
     }
 
 private:
     constexpr auto addDestinationNode(acore::size_type index) -> void
     {
-        mStack.append(this->graph()->edge(index).to().index());
-        mDistances.append(mDistance + 1);
+        mStack.push_back(this->graph()->edge(index).to().index());
+        mDistances.push_back(mDistance + 1);
     }
 
     constexpr auto addEdgesFromNode(acore::size_type index) -> void
     {
         for (const typename GraphType::Edge &edge : this->graph()->node(index))
         {
-            mStack.append(edge.index());
-            mDistances.append(mDistance + 1);
+            mStack.push_back(edge.index());
+            mDistances.push_back(mDistance + 1);
         }
     }
 
@@ -115,20 +127,20 @@ private:
 
         for (auto it = node.rbegin(); it != node.rend(); ++it)
         {
-            mStack.append((*it).index());
-            mDistances.append(mDistance + 1);
+            mStack.push_back((*it).index());
+            mDistances.push_back(mDistance + 1);
         }
     }
 
     constexpr auto addOriginNode(acore::size_type index) -> void
     {
-        mStack.append(this->graph()->edge(index).from().index());
-        mDistances.append(mDistance + 1);
+        mStack.push_back(this->graph()->edge(index).from().index());
+        mDistances.push_back(mDistance + 1);
     }
 
     constexpr auto addResultElement(acore::size_type index) -> void
     {
-        mElements.append(index);
+        mElements.push_back(index);
     }
 
     constexpr auto processEdge(acore::size_type index, void (SearchType::*proc)(acore::size_type)) -> void
@@ -172,10 +184,10 @@ private:
 
     constexpr auto searchFrom(acore::size_type index) -> void
     {
-        mStack.append(index);
-        mDistances.append(0);
+        mStack.push_back(index);
+        mDistances.push_back(0);
 
-        while (mGood && !mStack.isEmpty())
+        while (mGood && !mStack.empty())
         {
             static_cast<SearchType *>(this)->processStackFrom();
         }
@@ -188,10 +200,10 @@ private:
 
     constexpr auto searchTo(acore::size_type index) -> void
     {
-        mStack.append(index);
-        mDistances.append(0);
+        mStack.push_back(index);
+        mDistances.push_back(0);
 
-        while (mGood && !mStack.isEmpty())
+        while (mGood && !mStack.empty())
         {
             static_cast<SearchType *>(this)->processStackTo();
         }
