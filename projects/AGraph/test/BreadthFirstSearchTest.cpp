@@ -73,6 +73,11 @@ private:
 
 TEST_CASE("[agraph::BreadthFirstSearch]")
 {
+    REQUIRE_FALSE(std::is_default_constructible_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
+    REQUIRE(std::is_copy_constructible_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
+    REQUIRE(std::is_nothrow_move_constructible_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
+    REQUIRE(std::is_copy_assignable_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
+    REQUIRE(std::is_move_assignable_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
 }
 
 TEST_CASE("from(const typename GraphType::Node &node) -> std::vector<acore::size_type> [agraph::BreadthFirstSearch]")
