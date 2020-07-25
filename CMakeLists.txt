@@ -175,11 +175,8 @@ add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/GraphBase.hpp
                           projects/AGraph/include/AGraph/GraphData.hpp
                           projects/AGraph/include/AGraph/GraphSearch.hpp
-                          projects/AGraph/include/AGraph/GraphSearchBase.hpp
-                          projects/AGraph/include/AGraph/GraphSearchControl.hpp
                           projects/AGraph/include/AGraph/Node.hpp
                           projects/AGraph/include/AGraph/PathSearch.hpp
-                          projects/AGraph/include/AGraph/PathSearchHandler.hpp
                           projects/AGraph/include/AGraph/PersistentGraph.hpp
                           projects/AGraph/include/AGraph/PersistentGraphData.hpp
                           projects/AGraph/Graph.cpp
@@ -200,7 +197,6 @@ add_executable(AGraphTest projects/AGraph/test/BreadthFirstSearchTest.cpp
                           projects/AGraph/test/ElementTest.cpp
                           projects/AGraph/test/GraphTest.cpp
                           projects/AGraph/test/NodeTest.cpp
-                          projects/AGraph/test/PathSearchHandlerTest.cpp
                           projects/AGraph/test/PathSearchTest.cpp
                           projects/AGraph/test/PersistentGraphTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")

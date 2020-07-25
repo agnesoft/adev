@@ -32,7 +32,9 @@ private:
     using Base = GraphSearch<GraphType, DepthFirstSearch>;
     friend Base;
 
-    auto processStack(std::vector<typename Base::Index> *stack) -> void
+    constexpr DepthFirstSearch() = default;
+
+    constexpr auto processStack(std::vector<typename Base::Index> *stack) -> void
     {
         const auto index = stack->back();
         stack->pop_back();

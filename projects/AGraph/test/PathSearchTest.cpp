@@ -22,15 +22,15 @@
 
 namespace pathsearchtest
 {
-class SearchHandler
+class WightedHandler
 {
 public:
-    auto setWeights(const std::unordered_map<acore::size_type, acore::size_type> &weights) -> void
+    explicit WightedHandler(std::unordered_map<acore::size_type, acore::size_type> weights) :
+        mWeights{std::move(weights)}
     {
-        mWeights = weights;
     }
 
-    [[nodiscard]] auto operator()(acore::size_type index, acore::size_type distance) const -> acore::size_type
+    [[nodiscard]] auto operator()(acore::size_type index, [[maybe_unused]] acore::size_type distance) const -> acore::size_type
     {
         const auto it = mWeights.find(index);
 
@@ -39,32 +39,16 @@ public:
             return it->second;
         }
 
-        return agraph::PathSearchHandler{}(index, distance);
+        return 1;
     }
 
 private:
     std::unordered_map<acore::size_type, acore::size_type> mWeights;
 };
 
-TEST_CASE("[agraph::PathSearch]")
-{
-    REQUIRE_FALSE(std::is_default_constructible_v<agraph::PathSearch<agraph::Graph>>);
-    REQUIRE(std::is_copy_constructible_v<agraph::PathSearch<agraph::Graph>>);
-    REQUIRE(std::is_nothrow_move_constructible_v<agraph::PathSearch<agraph::Graph>>);
-    REQUIRE(std::is_copy_assignable_v<agraph::PathSearch<agraph::Graph>>);
-    REQUIRE(std::is_move_assignable_v<agraph::PathSearch<agraph::Graph>>);
-}
-
-TEST_CASE("PathSearch(const GraphtType *graph [agraph::PathSearch]")
-{
-    const agraph::Graph graph;
-    REQUIRE((agraph::PathSearch{&graph}).graph() == &graph);
-}
-
-TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::Node &to) -> std::vector<acore::size_type> [agraph::PathSearch]")
+TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::Node &to, const Handler &handler) -> std::vector<acore::size_type> [agraph::PathSearch]")
 {
     agraph::Graph graph;
-    agraph::PathSearch path{&graph};
 
     SECTION("[triangle graph]")
     {
@@ -78,15 +62,16 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
 
         SECTION("[unweighted]")
         {
-            REQUIRE(agraph::PathSearch{&graph}.path(graph.node(0), graph.node(2)) == std::vector<acore::size_type>{0, -4, 2});
+            REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(0), graph.node(2), []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) -> acore::size_type {
+                        return 1;
+                    })
+                    == std::vector<acore::size_type>{0, -4, 2});
         }
 
         SECTION("[weighted]")
         {
-            SearchHandler handler;
-            handler.setWeights(std::unordered_map<acore::size_type, acore::size_type>{{-4, 10}});
-
-            REQUIRE(agraph::PathSearch<agraph::Graph, SearchHandler>{&graph, handler}.path(graph.node(0), graph.node(2)) == std::vector<acore::size_type>{0, -3, 1, -2, 2});
+            REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(0), graph.node(2), WightedHandler{{{-4, 10}}})
+                    == std::vector<acore::size_type>{0, -3, 1, -2, 2});
         }
     }
 
@@ -134,7 +119,10 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
 
         SECTION("[unweighted]")
         {
-            REQUIRE(agraph::PathSearch{&graph}.path(graph.node(1), graph.node(8)) == std::vector<acore::size_type>{1, -5, 2, -8, 3, -10, 8});
+            REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(8), []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) -> acore::size_type {
+                        return 1;
+                    })
+                    == std::vector<acore::size_type>{1, -5, 2, -8, 3, -10, 8});
         }
 
         SECTION("[weighted]")
@@ -146,24 +134,23 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
             std::unordered_map<acore::size_type, acore::size_type> w;
 
             // clang-format off
-            w[0] = MOUNTAIN_WEIGHT; w[1] = TOWN_WEIGHT;      w[2] = MOUNTAIN_WEIGHT; w[3] = MOUNTAIN_WEIGHT; w[4] = MOUNTAIN_WEIGHT;
-            w[5] = FOREST_WEIGHT;   w[6] = ROAD_WEIGHT;      w[7] = FOREST_WEIGHT;   w[8] = TOWN_WEIGHT;     w[9] = MOUNTAIN_WEIGHT;
-            w[10] = FOREST_WEIGHT;  w[11] = TOWN_WEIGHT;     w[12] = ROAD_WEIGHT;    w[13] = ROAD_WEIGHT;    w[14] = MOUNTAIN_WEIGHT;
-            w[15] = FOREST_WEIGHT;  w[16] = FOREST_WEIGHT;   w[17] = MOUNTAIN_WEIGHT;w[18] = MOUNTAIN_WEIGHT;w[19] = MOUNTAIN_WEIGHT;
-            w[20] = MOUNTAIN_WEIGHT;w[21] = MOUNTAIN_WEIGHT; w[22] = TOWN_WEIGHT;    w[23] = ROAD_WEIGHT;    w[24] = FOREST_WEIGHT;
+            w[0] = MOUNTAIN_WEIGHT;  w[1] = TOWN_WEIGHT;      w[2] = MOUNTAIN_WEIGHT;  w[3] = MOUNTAIN_WEIGHT;  w[4] = MOUNTAIN_WEIGHT;
+            w[5] = FOREST_WEIGHT;    w[6] = ROAD_WEIGHT;      w[7] = FOREST_WEIGHT;    w[8] = TOWN_WEIGHT;      w[9] = MOUNTAIN_WEIGHT;
+            w[10] = FOREST_WEIGHT;   w[11] = TOWN_WEIGHT;     w[12] = ROAD_WEIGHT;     w[13] = ROAD_WEIGHT;     w[14] = MOUNTAIN_WEIGHT;
+            w[15] = FOREST_WEIGHT;   w[16] = FOREST_WEIGHT;   w[17] = MOUNTAIN_WEIGHT; w[18] = MOUNTAIN_WEIGHT; w[19] = MOUNTAIN_WEIGHT;
+            w[20] = MOUNTAIN_WEIGHT; w[21] = MOUNTAIN_WEIGHT; w[22] = TOWN_WEIGHT;     w[23] = ROAD_WEIGHT;     w[24] = FOREST_WEIGHT;
             // clang-format on
-
-            SearchHandler handler;
-            handler.setWeights(w);
 
             SECTION("[reachable]")
             {
-                REQUIRE(agraph::PathSearch<agraph::Graph, SearchHandler>{&graph, handler}.path(graph.node(1), graph.node(8)) == std::vector<acore::size_type>{1, -4, 6, -18, 11, -38, 12, -42, 13, -45, 8});
+                REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(8), WightedHandler{std::move(w)})
+                        == std::vector<acore::size_type>{1, -4, 6, -18, 11, -38, 12, -42, 13, -45, 8});
             }
 
             SECTION("[unreachable]")
             {
-                REQUIRE(agraph::PathSearch<agraph::Graph, SearchHandler>{&graph, handler}.path(graph.node(1), graph.node(22)) == std::vector<acore::size_type>{});
+                REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(22), WightedHandler{std::move(w)})
+                        == std::vector<acore::size_type>{});
             }
         }
     }
@@ -178,15 +165,16 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
 
         SECTION("[unweighted]")
         {
-            REQUIRE(agraph::PathSearch{&graph}.path(graph.node(0), graph.node(1)) == std::vector<acore::size_type>{0, -3, 1});
+            REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(0), graph.node(1), []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) -> acore::size_type {
+                        return 1;
+                    })
+                    == std::vector<acore::size_type>{0, -3, 1});
         }
 
         SECTION("[weighted]")
         {
-            SearchHandler handler;
-            handler.setWeights(std::unordered_map<acore::size_type, acore::size_type>{{-3, 10}});
-
-            REQUIRE(agraph::PathSearch<agraph::Graph, SearchHandler>{&graph, handler}.path(graph.node(0), graph.node(1)) == std::vector<acore::size_type>{0, -2, 1});
+            REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(0), graph.node(1), WightedHandler{{{-3, 10}}})
+                    == std::vector<acore::size_type>{0, -2, 1});
         }
     }
 
@@ -194,14 +182,20 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
     {
         graph.insertNode();
 
-        REQUIRE_THROWS_AS(path.path(graph.node(1), graph.node(0)), acore::Exception);
+        REQUIRE_THROWS_AS(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(0), []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) -> acore::size_type {
+                              return 1;
+                          }),
+                          acore::Exception);
     }
 
     SECTION("[to invalid]")
     {
         graph.insertNode();
 
-        REQUIRE_THROWS_AS(path.path(graph.node(0), graph.node(1)), acore::Exception);
+        REQUIRE_THROWS_AS(agraph::PathSearch<agraph::Graph>::path(graph.node(0), graph.node(1), []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) -> acore::size_type {
+                              return 1;
+                          }),
+                          acore::Exception);
     }
 }
 }

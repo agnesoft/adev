@@ -16,13 +16,20 @@
 #define AGRAPH_GRAPHSEARCH_HPP
 
 #include "AGraphModule.hpp"
-#include "GraphSearchBase.hpp"
-#include "GraphSearchControl.hpp"
 
+#include <utility>
 #include <vector>
 
 namespace agraph
 {
+enum class SearchControl : acore::size_type
+{
+    Continue = 0,
+    Finish = 1,
+    Skip = 2,
+    Stop = 3
+};
+
 template<typename GraphType, typename SearchType>
 class GraphSearch
 {
@@ -33,9 +40,10 @@ class GraphSearch
 
 public:
     template<typename Handler>
-    [[nodiscard]] auto from(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
+    [[nodiscard]] static auto from(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
     {
-        search(
+        SearchType searchImpl;
+        searchImpl.search(
             node,
             handler,
             [](const typename GraphType::Node &node) {
@@ -44,13 +52,14 @@ public:
             [](const typename GraphType::Edge &edge) {
                 return edge.to().index();
             });
-        return mElements;
+        return searchImpl.mElements;
     }
 
     template<typename Handler>
-    [[nodiscard]] auto to(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
+    [[nodiscard]] static auto to(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
     {
-        search(
+        SearchType searchImpl;
+        searchImpl.search(
             node,
             handler,
             [](const typename GraphType::Node &node) {
@@ -59,7 +68,7 @@ public:
             [](const typename GraphType::Edge &edge) {
                 return edge.from().index();
             });
-        return mElements;
+        return searchImpl.mElements;
     }
 
 protected:
@@ -69,7 +78,9 @@ protected:
         acore::size_type distance = acore::INVALID_INDEX;
     };
 
-    auto handleIndex(Index index)
+    constexpr GraphSearch() = default;
+
+    constexpr auto handleIndex(Index index)
     {
         switch (mHandlerCaller(mHandler, index.value, index.distance))
         {
@@ -88,7 +99,7 @@ protected:
     }
 
 private:
-    auto expandEdge(acore::size_type destination, acore::size_type distance) -> void
+    constexpr auto expandEdge(acore::size_type destination, acore::size_type distance) -> void
     {
         if (!mVisited[destination])
         {
@@ -97,7 +108,7 @@ private:
         }
     }
 
-    auto expandIndex(Index index) -> void
+    constexpr auto expandIndex(Index index) -> void
     {
         if (agraph::isNode(index.value))
         {
@@ -111,7 +122,7 @@ private:
         }
     }
 
-    auto expandNode(std::pair<typename GraphType::Node::const_iterator, typename GraphType::Node::const_iterator> range, acore::size_type distance) -> void
+    constexpr auto expandNode(std::pair<typename GraphType::Node::const_iterator, typename GraphType::Node::const_iterator> range, acore::size_type distance) -> void
     {
         for (auto it = range.first; it != range.second; ++it)
         {
@@ -120,7 +131,7 @@ private:
     }
 
     template<typename Handler>
-    auto reset(const typename GraphType::Node &node, const Handler &handler, GetEdgeRange getEdgeRange, GetDestination getDestination) -> void
+    constexpr auto reset(const typename GraphType::Node &node, const Handler &handler, GetEdgeRange getEdgeRange, GetDestination getDestination) -> void
     {
         mElements.clear();
         mGetEdgeRange = getEdgeRange;
@@ -136,7 +147,7 @@ private:
         mVisited[node.index()] = true;
     }
 
-    auto search() -> void
+    constexpr auto search() -> void
     {
         while (mGood && !mStack.empty())
         {
@@ -145,14 +156,14 @@ private:
     }
 
     template<typename Handler>
-    auto search(const typename GraphType::Node &node, const Handler &handler, GetEdgeRange getEdgeRange, GetDestination getDestination) -> void
+    constexpr auto search(const typename GraphType::Node &node, const Handler &handler, GetEdgeRange getEdgeRange, GetDestination getDestination) -> void
     {
         validateNode(node);
         reset(node, handler, getEdgeRange, getDestination);
         search();
     }
 
-    auto validateNode(const typename GraphType::Node &node) -> void
+    constexpr static auto validateNode(const typename GraphType::Node &node) -> void
     {
         if (!node.isValid())
         {

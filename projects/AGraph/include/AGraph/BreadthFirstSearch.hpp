@@ -32,7 +32,9 @@ private:
     using Base = GraphSearch<GraphType, BreadthFirstSearch>;
     friend Base;
 
-    auto processStack(std::vector<typename Base::Index> *stack) -> void
+    constexpr BreadthFirstSearch() = default;
+
+    constexpr auto processStack(std::vector<typename Base::Index> *stack) -> void
     {
         for (auto index : takeStack(stack))
         {

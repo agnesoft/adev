@@ -15,33 +15,30 @@
 #ifndef AGRAPH_PATHSEARCH_HPP
 #define AGRAPH_PATHSEARCH_HPP
 
-#include "BreadthFirstSearch.hpp"
-#include "GraphSearchBase.hpp"
-#include "PathSearchHandler.hpp"
+#include "AGraphModule.hpp"
 
 namespace agraph
 {
-template<typename GraphType, typename Handler = PathSearchHandler>
-class PathSearch : public GraphSearchBase<GraphType, Handler>
+template<typename GraphType>
+class PathSearch
 {
+    using HandlerCaller = auto (*)(const void *handler, acore::size_type, acore::size_type) -> acore::size_type;
+
 public:
-    using GraphSearchBase<GraphType, Handler>::GraphSearchBase;
-
-    explicit constexpr PathSearch(const GraphType *graph) :
-        GraphSearchBase<GraphType, Handler>(graph, Handler{})
+    template<typename Handler>
+    [[nodiscard]] static auto path(const typename GraphType::Node &from, const typename GraphType::Node &to, const Handler &handler) -> std::vector<acore::size_type>
     {
-    }
+        validateNodes(from, to);
 
-    [[nodiscard]] auto path(const typename GraphType::Node &from, const typename GraphType::Node &to) -> std::vector<acore::size_type>
-    {
-        reset(from, to);
+        PathSearch searchImpl;
+        searchImpl.reset(from, to, handler);
 
-        while (!isFinished())
+        while (!searchImpl.isFinished())
         {
-            processPaths();
+            searchImpl.processPaths();
         }
 
-        return mElements;
+        return searchImpl.mElements;
     }
 
 private:
@@ -50,6 +47,8 @@ private:
         std::vector<acore::size_type> elements;
         acore::size_type cost = 0;
     };
+
+    constexpr PathSearch() = default;
 
     constexpr auto expandEdges(const typename GraphType::Node &node) -> void
     {
@@ -71,7 +70,7 @@ private:
         mElements = mCurrentPath.elements;
     }
 
-    [[nodiscard]] constexpr bool isDestination(acore::size_type index) const noexcept
+    [[nodiscard]] constexpr auto isDestination(acore::size_type index) const noexcept -> bool
     {
         return index == mTo;
     }
@@ -83,7 +82,7 @@ private:
 
     constexpr auto handleEdge(acore::size_type index) -> void
     {
-        expand<Path>(this->graph()->edge(index).to().index());
+        expand<Path>(mGraph->edge(index).to().index());
     }
 
     constexpr auto handleNode(acore::size_type index) -> void
@@ -101,7 +100,7 @@ private:
     template<typename T>
     constexpr auto expand(acore::size_type index) -> void
     {
-        acore::size_type cost = this->getHandler()(index, mCurrentPath.elements.size());
+        acore::size_type cost = mHandlerCaller(mHandler, index, mCurrentPath.elements.size());
 
         if (cost != 0)
         {
@@ -111,7 +110,7 @@ private:
 
     constexpr auto processIndex(acore::size_type index) -> void
     {
-        if (isNode(index))
+        if (agraph::isNode(index))
         {
             handleNode(index);
         }
@@ -123,10 +122,10 @@ private:
 
     constexpr auto processNode(acore::size_type index) -> void
     {
-        if (!this->isVisited(index))
+        if (!mVisited[index])
         {
-            this->setVisited(index);
-            expandEdges(this->graph()->node(index));
+            mVisited[index] = true;
+            expandEdges(mGraph->node(index));
         }
     }
 
@@ -143,10 +142,15 @@ private:
         processLastPath();
     }
 
-    constexpr auto reset(const typename GraphType::Node &from, const typename GraphType::Node &to) -> void
+    template<typename Handler>
+    constexpr auto reset(const typename GraphType::Node &from, const typename GraphType::Node &to, const Handler &handler) -> void
     {
-        validateNodes(from, to);
-        GraphSearchBase<GraphType, Handler>::reset();
+        mGraph = from.graph();
+        mHandler = &handler;
+        mHandlerCaller = [](const void *handler, acore::size_type index, acore::size_type distance) {
+            return (*static_cast<const Handler *>(handler))(index, distance);
+        };
+        mVisited = std::vector<bool>(mGraph->storage()->nodeCapacity(), false);
         mPaths.emplace_back(Path{{from.index()}, 0});
         mTo = to.index();
     }
@@ -158,12 +162,24 @@ private:
         });
     }
 
-    constexpr auto validateNodes(const typename GraphType::Node &from, const typename GraphType::Node &to) const -> void
+    constexpr static auto validate(const typename GraphType::Node &node) -> void
     {
-        this->validate(from);
-        this->validate(to);
+        if (!node.isValid())
+        {
+            throw acore::Exception{} << "Invalid node (" << node.index() << ") used for graph search";
+        }
     }
 
+    constexpr static auto validateNodes(const typename GraphType::Node &from, const typename GraphType::Node &to) -> void
+    {
+        validate(from);
+        validate(to);
+    }
+
+    const GraphType *mGraph = nullptr;
+    const void *mHandler = nullptr;
+    HandlerCaller mHandlerCaller;
+    std::vector<bool> mVisited;
     std::vector<Path> mPaths;
     std::vector<acore::size_type> mElements;
     acore::size_type mTo = acore::INVALID_INDEX;
