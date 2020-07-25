@@ -241,10 +241,11 @@ graph.insertEdge(node3, node4); //-5
         //! [[Graph]]
 
         //! [[Usage]]
-auto ids = agraph::DepthFirstSearch<agraph::Graph>::from(node1,
-                                                         [](acore::size_type, acore::size_type) {
-                                                             return agraph::SearchControl::Continue;
-                                                         });
+auto ids = agraph::DepthFirstSearch<agraph::Graph>::from(
+            node1,
+            []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) {
+                return agraph::SearchControl::Continue;
+            });
 // ids == {
 //  0: node1 (root, level 0)
 // -2: edge1 (level 1)

@@ -16,6 +16,7 @@
 #define AGRAPH_GRAPHSEARCH_HPP
 
 #include "AGraphModule.hpp"
+#include "Common.hpp"
 
 #include <utility>
 #include <vector>

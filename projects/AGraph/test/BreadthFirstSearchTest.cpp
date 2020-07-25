@@ -60,7 +60,7 @@ public:
         case Type::Finish:
             return index == 1 ? agraph::SearchControl::Finish : agraph::SearchControl::Continue;
         case Type::FinishAlt:
-            return index == -6 ? agraph::SearchControl::Finish : agraph::SearchControl::Continue;
+            return index == -6 ? agraph::SearchControl::Finish : agraph::SearchControl::Continue; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         }
 
         return agraph::SearchControl::Continue;
@@ -244,10 +244,11 @@ graph.insertEdge(node3, node4); //-5
         //! [[Graph]]
 
         //! [[Usage]]
-auto ids = agraph::BreadthFirstSearch<agraph::Graph>::from(node1,
-                                                           [](acore::size_type, acore::size_type) {
-                                                               return agraph::SearchControl::Continue;
-                                                           });
+auto ids = agraph::BreadthFirstSearch<agraph::Graph>::from(
+            node1,
+            []([[maybe_unused]] acore::size_type index, [[maybe_unused]] acore::size_type distance) {
+                return agraph::SearchControl::Continue;
+            });
 // ids == {
 //  0: node1 (root, level 0)
 // -3: edge1 (level 1)

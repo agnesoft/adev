@@ -79,13 +79,13 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
     {
         constexpr acore::size_type MAP_HEIGHT = 5;
         constexpr acore::size_type MAP_WIDTH = 5;
-        std::array<std::array<acore::size_type, MAP_WIDTH>, MAP_HEIGHT> nodes;
+        std::array<std::array<acore::size_type, MAP_WIDTH>, MAP_HEIGHT> nodes{};
 
-        for (acore::size_type i = 0; i < MAP_HEIGHT; i++)
+        for (auto &ar : nodes)
         {
-            for (acore::size_type j = 0; j < MAP_WIDTH; j++)
+            for (auto &n : ar)
             {
-                nodes[i][j] = graph.insertNode().index();
+                n = graph.insertNode().index();
             }
         }
 
@@ -93,26 +93,26 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
         {
             for (acore::size_type j = 0; j < MAP_WIDTH; j++)
             {
-                const auto &node = graph.node(nodes[i][j]);
+                const auto &node = graph.node(nodes.at(i).at(j));
 
                 if (i < (MAP_HEIGHT - 1))
                 {
-                    graph.insertEdge(node, graph.node(nodes[i + 1][j]));
+                    graph.insertEdge(node, graph.node(nodes.at(i + 1).at(j)));
                 }
 
                 if (0 < i)
                 {
-                    graph.insertEdge(node, graph.node(nodes[i - 1][j]));
+                    graph.insertEdge(node, graph.node(nodes.at(i - 1).at(j)));
                 }
 
                 if (j < (MAP_WIDTH - 1))
                 {
-                    graph.insertEdge(node, graph.node(nodes[i][j + 1]));
+                    graph.insertEdge(node, graph.node(nodes.at(i).at(j + 1)));
                 }
 
                 if (0 < j)
                 {
-                    graph.insertEdge(node, graph.node(nodes[i][j - 1]));
+                    graph.insertEdge(node, graph.node(nodes.at(i).at(j - 1)));
                 }
             }
         }
@@ -134,22 +134,22 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
             std::unordered_map<acore::size_type, acore::size_type> w;
 
             // clang-format off
-            w[0] = MOUNTAIN_WEIGHT;  w[1] = TOWN_WEIGHT;      w[2] = MOUNTAIN_WEIGHT;  w[3] = MOUNTAIN_WEIGHT;  w[4] = MOUNTAIN_WEIGHT;
-            w[5] = FOREST_WEIGHT;    w[6] = ROAD_WEIGHT;      w[7] = FOREST_WEIGHT;    w[8] = TOWN_WEIGHT;      w[9] = MOUNTAIN_WEIGHT;
-            w[10] = FOREST_WEIGHT;   w[11] = TOWN_WEIGHT;     w[12] = ROAD_WEIGHT;     w[13] = ROAD_WEIGHT;     w[14] = MOUNTAIN_WEIGHT;
-            w[15] = FOREST_WEIGHT;   w[16] = FOREST_WEIGHT;   w[17] = MOUNTAIN_WEIGHT; w[18] = MOUNTAIN_WEIGHT; w[19] = MOUNTAIN_WEIGHT;
-            w[20] = MOUNTAIN_WEIGHT; w[21] = MOUNTAIN_WEIGHT; w[22] = TOWN_WEIGHT;     w[23] = ROAD_WEIGHT;     w[24] = FOREST_WEIGHT;
+            w[0] = MOUNTAIN_WEIGHT;  w[1] = TOWN_WEIGHT;      w[2] = MOUNTAIN_WEIGHT;  w[3] = MOUNTAIN_WEIGHT;  w[4] = MOUNTAIN_WEIGHT; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            w[5] = FOREST_WEIGHT;    w[6] = ROAD_WEIGHT;      w[7] = FOREST_WEIGHT;    w[8] = TOWN_WEIGHT;      w[9] = MOUNTAIN_WEIGHT; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            w[10] = FOREST_WEIGHT;   w[11] = TOWN_WEIGHT;     w[12] = ROAD_WEIGHT;     w[13] = ROAD_WEIGHT;     w[14] = MOUNTAIN_WEIGHT; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            w[15] = FOREST_WEIGHT;   w[16] = FOREST_WEIGHT;   w[17] = MOUNTAIN_WEIGHT; w[18] = MOUNTAIN_WEIGHT; w[19] = MOUNTAIN_WEIGHT; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+            w[20] = MOUNTAIN_WEIGHT; w[21] = MOUNTAIN_WEIGHT; w[22] = TOWN_WEIGHT;     w[23] = ROAD_WEIGHT;     w[24] = FOREST_WEIGHT; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
             // clang-format on
 
             SECTION("[reachable]")
             {
-                REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(8), WightedHandler{std::move(w)})
+                REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(8), WightedHandler{w})
                         == std::vector<acore::size_type>{1, -4, 6, -18, 11, -38, 12, -42, 13, -45, 8});
             }
 
             SECTION("[unreachable]")
             {
-                REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(22), WightedHandler{std::move(w)})
+                REQUIRE(agraph::PathSearch<agraph::Graph>::path(graph.node(1), graph.node(22), WightedHandler{w}) //NOLINT(readability-container-size-empty)
                         == std::vector<acore::size_type>{});
             }
         }
@@ -215,11 +215,12 @@ graph.insertEdge(node2, node3); //-4
         //! [[Graph]]
 
         //! [[Usage]]
-auto ids = agraph::PathSearch<agraph::Graph>::path(node1,
-                                                   node3,
-                                                   [](acore::size_type index, acore::size_type) -> acore::size_type {
-                                                       return index == -3 ? 0 : 1;
-                                                   });
+auto ids = agraph::PathSearch<agraph::Graph>::path(
+            node1,
+            node3,
+            [](acore::size_type index, [[maybe_unused]] acore::size_type distance) -> acore::size_type {
+                return index == -3 ? 0 : 1;
+            });
 // ids == {
 //  0: node1
 // -2: edge
