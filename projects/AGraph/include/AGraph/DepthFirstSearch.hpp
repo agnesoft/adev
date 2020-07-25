@@ -18,49 +18,25 @@
 #include "AGraphModule.hpp"
 #include "GraphSearch.hpp"
 
+#include <vector>
+
 namespace agraph
 {
-template<typename GraphType, typename Handler>
-class DepthFirstSearch : public GraphSearch<GraphType, Handler, DepthFirstSearch<GraphType, Handler>>
+template<typename GraphType>
+class DepthFirstSearch : public GraphSearch<GraphType, DepthFirstSearch<GraphType>>
 {
 public:
-    using GraphSearch<GraphType, Handler, DepthFirstSearch<GraphType, Handler>>::GraphSearch;
+    using GraphSearch<GraphType, DepthFirstSearch>::GraphSearch;
 
 private:
-    friend class GraphSearch<GraphType, Handler, DepthFirstSearch<GraphType, Handler>>;
+    using Base = GraphSearch<GraphType, DepthFirstSearch>;
+    friend Base;
 
-    constexpr auto processStackFrom() -> void
+    auto processStack(std::vector<typename Base::Index> *stack) -> void
     {
-        searchFromElement(this->takeLast());
-    }
-
-    constexpr auto processStackTo() -> void
-    {
-        searchToElement(this->takeLast());
-    }
-
-    constexpr auto searchFromElement(acore::size_type index) -> void
-    {
-        if (isNode(index))
-        {
-            this->processFromNode(index);
-        }
-        else
-        {
-            this->processFromEdge(index);
-        }
-    }
-
-    constexpr auto searchToElement(acore::size_type index) -> void
-    {
-        if (isNode(index))
-        {
-            this->processToNode(index);
-        }
-        else
-        {
-            this->processToEdge(index);
-        }
+        const auto index = stack->back();
+        stack->pop_back();
+        handleIndex(index);
     }
 };
 }

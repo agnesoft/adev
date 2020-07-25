@@ -40,12 +40,12 @@ public:
     {
     }
 
-    auto distances() const -> std::vector<acore::size_type>
+    [[nodiscard]] auto distances() const -> std::vector<acore::size_type>
     {
         return mDistances;
     }
 
-    auto operator()(acore::size_type index, acore::size_type distance) -> agraph::SearchControl
+    [[nodiscard]] auto operator()(acore::size_type index, acore::size_type distance) const -> agraph::SearchControl
     {
         mDistances.push_back(distance);
 
@@ -67,21 +67,22 @@ public:
     }
 
 private:
-    std::vector<acore::size_type> mDistances;
+    mutable std::vector<acore::size_type> mDistances;
     Type mType = Type::Continue;
 };
 
 TEST_CASE("[agraph::BreadthFirstSearch]")
 {
-    REQUIRE_FALSE(std::is_default_constructible_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
-    REQUIRE(std::is_copy_constructible_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
-    REQUIRE(std::is_nothrow_move_constructible_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
-    REQUIRE(std::is_copy_assignable_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
-    REQUIRE(std::is_move_assignable_v<agraph::BreadthFirstSearch<agraph::Graph, SearchHandler>>);
+    REQUIRE(std::is_default_constructible_v<agraph::BreadthFirstSearch<agraph::Graph>>);
+    REQUIRE(std::is_copy_constructible_v<agraph::BreadthFirstSearch<agraph::Graph>>);
+    REQUIRE(std::is_nothrow_move_constructible_v<agraph::BreadthFirstSearch<agraph::Graph>>);
+    REQUIRE(std::is_copy_assignable_v<agraph::BreadthFirstSearch<agraph::Graph>>);
+    REQUIRE(std::is_move_assignable_v<agraph::BreadthFirstSearch<agraph::Graph>>);
 }
 
 TEST_CASE("from(const typename GraphType::Node &node) -> std::vector<acore::size_type> [agraph::BreadthFirstSearch]")
 {
+    agraph::BreadthFirstSearch<agraph::Graph> search;
     agraph::Graph graph;
     const auto root = graph.insertNode();
     const auto node1 = graph.insertNode();
@@ -104,30 +105,30 @@ TEST_CASE("from(const typename GraphType::Node &node) -> std::vector<acore::size
     {
         SECTION("[all]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{}};
-            REQUIRE(search.from(root) == std::vector<acore::size_type>{0, -2, -3, -4, 3, 2, 1, -8, -9, 5});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4});
+            SearchHandler handler;
+            REQUIRE(agraph::BreadthFirstSearch<agraph::Graph>{}.from(root, handler) == std::vector<acore::size_type>{0, -4, -3, -2, 3, 2, 1, -9, -8, 5});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4});
         }
 
         SECTION("[skip edges]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::SkipEdge}};
-            REQUIRE(search.from(root) == std::vector<acore::size_type>{0, 3, 2, 1, 5});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4});
+            SearchHandler handler{SearchHandler::Type::SkipEdge};
+            REQUIRE(search.from(root, handler) == std::vector<acore::size_type>{0, 3, 2, 1, 5});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4});
         }
 
         SECTION("[odd nodes]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::Stop}};
-            REQUIRE(search.from(root) == std::vector<acore::size_type>{0, -2, -3, -4, 3, 1});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2});
+            SearchHandler handler{SearchHandler::Type::Stop};
+            REQUIRE(search.from(root, handler) == std::vector<acore::size_type>{0, -4, -3, -2, 3, 1});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2});
         }
 
         SECTION("[short circuit]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::Finish}};
-            REQUIRE(search.from(root) == std::vector<acore::size_type>{0, -2, -3, -4, 3, 2});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2});
+            SearchHandler handler{SearchHandler::Type::Finish};
+            REQUIRE(search.from(root, handler) == std::vector<acore::size_type>{0, -4, -3, -2, 3, 2});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2});
         }
     }
 
@@ -138,28 +139,28 @@ TEST_CASE("from(const typename GraphType::Node &node) -> std::vector<acore::size
 
         SECTION("[all]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{}};
-            REQUIRE(search.from(root) == std::vector<acore::size_type>{0, -2, -3, -4, 3, 2, 1, -8, -9, 5, -10, -11, 4, -5, -6, -7});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 5, 5, 6, 7, 7, 7});
+            SearchHandler handler;
+            REQUIRE(search.from(root, handler) == std::vector<acore::size_type>{0, -4, -3, -2, 3, 2, 1, -9, -8, 5, -11, -10, 4, -7, -6, -5});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 5, 5, 6, 7, 7, 7});
         }
 
         SECTION("[skip edges]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::SkipEdge}};
-            REQUIRE(search.from(root) == std::vector<acore::size_type>{0, 3, 2, 1, 5, 4});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 5, 5, 6, 7, 7, 7});
+            SearchHandler handler{SearchHandler::Type::SkipEdge};
+            REQUIRE(search.from(root, handler) == std::vector<acore::size_type>{0, 3, 2, 1, 5, 4});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 5, 5, 6, 7, 7, 7});
         }
     }
 
     SECTION("[invalid]")
     {
-        agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{}};
-        REQUIRE_THROWS_AS(search.from(graph.node(100)), acore::Exception);
+        REQUIRE_THROWS_AS(search.from(graph.node(100), SearchHandler{}), acore::Exception);
     }
 }
 
 TEST_CASE("to(const typename GraphType::Node &node) -> std::vector<acore::size_type> [agraph::BreadthFirstSearch]")
 {
+    agraph::BreadthFirstSearch<agraph::Graph> search;
     agraph::Graph graph;
     const auto root = graph.insertNode();
     const auto node1 = graph.insertNode();
@@ -182,30 +183,30 @@ TEST_CASE("to(const typename GraphType::Node &node) -> std::vector<acore::size_t
     {
         SECTION("[all]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{}};
-            REQUIRE(search.to(node5) == std::vector<acore::size_type>{5, -8, -9, 2, -3, -6, 4, 0});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4});
+            SearchHandler handler;
+            REQUIRE(search.to(node5, handler) == std::vector<acore::size_type>{5, -9, -8, 2, -6, -3, 4, 0});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4});
         }
 
         SECTION("[skip edges]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::SkipEdge}};
-            REQUIRE(search.to(node5) == std::vector<acore::size_type>{5, 2, 4, 0});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4});
+            SearchHandler handler{SearchHandler::Type::SkipEdge};
+            REQUIRE(search.to(node5, handler) == std::vector<acore::size_type>{5, 2, 4, 0});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4});
         }
 
         SECTION("[odd nodes]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::Stop}};
-            REQUIRE(search.to(node5) == std::vector<acore::size_type>{5, -8, -9});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 2});
+            SearchHandler handler{SearchHandler::Type::Stop};
+            REQUIRE(search.to(node5, handler) == std::vector<acore::size_type>{5, -9, -8});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 2});
         }
 
         SECTION("[short circuit]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::FinishAlt}};
-            REQUIRE(search.to(node5) == std::vector<acore::size_type>{5, -8, -9, 2, -3});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3});
+            SearchHandler handler{SearchHandler::Type::FinishAlt};
+            REQUIRE(search.to(node5, handler) == std::vector<acore::size_type>{5, -9, -8, 2, -3});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3});
         }
     }
 
@@ -216,23 +217,22 @@ TEST_CASE("to(const typename GraphType::Node &node) -> std::vector<acore::size_t
 
         SECTION("[all]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{}};
-            REQUIRE(search.to(node5) == std::vector<acore::size_type>{5, -8, -9, 2, -3, -6, 4, 0, -10, -11});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4, 5, 5});
+            SearchHandler handler;
+            REQUIRE(search.to(node5, handler) == std::vector<acore::size_type>{5, -9, -8, 2, -6, -3, 4, 0, -11, -10});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4, 5, 5});
         }
 
         SECTION("[skip edges]")
         {
-            agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{SearchHandler::Type::SkipEdge}};
-            REQUIRE(search.to(node5) == std::vector<acore::size_type>{5, 2, 4, 0});
-            REQUIRE(search.handler().distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4, 5, 5});
+            SearchHandler handler{SearchHandler::Type::SkipEdge};
+            REQUIRE(search.to(node5, handler) == std::vector<acore::size_type>{5, 2, 4, 0});
+            REQUIRE(handler.distances() == std::vector<acore::size_type>{0, 1, 1, 2, 3, 3, 4, 4, 5, 5});
         }
     }
 
     SECTION("[invalid]")
     {
-        agraph::BreadthFirstSearch<agraph::Graph, SearchHandler> search{&graph, SearchHandler{}};
-        REQUIRE_THROWS_AS(search.to(graph.node(100)), acore::Exception);
+        REQUIRE_THROWS_AS(search.to(graph.node(100), SearchHandler{}), acore::Exception);
     }
 }
 }

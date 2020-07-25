@@ -18,67 +18,33 @@
 #include "AGraphModule.hpp"
 #include "GraphSearch.hpp"
 
+#include <vector>
+
 namespace agraph
 {
-template<typename GraphType, typename Handler>
-class BreadthFirstSearch : public GraphSearch<GraphType, Handler, BreadthFirstSearch<GraphType, Handler>>
+template<typename GraphType>
+class BreadthFirstSearch : public GraphSearch<GraphType, BreadthFirstSearch<GraphType>>
 {
 public:
-    using GraphSearch<GraphType, Handler, BreadthFirstSearch<GraphType, Handler>>::GraphSearch;
+    using GraphSearch<GraphType, BreadthFirstSearch>::GraphSearch;
 
 private:
-    friend class GraphSearch<GraphType, Handler, BreadthFirstSearch<GraphType, Handler>>;
+    using Base = GraphSearch<GraphType, BreadthFirstSearch>;
+    friend Base;
 
-    auto processEdgesDestinations() -> void
+    auto processStack(std::vector<typename Base::Index> *stack) -> void
     {
-        std::vector<acore::size_type> edges = this->takeAll();
-
-        while (this->isGood() && !edges.empty())
+        for (auto index : takeStack(stack))
         {
-            this->processFromEdge(takeLast(&edges));
+            handleIndex(index);
         }
     }
 
-    auto processEdgesOrigins() -> void
+    [[nodiscard]] auto takeStack(std::vector<typename Base::Index> *stack) -> std::vector<typename Base::Index>
     {
-        std::vector<acore::size_type> edges = this->takeAll();
-
-        while (this->isGood() && !edges.empty())
-        {
-            this->processToEdge(takeLast(&edges));
-        }
-    }
-
-    auto processNodesFrom() -> void
-    {
-        std::vector<acore::size_type> nodes = this->takeAll();
-
-        while (this->isGood() && !nodes.empty())
-        {
-            this->processFromNode(takeLast(&nodes));
-        }
-    }
-
-    auto processNodesTo() -> void
-    {
-        std::vector<acore::size_type> nodes = this->takeAll();
-
-        while (this->isGood() && !nodes.empty())
-        {
-            this->processToNode(takeLast(&nodes));
-        }
-    }
-
-    constexpr auto processStackFrom() -> void
-    {
-        processNodesFrom();
-        processEdgesDestinations();
-    }
-
-    constexpr auto processStackTo() -> void
-    {
-        processNodesTo();
-        processEdgesOrigins();
+        std::vector<typename GraphSearch<GraphType, BreadthFirstSearch>::Index> currentStack;
+        currentStack.swap(*stack);
+        return currentStack;
     }
 };
 }

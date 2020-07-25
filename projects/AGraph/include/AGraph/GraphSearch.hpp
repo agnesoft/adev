@@ -23,140 +23,61 @@
 
 namespace agraph
 {
-template<typename GraphType, typename Handler, typename SearchType>
-class GraphSearch : public GraphSearchBase<GraphType, Handler>
+template<typename GraphType, typename SearchType>
+class GraphSearch
 {
-public:
-    using GraphSearchBase<GraphType, Handler>::GraphSearchBase;
+    using EdgeRange = std::pair<typename GraphType::Node::const_iterator, typename GraphType::Node::const_iterator>;
+    using GetEdgeRange = auto (*)(const typename GraphType::Node &node) -> EdgeRange;
+    using GetDestination = auto (*)(const typename GraphType::Edge &edge) -> acore::size_type;
+    using HandlerCaller = auto (*)(const void *handler, acore::size_type, acore::size_type) -> SearchControl;
 
-    [[nodiscard]] auto from(const typename GraphType::Node &node) -> std::vector<acore::size_type>
+public:
+    template<typename Handler>
+    [[nodiscard]] auto from(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
     {
-        this->validate(node);
-        reset();
-        searchFrom(node.index());
+        search(
+            node,
+            handler,
+            [](const typename GraphType::Node &node) {
+                return EdgeRange{node.begin(), node.end()};
+            },
+            [](const typename GraphType::Edge &edge) {
+                return edge.to().index();
+            });
         return mElements;
     }
 
-    [[nodiscard]] auto to(const typename GraphType::Node &node) -> std::vector<acore::size_type>
+    template<typename Handler>
+    [[nodiscard]] auto to(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
     {
-        this->validate(node);
-        reset();
-        searchTo(node.index());
+        search(
+            node,
+            handler,
+            [](const typename GraphType::Node &node) {
+                return EdgeRange{node.rbegin(), node.rend()};
+            },
+            [](const typename GraphType::Edge &edge) {
+                return edge.from().index();
+            });
         return mElements;
     }
 
 protected:
-    [[nodiscard]] constexpr auto isGood() const noexcept -> bool
+    struct Index
     {
-        return mGood;
-    }
+        acore::size_type value = acore::INVALID_INDEX;
+        acore::size_type distance = acore::INVALID_INDEX;
+    };
 
-    constexpr auto processFromEdge(acore::size_type index) -> void
+    auto handleIndex(Index index)
     {
-        processEdge(index, &GraphSearch::addDestinationNode);
-    }
-
-    constexpr auto processFromNode(acore::size_type index) -> void
-    {
-        if (!this->isVisited(index))
-        {
-            processNode(index, &GraphSearch::addEdgesFromNode);
-        }
-    }
-
-    constexpr auto processToEdge(acore::size_type index) -> void
-    {
-        processEdge(index, &GraphSearch::addOriginNode);
-    }
-
-    constexpr auto processToNode(acore::size_type index) -> void
-    {
-        if (!this->isVisited(index))
-        {
-            processNode(index, &GraphSearch::addEdgesToNode);
-        }
-    }
-
-    [[nodiscard]] constexpr auto takeLast() -> acore::size_type
-    {
-        mDistance = mDistances[mStack.size() - 1];
-        mDistances.pop_back();
-        return takeLast(&mStack);
-    }
-
-    [[nodiscard]] auto takeAll() -> std::vector<acore::size_type>
-    {
-        std::vector<acore::size_type> stack;
-
-        if (!mStack.empty())
-        {
-            mDistance = mDistances[mStack.size() - 1];
-            mDistances.clear();
-            stack.swap(mStack);
-        }
-
-        return stack;
-    }
-
-    [[nodiscard]] constexpr static auto takeLast(std::vector<acore::size_type> *vec) -> acore::size_type
-    {
-        const acore::size_type value = vec->back();
-        vec->pop_back();
-        return value;
-    }
-
-private:
-    constexpr auto addDestinationNode(acore::size_type index) -> void
-    {
-        mStack.push_back(this->graph()->edge(index).to().index());
-        mDistances.push_back(mDistance + 1);
-    }
-
-    constexpr auto addEdgesFromNode(acore::size_type index) -> void
-    {
-        for (const typename GraphType::Edge &edge : this->graph()->node(index))
-        {
-            mStack.push_back(edge.index());
-            mDistances.push_back(mDistance + 1);
-        }
-    }
-
-    constexpr auto addEdgesToNode(acore::size_type index) -> void
-    {
-        const typename GraphType::Node node = this->graph()->node(index);
-
-        for (auto it = node.rbegin(); it != node.rend(); ++it)
-        {
-            mStack.push_back((*it).index());
-            mDistances.push_back(mDistance + 1);
-        }
-    }
-
-    constexpr auto addOriginNode(acore::size_type index) -> void
-    {
-        mStack.push_back(this->graph()->edge(index).from().index());
-        mDistances.push_back(mDistance + 1);
-    }
-
-    constexpr auto addResultElement(acore::size_type index) -> void
-    {
-        mElements.push_back(index);
-    }
-
-    constexpr auto processEdge(acore::size_type index, void (SearchType::*proc)(acore::size_type)) -> void
-    {
-        processElement(index, proc);
-    }
-
-    constexpr auto processElement(acore::size_type index, void (SearchType::*proc)(acore::size_type)) -> void
-    {
-        switch (this->getHandler()(index, mDistance))
+        switch (mHandlerCaller(mHandler, index.value, index.distance))
         {
         case SearchControl::Continue:
-            addResultElement(index);
+            mElements.push_back(index.value);
             [[fallthrough]];
         case SearchControl::Skip:
-            (static_cast<SearchType *>(this)->*proc)(index);
+            expandIndex(index);
             [[fallthrough]];
         case SearchControl::Stop:
             break;
@@ -166,59 +87,88 @@ private:
         }
     }
 
-    constexpr auto processNode(acore::size_type index, void (SearchType::*proc)(acore::size_type)) -> void
+private:
+    auto expandEdge(acore::size_type destination, acore::size_type distance) -> void
     {
-        this->setVisited(index);
-        processElement(index, proc);
+        if (!mVisited[destination])
+        {
+            mVisited[destination] = true;
+            mStack.push_back(Index{destination, distance});
+        }
     }
 
-    constexpr auto reset() -> void
+    auto expandIndex(Index index) -> void
     {
-        GraphSearchBase<GraphType, Handler>::reset();
+        if (agraph::isNode(index.value))
+        {
+            const auto node = mGraph->node(index.value);
+            expandNode(mGetEdgeRange(node), index.distance + 1);
+        }
+        else
+        {
+            const auto edge = mGraph->edge(index.value);
+            expandEdge(mGetDestination(edge), index.distance + 1);
+        }
+    }
 
+    auto expandNode(std::pair<typename GraphType::Node::const_iterator, typename GraphType::Node::const_iterator> range, acore::size_type distance) -> void
+    {
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            mStack.push_back(Index{(*it).index(), distance});
+        }
+    }
+
+    template<typename Handler>
+    auto reset(const typename GraphType::Node &node, const Handler &handler, GetEdgeRange getEdgeRange, GetDestination getDestination) -> void
+    {
+        mElements.clear();
+        mGetEdgeRange = getEdgeRange;
+        mGetDestination = getDestination;
         mGood = true;
-        mElements = std::vector<acore::size_type>();
-        mStack = std::vector<acore::size_type>();
-        mDistances = std::vector<acore::size_type>();
+        mGraph = node.graph();
+        mHandler = &handler;
+        mHandlerCaller = [](const void *handler, acore::size_type index, acore::size_type distance) {
+            return (*static_cast<const Handler *>(handler))(index, distance);
+        };
+        mStack = std::vector<Index>{Index{node.index(), 0}};
+        mVisited = std::vector<bool>(mGraph->storage()->nodeCapacity(), false);
+        mVisited[node.index()] = true;
     }
 
-    constexpr auto searchFrom(acore::size_type index) -> void
+    auto search() -> void
     {
-        mStack.push_back(index);
-        mDistances.push_back(0);
-
         while (mGood && !mStack.empty())
         {
-            static_cast<SearchType *>(this)->processStackFrom();
+            static_cast<SearchType *>(this)->processStack(&mStack);
         }
     }
 
-    constexpr auto searchFromEdge(acore::size_type index) -> void
+    template<typename Handler>
+    auto search(const typename GraphType::Node &node, const Handler &handler, GetEdgeRange getEdgeRange, GetDestination getDestination) -> void
     {
-        searchFrom(this->graph()->edge(index).to().index());
+        validateNode(node);
+        reset(node, handler, getEdgeRange, getDestination);
+        search();
     }
 
-    constexpr auto searchTo(acore::size_type index) -> void
+    auto validateNode(const typename GraphType::Node &node) -> void
     {
-        mStack.push_back(index);
-        mDistances.push_back(0);
-
-        while (mGood && !mStack.empty())
+        if (!node.isValid())
         {
-            static_cast<SearchType *>(this)->processStackTo();
+            throw acore::Exception{} << "Invalid node (" << node.index() << ") used for graph search";
         }
     }
 
-    constexpr auto searchToEdge(acore::size_type index) -> void
-    {
-        searchTo(this->graph()->edge(index).from().index());
-    }
-
+    const GraphType *mGraph = nullptr;
+    const void *mHandler = nullptr;
+    HandlerCaller mHandlerCaller;
+    GetEdgeRange mGetEdgeRange;
+    GetDestination mGetDestination;
+    std::vector<bool> mVisited;
+    std::vector<Index> mStack;
     std::vector<acore::size_type> mElements;
-    std::vector<acore::size_type> mStack;
-    std::vector<acore::size_type> mDistances;
-    acore::size_type mDistance = 0;
-    bool mGood = false;
+    bool mGood = true;
 };
 }
 
