@@ -22,6 +22,45 @@
 
 namespace agraph
 {
+//! The BreadthFirstSearch<GraphType>
+//! is a template graph search algorithm implementing
+//! breadth first search.
+//!
+//! The breadth-first search (BFS) is an algorithm for
+//! traversing (searching) a graph. It starts at a
+//! node on the graph and explores all of the outgoing
+//! edges going to the neighbor nodes. Then it explores
+//! all the destination nodes of the edges. The
+//! algorithm always examines all of the elements
+//! (edges  and nodes) at the present depth prior
+//! to moving on to the edges or nodes at the next
+//! depth level.
+//!
+//! For example consider a simple graph:
+//!
+//! \snippet BreadthFirstSearchTest.cpp [Graph]
+//!
+//! Starting the search from the \c node1 the BFS
+//! would search the elements of the graph in the
+//! following order:
+//!
+//! \snippet BreadthFirstSearchTest.cpp [Usage]
+//!
+//! Several aspects of this manner of search should be
+//! noted:
+//!
+//! All elements at the given depth are explored
+//! regardless of them being connected to different
+//! elements in the previous depth (notice how edges
+//! are explored at the same depth level even though
+//! they originate in different nodes in the previous
+//! depth level).
+//!
+//! Both edges and nodes constitute a depth level. The
+//! AGraph graph implementation based on GraphBase
+//! gives edges the same significance as to nodes.
+//! Neither edges or nodes are visited more than once.
+//! The algorithm can handle cyclic graphs.
 template<typename GraphType>
 class BreadthFirstSearch : public GraphSearch<GraphType, BreadthFirstSearch<GraphType>>
 {

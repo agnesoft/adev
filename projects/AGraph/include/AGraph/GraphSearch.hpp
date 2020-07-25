@@ -22,14 +22,27 @@
 
 namespace agraph
 {
+//! Specifies possible return codes of the callable
+//! \c Handler used in #agraph::BreadthFirstSearch and
+//! #agraph::DepthFirstSearch algorithms.
 enum class SearchControl : acore::size_type
 {
+    //! Adds the current index to the results and continue the search.
     Continue = 0,
+
+    //! Conclude the search immediately.
     Finish = 1,
+
+    //! Do not add the current index to the results and continue the search.
     Skip = 2,
+
+    //! Do not add the current index to the results and do not continue the search in this direction (may continue in other directions if there are any still rechable).
     Stop = 3
 };
 
+//! The GraphSearch is the base class for #agraph::BreadthFirstSearch
+//! and agraph::DepthFirstSearch aglorithms and
+//! implements the common parts of the algorithm.
 template<typename GraphType, typename SearchType>
 class GraphSearch
 {
@@ -39,6 +52,13 @@ class GraphSearch
     using HandlerCaller = auto (*)(const void *handler, acore::size_type, acore::size_type) -> SearchControl;
 
 public:
+    //! Static method to start the search from the
+    //! node \a node going via outgoing edges using
+    //! the \a handler to process each encountered
+    //! element. The handler must be callable with
+    //! following signature:
+    //!
+    //! <tt> auto (*)(acore::size_type index, acore::size_type distance) -> agraph::SearchControl </tt>
     template<typename Handler>
     [[nodiscard]] static auto from(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
     {
@@ -55,6 +75,13 @@ public:
         return searchImpl.mElements;
     }
 
+    //! Static method to start the search from the
+    //! node \a node going via incoming edges using
+    //! the \a handler to process each encountered
+    //! element. The handler must be callable with
+    //! following signature:
+    //!
+    //! <tt> auto (*)(acore::size_type index, acore::size_type distance) -> agraph::SearchControl </tt>
     template<typename Handler>
     [[nodiscard]] static auto to(const typename GraphType::Node &node, const Handler &handler) -> std::vector<acore::size_type>
     {
@@ -72,6 +99,7 @@ public:
     }
 
 protected:
+    //! \cond IMPLEMENTAION_DETAIL
     struct Index
     {
         acore::size_type value = acore::INVALID_INDEX;
@@ -97,6 +125,7 @@ protected:
             break;
         }
     }
+    //! \endcond
 
 private:
     constexpr auto expandEdge(acore::size_type destination, acore::size_type distance) -> void

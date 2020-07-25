@@ -224,4 +224,43 @@ TEST_CASE("to(const typename GraphType::Node &node, const Handler &handler) -> s
         REQUIRE_THROWS_AS(agraph::BreadthFirstSearch<agraph::Graph>::to(graph.node(100), SearchHandler{}), acore::Exception);
     }
 }
+
+TEST_CASE("agraph::BreadthFirstSearch [examples]")
+{
+    SECTION("[usage]")
+    {
+        // clang-format off
+        //! [[Graph]]
+agraph::Graph graph;
+auto node1 = graph.insertNode(); //0
+auto node2 = graph.insertNode(); //1
+auto node3 = graph.insertNode(); //2
+auto node4 = graph.insertNode(); //3
+
+graph.insertEdge(node1, node2); //-2
+graph.insertEdge(node1, node3); //-3
+graph.insertEdge(node2, node4); //-4
+graph.insertEdge(node3, node4); //-5
+        //! [[Graph]]
+
+        //! [[Usage]]
+auto ids = agraph::BreadthFirstSearch<agraph::Graph>::from(node1,
+                                                           [](acore::size_type, acore::size_type) {
+                                                               return agraph::SearchControl::Continue;
+                                                           });
+// ids == {
+//  0: node1 (root, level 0)
+// -3: edge1 (level 1)
+// -2: edge2 (level 1)
+//  2: node3 (level 2)
+//  1: node2 (level 2)
+// -5: edge3 (level 3)
+// -4: edge4 (level 3)
+//  3: node4 (level 4)
+        //! [[Usage]]
+        // clang-format on
+
+        REQUIRE(ids == std::vector<acore::size_type>{0, -3, -2, 2, 1, -5, -4, 3});
+    }
+}
 }

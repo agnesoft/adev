@@ -198,4 +198,38 @@ TEST_CASE("path(const typename GraphType::Node &from, const typename GraphType::
                           acore::Exception);
     }
 }
+
+TEST_CASE("agraph::PathSearch [examples]")
+{
+    SECTION("[usage]")
+    {
+        // clang-format off
+        //! [[Graph]]
+agraph::Graph graph;
+agraph::Graph::Node node1 = graph.insertNode(); //0
+agraph::Graph::Node node2 = graph.insertNode(); //1
+agraph::Graph::Node node3 = graph.insertNode(); //2
+graph.insertEdge(node1, node2); //-2
+graph.insertEdge(node1, node3); //-3
+graph.insertEdge(node2, node3); //-4
+        //! [[Graph]]
+
+        //! [[Usage]]
+auto ids = agraph::PathSearch<agraph::Graph>::path(node1,
+                                                   node3,
+                                                   [](acore::size_type index, acore::size_type) -> acore::size_type {
+                                                       return index == -3 ? 0 : 1;
+                                                   });
+// ids == {
+//  0: node1
+// -2: edge
+//  1: node2
+// -4: edge
+//  2: node3
+        //! [[Usage]]
+        // clang-format on
+
+        REQUIRE(ids == std::vector<acore::size_type>{0, -2, 1, -4, 2});
+    }
+}
 }
