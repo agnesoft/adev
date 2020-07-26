@@ -19,6 +19,7 @@
 #include "Exception.hpp"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -48,6 +49,18 @@ public:
     explicit constexpr Variant(const T &value)
     {
         mStream << value;
+    }
+
+    //! Constructs a Variant from \c std::string_view \a value.
+    explicit Variant(std::string_view value) :
+        mStream{std::vector<char>(value.begin(), value.end())}
+    {
+    }
+
+    //! Constructs a Variant from raw \c c-string \a value.
+    explicit Variant(const char *value) :
+        Variant(std::string_view{value})
+    {
     }
 
     //! Constructs a Variant from raw data vector \a value.
@@ -129,7 +142,7 @@ private:
 //! Constructs a Variant from \c string \a value.
 template<>
 inline Variant::Variant(const std::string &value) :
-    mStream{std::vector<char>(value.begin(), value.end())}
+    Variant(std::string_view{value})
 {
 }
 
@@ -147,6 +160,14 @@ template<>
 inline auto Variant::value() const -> std::string
 {
     return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
+}
+
+//! Explicit specialization returning the copy
+//! of the underlying data as a string.
+template<>
+inline auto Variant::value() const -> std::string_view
+{
+    return std::string_view(&mStream.buffer().data()[0], mStream.buffer().data().size());
 }
 
 //! Explicit specialization returning the copy
