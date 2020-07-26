@@ -15,7 +15,10 @@
 #ifndef AGRAPH_AGRAPH_HPP
 #define AGRAPH_AGRAPH_HPP
 
+#include "AGraph/BreadthFirstSearch.hpp"
+#include "AGraph/DepthFirstSearch.hpp"
 #include "AGraph/Graph.hpp"
+#include "AGraph/PathSearch.hpp"
 #include "AGraph/PersistentGraph.hpp"
 
 #endif
