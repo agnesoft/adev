@@ -270,7 +270,7 @@ target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
 install(TARGETS ABuild ABenchmarks DESTINATION bin)
-install(TARGETS ABuildTest ACoreTest AFileTest AGraphTest DESTINATION bin/test)
+install(TARGETS ABuildTest ACoreTest ADb AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)

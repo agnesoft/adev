@@ -49,12 +49,22 @@ TEST_CASE("Value(T &value) [adb::Value]")
         REQUIRE_NOTHROW(adb::Value{acore::size_type{1}});
     }
 
+    SECTION("[short c-string]")
+    {
+        REQUIRE_NOTHROW(adb::Value{"Hello"});
+    }
+
+    SECTION("[string view]")
+    {
+        REQUIRE_NOTHROW(adb::Value{std::string_view{"Hello"}});
+    }
+
     SECTION("[short string]")
     {
         REQUIRE_NOTHROW(adb::Value{std::string{"Hello"}});
     }
 
-    SECTION("[complex]")
+    SECTION("[long string]")
     {
         REQUIRE_NOTHROW(adb::Value{std::string{"This is not exactly short string optimized string."}});
     }
@@ -65,30 +75,151 @@ TEST_CASE("Value(T &value) [adb::Value]")
     }
 }
 
-TEST_CASE("operator T() const [adb::Value]")
+TEST_CASE("get() const -> T [adb::Value]")
 {
     SECTION("[default]")
     {
-        const auto val = static_cast<int>(adb::Value{});
-        REQUIRE(val == 0);
+        REQUIRE_THROWS_AS(adb::Value{}.get<int>(), acore::Exception);
+        REQUIRE_THROWS_AS(adb::Value{}.get<std::vector<int>>(), acore::Exception);
+        REQUIRE_THROWS_AS(adb::Value{}.get<std::string_view>(), acore::Exception);
     }
 
     SECTION("[trivial]")
     {
-        const auto val = static_cast<int>(adb::Value{1});
-        REQUIRE(val == 1);
+        REQUIRE(adb::Value{1}.get<int>() == 1);
     }
 
     SECTION("[short string]")
     {
-        const auto val = static_cast<std::string>(adb::Value{"Hello"});
-        REQUIRE(val == "Hello");
+        REQUIRE(adb::Value{"Hello"}.get<std::string>() == "Hello");
+    }
+
+    SECTION("[string_view, small string]")
+    {
+        REQUIRE(adb::Value{"Hello"}.get<std::string_view>() == "Hello");
+    }
+
+    SECTION("[string_view, long string]")
+    {
+        REQUIRE(adb::Value{"Hello, World!"}.get<std::string_view>() == "Hello, World!");
+    }
+
+    SECTION("[string_view, full string]")
+    {
+        const char *str = "12345678";
+        REQUIRE(adb::Value{str}.get<std::string_view>() == str);
+    }
+
+    SECTION("[string_view, empty string]")
+    {
+        const char *str = "";
+        REQUIRE(adb::Value{str}.get<std::string_view>() == str);
+    }
+
+    SECTION("[small string with null, null terminated]")
+    {
+        const std::array<char, 4> str{'1', '\0', '3', '\0'};
+        REQUIRE(adb::Value{std::string_view{str.data(), str.size()}}.get<std::string>()
+                == std::string{str.data(), str.size() - 1});
+    }
+
+    SECTION("[small string with null]")
+    {
+        const std::array<char, 4> str{'1', '\0', '3', '4'};
+        REQUIRE(adb::Value{std::string_view{str.data(), str.size()}}.get<std::string>()
+                == std::string{str.data(), str.size()});
     }
 
     SECTION("[complex]")
     {
-        const auto val = static_cast<std::vector<int>>(adb::Value{std::vector<int>{1, 2, 3, 4, 5}});
-        REQUIRE(val == std::vector<int>{1, 2, 3, 4, 5});
+        const auto val = adb::Value{std::vector<int>{1, 2, 3, 4}}.get<std::vector<int>>();
+        REQUIRE(val == std::vector<int>{1, 2, 3, 4});
+    }
+
+    SECTION("[trivial -> complex]")
+    {
+        REQUIRE_THROWS_AS(adb::Value{std::string{"Hello, World!"}}.get<int>(), acore::Exception);
+    }
+
+    SECTION("[complex -> trivial]")
+    {
+        REQUIRE_THROWS_AS(adb::Value{10}.get<std::vector<int>>(), acore::Exception);
+    }
+}
+
+TEST_CASE("operator==(const Value &left, const Value &right) [adb::Value]")
+{
+    SECTION("[default, default]")
+    {
+        REQUIRE(adb::Value{} == adb::Value{});
+    }
+
+    SECTION("[trivial, default]")
+    {
+        REQUIRE_FALSE(adb::Value{1} == adb::Value{});
+    }
+
+    SECTION("[complex, default]")
+    {
+        REQUIRE_FALSE(adb::Value{std::vector<int>{1, 2, 3, 4}} == adb::Value{});
+    }
+
+    SECTION("[trivial, same]")
+    {
+        REQUIRE(adb::Value{"Hello"} == adb::Value{"Hello"});
+    }
+
+    SECTION("[trivial, different]")
+    {
+        REQUIRE_FALSE(adb::Value{"Hello"} == adb::Value{"World"});
+    }
+
+    SECTION("[complex, same]")
+    {
+        REQUIRE(adb::Value{std::vector<int>{1, 2, 3, 4}} == adb::Value{std::vector<int>{1, 2, 3, 4}});
+    }
+
+    SECTION("[complex, different]")
+    {
+        REQUIRE_FALSE(adb::Value{std::string{"Hello, World!"}} == adb::Value{"Some different string"});
+    }
+}
+
+TEST_CASE("operator!=(const Value &left, const Value &right) [adb::Value]")
+{
+    SECTION("[default, default]")
+    {
+        REQUIRE_FALSE(adb::Value{} != adb::Value{});
+    }
+
+    SECTION("[trivial, default]")
+    {
+        REQUIRE(adb::Value{1} != adb::Value{});
+    }
+
+    SECTION("[complex, default]")
+    {
+        REQUIRE(adb::Value{std::vector<int>{1, 2, 3, 4}} != adb::Value{});
+    }
+
+    SECTION("[trivial, same]")
+    {
+        REQUIRE_FALSE(adb::Value{"Hello"} != adb::Value{"Hello"});
+    }
+
+    SECTION("[trivial, different]")
+    {
+        REQUIRE(adb::Value{"Hello"} != adb::Value{"World"});
+    }
+
+    SECTION("[complex, same]")
+    {
+        REQUIRE_FALSE(adb::Value{std::vector<int>{1, 2, 3, 4}} != adb::Value{std::vector<int>{1, 2, 3, 4}});
+    }
+
+    SECTION("[complex, different]")
+    {
+        REQUIRE(adb::Value{std::string{"Hello, World!"}} != adb::Value{"Some different string"});
     }
 }
 }
