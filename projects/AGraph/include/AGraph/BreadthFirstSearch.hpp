@@ -77,7 +77,7 @@ private:
     {
         for (auto index : takeStack(stack))
         {
-            handleIndex(index);
+            this->handleIndex(index);
         }
     }
 

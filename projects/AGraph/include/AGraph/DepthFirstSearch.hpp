@@ -73,7 +73,7 @@ private:
     {
         const auto index = stack->back();
         stack->pop_back();
-        handleIndex(index);
+        this->handleIndex(index);
     }
 };
 }
