@@ -207,7 +207,7 @@ private:
 //! If the value was default constructred this
 //! function will throw.
 template<>
-[[nodiscard]] auto Value::get() const -> std::string_view
+[[nodiscard]] inline auto Value::get() const -> std::string_view
 {
     return std::visit([](auto &&value) -> std::string_view {
         using DataT = std::decay_t<decltype(value)>;
@@ -237,13 +237,13 @@ template<>
             return value.template value<std::string_view>();
         }
     },
-                        mData);
+                      mData);
 }
 
 //! Same as get<std::string_view>() but returns
 //! a copy of the string.
 template<>
-[[nodiscard]] auto Value::get() const -> std::string
+[[nodiscard]] inline auto Value::get() const -> std::string
 {
     return std::string{get<std::string_view>()};
 }
