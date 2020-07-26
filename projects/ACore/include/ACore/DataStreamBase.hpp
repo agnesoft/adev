@@ -24,6 +24,7 @@
 #include <cstring>
 #include <initializer_list>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -458,6 +459,21 @@ auto operator>>(DataStreamBase<Buffer> &stream, double &value) -> DataStreamBase
 }
 
 //! \relates DataStreamBase
+//! Serializes contents of the std::string_view
+//! \a value into the stream as acore::size_type
+//! value representing the string's size obtained
+//! by the call to \c size() followed by the string
+//! data. Returns the \a stream.
+template<typename Buffer>
+auto operator<<(DataStreamBase<Buffer> &stream, const std::string_view &value) -> DataStreamBase<Buffer> &
+{
+    const auto size = static_cast<size_type>(value.size());
+    stream << size;
+    stream.write(value.data(), size);
+    return stream;
+}
+
+//! \relates DataStreamBase
 //! Serializes a null terminated c-string \a value
 //! into the stream as \c std::int64_t value representing
 //! the string's size obtained by the call to \c strlen()
@@ -473,24 +489,7 @@ auto operator>>(DataStreamBase<Buffer> &stream, double &value) -> DataStreamBase
 template<typename Buffer>
 auto operator<<(DataStreamBase<Buffer> &stream, const char *value) -> DataStreamBase<Buffer> &
 {
-    const auto size = static_cast<size_type>(std::strlen(value));
-    stream << size;
-    stream.write(value, size);
-    return stream;
-}
-
-//! \relates DataStreamBase
-//! Serializes an std::string \a value into the stream
-//! as acore::size_type value representing the string's
-//! size obtained by the call to \c size() followed
-//! by the string data. Returns the \a stream.
-template<typename Buffer>
-auto operator<<(DataStreamBase<Buffer> &stream, const std::string &value) -> DataStreamBase<Buffer> &
-{
-    const auto size = static_cast<size_type>(value.size());
-    stream << size;
-    stream.write(value.data(), size);
-    return stream;
+    return stream << std::string_view{value};
 }
 
 //! \relates DataStreamBase
