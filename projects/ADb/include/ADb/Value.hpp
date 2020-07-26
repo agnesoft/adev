@@ -124,7 +124,7 @@ public:
     //! the type mismatch occurs this function will
     //! throw.
     template<typename T>
-    auto get() const -> T
+    [[nodiscard]] auto get() const -> T
     {
         if constexpr (std::is_trivially_copyable_v<T> && sizeof(T) <= sizeof(acore::size_type))
         {
@@ -170,62 +170,6 @@ public:
         }
     }
 
-    //! Retrieves the string from the internal data.
-    //!
-    //! If the value is storing trivial data the
-    //! returned std::string_view will be a view
-    //! into this data buffer possibly shortened to
-    //! the last null '\0' character found (if any).
-    //!
-    //! If the value is storing a complex data the
-    //! returned std::string_view will be a view
-    //! into the internal serialization buffer (see
-    //! acore::Variant for further details).
-    //!
-    //! If the value was default constructred this
-    //! function will throw.
-    template<>
-    auto get() const -> std::string_view
-    {
-        return std::visit([](auto &&value) -> std::string_view {
-            using DataT = std::decay_t<decltype(value)>;
-
-            if constexpr (std::is_same_v<DataT, std::monostate>)
-            {
-                throw acore::Exception{} << "The adb::Value has no value.";
-            }
-            else if constexpr (std::is_same_v<DataT, TrivialValue>)
-            {
-                const auto valueSize = [](const TrivialValue &value) -> size_t {
-                    for (size_t i = value.size() - 1; i < value.size(); --i)
-                    {
-                        if (value[i] != '\0')
-                        {
-                            return i + 1;
-                        }
-                    }
-
-                    return 0;
-                };
-
-                return std::string_view{value.data(), valueSize(value)};
-            }
-            else
-            {
-                return value.template value<std::string_view>();
-            }
-        },
-                          mData);
-    }
-
-    //! Same as get<std::string_view>() but returns
-    //! a copy of the string.
-    template<>
-    auto get() const -> std::string
-    {
-        return std::string{get<std::string_view>()};
-    }
-
 private:
     template<typename T>
     [[nodiscard]] auto save(const T *value, size_t size) -> TrivialValue
@@ -247,6 +191,62 @@ private:
 
     std::variant<std::monostate, TrivialValue, acore::Variant> mData;
 };
+
+//! Retrieves the string from the internal data.
+//!
+//! If the value is storing trivial data the
+//! returned std::string_view will be a view
+//! into this data buffer possibly shortened to
+//! the last null '\0' character found (if any).
+//!
+//! If the value is storing a complex data the
+//! returned std::string_view will be a view
+//! into the internal serialization buffer (see
+//! acore::Variant for further details).
+//!
+//! If the value was default constructred this
+//! function will throw.
+template<>
+[[nodiscard]] auto Value::get() const -> std::string_view
+{
+    return std::visit([](auto &&value) -> std::string_view {
+        using DataT = std::decay_t<decltype(value)>;
+
+        if constexpr (std::is_same_v<DataT, std::monostate>)
+        {
+            throw acore::Exception{} << "The adb::Value has no value.";
+        }
+        else if constexpr (std::is_same_v<DataT, TrivialValue>)
+        {
+            const auto valueSize = [](const TrivialValue &value) -> size_t {
+                for (size_t i = value.size() - 1; i < value.size(); --i)
+                {
+                    if (value[i] != '\0')
+                    {
+                        return i + 1;
+                    }
+                }
+
+                return 0;
+            };
+
+            return std::string_view{value.data(), valueSize(value)};
+        }
+        else
+        {
+            return value.template value<std::string_view>();
+        }
+    },
+                        mData);
+}
+
+//! Same as get<std::string_view>() but returns
+//! a copy of the string.
+template<>
+[[nodiscard]] auto Value::get() const -> std::string
+{
+    return std::string{get<std::string_view>()};
+}
 }
 
 #endif
