@@ -1,32 +1,109 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="app">    
+        <MainHeader id="main-header" />
+        
+        <router-view  id="main-container"/>
+
+        <MainFooter id="main-footer" />
     </div>
-    <router-view/>
-  </div>
 </template>
 
+
+<script>
+import MainHeader from "./components/layout/MainHeader";
+import MainFooter from "./components/layout/MainFooter";
+
+
+export default {
+    name: 'app',
+    components: {
+        MainHeader,
+        MainFooter
+    },
+}
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+:root{
+    --primary-color: #ffa45c;
+    --dark-color:#5d5d5a;
+    --light-color:#fff4e3;
+    --secondary-color:#ac3f21;
+    --light-primary-color: #ffcdab;
+    --light-grey: #DDD;
+
+    --primary-font: 'Helvetica', 'Arial', sans-serif;
+
+    --button-size: 1.8rem;
+    --gradient-underline: linear-gradient(90deg, transparent 0%,var(--light-color) 30%,var(--light-color) 70%,transparent 100%);
+
+    --border-radius: 0.4rem;
+    --border-width: 0.25rem;
+
+    --transition-ease: 0.5s ease;
+    --transition-opacity: opacity var(--transition-ease);
+
+    --grid-gap: 0.4rem;
+    --menu-speed: 0.6s ease;
+
+    /* --pullout-transform-origin: top left;
+    --pullout-transform: scaleY(0);
+    --pullout-transition: all 0.4s ease; */
+
 }
 
-#nav {
-  padding: 30px;
+*{
+    box-sizing: border-box;
 }
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+body{
+    padding: 0;
+    margin: 0;
 }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+a{
+    text-decoration: none;
+    transition: var(--transition-opacity);
+}
+ul{
+    list-style-type: none;
+}
+
+/* implementation for old browsers*/
+article, aside, footer, header, nav, section {
+    display: block;
+}
+
+#app{
+    background-color: var(--light-color);
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: max-content minmax(max-content,1fr) max-content;
+    grid-template-areas: 
+        'header'
+        'container'
+        'footer'
+        ;
+    min-height: calc(100vh);
+    grid-gap: 0;
+    font-family: var(--primary-font);
+}
+#main-container{
+    --wrapper-margin: 0.3rem;
+    margin: var(--wrapper-margin);
+    background-color: var(--light-color);
+    padding: var(--grid-gap);
+}
+#main-header{
+  grid-area: header;
+}
+#left-panel{
+  grid-area: sidebar;
+}
+#main-content{
+  grid-area: main;
+}
+#main-footer{
+  grid-area: footer;
 }
 </style>
