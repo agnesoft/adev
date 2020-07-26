@@ -38,6 +38,14 @@ namespace acore
 //! The Variant is not very suitable for small data
 //! types due to significant overhead of its type
 //! erasure mechanism (serialization).
+//!
+//! Note the special handling of string types (std::string,
+//! std::string_view, std::vector<char> and const char *).
+//! They are simply copied into the internal buffer
+//! rather than being serialized. Conversely you
+//! can access the internal buffer with requesting
+//! these types back. For reading the string data
+//! the most efficient is the std::string_view.
 class Variant
 {
 public:

@@ -15,10 +15,14 @@
 #ifndef ADB_ADBMODULE_HPP
 #define ADB_ADBMODULE_HPP
 
+//! \defgroup ADbModule ADb Module
+
 #include <ACore.hpp>
 #include <AFile.hpp>
 #include <AGraph.hpp>
 
+//! \ingroup ADbModule
+//! The module provides graph database.
 namespace adb
 {
 }

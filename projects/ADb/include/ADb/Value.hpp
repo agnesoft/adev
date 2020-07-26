@@ -26,13 +26,50 @@
 
 namespace adb
 {
+//! The Value represents a value in the database.
+//! It can be constructed with any value type as
+//! long as either:
+//!
+//! - <tt> std::is_trivially_copyable_v<T> == true </tt>
+//! - <tt> (sizeof(T) <= sizeof(acore::size_type) == true </tt>
+//!
+//! or the following operators are provided:
+//!
+//! - <tt> auto operator<<(acore::DataStream &stream, const T &value) </tt>
+//! - <tt> auto operator>>(acore::DataStream &stream, T &value) </tt>
+//!
+//! In the former case the value is simply copied
+//! to the internal buffer and copied back when
+//! requested. This also applies to the string types
+//! (std::string, std::string_view and const char *)
+//! provided their size is less than \c sizeof(acore::size_type).
+//!
+//! In the latter case the value is serialized and
+//! deserialized as requested. This way any data
+//! can be stored into and retrieved from the
+//! database.
+//!
+//! The Value class performs static (compile time)
+//! sanity checking when the values are requested.
+//! It will throw when a value is requested from
+//! a default constructred object, a trivial value
+//! is requested from an object storing a complex
+//! value and vice versa. No runtime type safety
+//! checks are performed though apart from buffer
+//! overrun during the (de)serialization.
 class Value
 {
     using TrivialValue = std::array<char, sizeof(acore::size_type)>;
 
 public:
+    //! Default constructs the Value. Such an object
+    //! will throw when you attemp to call get().
     Value() = default;
 
+    //! Constructs the Value with \a value. For
+    //! trivial types it will simply copy them into
+    //! the internal buffer. For complex types it
+    //! will serialize them.
     template<typename T>
     explicit constexpr Value(const T &value)
     {
@@ -46,6 +83,11 @@ public:
         }
     }
 
+    //! Constructs the Value with \a value. If the
+    //! size of the string is less than or equal to
+    //! the internal buffer <tt> sizeof(acore::size_type) </tt>
+    //! the string will be copied into it. Otherwise
+    //! it will be serialized.
     explicit Value(std::string_view value)
     {
         if (value.size() <= sizeof(acore::size_type))
@@ -58,16 +100,29 @@ public:
         }
     }
 
+    //! Same as Value(std::string_view).
     explicit Value(const char *value) :
         Value(std::string_view{value})
     {
     }
 
-    Value(const std::string &value) :
+    //! Same as Value(std::string_view).
+    explicit Value(const std::string &value) :
         Value(std::string_view{value})
     {
     }
 
+    //! Retrieves the object of type T from the Value.
+    //!
+    //! If the Value holds a trivial data simple
+    //! std::memcpy to T will be performed.
+    //!
+    //! If the Value holds a complex data the T
+    //! is deserialized.
+    //!
+    //! If the Value was default consttructed or
+    //! the type mismatch occurs this function will
+    //! throw.
     template<typename T>
     auto get() const -> T
     {
@@ -115,6 +170,20 @@ public:
         }
     }
 
+    //! Retrieves the string from the internal data.
+    //!
+    //! If the value is storing trivial data the
+    //! returned std::string_view will be a view
+    //! into this data buffer possibly shortened to
+    //! the last null '\0' character found (if any).
+    //!
+    //! If the value is storing a complex data the
+    //! returned std::string_view will be a view
+    //! into the internal serialization buffer (see
+    //! acore::Variant for further details).
+    //!
+    //! If the value was default constructred this
+    //! function will throw.
     template<>
     auto get() const -> std::string_view
     {
@@ -149,6 +218,8 @@ public:
                           mData);
     }
 
+    //! Same as get<std::string_view>() but returns
+    //! a copy of the string.
     template<>
     auto get() const -> std::string
     {
