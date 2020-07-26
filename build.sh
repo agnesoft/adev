@@ -623,7 +623,7 @@ function coverage () {
     #Generate individual reports per test
     local DATA_RAW=$(find . -name "*.profraw" -type f)
     local DATA=""
-    local EXCLUDE_REGEX=".*[Tt]est[\/\\]|tiny-process-library.*|ADb[\/\\]include[\/\\]ADb[\/\\]Value\.hpp"
+    local EXCLUDE_REGEX=".*[Tt]est[\/\\]|tiny-process-library.*"
 
     for raw_data in $DATA_RAW
     do

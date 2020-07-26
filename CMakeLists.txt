@@ -30,7 +30,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
 endif()
 
-set(CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 ##########
 # CATCH2 #
@@ -270,7 +270,7 @@ target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
 install(TARGETS ABuild ABenchmarks DESTINATION bin)
-install(TARGETS ABuildTest ACoreTest ADb AFileTest AGraphTest DESTINATION bin/test)
+install(TARGETS ABuildTest ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)
