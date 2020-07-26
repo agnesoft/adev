@@ -231,7 +231,7 @@ TEST_CASE("operator<<(DataStream &stream, const T &value) -> DataStream &, opera
         REQUIRE(j == std::numeric_limits<std::int64_t>::min());
     }
 
-    SECTION("const char*, std::string")
+    SECTION("const char*, std::string_view")
     {
         const std::string str1{"Hello World!"};
         const std::string str2;
