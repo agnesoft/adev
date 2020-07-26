@@ -113,7 +113,7 @@ private:
     //! \relates Variant
     //! Returns \c true if the \a left holds the same
     //! value as does the \a right.
-    friend auto operator==(const Variant &left, const Variant &right) noexcept -> bool
+    [[nodiscard]] friend auto operator==(const Variant &left, const Variant &right) noexcept -> bool
     {
         return left.mStream.buffer().data() == right.mStream.buffer().data();
     }
@@ -121,7 +121,7 @@ private:
     //! \relates Variant
     //! Returns \c true if the \a left holds different
     //! value than the \a right.
-    friend auto operator!=(const Variant &left, const Variant &right) noexcept -> bool
+    [[nodiscard]] friend auto operator!=(const Variant &left, const Variant &right) noexcept -> bool
     {
         return !(left == right);
     }
@@ -157,7 +157,7 @@ inline Variant::Variant(const std::string &value) :
 //! Explicit specialization returning the const
 //! reference to the underlying data.
 template<>
-inline auto Variant::value() const -> const std::vector<char> &
+[[nodiscard]] inline auto Variant::value() const -> const std::vector<char> &
 {
     return mStream.buffer().data();
 }
@@ -165,7 +165,7 @@ inline auto Variant::value() const -> const std::vector<char> &
 //! Explicit specialization returning the copy
 //! of the underlying data as a string.
 template<>
-inline auto Variant::value() const -> std::string
+[[nodiscard]] inline auto Variant::value() const -> std::string
 {
     return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
 }
@@ -173,7 +173,7 @@ inline auto Variant::value() const -> std::string
 //! Explicit specialization returning the copy
 //! of the underlying data as a string.
 template<>
-inline auto Variant::value() const -> std::string_view
+[[nodiscard]] inline auto Variant::value() const -> std::string_view
 {
     return std::string_view(&mStream.buffer().data()[0], mStream.buffer().data().size());
 }
@@ -181,7 +181,7 @@ inline auto Variant::value() const -> std::string_view
 //! Explicit specialization returning the copy
 //! of the underlying data.
 template<>
-inline auto Variant::value() const -> std::vector<char>
+[[nodiscard]] inline auto Variant::value() const -> std::vector<char>
 {
     return mStream.buffer().data();
 }
@@ -189,7 +189,7 @@ inline auto Variant::value() const -> std::vector<char>
 //! Explicit specialization simply returning
 //! the copy of this variant.
 template<>
-inline auto Variant::value() const -> Variant
+[[nodiscard]] inline auto Variant::value() const -> Variant
 {
     return *this;
 }
