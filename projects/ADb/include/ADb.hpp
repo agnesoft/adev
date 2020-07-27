@@ -15,6 +15,7 @@
 #ifndef ADB_ADB_HPP
 #define ADB_ADB_HPP
 
+#include "ADb/KeyValue.hpp"
 #include "ADb/Value.hpp"
 
 #endif
