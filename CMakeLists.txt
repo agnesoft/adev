@@ -217,6 +217,7 @@ target_link_libraries(AGraphTest AGraph Catch2)
 #ADb Static Library
 add_library(ADb STATIC projects/ADb/include/ADb.hpp
                        projects/ADb/include/ADb/ADbModule.hpp
+                       projects/ADb/include/ADb/KeyValue.hpp
                        projects/ADb/include/ADb/Value.hpp
                        projects/ADb/Value.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
@@ -227,7 +228,8 @@ target_include_directories(ADb PRIVATE projects/ADb/include/ADb)
 target_include_directories(ADb PUBLIC projects/ADb/include)
 
 #ADbTest
-add_executable(ADbTest projects/ADb/test/ValueTest.cpp)
+add_executable(ADbTest projects/ADb/test/KeyValueTest.cpp
+                       projects/ADb/test/ValueTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
     target_precompile_headers(ADbTest PRIVATE projects/ADb/test/pch.hpp)
 endif()
