@@ -1,4 +1,3 @@
-
 import { localVue } from '../TestUtils'
 import Vuex from 'vuex'
 import scene from '@/store/modules/scene'
