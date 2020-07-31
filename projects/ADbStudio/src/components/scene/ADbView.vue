@@ -1,5 +1,5 @@
 <template>
-    <div class="adb-view">
+    <div class="adb-view"  >
         <Edge v-for="edge in edges" :key="edge.id" :params="edge" :viewSize="viewSize"/>
         <Node v-for="node in nodes" :key="node.id" :params="node" :viewSize="viewSize"/>
     </div>
@@ -19,7 +19,7 @@ export default {
     data(){
         return {
             viewWidth: 0,
-            viewHeight: 0
+            viewHeight: 0,
         }
     },
     computed: {
@@ -32,13 +32,13 @@ export default {
                 width: this.viewWidth,
                 height: this.viewHeight
             }
-        }
+        },
     },
     methods: {
         onResize() {
             this.viewWidth = document.documentElement.clientWidth;
             this.viewHeight = document.documentElement.clientHeight;
-        }
+        },
     },
     mounted() {
         window.addEventListener('resize', this.onResize)
@@ -46,7 +46,7 @@ export default {
     },
 
     beforeDestroy() {
-        window.removeEventListener('resize', this.onResize)
+        window.removeEventListener('onmousewheel', this.onResize)
     }
 
 }
@@ -55,5 +55,10 @@ export default {
 <style scoped>
     .adb-view{
         position: relative;
+        transform: scale(var(--scale,1)) translate(var(--move-x,0), var(--move-y,0));
+        width: 100%;
+        height: 100%;
+        background: white;
+        box-shadow: inset  0 0 5px var(--light-color);
     }
 </style>

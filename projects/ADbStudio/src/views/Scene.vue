@@ -4,8 +4,15 @@
             <textarea class="command" v-model.trim="command" :placeholder="$t('write-command')" rows="1" />
             <input type="submit" :value="$t('run')" class="submit-button">
         </form>
-        <ADbView id="adb-view" />
+        <div class="view-container" @wheel.prevent="onMouseWheel" @dragover.prevent @drop="onDrop" @dragstart="onDragStart">
+            <ADbView id="adb-view" :zoom="zoom" draggable="true" :style="viewStyle"/>
+        </div>
         <SearchField id="search-field" />
+        <div class="controls">
+            <button @click="resetView">{{$t('reset-view')}}</button>
+            <button @click="zoomPlus">+</button>
+            <button @click="zoomMinus">-</button>
+        </div>
     </div>
 </template>
 
@@ -23,6 +30,15 @@ export default {
     data(){
         return {
             command: '',
+            zoom: 0,
+            move: {
+                x: 0,
+                y: 0
+            },
+            startDragCoordinates: {
+                x: 0,
+                y: 0
+            }
         }
     },
     methods: {
@@ -34,6 +50,46 @@ export default {
                 this.send_command({command: this.command});
                 this.command = '';
             }
+        },
+        onMouseWheel(event){
+            event.deltaY < 0 ? this.zoomPlus() : this.zoomMinus(); 
+        },
+        onDragStart(event){
+            this.startDragCoordinates.x = event.clientX;
+            this.startDragCoordinates.y = event.clientY;
+        },
+        onDrop(event){
+            this.move.x += (event.clientX - this.startDragCoordinates.x)/this.scale;
+            this.move.y += (event.clientY - this.startDragCoordinates.y)/this.scale;
+        },
+        resetView(){
+            this.move.x = 0;
+            this.move.y = 0;
+            this.zoom = 0;
+            this.startDragCoordinates.x = 0;
+            this.startDragCoordinates.y = 0;
+        },
+        zoomPlus(){
+            this.zoom++;
+        },
+        zoomMinus(){
+            this.zoom--;
+            this.zoom = this.zoom < -9 ? -9 : this.zoom;
+        }
+    },
+    computed: {
+        viewStyle: function(){
+            return {
+                "--move-x": this.move.x.toString()+"px",
+                "--move-y": this.move.y.toString()+"px", 
+                '--scale': this.scale,
+            }
+        },
+        scale: function(){
+            let scale = 1;
+            scale = 1 + this.zoom/10;
+            scale = scale < 0.1 ? 0.1 : scale;
+            return scale;
         }
     }
 }
@@ -44,11 +100,13 @@ export default {
         position: relative;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: max-content minmax(max-content,1fr);
+        grid-template-rows: max-content minmax(max-content,1fr) max-content;
         grid-template-areas: 
             'command'
             'view'
+            'controls'
             ;
+        grid-gap: 0.4rem;
     }
     .command-form{
         grid-area: command;
@@ -59,10 +117,18 @@ export default {
         flex-grow: 2;
         /* max-width: 50rem */
     }
-    .adb-view{
+    .view-container{
         grid-area: view;
+        overflow: hidden;
+        position: relative;
     }
     .search-field{
         grid-area: search;
+    }
+    #adb-view{
+        position: absolute;
+    }
+    .controls{
+        grid-area: controls;
     }
 </style>
