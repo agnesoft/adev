@@ -72,7 +72,7 @@ private:
 //! Returns \c true if both \a left and \a right
 //! represents the same key-value pair or \c false
 //! otherwise.
-[[nodiscard]] inline bool operator==(const KeyValue &left, const KeyValue &right)
+[[nodiscard]] inline auto operator==(const KeyValue &left, const KeyValue &right) -> bool
 {
     return left.key() == right.key() && left.value() == right.value();
 }
@@ -81,7 +81,7 @@ private:
 //! Returns \c true if \a left and \a right do not
 //! represent the same key-value pair or \c false
 //! otherwise.
-[[nodiscard]] inline bool operator!=(const KeyValue &left, const KeyValue &right)
+[[nodiscard]] inline auto operator!=(const KeyValue &left, const KeyValue &right) -> bool
 {
     return !(left == right);
 }

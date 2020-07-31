@@ -52,13 +52,13 @@ TEST_CASE("data() const noexcept -> const std::vector<KeyValue> & [adb::Element]
     {
         const adb::Element e;
         REQUIRE(noexcept(e.data()));
-        REQUIRE(e.data() == std::vector<adb::KeyValue>{});
+        REQUIRE(e.data() == std::vector<adb::KeyValue>{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[index only]")
     {
         const adb::Element e{1};
-        REQUIRE(e.data() == std::vector<adb::KeyValue>{});
+        REQUIRE(e.data() == std::vector<adb::KeyValue>{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[data]")
