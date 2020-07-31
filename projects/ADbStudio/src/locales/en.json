@@ -1,3 +1,5 @@
 {
-  "message": "hello i18n !!"
+  "message": "hello i18n !!",
+  "run": "Run",
+  "write-command": "Write command"
 }
