@@ -539,7 +539,7 @@ map.insert(2, 3, 4);
 
 const acore::size_type value1 = map.value(1, 2); //== 3
         //! [[Usage]]
-        // clang-format on;
+        // clang-format on
         REQUIRE(value1 == 3);
     }
 }

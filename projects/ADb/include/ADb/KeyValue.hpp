@@ -20,35 +20,64 @@
 
 namespace adb
 {
-//! Struct representing single piece of data - a
-//! key-value pair - associated with the database's
-//! elements (nodes and edges).
-struct KeyValue
+//! The KeyValue represents a single piece of data
+//! (a key-value pair) associated with the database's
+//! elements (nodes and edges). It provides convenience
+//! constructor in order to work with the Value objects
+//! easier when used within the Database context.
+class KeyValue
 {
+public:
+    //! Default constructor.
     KeyValue() = default;
 
-    template<typename K, typename V>
-    KeyValue(const K &k, const V &v) :
-        key{k},
-        value{v}
+    //! Constructs the KeyValue with \a key and
+    //! \a value. Provided to avoid too verbose
+    //! syntax:
+    //!
+    //! \snippet KeyValueTest.cpp [Verbose]
+    //!
+    //! and to allow:
+    //!
+    //! \snippet KeyValueTest.cpp [Brief]
+    //!
+    //! and constructing a vector:
+    //!
+    //! \snippet KeyValueTest.cpp [Vector]
+    template<typename KeyT, typename ValueT>
+    KeyValue(const KeyT &key, const ValueT &value) :
+        mKey{key},
+        mValue{value}
     {
     }
 
-    //! Key
-    Value key;
+    //! Returns the key.
+    [[nodiscard]] auto key() const noexcept -> const Value &
+    {
+        return mKey;
+    }
 
-    //! Value
-    Value value;
+    //! Returns the value.
+    [[nodiscard]] auto value() const noexcept -> const Value &
+    {
+        return mValue;
+    }
+
+private:
+    Value mKey;
+    Value mValue;
 };
 
+//! \relates adb::KeyValue
 //! Returns \c true if both \a left and \a right
 //! represents the same key-value pair or \c false
 //! otherwise.
 [[nodiscard]] inline bool operator==(const KeyValue &left, const KeyValue &right)
 {
-    return left.key == right.key && left.value == right.value;
+    return left.key() == right.key() && left.value() == right.value();
 }
 
+//! \relates adb::KeyValue
 //! Returns \c true if \a left and \a right do not
 //! represent the same key-value pair or \c false
 //! otherwise.

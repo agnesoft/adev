@@ -52,28 +52,61 @@ TEST_CASE("data() const noexcept -> const std::vector<KeyValue> & [adb::Element]
     {
         const adb::Element e;
         REQUIRE(noexcept(e.data()));
-        REQUIRE(e.data() == std::vector<adb::KeyValue>{{1, 2}});
+        REQUIRE(e.data() == std::vector<adb::KeyValue>{});
     }
 
-    SECTION("[id only]")
+    SECTION("[index only]")
     {
         const adb::Element e{1};
+        REQUIRE(e.data() == std::vector<adb::KeyValue>{});
     }
 
     SECTION("[data]")
     {
+        const adb::Element e{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}};
+        REQUIRE(e.data() == std::vector<adb::KeyValue>{{"Key", "Value"}, {"ID", 3}, {-2, -4}});
     }
 }
 
 TEST_CASE("index() const noexcept -> acore::size_type [adb::Element]")
 {
+    SECTION("[empty]")
+    {
+        const adb::Element e;
+        REQUIRE(noexcept(e.index()));
+        REQUIRE(e.index() == acore::INVALID_INDEX);
+    }
+
+    SECTION("[index only]")
+    {
+        const adb::Element e{1};
+        REQUIRE(e.index() == 1);
+    }
+
+    SECTION("[data]")
+    {
+        const adb::Element e{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}};
+        REQUIRE(e.data() == std::vector<adb::KeyValue>{{"Key", "Value"}, {"ID", 3}, {-2, -4}});
+    }
 }
 
 TEST_CASE("operator==(const Element &left, const Element &right) -> bool [adb::Element]")
 {
+    REQUIRE(adb::Element{} == adb::Element{});
+    REQUIRE(adb::Element{1} == adb::Element{1});
+    REQUIRE(adb::Element{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}} == adb::Element{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}});
+    REQUIRE_FALSE(adb::Element{} == adb::Element{1});
+    REQUIRE_FALSE(adb::Element{1} == adb::Element{});
+    REQUIRE_FALSE(adb::Element{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}} == adb::Element{1, {{"Key", "Value"}, {-2, -4}}});
 }
 
 TEST_CASE("operator!=(const Element &left, const Element &right) -> bool [adb::Element]")
 {
+    REQUIRE_FALSE(adb::Element{} != adb::Element{});
+    REQUIRE_FALSE(adb::Element{1} != adb::Element{1});
+    REQUIRE_FALSE(adb::Element{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}} != adb::Element{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}});
+    REQUIRE(adb::Element{} != adb::Element{1});
+    REQUIRE(adb::Element{1} != adb::Element{});
+    REQUIRE(adb::Element{1, {{"Key", "Value"}, {"ID", 3}, {-2, -4}}} != adb::Element{1, {{"Key", "Value"}, {-2, -4}}});
 }
 }
