@@ -26,6 +26,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "SanitizeUB")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=undefined -fno-omit-frame-pointer -fno-optimize-sibling-calls")
 endif()
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
+endif()
+
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 ##########
 # CATCH2 #
 ##########
@@ -164,6 +170,7 @@ target_link_libraries(AFileTest AFile Catch2)
 ##########
 # AGRAPH #
 ##########
+#AGraph Static Library
 add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/AGraphModule.hpp
                           projects/AGraph/include/AGraph/BreadthFirstSearch.hpp
@@ -204,6 +211,30 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
 endif()
 target_link_libraries(AGraphTest AGraph Catch2)
 
+#######
+# ADB #
+#######
+#ADb Static Library
+add_library(ADb STATIC projects/ADb/include/ADb.hpp
+                       projects/ADb/include/ADb/ADbModule.hpp
+                       projects/ADb/include/ADb/KeyValue.hpp
+                       projects/ADb/include/ADb/Value.hpp
+                       projects/ADb/Value.cpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+   target_precompile_headers(ADb PRIVATE projects/ADb/pch.hpp)
+endif()
+target_link_libraries(ADb ACore AFile AGraph)
+target_include_directories(ADb PRIVATE projects/ADb/include/ADb)
+target_include_directories(ADb PUBLIC projects/ADb/include)
+
+#ADbTest
+add_executable(ADbTest projects/ADb/test/KeyValueTest.cpp
+                       projects/ADb/test/ValueTest.cpp)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    target_precompile_headers(ADbTest PRIVATE projects/ADb/test/pch.hpp)
+endif()
+target_link_libraries(ADbTest ADb Catch2)
+
 ###############
 # ABENCHMARKS #
 ###############
@@ -241,10 +272,9 @@ target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
 install(TARGETS ABuild ABenchmarks DESTINATION bin)
-install(TARGETS ABuildTest ACoreTest AFileTest AGraphTest DESTINATION bin/test)
+install(TARGETS ABuildTest ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)
 install(FILES projects/Catch2/LICENSE.txt DESTINATION bin/LICENSE/Catch2)
 install(FILES projects/tiny-process-library/LICENSE DESTINATION bin/LICENSE/tiny-process-library)
-

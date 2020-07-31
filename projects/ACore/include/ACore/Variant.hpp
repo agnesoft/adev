@@ -19,6 +19,7 @@
 #include "Exception.hpp"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -37,6 +38,14 @@ namespace acore
 //! The Variant is not very suitable for small data
 //! types due to significant overhead of its type
 //! erasure mechanism (serialization).
+//!
+//! Note the special handling of string types (std::string,
+//! std::string_view, std::vector<char> and const char *).
+//! They are simply copied into the internal buffer
+//! rather than being serialized. Conversely you
+//! can access the internal buffer with requesting
+//! these types back. For reading the string data
+//! the most efficient is the std::string_view.
 class Variant
 {
 public:
@@ -48,6 +57,18 @@ public:
     explicit constexpr Variant(const T &value)
     {
         mStream << value;
+    }
+
+    //! Constructs a Variant from \c std::string_view \a value.
+    explicit Variant(std::string_view value) :
+        mStream{std::vector<char>(value.begin(), value.end())}
+    {
+    }
+
+    //! Constructs a Variant from raw \c c-string \a value.
+    explicit Variant(const char *value) :
+        Variant(std::string_view{value})
+    {
     }
 
     //! Constructs a Variant from raw data vector \a value.
@@ -92,7 +113,7 @@ private:
     //! \relates Variant
     //! Returns \c true if the \a left holds the same
     //! value as does the \a right.
-    friend auto operator==(const Variant &left, const Variant &right) noexcept -> bool
+    [[nodiscard]] friend auto operator==(const Variant &left, const Variant &right) noexcept -> bool
     {
         return left.mStream.buffer().data() == right.mStream.buffer().data();
     }
@@ -100,7 +121,7 @@ private:
     //! \relates Variant
     //! Returns \c true if the \a left holds different
     //! value than the \a right.
-    friend auto operator!=(const Variant &left, const Variant &right) noexcept -> bool
+    [[nodiscard]] friend auto operator!=(const Variant &left, const Variant &right) noexcept -> bool
     {
         return !(left == right);
     }
@@ -129,14 +150,14 @@ private:
 //! Constructs a Variant from \c string \a value.
 template<>
 inline Variant::Variant(const std::string &value) :
-    mStream{std::vector<char>(value.begin(), value.end())}
+    Variant(std::string_view{value})
 {
 }
 
 //! Explicit specialization returning the const
 //! reference to the underlying data.
 template<>
-inline auto Variant::value() const -> const std::vector<char> &
+[[nodiscard]] inline auto Variant::value() const -> const std::vector<char> &
 {
     return mStream.buffer().data();
 }
@@ -144,15 +165,23 @@ inline auto Variant::value() const -> const std::vector<char> &
 //! Explicit specialization returning the copy
 //! of the underlying data as a string.
 template<>
-inline auto Variant::value() const -> std::string
+[[nodiscard]] inline auto Variant::value() const -> std::string
 {
     return std::string(mStream.buffer().data().begin(), mStream.buffer().data().end());
 }
 
 //! Explicit specialization returning the copy
+//! of the underlying data as a string.
+template<>
+[[nodiscard]] inline auto Variant::value() const -> std::string_view
+{
+    return std::string_view(&mStream.buffer().data()[0], mStream.buffer().data().size());
+}
+
+//! Explicit specialization returning the copy
 //! of the underlying data.
 template<>
-inline auto Variant::value() const -> std::vector<char>
+[[nodiscard]] inline auto Variant::value() const -> std::vector<char>
 {
     return mStream.buffer().data();
 }
@@ -160,7 +189,7 @@ inline auto Variant::value() const -> std::vector<char>
 //! Explicit specialization simply returning
 //! the copy of this variant.
 template<>
-inline auto Variant::value() const -> Variant
+[[nodiscard]] inline auto Variant::value() const -> Variant
 {
     return *this;
 }

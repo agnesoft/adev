@@ -1,5 +1,5 @@
 <template>
-    <div class="adb-view"  >
+    <div class="adb-view">
         <Edge v-for="edge in edges" :key="edge.id" :params="edge" :viewSize="viewSize"/>
         <Node v-for="node in nodes" :key="node.id" :params="node" :viewSize="viewSize"/>
     </div>

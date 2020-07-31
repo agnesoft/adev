@@ -34,14 +34,21 @@ TEST_CASE("[acore::Variant]")
 
 TEST_CASE("Variant() [acore::Variant]")
 {
-    const acore::Variant variant;
-    REQUIRE(variant.value<const std::vector<char> &>() == std::vector<char>{}); //NOLINT(readability-container-size-empty)
+    REQUIRE_NOTHROW(acore::Variant{});
 }
 
 TEST_CASE("Variant(const T &value) [acore::Variant]")
 {
-    const acore::Variant variant{std::vector<int>{1, 2}};
-    REQUIRE(variant.value<const std::vector<char> &>().size() == 16);
+    SECTION("[complex]")
+    {
+        REQUIRE_NOTHROW(acore::Variant{std::vector<int>{1, 2}});
+    }
+
+    SECTION("[string_view]")
+    {
+        const char *value = "Hello, World!";
+        REQUIRE_NOTHROW(acore::Variant{std::string_view{value}});
+    }
 }
 
 TEST_CASE("isValid() const noexcept -> bool [acore::Variant]")
@@ -72,6 +79,20 @@ TEST_CASE("value() const -> T [acore::Variant]")
     {
         const acore::Variant variant{std::string{"Hello World!"}};
         REQUIRE(variant.value<std::string>() == "Hello World!");
+    }
+
+    SECTION("[string_view]")
+    {
+        const std::string value = "Hello, World!";
+        const acore::Variant variant{std::string_view{value}};
+        REQUIRE(variant.value<std::string_view>() == value);
+    }
+
+    SECTION("[raw string to string]")
+    {
+        const char *value = "Hello, World!";
+        const acore::Variant variant{value};
+        REQUIRE(variant.value<std::string>() == std::string{value});
     }
 
     SECTION("[raw data]")
