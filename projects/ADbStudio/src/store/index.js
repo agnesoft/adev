@@ -3,13 +3,17 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+import Scene from "./modules/scene";
+
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+    strict: process.env.NODE_ENV !== 'production',
+    state: {
+    },
+    mutations: {
+    },
+    actions: {
+    },
+    modules: {
+        scene: Scene,
+    }
 })
