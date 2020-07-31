@@ -89,7 +89,7 @@ namespace dataindexmaptest
 {
 TEST_CASE("[acore::DataIndexMap]")
 {
-#if defined(MSVC) && !defined(DEBUG)
+#if defined(_MSC_VER) && !defined(_DEBUG)
     REQUIRE(std::is_standard_layout_v<acore::DataIndexMap>);
 #endif
     REQUIRE(std::is_default_constructible_v<acore::DataIndexMap>);

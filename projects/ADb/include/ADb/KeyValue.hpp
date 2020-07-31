@@ -25,6 +25,15 @@ namespace adb
 //! elements (nodes and edges).
 struct KeyValue
 {
+    KeyValue() = default;
+
+    template<typename K, typename V>
+    KeyValue(const K &k, const V &v) :
+        key{k},
+        value{v}
+    {
+    }
+
     //! Key
     Value key;
 
