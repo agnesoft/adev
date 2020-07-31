@@ -16,8 +16,17 @@ describe('Node',() => {
                         x: 0.2,
                         y: 0.5
                     }
+                },
+                viewSize: {
+                    width: 200,
+                    height: 100
                 }
-            }
+            },
+            computed: {
+                node_size() {
+                    return "2.4";
+                }
+              }
           });
     })
     it('renders node id',() => {
@@ -25,7 +34,7 @@ describe('Node',() => {
     })
     it('renders node in the correct position', () => {
         let style = wrapper.attributes().style;
-        expect(style).toContain('top: 50%');
-        expect(style).toContain('left: 20%');
+        expect(style).toContain('top: calc(50px - 1.2rem)');
+        expect(style).toContain('left: calc(40px - 1.2rem)');
     })
 })

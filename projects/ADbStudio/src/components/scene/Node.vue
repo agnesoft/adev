@@ -23,11 +23,11 @@ export default {
         },
         top_pos: function(){
             let pos = this.params.coordinates.y*this.viewSize.height;
-            return 'calc('+(pos).toString()+"px - "+(this.node_size/2).toString()+"rem )";
+            return 'calc('+(pos).toString()+"px - "+(this.node_size/2).toString()+"rem)";
         },
         left_pos: function(){
             let pos = this.params.coordinates.x*this.viewSize.width;
-            return 'calc('+(pos).toString()+"px - "+(this.node_size/2).toString()+"rem )";
+            return 'calc('+(pos).toString()+"px - "+(this.node_size/2).toString()+"rem)";
         },
         node_size: function(){
             return "2.4";

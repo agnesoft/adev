@@ -43,16 +43,17 @@ export default {
     .scene{
         position: relative;
         display: grid;
-        grid-template-columns: 1fr 12rem;
+        grid-template-columns: 1fr;
         grid-template-rows: max-content minmax(max-content,1fr);
         grid-template-areas: 
-            'command search'
-            'view sidepanel'
+            'command'
+            'view'
             ;
     }
     .command-form{
         grid-area: command;
         display: flex;
+        max-width: 80rem;
     }
     .command{
         flex-grow: 2;
@@ -60,7 +61,6 @@ export default {
     }
     .adb-view{
         grid-area: view;
-        position: absolute;
     }
     .search-field{
         grid-area: search;

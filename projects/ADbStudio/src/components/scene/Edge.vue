@@ -1,6 +1,8 @@
 <template>
     <div class="edge" :style="'--top_pos:'+ top_pos+'; --left_pos:'+ left_pos+'; --length:'+ length+'; --angle:'+ angle">
-        {{ params.id }}
+        <div class="content">
+            {{ params.id }}
+        </div>
     </div>
 </template>
 
@@ -39,13 +41,18 @@ export default {
 
 <style scoped>
     .edge{
-        border: 1px solid var(--secondary-color);
+        border: 2px solid var(--secondary-color);
         width:  var(--length); 
         text-align: center;
         height: 0px; 
         transform: rotate(var(--angle));
         position: absolute; 
         top: var(--top_pos); 
-        left: var(--left_pos); 
+        left: var(--left_pos);
+        cursor: pointer;
+        transition: box-shadow var(--transition-ease); 
+    }
+    .edge:hover{
+        box-shadow:  0 0 3px var(--primary-color), 2px 2px 5px var(--dark-color);
     }
 </style>
