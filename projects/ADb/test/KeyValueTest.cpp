@@ -16,7 +16,6 @@
 
 #include <catch2/catch.hpp>
 
-#include <string>
 #include <type_traits>
 #include <vector>
 
@@ -30,6 +29,35 @@ TEST_CASE("[adb::KeyValue]")
     REQUIRE(std::is_copy_assignable_v<adb::KeyValue>);
     REQUIRE(std::is_nothrow_move_assignable_v<adb::KeyValue>);
     REQUIRE(std::is_nothrow_destructible_v<adb::KeyValue>);
+}
+
+TEST_CASE("KeyValue() [adb::KeyValue]")
+{
+    REQUIRE_NOTHROW(adb::KeyValue{});
+}
+
+TEST_CASE("KeyValue(const KeyT &key, const ValueT &value) [adb::KeyValue]")
+{
+    REQUIRE_NOTHROW(adb::KeyValue{"id", 3});
+    REQUIRE_NOTHROW(adb::KeyValue{1, 2});
+    REQUIRE_NOTHROW(adb::KeyValue{"key", "value"});
+    REQUIRE_NOTHROW(adb::KeyValue{"a very long key", "even longer value with lots of characters"});
+}
+
+TEST_CASE("key() const noexcept -> const Value & [adb::KeyValue]")
+{
+    REQUIRE_NOTHROW(adb::KeyValue{"id", 3}.key() == adb::Value{"id"});
+    REQUIRE_NOTHROW(adb::KeyValue{1, 2}.key() == adb::Value{1});
+    REQUIRE_NOTHROW(adb::KeyValue{"key", "value"}.key() == adb::Value{"key"});
+    REQUIRE_NOTHROW(adb::KeyValue{"a very long key", "even longer value with lots of characters"}.key() == adb::Value{"a very long key"});
+}
+
+TEST_CASE("value() const noexcept -> const Value & [adb::KeyValue]")
+{
+    REQUIRE_NOTHROW(adb::KeyValue{"id", 3}.value() == adb::Value{3});
+    REQUIRE_NOTHROW(adb::KeyValue{1, 2}.value() == adb::Value{2});
+    REQUIRE_NOTHROW(adb::KeyValue{"key", "value"}.value() == adb::Value{"value"});
+    REQUIRE_NOTHROW(adb::KeyValue{"a very long key", "even longer value with lots of characters"}.value() == adb::Value{"even longer value with lots of characters"});
 }
 
 TEST_CASE("operator==(const KeyValue &left, const KeyValue &right) -> bool [adb::KeyValue]")
@@ -63,6 +91,38 @@ TEST_CASE("operator!=(const KeyValue &left, const KeyValue &right) -> bool [adb:
         REQUIRE(adb::KeyValue{} != adb::KeyValue{adb::Value{"Hi"}, adb::Value{}});
         REQUIRE(adb::KeyValue{adb::Value{"Identifier"}, adb::Value{1}} != adb::KeyValue{adb::Value{"Identifier"}, adb::Value{2}});
         REQUIRE(adb::KeyValue{adb::Value{"Message"}, adb::Value{"Hello, World!"}} != adb::KeyValue{adb::Value{"Text"}, adb::Value{"Hello, World!"}});
+    }
+}
+
+TEST_CASE("adb::KeyValue [examples]")
+{
+    SECTION("[verbose]")
+    {
+        // clang-format off
+        //! [[Verbose]]
+adb::KeyValue keyValue{adb::Value{"Key"}, adb::Value{"Value"}};
+        //! [[Verbose]]
+        // clang-format on
+    }
+
+    SECTION("[brief]")
+    {
+        // clang-format off
+        //! [[Brief]]
+adb::KeyValue keyValue{"Key", "Value"};
+        //! [[Brief]]
+        // clang-format on
+    }
+
+    SECTION("[vector]")
+    {
+        // clang-format off
+        //! [[Vector]]
+std::vector<adb::KeyValue> keyValues = {{"Key", "Value"},
+                                        {1, 2},
+                                        {"Id", 4}};
+        //! [[Vector]]
+        // clang-format on
     }
 }
 }

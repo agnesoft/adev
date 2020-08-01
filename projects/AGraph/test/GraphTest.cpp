@@ -132,7 +132,7 @@ namespace graphtest
 {
 TEST_CASE("[agraph::Graph]")
 {
-#if defined(MSVC) && !defined(DEBUG)
+#if defined(_MSC_VER) && !defined(_DEBUG)
     REQUIRE(std::is_standard_layout_v<agraph::Graph>);
 #endif
     REQUIRE(std::is_default_constructible_v<agraph::Graph>);

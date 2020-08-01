@@ -89,7 +89,7 @@ namespace dataindexmaptest
 {
 TEST_CASE("[acore::DataIndexMap]")
 {
-#if defined(MSVC) && !defined(DEBUG)
+#if defined(_MSC_VER) && !defined(_DEBUG)
     REQUIRE(std::is_standard_layout_v<acore::DataIndexMap>);
 #endif
     REQUIRE(std::is_default_constructible_v<acore::DataIndexMap>);
@@ -539,7 +539,7 @@ map.insert(2, 3, 4);
 
 const acore::size_type value1 = map.value(1, 2); //== 3
         //! [[Usage]]
-        // clang-format on;
+        // clang-format on
         REQUIRE(value1 == 3);
     }
 }

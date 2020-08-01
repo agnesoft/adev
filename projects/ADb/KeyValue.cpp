@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_ADB_HPP
-#define ADB_ADB_HPP
+#include "pch.hpp"
 
-#include "ADb/Element.hpp"
-#include "ADb/KeyValue.hpp"
-#include "ADb/Value.hpp"
+#include "KeyValue.hpp"
 
-#endif
+namespace adb
+{
+}
