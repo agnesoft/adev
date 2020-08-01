@@ -30,7 +30,7 @@ export default {
     --light-color:#fff4e3;
     --secondary-color:#ac3f21;
     --light-primary-color: #ffcdab;
-    --light-grey: #DDD;
+    --light-grey: #ececec;
 
     --primary-font: 'Helvetica', 'Arial', sans-serif;
 
