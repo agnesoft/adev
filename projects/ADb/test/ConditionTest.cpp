@@ -94,12 +94,17 @@ TEST_CASE("Condition(Data data) noexcept [adb::Condition]")
     REQUIRE(noexcept(adb::Condition{adb::Condition::FromCount{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Id{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Ids{}}));
-    REQUIRE(noexcept(adb::Condition{adb::Condition::Key{}}));
+
+    adb::Condition::Key keyData;
+    REQUIRE(noexcept(adb::Condition{std::move(keyData)}));
+
     REQUIRE(noexcept(adb::Condition{adb::Condition::Node{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Not{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Or{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::ToCount{}}));
-    REQUIRE(noexcept(adb::Condition{adb::Condition::Value{}}));
+
+    adb::Condition::Value valueData;
+    REQUIRE(noexcept(adb::Condition{std::move(valueData)}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Where{}}));
 
     REQUIRE_NOTHROW(adb::Condition{adb::Condition::And{}});
