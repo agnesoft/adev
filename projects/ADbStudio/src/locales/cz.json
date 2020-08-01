@@ -1,5 +1,6 @@
 {
   "message": "ahoj i18n !!",
   "run": "Spustit",
-  "write-command": "Napište příkaz"
+  "write-command": "Napište příkaz",
+  "reset-view": "Resetovat pohled"
 }
