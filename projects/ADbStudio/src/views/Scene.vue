@@ -2,16 +2,16 @@
     <div class="scene">
         <form class="command-form" @submit.prevent="sendCommand">
             <textarea class="command" v-model.trim="command" :placeholder="$t('write-command')" rows="1" />
-            <input type="submit" :value="$t('run')" class="submit-button">
+            <input type="submit" :value="$t('run')" class="submit-button btn btn-primary">
         </form>
         <div class="view-container" @wheel.prevent="onMouseWheel" @dragover.prevent @drop="onDrop" @dragstart="onDragStart">
             <ADbView id="adb-view" :zoom="zoom" draggable="true" :style="viewStyle"/>
         </div>
         <SearchField id="search-field" />
         <div class="controls">
-            <button @click="resetView">{{$t('reset-view')}}</button>
-            <button @click="zoomPlus">+</button>
-            <button @click="zoomMinus">-</button>
+            <BaseButton class="btn-default" @click="resetView">{{$t('reset-view')}}</BaseButton>
+            <BaseButton class="btn-default" @click="zoomPlus">+</BaseButton>
+            <BaseButton class="btn-default" @click="zoomMinus">-</BaseButton>
         </div>
     </div>
 </template>
@@ -116,6 +116,9 @@ export default {
     .command{
         flex-grow: 2;
         resize: vertical;
+        margin-right: 0.2rem;
+        border: 1px solid #DDD;
+        font: var(--primary-font);
         /* max-width: 50rem */
     }
     .view-container{
@@ -131,5 +134,8 @@ export default {
     }
     .controls{
         grid-area: controls;
+    }
+    .controls>.btn{
+        margin-right: 0.2rem;
     }
 </style>

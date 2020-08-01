@@ -16,13 +16,11 @@ const router = new VueRouter({routes: [
 
 // import BaseSelect from "@/components/base/BaseSelect.vue";
 // import BaseIconSvg from "@/components/base/BaseIconSvg.vue";
-// import BaseButton from "@/components/base/BaseButton.vue";
-// import BaseMenu from "@/components/base/BaseMenu.vue";
+ import BaseButton from "@/components/base/BaseButton.vue";
 
 // localVue.component("BaseSelect", BaseSelect);
 // localVue.component("BaseIconSvg", BaseIconSvg);
-// localVue.component("BaseButton", BaseButton);
-// localVue.component("BaseMenu", BaseMenu);
+ localVue.component("BaseButton", BaseButton);
 
 // Create new i18n instance
 module.exports = {
