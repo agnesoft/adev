@@ -115,6 +115,7 @@ export default {
     }
     .command{
         flex-grow: 2;
+        resize: vertical;
         /* max-width: 50rem */
     }
     .view-container{
