@@ -34,7 +34,6 @@ public:
     struct Count
     {
         acore::size_type count = 0;
-
         CountComparisonOperator compare = [](acore::size_type left, acore::size_type right) {
             return left == right;
         };
@@ -105,7 +104,6 @@ public:
 
     struct ToCount : Count
     {
-        using Count::Count;
     };
 
     struct Where
