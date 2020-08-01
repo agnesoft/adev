@@ -95,18 +95,22 @@ TEST_CASE("Condition(Data data) noexcept [adb::Condition]")
     REQUIRE(noexcept(adb::Condition{adb::Condition::Id{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Ids{}}));
 
-    adb::Condition::Key keyData;
-    REQUIRE(noexcept(adb::Condition{std::move(keyData)}));
+    {
+        adb::Condition::Key keyData;
+        REQUIRE(noexcept(adb::Condition{std::move(keyData)})); //NOLINT(hicpp-invalid-access-moved, bugprone-use-after-move)
+    }
 
     REQUIRE(noexcept(adb::Condition{adb::Condition::Node{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Not{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::Or{}}));
     REQUIRE(noexcept(adb::Condition{adb::Condition::ToCount{}}));
 
-    adb::Condition::Value valueData;
-    REQUIRE(noexcept(adb::Condition{std::move(valueData)}));
-    REQUIRE(noexcept(adb::Condition{adb::Condition::Where{}}));
+    {
+        adb::Condition::Value valueData;
+        REQUIRE(noexcept(adb::Condition{std::move(valueData)})); //NOLINT(hicpp-invalid-access-moved, bugprone-use-after-move)
+    }
 
+    REQUIRE(noexcept(adb::Condition{adb::Condition::Where{}}));
     REQUIRE_NOTHROW(adb::Condition{adb::Condition::And{}});
     REQUIRE_NOTHROW(adb::Condition{adb::Condition::BeyondId{}});
     REQUIRE_NOTHROW(adb::Condition{adb::Condition::BeyondIds{}});
