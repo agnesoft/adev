@@ -34,7 +34,7 @@ export default {
 
     --primary-font: 'Helvetica', 'Arial', sans-serif;
 
-    --button-size: 1.8rem;
+    --button-size: 2.4rem;
     --gradient-underline: linear-gradient(90deg, transparent 0%,var(--light-color) 30%,var(--light-color) 70%,transparent 100%);
 
     --border-radius: 0.4rem;

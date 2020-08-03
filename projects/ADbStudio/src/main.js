@@ -9,7 +9,7 @@ import camelCase from 'lodash/camelCase'
 
 Vue.config.productionTip = false
 
-//----------Component Registration--------------
+//----------Base Components Registration--------------
 const requireComponent = require.context(
     // The relative path of the components folder
     './components/base',
