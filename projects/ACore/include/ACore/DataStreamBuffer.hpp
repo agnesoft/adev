@@ -30,8 +30,8 @@ class DataStreamBuffer
 public:
     DataStreamBuffer() = default;
 
-    explicit DataStreamBuffer(std::vector<char> data) :
-        mData(std::move(data))
+    explicit DataStreamBuffer(std::vector<char> data) noexcept :
+        mData{std::move(data)}
     {
     }
 

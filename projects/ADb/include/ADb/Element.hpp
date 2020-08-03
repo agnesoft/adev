@@ -43,7 +43,7 @@ public:
 
     //! Constructs the Element with \a index and
     //! \a data.
-    Element(acore::size_type index, std::vector<KeyValue> data) :
+    Element(acore::size_type index, std::vector<KeyValue> data) noexcept :
         mIndex{index},
         mData{std::move(data)}
     {

@@ -16,6 +16,10 @@
 
 #include <catch2/catch.hpp>
 
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 namespace elementtest
 {
 TEST_CASE("[adb::Element]")
@@ -41,9 +45,11 @@ TEST_CASE("Element(acore::size_type index) [adb::Element]")
     REQUIRE_NOTHROW(adb::Element{acore::size_type{1}});
 }
 
-TEST_CASE("Element(acore::size_type index, std::vector<KeyValue> data) [adb::Element]")
+TEST_CASE("Element(acore::size_type index, std::vector<KeyValue> data) noexcept [adb::Element]")
 {
-    REQUIRE_NOTHROW(adb::Element{acore::size_type{1}, {adb::KeyValue{adb::Value{"Hello"}, adb::Value{"World"}}}});
+    std::vector<adb::KeyValue> data{adb::KeyValue{adb::Value{"Hello"}, adb::Value{"World"}}};
+    REQUIRE(noexcept(adb::Element{acore::size_type{1}, std::move(data)})); //NOLINT(hicpp-invalid-access-moved, bugprone-use-after-move)
+    REQUIRE_NOTHROW(adb::Element{acore::size_type{1}, std::move(data)}); //NOLINT(hicpp-invalid-access-moved, bugprone-use-after-move)
 }
 
 TEST_CASE("data() const noexcept -> const std::vector<KeyValue> & [adb::Element]")

@@ -17,10 +17,11 @@
 #include <catch2/catch.hpp>
 
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
-namespace valutest
+namespace valuetest
 {
 TEST_CASE("[adb::Value]")
 {
