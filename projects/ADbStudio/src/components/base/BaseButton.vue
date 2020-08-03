@@ -66,5 +66,4 @@ export default {
         --shadow:  none; 
     }
 
-    
 </style>

@@ -40,7 +40,7 @@ public:
     //! Constructs the stream with \a data as
     //! the internal buffer.
     explicit DataStream(std::vector<char> data) :
-        DataStreamBase<DataStreamBuffer>(std::move(data))
+        DataStreamBase<DataStreamBuffer>{std::move(data)}
     {
     }
 };
