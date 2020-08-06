@@ -220,11 +220,13 @@ add_library(ADb STATIC projects/ADb/include/ADb.hpp
                        projects/ADb/include/ADb/Condition.hpp
                        projects/ADb/include/ADb/Element.hpp
                        projects/ADb/include/ADb/KeyValue.hpp
+                       projects/ADb/include/ADb/Query.hpp
                        projects/ADb/include/ADb/Result.hpp
                        projects/ADb/include/ADb/Value.hpp
                        projects/ADb/Condition.cpp
                        projects/ADb/Element.cpp
                        projects/ADb/KeyValue.cpp
+                       projects/ADb/Query.cpp
                        projects/ADb/Result.cpp
                        projects/ADb/Value.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
@@ -238,6 +240,7 @@ target_include_directories(ADb PUBLIC projects/ADb/include)
 add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
                        projects/ADb/test/ElementTest.cpp
                        projects/ADb/test/KeyValueTest.cpp
+                       projects/ADb/test/QueryTest.cpp
                        projects/ADb/test/ResultTest.cpp
                        projects/ADb/test/ValueTest.cpp)
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
