@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import Scene from '@/views/Scene.vue';
 import SearchField from "@/components/scene/SearchField";
 import ADbView from "@/components/scene/ADbView";
+import LeftPanel from "@/components/scene/LeftPanel";
 import scene_store from '../../../src/store/modules/scene'
 //import NodeInfo from "@/components/scene/NodeInfo";
 
@@ -40,6 +41,7 @@ describe('Scene',() => {
         expect(wrapper.find(".command").exists()).toBe(true);
         expect(wrapper.findComponent(SearchField).exists()).toBe(true);
         expect(wrapper.findComponent(ADbView).exists()).toBe(true);
+        expect(wrapper.findComponent(LeftPanel).exists()).toBe(true);
     })
     it('sends command, fetches data and clear the input', async () => {
         wrapper.setData({command: 'test command'});

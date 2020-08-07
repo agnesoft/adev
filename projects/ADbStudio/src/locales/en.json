@@ -3,5 +3,8 @@
   "run": "Execute",
   "write-command": "Write command",
   "reset-view": "Reset view",
-  "search-element": "Search element"
+  "search-element": "Search element",
+  "list-of-nodes": "List of Nodes",
+  "list-of-edges": "List of Edges",
+  "raw-data": "Raw Data"
 }

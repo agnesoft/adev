@@ -2,12 +2,23 @@
 
 const state = {
     nodes: [],
-    edges: []
+    edges: [],
+    data: ''
 };
 
 const getters = {
     getNodes: state => state.nodes,
-    getEdges: state => state.edges
+    getEdges: state => state.edges,
+    getData: state => { 
+        let data = {};
+        if(state.nodes.length > 0){
+            data.nodes = state.nodes;
+        }
+        if(state.edges.length > 0){
+            data.edges = state.edges;
+        }
+        return data
+    }
 };
 
 const actions = {
@@ -24,6 +35,7 @@ const actions = {
 
 const mutations = {
     setData: (state,data) => {
+        state.data = data;
         if(typeof data.nodes !== undefined){
             state.nodes = data.nodes;
         } else {
