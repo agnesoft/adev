@@ -1,6 +1,7 @@
 {
   "message": "hello i18n !!",
-  "run": "Run",
+  "run": "Execute",
   "write-command": "Write command",
-  "reset-view": "Reset view"
+  "reset-view": "Reset view",
+  "search-element": "Search element"
 }

@@ -26,16 +26,17 @@ export default {
         font-size: 1rem;
         border: none;
         border-radius: 0.2rem;
-        -webkit-box-shadow:  var(--dark-color) 1px 1px 2px 0px;
-        -moz-box-shadow:  var(--dark-color) 1px 1px 2px 0px;
-        box-shadow:  var(--dark-color) 1px 1px 2px 0px;
+        --shadow: var(--dark-color) 1px 1px 2px 0px;
+        -webkit-box-shadow:  var(--shadow);
+        -moz-box-shadow:  var(--shadow);
+        box-shadow:  var(--shadow);
     }
     .btn-primary{
         color: var(--light-color);
         background-color: var(--primary-color);
         transition: var(--transition-opacity);
     }
-    .btn-primary:hover{
+    .btn-primary:hover, .btn-light:hover{
         opacity: 0.7;
     }
     .btn-default{
@@ -46,4 +47,23 @@ export default {
     .btn-default:hover{
         filter: brightness(85%)
     }
+
+    .btn-rounded{
+        border-radius: 50%;
+    }
+    .btn-flat{        
+        --shadow:  none;   
+         border: solid var(--border-width) var(--light-color);
+        background-color: var(--primary-color);
+        color: var(--light-color);
+        padding: calc(var(--button-size) * 0.1);
+        font-size: calc(var(--button-size) * 0.6);
+        line-height: calc(var(--button-size) * 0.6);
+    }
+    .btn-light{
+        --icon-color: var(--primary-color);
+        background: none;
+        --shadow:  none; 
+    }
+
 </style>

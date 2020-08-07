@@ -99,12 +99,12 @@ export default {
     .scene{
         position: relative;
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr max-content;
         grid-template-rows: max-content minmax(max-content,1fr) max-content;
         grid-template-areas: 
-            'command'
-            'view'
-            'controls'
+            'command command'
+            'view search'
+            'controls controls '
             ;
         grid-gap: 0.4rem;
     }
@@ -122,12 +122,14 @@ export default {
         /* max-width: 50rem */
     }
     .view-container{
-        grid-area: view;
+        grid-area: view / view / view / search;
         overflow: hidden;
         position: relative;
     }
     .search-field{
         grid-area: search;
+        z-index: 1;
+
     }
     #adb-view{
         position: absolute;

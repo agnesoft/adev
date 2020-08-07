@@ -2,5 +2,6 @@
   "message": "ahoj i18n !!",
   "run": "Spustit",
   "write-command": "Napište příkaz",
-  "reset-view": "Resetovat pohled"
+  "reset-view": "Resetovat pohled",
+  "search-element": "Vyhledat prvek"
 }
