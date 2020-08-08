@@ -3,5 +3,8 @@
   "run": "Spustit",
   "write-command": "Napište příkaz",
   "reset-view": "Resetovat pohled",
-  "search-element": "Vyhledat prvek"
+  "search-element": "Vyhledat prvek",
+  "list-of-nodes": "Seznam uzlů",
+  "list-of-edges": "Seznam hran",
+  "raw-data": "Surová data"
 }

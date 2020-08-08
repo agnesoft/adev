@@ -48,8 +48,11 @@ export default {
         filter: brightness(85%)
     }
 
-    .btn-rounded{
+    .btn-circle{
         border-radius: 50%;
+        padding: calc(var(--button-size) * 0.15);
+        width: var(--button-size);
+        height: var(--button-size);
     }
     .btn-flat{        
         --shadow:  none;   

@@ -4,6 +4,7 @@
             <textarea class="command" v-model.trim="command" :placeholder="$t('write-command')" rows="1" />
             <input type="submit" :value="$t('run')" class="submit-button btn btn-primary">
         </form>
+        <LeftPanel></LeftPanel>
         <div class="view-container" @wheel.prevent="onMouseWheel" @dragover.prevent @drop="onDrop" @dragstart="onDragStart">
             <ADbView id="adb-view" :zoom="zoom" draggable="true" :style="viewStyle"/>
         </div>
@@ -19,13 +20,16 @@
 <script>
 import SearchField from '@/components/scene/SearchField.vue'
 import ADbView from '@/components/scene/ADbView.vue'
+import LeftPanel from '@/components/scene/LeftPanel.vue'
+
 import { mapActions } from 'vuex'
 
 export default {
     name: "Scene",
     components: {
         SearchField,
-        ADbView
+        ADbView,
+        LeftPanel
     },
     data(){
         return {
@@ -38,7 +42,7 @@ export default {
             startDragCoordinates: {
                 x: 0,
                 y: 0
-            }
+            },
         }
     },
     methods: {
@@ -99,12 +103,12 @@ export default {
     .scene{
         position: relative;
         display: grid;
-        grid-template-columns: 1fr max-content;
-        grid-template-rows: max-content minmax(max-content,1fr) max-content;
+        grid-template-columns: max-content 1fr max-content;
+        grid-template-rows: max-content 1fr max-content;
         grid-template-areas: 
-            'command command'
-            'view search'
-            'controls controls '
+            'command command command'
+            'leftpanel view search'
+            'leftpanel controls controls '
             ;
         grid-gap: 0.4rem;
     }
@@ -139,5 +143,8 @@ export default {
     }
     .controls>.btn{
         margin-right: 0.2rem;
+    }
+    .left-panel{
+        grid-area: leftpanel;
     }
 </style>
