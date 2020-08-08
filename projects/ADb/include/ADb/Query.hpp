@@ -18,9 +18,11 @@
 #include "ADbModule.hpp"
 #include "Condition.hpp"
 #include "KeyValue.hpp"
+#include "QueryData.hpp"
 #include "Value.hpp"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -31,7 +33,7 @@ namespace adb
 //! Queries are constructed using fluent interface
 //! in order to provide semantic correctness (not
 //! necessarily data correctness) and readability
-//! to writing queries.
+//! to writing queries (unlike plain text queries).
 //!
 //! To start constructing a query use one of the three
 //! basic standalone functions in the namespace adb:
@@ -42,75 +44,41 @@ namespace adb
 //!
 //! When using IDE you will experience essentially
 //! a guided construction of your query.
+//!
+//! The Query supports both nested queries and placeholder
+//! values. Nested queries are passed in during the
+//! construction of the query in place of values where
+//! it makes sense (e.g. list of element ids, list
+//! of values etc.). Placeholders can be used in
+//! essentially the same places and must be later
+//! bound using bind() method on the resulting query.
 class Query
 {
 public:
-    //! \cond IMPLEMENTAION_DETAIL
     class Insert;
 
-    struct SubQuery
+    //! Binds a value of a placehodler associated
+    //! with \a name to \a value. Note that if the
+    //! \a value 's type does not match the type
+    //! expected by the placeholding value an exception
+    //! is thrown.
+    auto bind(const char *name, PlaceholderValue value) -> void
     {
-        SubQuery() = default;
+        auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const Placeholder &placeholder) {
+            return placeholder.name == name;
+        });
 
-        SubQuery(std::unique_ptr<Query> subQuery) :
-            query{std::move(subQuery)}
+        if (it == mPlaceholders.end())
         {
+            throw acore::Exception{} << "Placeholder '" << name << "' not found.";
         }
 
-        SubQuery(const SubQuery &other)
-        {
-            *this = other;
-        }
-
-        SubQuery(SubQuery &&other) noexcept = default;
-        ~SubQuery() = default;
-
-        auto operator=(const SubQuery &other) -> SubQuery &
-        {
-            query = std::make_unique<Query>(*other.query);
-            return *this;
-        }
-
-        auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
-
-        std::unique_ptr<Query> query;
-    };
-
-    struct InsertNodeQuery : SubQuery
-    {
-    };
-
-    struct InsertNodeValues
-    {
-        std::vector<adb::KeyValue> values;
-    };
-
-    struct InsertNodesCount
-    {
-        acore::size_type count = 0;
-    };
-
-    struct InsertNodesQuery : SubQuery
-    {
-    };
-
-    struct InsertNodesValues
-    {
-        std::vector<std::vector<adb::KeyValue>> values;
-    };
-    //! \endcond
-
-    //! Alias for all the possible query data types.
-    using Data = std::variant<std::monostate,
-                              InsertNodeQuery,
-                              InsertNodeValues,
-                              InsertNodesCount,
-                              InsertNodesQuery,
-                              InsertNodesValues>;
+        it->bind(std::move(value), &mData);
+    }
 
     //! Returns the data of the query. Used by the
     //! database to access the query's data to execute.
-    [[nodiscard]] auto data() const noexcept -> const Data &
+    [[nodiscard]] auto data() const noexcept -> const QueryData &
     {
         return mData;
     }
@@ -130,10 +98,10 @@ private:
     {
     }
 
-    Data mData;
+    QueryData mData;
+    std::vector<Placeholder> mPlaceholders;
 };
 
-//! \cond IMPLEMENTAION_DETAIL
 class Query::Insert
 {
 public:
@@ -152,8 +120,17 @@ public:
         return Query{InsertNodeQuery{std::make_unique<Query>(std::move(query))}};
     }
 
-    [[nodiscard]] auto
-        nodes(acore::size_type count) -> Query
+    [[nodiscard]] auto node(const char *placeholderName) -> Query
+    {
+        Query query{InsertNodeValues{}};
+        const auto handler = [](PlaceholderValue &&value, QueryData *data) {
+            std::get<InsertNodeValues>(*data).values = std::move(std::get<std::vector<adb::KeyValue>>(value));
+        };
+        query.mPlaceholders.emplace_back(Placeholder{placeholderName, handler});
+        return query;
+    }
+
+    [[nodiscard]] auto nodes(acore::size_type count) -> Query
     {
         return Query{InsertNodesCount{count}};
     }
@@ -173,7 +150,6 @@ public:
 {
     return Query::Insert{};
 }
-//! \endcond
 }
 
 #endif
