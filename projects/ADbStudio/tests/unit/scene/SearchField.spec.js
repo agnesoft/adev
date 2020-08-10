@@ -31,6 +31,5 @@ describe('SearchField',() => {
         await  wrapper.find(".btn").trigger('click');
         expect(wrapper.emitted().search).toBeTruthy();
         expect(wrapper.emitted().search[0]).toEqual(['foo']);
-        expect(wrapper.find("input").exists()).toBe(false);
     });
 })

@@ -1,10 +1,12 @@
 {
-  "message": "hello i18n !!",
-  "run": "Execute",
-  "write-command": "Write command",
-  "reset-view": "Reset view",
-  "search-element": "Search element",
-  "list-of-nodes": "List of Nodes",
+  "element-not-found": "Element was not found.",
   "list-of-edges": "List of Edges",
-  "raw-data": "Raw Data"
+  "list-of-nodes": "List of Nodes",
+  "message": "hello i18n !!",
+  "raw-data": "Raw Data",
+  "reset-view": "Reset view",
+  "run": "Execute",
+  "search-element": "Search element",
+  "searched-element-word": "Searched element: {word}",
+  "write-command": "Write command"
 }

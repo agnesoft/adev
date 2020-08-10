@@ -2,7 +2,7 @@
     <div class="search-field" :class="{opened: showContent}">
         <SlideXTransition :opened="showContent">
             <form class="search-form" @submit.prevent="onSubmit">
-                <input type="text" class="search-input" v-model.trim="search" :placeholder="$t('search-element')"/>
+                <input type="text" ref="search_input" class="search-input" v-model.trim="search" :placeholder="$t('search-element')"/>
             </form>
         </SlideXTransition>
         <BaseButton class="btn-light" @click="handleClick">
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import SlideXTransition from "../transitions/SlideXTransition";
+import SlideXTransition from "@/components/transitions/SlideXTransition";
 export default {
     name: "SearchField",
     components: {
@@ -30,8 +30,16 @@ export default {
         handleClick(){
             if(this.search != ''){
                 this.onSubmit();
+                return;
             } 
             this.showContent = !this.showContent; 
+            if(this.showContent){
+                let component = this;
+                this.$nextTick()
+                .then(function () {
+                    component.$refs.search_input.focus();
+                })
+            }
         },
         // handleFocusOut(){
         //     this.showContent = false;
@@ -40,7 +48,7 @@ export default {
             this.$emit('search',this.search);
             this.search = ''
         }
-    }
+    },
 }
 </script>
 

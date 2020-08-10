@@ -42,6 +42,7 @@ export default {
 <style scoped>
     .edge{
         border: 2px solid var(--secondary-color);
+        color: var(--dark-color);
         width:  var(--length); 
         text-align: center;
         height: 0px; 
@@ -50,9 +51,17 @@ export default {
         top: var(--top_pos); 
         left: var(--left_pos);
         cursor: pointer;
-        transition: box-shadow var(--transition-ease); 
+        transition: all var(--transition-ease); 
     }
     .edge:hover{
         box-shadow:  0 0 3px var(--primary-color), 2px 2px 5px var(--dark-color);
+    }
+    .search-mode .edge{
+        border-color: #f2ede8;
+        color: #c4b1a1;
+    }
+    .edge.selected{
+        border: 2px solid var(--secondary-color);
+        color: var(--dark-color);
     }
 </style>

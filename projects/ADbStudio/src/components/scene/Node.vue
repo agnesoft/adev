@@ -47,11 +47,19 @@ export default {
         line-height:  var(--node-size);
         text-align: center;
         cursor: pointer;
-        transition: box-shadow var(--transition-ease);
+        transition: all var(--transition-ease);
         font-weight: 700;
     }
     
     .node:hover{
         box-shadow:  0 0 3px var(--primary-color), 2px 2px 5px var(--dark-color);
+    }
+    .search-mode .node{
+        background-color: #f2ede8;
+        color: #c4b1a1;
+    }
+    .node.selected{
+        background-color: var(--primary-color);
+        color: var(--dark-color);
     }
 </style>

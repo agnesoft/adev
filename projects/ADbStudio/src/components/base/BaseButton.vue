@@ -64,6 +64,7 @@ export default {
         line-height: calc(var(--button-size) * 0.6);
     }
     .btn-light{
+        transition: var(--transition-opacity);
         --icon-color: var(--primary-color);
         background: none;
         --shadow:  none; 

@@ -3,7 +3,7 @@
 const state = {
     nodes: [],
     edges: [],
-    data: ''
+    searchError: -1,
 };
 
 const getters = {
@@ -18,7 +18,8 @@ const getters = {
             data.edges = state.edges;
         }
         return data
-    }
+    },
+    getSearchError: state => state.searchError,
 };
 
 const actions = {
@@ -46,6 +47,29 @@ const mutations = {
         } else {
             state.edges = [];
         }
+    },
+    search(state,word) {
+        state.searchError = 1;
+        state.edges.map(edge => edge.selected = false);
+        state.nodes.map(node => node.selected = false);
+        if(isNaN(word) || word == 0){
+            return false;
+        }
+        if(word < 0){
+            let edge = state.edges.find((edge) => edge.id == word);
+            if(edge){
+                state.searchError = 0;
+                edge.selected = true;
+                state.searched = word;
+            }
+        } else if(word > 0) {
+            let node = state.nodes.find((node) => node.id == word);
+            if(node){
+                state.searchError = 0;
+                node.selected = true;
+                state.searched = word;
+            }
+        } 
     }
 };
 
