@@ -1,7 +1,9 @@
 <template>
-    <div class="adb-view">
-        <Edge v-for="edge in edges" :key="edge.id" :params="edge" :viewSize="viewSize"/>
-        <Node v-for="node in nodes" :key="node.id" :params="node" :viewSize="viewSize"/>
+    <div class="adb-view" :class="{'search-mode': searchedWord !== ''}">
+        <div class="view">
+            <Edge v-for="edge in edges" :key="edge.id" :params="edge" :viewSize="viewSize" :class="{selected: edge.id == searchedWord}"/>
+            <Node v-for="node in nodes" :key="node.id" :params="node" :viewSize="viewSize" :class="{selected: node.id == searchedWord}"/>
+        </div>
     </div>
 </template>
 
@@ -22,6 +24,9 @@ export default {
             viewHeight: 0,
         }
     },
+    props: {
+        searchedWord: String,
+    },
     computed: {
         ...mapGetters({
             nodes: 'scene/getNodes',
@@ -38,7 +43,7 @@ export default {
         onResize() {
             this.viewWidth = document.documentElement.clientWidth;
             this.viewHeight = document.documentElement.clientHeight;
-        },
+        }
     },
     mounted() {
         window.addEventListener('resize', this.onResize)
@@ -58,7 +63,5 @@ export default {
         transform: scale(var(--scale,1)) translate(var(--move-x,0), var(--move-y,0));
         width: 100%;
         height: 100%;
-        background: white;
-        box-shadow: inset  0 0 5px var(--light-color);
     }
 </style>

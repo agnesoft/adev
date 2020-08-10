@@ -17,10 +17,13 @@ const router = new VueRouter({routes: [
 // import BaseSelect from "@/components/base/BaseSelect.vue";
  import BaseIcon from "@/components/base/BaseIcon.vue";
  import BaseButton from "@/components/base/BaseButton.vue";
+ import BaseMessage from "@/components/base/BaseMessage.vue";
 
 // localVue.component("BaseSelect", BaseSelect);
  localVue.component("BaseIcon", BaseIcon);
  localVue.component("BaseButton", BaseButton);
+ localVue.component("BaseMessage", BaseMessage);
+
 
  const scene_state = {
     nodes: [{

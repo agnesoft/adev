@@ -1,10 +1,12 @@
 {
-  "message": "ahoj i18n !!",
-  "run": "Spustit",
-  "write-command": "Napište příkaz",
-  "reset-view": "Resetovat pohled",
-  "search-element": "Vyhledat prvek",
-  "list-of-nodes": "Seznam uzlů",
+  "element-not-found": "Prvek nebyl nalezen.",
   "list-of-edges": "Seznam hran",
-  "raw-data": "Surová data"
+  "list-of-nodes": "Seznam uzlů",
+  "message": "ahoj i18n !!",
+  "raw-data": "Surová data",
+  "reset-view": "Resetovat pohled",
+  "run": "Spustit",
+  "search-element": "Vyhledat prvek",
+  "searched-element-word": "Vyhledán prvek: {word}",
+  "write-command": "Napište příkaz"
 }

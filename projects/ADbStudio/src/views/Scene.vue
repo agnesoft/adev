@@ -6,30 +6,38 @@
         </form>
         <LeftPanel></LeftPanel>
         <div class="view-container" @wheel.prevent="onMouseWheel" @dragover.prevent @drop="onDrop" @dragstart="onDragStart">
-            <ADbView id="adb-view" :zoom="zoom" draggable="true" :style="viewStyle"/>
+            <ADbView id="adb-view" :zoom="zoom" draggable="true" :style="viewStyle" :searchedWord="searchedWord"/>
+            <div class="search-wrap">    
+                <SearchField @search="search"/>          
+                    <BaseMessage class="error" :opened="error === 'search'" @close="error=''">
+                        {{ $t("element-not-found") }}
+                    </BaseMessage> 
+                    <BaseMessage class="info" :opened="searchedWord != ''" @close="resetView">
+                        {{ $t('searched-element-word',{word: searchedWord}) }}
+                    </BaseMessage>
+            </div>
         </div>
-        <SearchField id="search-field" />
         <div class="controls">
-            <BaseButton class="btn-default" @click="resetView">{{$t('reset-view')}}</BaseButton>
-            <BaseButton class="btn-default" @click="zoomPlus">+</BaseButton>
-            <BaseButton class="btn-default" @click="zoomMinus">-</BaseButton>
+            <BaseButton class="btn-default reset" @click="resetView">{{$t('reset-view')}}</BaseButton>
+            <BaseButton class="btn-default plus" @click="zoomPlus">+</BaseButton>
+            <BaseButton class="btn-default minus" @click="zoomMinus">-</BaseButton>
         </div>
     </div>
 </template>
 
 <script>
-import SearchField from '@/components/scene/SearchField.vue'
 import ADbView from '@/components/scene/ADbView.vue'
 import LeftPanel from '@/components/scene/LeftPanel.vue'
+import SearchField from '@/components/scene/SearchField.vue'
 
-import { mapActions } from 'vuex'
+import { mapActions,mapGetters } from 'vuex'
 
 export default {
     name: "Scene",
     components: {
         SearchField,
         ADbView,
-        LeftPanel
+        LeftPanel,
     },
     data(){
         return {
@@ -43,6 +51,8 @@ export default {
                 x: 0,
                 y: 0
             },
+            searchedWord: '',
+            error: '',
         }
     },
     methods: {
@@ -53,6 +63,7 @@ export default {
             if(this.command != ""){
                 this.send_command({command: this.command});
                 this.command = '';
+                this.resetView();
             }
         },
         onMouseWheel(event){
@@ -72,6 +83,11 @@ export default {
             this.zoom = 0;
             this.startDragCoordinates.x = 0;
             this.startDragCoordinates.y = 0;
+            this.resetSearch();
+        },
+        resetSearch(){
+            this.searchedWord = '';
+            this.error = '';
         },
         zoomPlus(){
             this.zoom++;
@@ -79,9 +95,35 @@ export default {
         zoomMinus(){
             this.zoom--;
             this.zoom = this.zoom < -9 ? -9 : this.zoom;
+        },
+        search(word){
+            this.resetView();
+            
+            this.error = "search";
+            this.searchedWord = '';
+            if(isNaN(word) || word == 0){
+                return false;
+            }
+            if(word < 0){
+                let edge = this.edges.find((edge) => edge.id == word);
+                if(edge){
+                    this.searchedWord = word;
+                    this.error = '';
+                }
+            } else if(word > 0) {
+                let node = this.nodes.find((node) => node.id == word);
+                if(node){
+                    this.searchedWord = word;
+                    this.error = '';
+                }
+            } 
         }
     },
     computed: {
+        ...mapGetters({
+            nodes: 'scene/getNodes',
+            edges: 'scene/getEdges',
+        }),
         viewStyle: function(){
             return {
                 "--move-x": this.move.x.toString()+"px",
@@ -103,12 +145,12 @@ export default {
     .scene{
         position: relative;
         display: grid;
-        grid-template-columns: max-content 1fr max-content;
+        grid-template-columns: max-content 1fr;
         grid-template-rows: max-content 1fr max-content;
         grid-template-areas: 
-            'command command command'
-            'leftpanel view search'
-            'leftpanel controls controls '
+            'command command'
+            'leftpanel view'
+            'leftpanel controls '
             ;
         grid-gap: 0.4rem;
     }
@@ -126,14 +168,11 @@ export default {
         /* max-width: 50rem */
     }
     .view-container{
-        grid-area: view / view / view / search;
+        grid-area: view;
         overflow: hidden;
         position: relative;
-    }
-    .search-field{
-        grid-area: search;
-        z-index: 1;
-
+        background: white;
+        box-shadow: inset  0 0 5px var(--light-color);
     }
     #adb-view{
         position: absolute;
@@ -146,5 +185,29 @@ export default {
     }
     .left-panel{
         grid-area: leftpanel;
+    }
+    
+    .search-wrap{
+        position: absolute;
+        right: 0;
+        top: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: max-content max-content;
+        grid-template-areas: 
+            'input'
+            'message'
+            ;
+        grid-gap: 0.4rem;
+        /* flex-direction: column; */
+        padding: 0.4rem;
+        /* align-items: flex-end; */
+    }
+    .search-field{
+        grid-area: input;
+        place-self: center right;
+    }
+    .base-message{
+        grid-area: message;
     }
 </style>
