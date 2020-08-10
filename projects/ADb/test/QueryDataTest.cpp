@@ -14,8 +14,20 @@
 
 #include "pch.hpp"
 
-#include "QueryData.hpp"
+#include <catch2/catch.hpp>
 
-namespace adb
+namespace querydatatest
 {
+TEST_CASE("Query(const Query &other) [adb::Query]")
+{
+    SECTION("[copy with subquery]")
+    {
+        const auto query = adb::insert().nodes(adb::select().count());
+        const auto other{query}; //NOLINT(performance-unnecessary-copy-initialization)
+        auto subQueries = other.subQueries();
+
+        REQUIRE(subQueries.size() == 1);
+        REQUIRE(std::get<adb::InsertNodesCount>(query.data()).count == 0);
+    }
+}
 }

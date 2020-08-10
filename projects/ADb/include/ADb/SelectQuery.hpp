@@ -12,10 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pch.hpp"
-
-#include "QueryData.hpp"
+#ifndef ADB_SELECTQUERY_HPP
+#define ADB_SELECTQUERY_HPP
 
 namespace adb
 {
+class CountQuery;
+class ValuesQuery;
+
+class SelectQuery
+{
+public:
+    [[nodiscard]] auto count() -> CountQuery;
+    [[nodiscard]] auto values() -> ValuesQuery;
+};
 }
+
+#endif

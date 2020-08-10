@@ -12,47 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_QUERYDATA_HPP
-#define ADB_QUERYDATA_HPP
+#ifndef ADB_SUBQUERY_HPP
+#define ADB_SUBQUERY_HPP
 
 #include "ADbModule.hpp"
-#include "KeyValue.hpp"
+#include "Placeholders.hpp"
+#include "QueryData.hpp"
 
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace adb
 {
 //! \cond IMPLEMENTAION_DETAIL
-struct InsertNodeValues
-{
-    std::vector<adb::KeyValue> values;
-};
+class Query;
 
-struct InsertNodesCount
-{
-    acore::size_type count = 0;
-};
+using BindResultFunction = auto (*)(PlaceholderValue &&value, QueryData *data) -> void;
 
-struct InsertNodesValues
+struct SubQuery
 {
-    std::vector<std::vector<adb::KeyValue>> values;
-};
+    SubQuery() = default;
+    SubQuery(Query &&subQuery, BindResultFunction bindFunction);
+    SubQuery(const SubQuery &other);
+    SubQuery(SubQuery &&other) noexcept = default;
+    ~SubQuery();
 
-struct SelectData
-{
+    auto operator=(const SubQuery &other) -> SubQuery &;
+    auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
+
+    std::unique_ptr<Query> query;
+    BindResultFunction bind;
 };
 //! \endcond
-
-//! \relates adb::Query
-//! Represents the possible internal data types
-//! of the database query.
-using QueryData = std::variant<InsertNodeValues,
-                               InsertNodesCount,
-                               InsertNodesValues,
-                               SelectData>;
 }
-
 #endif

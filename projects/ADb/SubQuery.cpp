@@ -14,8 +14,27 @@
 
 #include "pch.hpp"
 
-#include "QueryData.hpp"
+#include "Query.hpp"
+#include "SubQuery.hpp"
 
 namespace adb
 {
+SubQuery::~SubQuery() = default;
+
+SubQuery::SubQuery(Query &&subQuery, BindResultFunction bindFunction) :
+    query{std::make_unique<Query>(std::move(subQuery))},
+    bind{bindFunction}
+{
+}
+
+SubQuery::SubQuery(const SubQuery &other)
+{
+    *this = other;
+}
+
+auto SubQuery::operator=(const SubQuery &other) -> SubQuery &
+{
+    query = std::make_unique<Query>(*other.query);
+    return *this;
+}
 }

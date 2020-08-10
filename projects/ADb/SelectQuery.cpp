@@ -14,8 +14,18 @@
 
 #include "pch.hpp"
 
-#include "QueryData.hpp"
+#include "Query.hpp"
+#include "SelectQuery.hpp"
 
 namespace adb
 {
+auto SelectQuery::count() -> CountQuery
+{
+    return CountQuery{Query{SelectData{}}};
+}
+
+auto SelectQuery::values() -> ValuesQuery
+{
+    return ValuesQuery{Query{SelectData{}}};
+}
 }
