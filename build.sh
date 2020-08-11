@@ -104,7 +104,7 @@ function installClang () {
         choco install -y llvm
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get purge -y clang clang++
+        sudo apt-get purge -y clang clang++ clang-6 clang++-6 clang-7 clang++-7 clang-8 clang++-8 clang-9 clang++-9
         sudo apt-get autoremove -y
         sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
     else
