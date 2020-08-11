@@ -1,4 +1,4 @@
-import { shallowMount  } from '@vue/test-utils';
+import { mount  } from '@vue/test-utils';
 import ListData from '@/components/scene/ListData.vue';
 
 import { localVue } from '../TestUtils'
@@ -7,7 +7,7 @@ import { localVue } from '../TestUtils'
 describe('ListData',() => {
     let wrapper
     beforeAll(() => {
-        wrapper = shallowMount(ListData, {
+        wrapper = mount(ListData, {
             localVue,
             propsData: {
                 data: [{

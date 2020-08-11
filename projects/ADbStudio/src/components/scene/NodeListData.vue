@@ -1,5 +1,5 @@
 <template>
-    <ListData :data="nodes" />
+    <ListData :data="nodes" v-on="$listeners"/>
 </template>
 
 <script>

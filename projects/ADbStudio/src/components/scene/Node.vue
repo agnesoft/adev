@@ -1,17 +1,24 @@
 <template>
     <div class="node" :style="style">
-        <div class="content">
-            {{ params.id }}
-        </div>
+        <Element :element="element" v-on="$listeners" />
     </div>
 </template>
 
 <script>
+import Element from "./Element"
+
 export default {
     name: "Node",
+    components: {
+        Element
+    },
     props: {
-        params: Object,
+        element: Object,
         viewSize: Object
+    },
+    data(){
+        return {
+        }
     },
     computed: {
         style: function(){
@@ -22,16 +29,16 @@ export default {
             }
         },
         top_pos: function(){
-            let pos = this.params.coordinates.y*this.viewSize.height;
+            let pos = this.element.coordinates.y*this.viewSize.height;
             return 'calc('+(pos).toString()+"px - "+(this.node_size/2).toString()+"rem)";
         },
         left_pos: function(){
-            let pos = this.params.coordinates.x*this.viewSize.width;
+            let pos = this.element.coordinates.x*this.viewSize.width;
             return 'calc('+(pos).toString()+"px - "+(this.node_size/2).toString()+"rem)";
         },
         node_size: function(){
             return "2.4";
-        }
+        },
     },
 }
 </script>
@@ -62,4 +69,5 @@ export default {
         background-color: var(--primary-color);
         color: var(--dark-color);
     }
+    
 </style>

@@ -1,4 +1,4 @@
-import { shallowMount  } from '@vue/test-utils';
+import { mount  } from '@vue/test-utils';
 import Node from '@/components/scene/Node.vue';
 
 import { localVue } from '../TestUtils'
@@ -7,10 +7,10 @@ import { localVue } from '../TestUtils'
 describe('Node',() => {
     let wrapper
     beforeAll(() => {
-        wrapper = shallowMount(Node, {
+        wrapper = mount(Node, {
             localVue,
             propsData: {
-                params: {
+                element: {
                     id: 1,
                     coordinates: {
                         x: 0.2,

@@ -4,6 +4,7 @@ import Scene from '@/views/Scene.vue';
 import SearchField from "@/components/scene/SearchField";
 import ADbView from "@/components/scene/ADbView";
 import LeftPanel from "@/components/scene/LeftPanel";
+import ElementData from "@/components/scene/ElementData";
 import scene_store from '../../../src/store/modules/scene'
 //import NodeInfo from "@/components/scene/NodeInfo";
 
@@ -100,6 +101,11 @@ describe('Scene',() => {
         expect(wrapper.find(".search-wrap .info").exists()).toBe(true);
         expect(wrapper.find(".search-mode").exists()).toBe(true);
         expect(wrapper.find(".node.selected").exists()).toBe(true);
-
     });
+    it("rendres element data after hovering element in the view",async () => {
+        expect(wrapper.find(".element-data").exists()).toBe(false);
+        let element = wrapper.find('.adb-view .element');
+        await element.trigger("mouseenter");
+        expect(wrapper.find(".element-data").exists()).toBe(true);
+    })
 })

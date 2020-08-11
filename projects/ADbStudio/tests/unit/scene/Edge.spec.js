@@ -1,4 +1,4 @@
-import { shallowMount  } from '@vue/test-utils';
+import { mount  } from '@vue/test-utils';
 import Edge from '@/components/scene/Edge.vue';
 
 import { localVue } from '../TestUtils'
@@ -7,10 +7,10 @@ import { localVue } from '../TestUtils'
 describe('Edge',() => {
     let wrapper
     beforeAll(() => {
-        wrapper = shallowMount(Edge, {
+        wrapper = mount(Edge, {
             localVue,
             propsData: {
-                params: {
+                element: {
                     id: -1,
                     coordinates1: {
                         x: 0.2,
