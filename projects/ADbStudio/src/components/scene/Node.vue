@@ -69,5 +69,4 @@ export default {
         background-color: var(--primary-color);
         color: var(--dark-color);
     }
-    
 </style>

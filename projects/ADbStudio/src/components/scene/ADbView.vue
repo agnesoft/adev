@@ -43,7 +43,7 @@ export default {
         onResize() {
             this.viewWidth = document.documentElement.clientWidth;
             this.viewHeight = document.documentElement.clientHeight;
-        },
+        }
     },
     mounted() {
         window.addEventListener('resize', this.onResize)

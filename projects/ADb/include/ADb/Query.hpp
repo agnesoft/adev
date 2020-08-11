@@ -20,6 +20,7 @@
 #include "KeyValue.hpp"
 #include "Value.hpp"
 
+#include <memory>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -44,19 +45,68 @@ namespace adb
 class Query
 {
 public:
+    //! \cond IMPLEMENTAION_DETAIL
     class Insert;
 
-    //! Data struct representing data of the insert
-    //! nodes query.
-    struct InsertNodes
+    struct SubQuery
     {
-        //! Node values to be inserted into the database.
+        SubQuery() = default;
+
+        SubQuery(std::unique_ptr<Query> subQuery) :
+            query{std::move(subQuery)}
+        {
+        }
+
+        SubQuery(const SubQuery &other)
+        {
+            *this = other;
+        }
+
+        SubQuery(SubQuery &&other) noexcept = default;
+        ~SubQuery() = default;
+
+        auto operator=(const SubQuery &other) -> SubQuery &
+        {
+            query = std::make_unique<Query>(*other.query);
+            return *this;
+        }
+
+        auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
+
+        std::unique_ptr<Query> query;
+    };
+
+    struct InsertNodeQuery : SubQuery
+    {
+    };
+
+    struct InsertNodeValues
+    {
+        std::vector<adb::KeyValue> values;
+    };
+
+    struct InsertNodesCount
+    {
+        acore::size_type count = 0;
+    };
+
+    struct InsertNodesQuery : SubQuery
+    {
+    };
+
+    struct InsertNodesValues
+    {
         std::vector<std::vector<adb::KeyValue>> values;
     };
+    //! \endcond
 
     //! Alias for all the possible query data types.
     using Data = std::variant<std::monostate,
-                              InsertNodes>;
+                              InsertNodeQuery,
+                              InsertNodeValues,
+                              InsertNodesCount,
+                              InsertNodesQuery,
+                              InsertNodesValues>;
 
     //! Returns the data of the query. Used by the
     //! database to access the query's data to execute.
@@ -83,38 +133,39 @@ private:
     Data mData;
 };
 
-//! The Query::Insert class servers as the entry
-//! point for building the insert queries.
+//! \cond IMPLEMENTAION_DETAIL
 class Query::Insert
 {
 public:
-    //! Creates a query that inserts a single node
-    //! with no data.
     [[nodiscard]] auto node() -> Query
     {
-        return Query{InsertNodes{std::vector<std::vector<adb::KeyValue>>(1)}};
+        return Query{InsertNodesCount{1}};
     }
 
-    //! Creates a query that inserts a single node
-    //! with \a values associated with it.
     [[nodiscard]] auto node(std::vector<adb::KeyValue> values) -> Query
     {
-        return Query{InsertNodes{{std::move(values)}}};
+        return Query{InsertNodeValues{std::move(values)}};
     }
 
-    //! Creates a query that inserts \a count number
-    //! of nodes with no data.
-    [[nodiscard]] auto nodes(acore::size_type count) -> Query
+    [[nodiscard]] auto node(Query query) -> Query
     {
-        return Query{InsertNodes{std::vector<std::vector<adb::KeyValue>>(count)}};
+        return Query{InsertNodeQuery{std::make_unique<Query>(std::move(query))}};
     }
 
-    //! Creates a query that inserts \a values.size()
-    //! nodes with \a values. Each entry in \a values
-    //! represents values of each inserted node.
+    [[nodiscard]] auto
+        nodes(acore::size_type count) -> Query
+    {
+        return Query{InsertNodesCount{count}};
+    }
+
     [[nodiscard]] auto nodes(std::vector<std::vector<adb::KeyValue>> values) -> Query
     {
-        return Query{InsertNodes{std::move(values)}};
+        return Query{InsertNodesValues{std::move(values)}};
+    }
+
+    [[nodiscard]] auto nodes(Query query) -> Query
+    {
+        return Query{InsertNodesQuery{std::make_unique<Query>(std::move(query))}};
     }
 };
 
@@ -122,6 +173,7 @@ public:
 {
     return Query::Insert{};
 }
+//! \endcond
 }
 
 #endif

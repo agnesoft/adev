@@ -108,4 +108,43 @@ describe('Scene',() => {
         await element.trigger("mouseenter");
         expect(wrapper.find(".element-data").exists()).toBe(true);
     })
+    it('resets the scene after clicking reset button',async () => {
+        wrapper.vm.move.x = -1;
+        wrapper.vm.move.y = -1;
+        wrapper.vm.zoom = -1;
+        wrapper.vm.startDragCoordinates.x = -1;
+        wrapper.vm.startDragCoordinates.y = -1;
+        wrapper.vm.searchedWord = '-1';
+        wrapper.vm.error = '-1';
+
+        await wrapper.find('.reset').trigger('click');
+        expect(wrapper.vm.move.x).toBe(0);
+        expect(wrapper.vm.move.y).toBe(0);
+        expect(wrapper.vm.zoom).toBe(0);
+        expect(wrapper.vm.startDragCoordinates.x).toBe(0);
+        expect(wrapper.vm.startDragCoordinates.x).toBe(0);
+        expect(wrapper.vm.searchedWord).toBe('');
+        expect(wrapper.vm.error).toBe('');
+    })
+    it('increases zoom after clicking plus button',async () => {
+        await wrapper.find('.plus').trigger('click');
+        expect(wrapper.vm.zoom).toBe(1);
+    });
+    it('decreases zoom after clicking minus button',async () => {
+        await wrapper.find('.minus').trigger('click');
+        expect(wrapper.vm.zoom).toBe(-1);
+    });
+    it('displays error message after searching invalid element', async () => {
+        expect(wrapper.find(".search-wrap .error").exists()).toBe(false);
+        await wrapper.findComponent(SearchField).vm.$emit('search','fdad');
+        expect(wrapper.find(".search-wrap .error").exists()).toBe(true);
+    });
+    it('displays search result after searching ivalid element', async () => {
+        expect(wrapper.find(".search-wrap .info").exists()).toBe(false);
+        await wrapper.findComponent(SearchField).vm.$emit('search','1');
+        expect(wrapper.find(".search-wrap .info").exists()).toBe(true);
+        expect(wrapper.find(".search-mode").exists()).toBe(true);
+        expect(wrapper.find(".node.selected").exists()).toBe(true);
+
+    });
 })
