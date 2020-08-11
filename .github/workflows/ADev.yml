@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
       - name: Install Clang-Tidy
@@ -26,6 +28,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
       - name: Install Clang
@@ -77,6 +81,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
       - name: Install Clang
@@ -90,9 +96,11 @@ jobs:
 
   sanitize-memory:
     name: Sanitize Memory
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
       - name: Install Clang
@@ -109,6 +117,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
       - name: Install Clang
@@ -144,6 +154,9 @@ jobs:
             }
     steps:
       - uses: actions/checkout@v2
+      - name: Install CMake
+        shell: bash
+        run: ./build.sh install-cmake
       - name: Install Ninja
         shell: bash
         run: ./build.sh install-ninja

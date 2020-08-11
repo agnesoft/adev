@@ -2,4 +2,4 @@
 
 Please add summary of the change.
 
-Resolves # (issue)
+Resolves #(issue)

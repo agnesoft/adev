@@ -137,7 +137,9 @@ function installCMake () {
         choco install -y cmake
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get install -y cmake
+        sudo apt-get remove --purge cmake -y
+        sudo apt-get install snap -y
+        sudo snap install cmake --classic
     else
         brew install cmake
     fi
