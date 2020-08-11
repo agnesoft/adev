@@ -104,17 +104,6 @@ function installClang () {
         choco install -y llvm
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get purge -y clang
-        sudo apt-get purge -y clang++
-        sudo apt-get purge -y clang-6.0
-        sudo apt-get purge -y clang++-6.0
-        sudo apt-get purge -y clang-7
-        sudo apt-get purge -y clang++-7
-        sudo apt-get purge -y clang-8
-        sudo apt-get purge -y clang++-8
-        sudo apt-get purge -y clang-9
-        sudo apt-get purge -y clang++-9
-        sudo apt-get autoremove -y
         sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
     else
         brew install llvm
@@ -148,7 +137,7 @@ function installCMake () {
         choco install -y cmake
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get remove --purge cmake -y
+        sudo apt-get purge cmake -y
         sudo apt-get install snap -y
         sudo snap install cmake --classic
     else
