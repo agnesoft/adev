@@ -3,6 +3,7 @@
   "list-of-edges": "Seznam hran",
   "list-of-nodes": "Seznam uzlů",
   "message": "ahoj i18n !!",
+  "no-data-selected": "Nebyla vybrána žádná data.",
   "raw-data": "Surová data",
   "reset-view": "Resetovat pohled",
   "run": "Spustit",

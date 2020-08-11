@@ -4,9 +4,9 @@
             <textarea class="command" v-model.trim="command" :placeholder="$t('write-command')" rows="1" />
             <input type="submit" :value="$t('run')" class="submit-button btn btn-primary">
         </form>
-        <LeftPanel></LeftPanel>
+        <LeftPanel @showData="showData" />
         <div class="view-container" @wheel.prevent="onMouseWheel" @dragover.prevent @drop="onDrop" @dragstart="onDragStart">
-            <ADbView id="adb-view" :zoom="zoom" draggable="true" :style="viewStyle" :searchedWord="searchedWord"/>
+            <ADbView id="adb-view" ref="adb_view" :zoom="zoom" draggable="true" :style="viewStyle" :searchedWord="searchedWord"  @showData="showData"/>
             <div class="search-wrap">    
                 <SearchField @search="search"/>          
                     <BaseMessage class="error" :opened="error === 'search'" @close="error=''">
@@ -17,6 +17,7 @@
                     </BaseMessage>
             </div>
         </div>
+        <ElementData :show="dataShow" :data="data" :dataStyle="elementDataStyle" />
         <div class="controls">
             <BaseButton class="btn-default reset" @click="resetView">{{$t('reset-view')}}</BaseButton>
             <BaseButton class="btn-default plus" @click="zoomPlus">+</BaseButton>
@@ -26,17 +27,19 @@
 </template>
 
 <script>
-import ADbView from '@/components/scene/ADbView.vue'
-import LeftPanel from '@/components/scene/LeftPanel.vue'
-import SearchField from '@/components/scene/SearchField.vue'
+import ADbView from '@/components/scene/ADbView.vue';
+import LeftPanel from '@/components/scene/LeftPanel.vue';
+import SearchField from '@/components/scene/SearchField.vue';
+import ElementData from "@/components/scene/ElementData";
 
-import { mapActions,mapGetters } from 'vuex'
+import { mapActions,mapGetters } from 'vuex';
 
 export default {
     name: "Scene",
     components: {
         SearchField,
         ADbView,
+        ElementData,
         LeftPanel,
     },
     data(){
@@ -53,6 +56,12 @@ export default {
             },
             searchedWord: '',
             error: '',
+            dataShow: false,
+            data: {},
+            dataPos: {
+                x: 0,
+                y: 0
+            },
         }
     },
     methods: {
@@ -117,6 +126,20 @@ export default {
                     this.error = '';
                 }
             } 
+        },
+        showData(element,event) {
+            this.data = {};
+            if(element === false){
+                this.dataShow = false;
+            } else {
+                if(Object.prototype.hasOwnProperty.call(element, 'data')){
+                    this.data = element.data;
+                }
+                this.dataShow = true;
+                element = this.$el; //this.$el.querySelector("#adb-view");
+                this.dataPos.y = event.clientY - element.getBoundingClientRect().top + 15;
+                this.dataPos.x = event.clientX - element.getBoundingClientRect().left + 15;
+            }
         }
     },
     computed: {
@@ -136,6 +159,12 @@ export default {
             scale = 1 + this.zoom/10;
             scale = scale < 0.1 ? 0.1 : scale;
             return scale;
+        },
+        elementDataStyle(){
+            return {
+                top: this.dataPos.y+"px",
+                left: this.dataPos.x+"px"
+            }
         }
     }
 }
@@ -209,5 +238,8 @@ export default {
     }
     .base-message{
         grid-area: message;
+    }
+    .element-data{
+        position: absolute;
     }
 </style>

@@ -38,6 +38,11 @@ const router = new VueRouter({routes: [
         coordinates: {
             x: 0.7,
             y: 0.7,
+        },
+        data: {
+            name: "Jana",
+            number: 18,
+            lorem: "ipsum"
         }
     }],
     edges: [{
@@ -49,6 +54,11 @@ const router = new VueRouter({routes: [
         coordinates2: {
             x: 0.7,
             y: 0.7,
+        },
+        data: {
+            foo: "bar",
+            foo1: "bar1",
+            foo2: "bar2",
         }
     }],
 };

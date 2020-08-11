@@ -15,7 +15,7 @@
                         {{tab_title}}
                     </header>
                     <transition name="fade" mode="out-in">
-                        <component class="tab-content" v-bind:is="component_content"></component>
+                        <component class="tab-content" v-bind:is="component_content"  v-on="$listeners"></component>
                     </transition>
                 </div>
             </SlideXTransition>    

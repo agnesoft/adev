@@ -1,8 +1,8 @@
 <template>
     <div class="adb-view" :class="{'search-mode': searchedWord !== ''}">
         <div class="view">
-            <Edge v-for="edge in edges" :key="edge.id" :params="edge" :viewSize="viewSize" :class="{selected: edge.id == searchedWord}"/>
-            <Node v-for="node in nodes" :key="node.id" :params="node" :viewSize="viewSize" :class="{selected: node.id == searchedWord}"/>
+            <Edge v-for="edge in edges" :key="edge.id" :element="edge" :viewSize="viewSize" :class="{selected: edge.id == searchedWord}" v-on="$listeners" />
+            <Node v-for="node in nodes" :key="node.id" :element="node" :viewSize="viewSize" :class="{selected: node.id == searchedWord}" v-on="$listeners" />
         </div>
     </div>
 </template>
@@ -16,7 +16,7 @@ export default {
     name: "ADbView",
     components: {
         Node,
-        Edge
+        Edge,
     },
     data(){
         return {
@@ -37,7 +37,7 @@ export default {
                 width: this.viewWidth,
                 height: this.viewHeight
             }
-        },
+        }
     },
     methods: {
         onResize() {

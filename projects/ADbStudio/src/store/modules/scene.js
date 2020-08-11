@@ -91,12 +91,15 @@ function getTestData(command){
                     x: 0.2,
                     y: 0.2,
                 }
-                
             },{
                 id: 2,
                 coordinates: {
                     x: 0.3,
                     y: 0.3,
+                },
+                data: {
+                    name: "Jana",
+                    number: 18,
                 }
             }],
         edges: [{
@@ -108,6 +111,11 @@ function getTestData(command){
             coordinates2: {
                 x: 0.3,
                 y: 0.3,
+            },
+            data: {
+                foo: "bar",
+                foo1: "bar1",
+                foo2: "bar2",
             }
         }],
     }
