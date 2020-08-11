@@ -91,6 +91,7 @@ jobs:
   sanitize-memory:
     name: Sanitize Memory
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install Ninja
