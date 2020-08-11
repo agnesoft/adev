@@ -24,7 +24,7 @@ auto InsertEdgeFromQuery::to(acore::size_type id) && -> IdsQuery
     return IdsQuery{std::move(mQuery)};
 }
 
-auto InsertEdgeFromQuery::to(PlaceholderId placeholder) && -> IdsQuery
+auto InsertEdgeFromQuery::to(const PlaceholderId &placeholder) && -> IdsQuery
 {
     mQuery.addPlaceholder(placeholder.name, bindInsertEdgesCountTo);
     return IdsQuery{std::move(mQuery)};

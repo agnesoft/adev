@@ -52,6 +52,9 @@ struct PlaceholderCount : PlaceholderBase
     using PlaceholderBase::PlaceholderBase;
 };
 
+//! \relates adb::Query
+//! Used when the placeholder represents an element
+//! id.
 struct PlaceholderId : PlaceholderBase
 {
     using PlaceholderBase::PlaceholderBase;

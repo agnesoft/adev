@@ -20,19 +20,19 @@
 
 namespace adb
 {
-auto InsertEdgeQuery::from(acore::size_type id) && -> InsertEdgeFromQuery
+auto InsertEdgeQuery::from(acore::size_type id) && -> InsertEdgeFromQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return InsertEdgeFromQuery{Query{InsertEdgesCount{id, acore::INVALID_INDEX, 1}}};
 }
 
-auto InsertEdgeQuery::from(PlaceholderId placeholder) && -> InsertEdgeFromQuery
+auto InsertEdgeQuery::from(const PlaceholderId &placeholder) && -> InsertEdgeFromQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertEdgesCount{acore::INVALID_INDEX, acore::INVALID_INDEX, 1}};
     query.addPlaceholder(placeholder.name, bindInsertEdgesCountFrom);
     return InsertEdgeFromQuery{std::move(query)};
 }
 
-auto InsertEdgeQuery::from(IdsQuery subQuery) && -> InsertEdgeFromQuery
+auto InsertEdgeQuery::from(IdsQuery subQuery) && -> InsertEdgeFromQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertEdgesCount{acore::INVALID_INDEX, acore::INVALID_INDEX, 1}};
     query.addSubQuery(std::move(subQuery), bindInsertEdgesCountFrom);

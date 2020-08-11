@@ -34,7 +34,12 @@ SubQuery::SubQuery(const SubQuery &other)
 
 auto SubQuery::operator=(const SubQuery &other) -> SubQuery &
 {
-    query = std::make_unique<Query>(*other.query);
+    if (&other != this)
+    {
+        query = std::make_unique<Query>(*other.query);
+        bind = other.bind;
+    }
+
     return *this;
 }
 }

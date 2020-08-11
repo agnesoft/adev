@@ -131,7 +131,7 @@ private:
             throw acore::Exception{} << "Placeholder '" << placeholder << "' already exists.";
         }
 
-        mPlaceholders.push_back({placeholder, bindFunction});
+        mPlaceholders.push_back({std::move(placeholder), bindFunction});
     }
 
     auto addSubQuery(Query query, BindResultFunction bindFunction) -> void

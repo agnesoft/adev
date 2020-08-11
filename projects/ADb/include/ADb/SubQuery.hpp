@@ -70,7 +70,7 @@ struct SubQuery
 
     //! Function to bind the query's result to the
     //! parent adb::Query.
-    BindResultFunction bind;
+    BindResultFunction bind = nullptr;
 };
 }
 #endif

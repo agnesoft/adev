@@ -145,7 +145,7 @@ TEST_CASE("adb::insert().node(SelectValuesQuery query) -> Query [adb::Query]")
                            .node(adb::select().values());
 
     REQUIRE(query.subQueries().size() == 1);
-    REQUIRE(std::get<adb::InsertNodeValues>(query.data()).values == std::vector<adb::KeyValue>{});
+    REQUIRE(std::get<adb::InsertNodeValues>(query.data()).values == std::vector<adb::KeyValue>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().node(PlaceholderValues placeholder) -> Query [adb::Query]")
@@ -217,6 +217,6 @@ TEST_CASE("adb::insert().nodes(SelectValuesQuery query) -> Query [adb::Query]")
                            .nodes(adb::select().values());
 
     REQUIRE(query.subQueries().size() == 1);
-    REQUIRE(std::get<adb::InsertNodesValues>(query.data()).values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(std::get<adb::InsertNodesValues>(query.data()).values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 }

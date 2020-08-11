@@ -27,7 +27,7 @@ template<typename Data>
 auto InsertQuery::createPlaceholderQuery(std::string name, BindPlaceholderFunction bind) -> IdsQuery
 {
     Query query{Data{}};
-    query.addPlaceholder(name, bind);
+    query.addPlaceholder(std::move(name), bind);
     return IdsQuery{std::move(query)};
 }
 
@@ -39,22 +39,22 @@ auto InsertQuery::createSubQueryQuery(Query &&subQuery, BindResultFunction bind)
     return IdsQuery{std::move(query)};
 }
 
-auto InsertQuery::edge() && -> InsertEdgeQuery
+auto InsertQuery::edge() && -> InsertEdgeQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return InsertEdgeQuery{};
 }
 
-auto InsertQuery::node() && -> IdsQuery
+auto InsertQuery::node() && -> IdsQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return IdsQuery{Query{InsertNodesCount{1}}};
 }
 
-auto InsertQuery::node(std::vector<KeyValue> values) && -> IdsQuery
+auto InsertQuery::node(std::vector<KeyValue> values) && -> IdsQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return IdsQuery{Query{InsertNodeValues{std::move(values)}}};
 }
 
-auto InsertQuery::node(PlaceholderValues placeholder) && -> IdsQuery
+auto InsertQuery::node(const PlaceholderValues &placeholder) && -> IdsQuery
 {
     return createPlaceholderQuery<InsertNodeValues>(placeholder.name, bindInsertNodeValues);
 }
@@ -64,12 +64,12 @@ auto InsertQuery::node(ValuesQuery subQuery) && -> IdsQuery
     return createSubQueryQuery<InsertNodeValues>(std::move(subQuery), bindInsertNodeValues);
 }
 
-auto InsertQuery::nodes(acore::size_type count) && -> IdsQuery
+auto InsertQuery::nodes(acore::size_type count) && -> IdsQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return IdsQuery{Query{InsertNodesCount{count}}};
 }
 
-auto InsertQuery::nodes(PlaceholderCount placeholder) && -> IdsQuery
+auto InsertQuery::nodes(const PlaceholderCount &placeholder) && -> IdsQuery
 {
     return createPlaceholderQuery<InsertNodesCount>(placeholder.name, bindInsertNodesCount);
 }
@@ -79,12 +79,12 @@ auto InsertQuery::nodes(CountQuery subQuery) && -> IdsQuery
     return createSubQueryQuery<InsertNodesCount>(std::move(subQuery), bindInsertNodesCount);
 }
 
-auto InsertQuery::nodes(std::vector<std::vector<KeyValue>> values) && -> IdsQuery
+auto InsertQuery::nodes(std::vector<std::vector<KeyValue>> values) && -> IdsQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return IdsQuery{Query{InsertNodesValues{std::move(values)}}};
 }
 
-auto InsertQuery::nodes(PlaceholderValues placeholder) && -> IdsQuery
+auto InsertQuery::nodes(const PlaceholderValues &placeholder) && -> IdsQuery
 {
     return createPlaceholderQuery<InsertNodesValues>(placeholder.name, bindInsertNodesValues);
 }

@@ -19,12 +19,12 @@
 
 namespace adb
 {
-auto SelectQuery::count() && -> CountQuery
+auto SelectQuery::count() && -> CountQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return CountQuery{Query{SelectData{}}};
 }
 
-auto SelectQuery::values() && -> ValuesQuery
+auto SelectQuery::values() && -> ValuesQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return ValuesQuery{Query{SelectData{}}};
 }

@@ -52,7 +52,7 @@ public:
 
     //! Insert a single node with values being
     //! bound later in place of \a placeholder.
-    [[nodiscard]] auto node(PlaceholderValues placeholder) && -> IdsQuery;
+    [[nodiscard]] auto node(const PlaceholderValues &placeholder) && -> IdsQuery;
 
     //! Insert a single node with value being
     //! obtained as a result of executing the
@@ -65,7 +65,7 @@ public:
     //! Insert nodes without any values. Number of
     //! inserted nodes will be bound later in place
     //! of \a placeholder.
-    [[nodiscard]] auto nodes(PlaceholderCount placeholder) && -> IdsQuery;
+    [[nodiscard]] auto nodes(const PlaceholderCount &placeholder) && -> IdsQuery;
 
     //! Insert nodes without any values. Number of
     //! inserted nodes will be obtained as result
@@ -80,7 +80,7 @@ public:
     //! later in place of \a placeholder. Number of
     //! nodes will correspond to the number of entries
     //! in the bound values.
-    [[nodiscard]] auto nodes(PlaceholderValues placeholder) && -> IdsQuery;
+    [[nodiscard]] auto nodes(const PlaceholderValues &placeholder) && -> IdsQuery;
 
     //! Insert ndoes with values that will be obtained
     //! as a result of executing the \a subQuery.

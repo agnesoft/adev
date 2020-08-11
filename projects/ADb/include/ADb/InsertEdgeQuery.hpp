@@ -37,7 +37,7 @@ public:
 
     //! Sets the \c from parameter of the query to
     //! a \a placeholder to be bound later.
-    [[nodiscard]] auto from(PlaceholderId placeholder) && -> InsertEdgeFromQuery;
+    [[nodiscard]] auto from(const PlaceholderId &placeholder) && -> InsertEdgeFromQuery;
 
     //! Sets the \c from parameter of the query to
     //! the \a subQuery. The \c from parameter will

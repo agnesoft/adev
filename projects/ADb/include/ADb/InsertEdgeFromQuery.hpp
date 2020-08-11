@@ -38,7 +38,7 @@ public:
 
     //! Sets the \c to parameter of the query to
     //! a \a placeholder to be bound later.
-    [[nodiscard]] auto to(PlaceholderId placeholder) && -> IdsQuery;
+    [[nodiscard]] auto to(const PlaceholderId &placeholder) && -> IdsQuery;
 
     //! Sets the \c to parameter of the query to
     //! the \a subQuery. The \c from parameter will
