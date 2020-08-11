@@ -5,15 +5,19 @@ project(ADev)
 #Required for clang-tidy
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
+set(ENABLE_PCH TRUE)
+
 #Required for llvm-cov
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+    set(ENABLE_PCH FALSE)
 endif()
 
 #Required for Clang/LLVM memory sanitizer
 if(CMAKE_BUILD_TYPE STREQUAL "SanitizeMemory")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=memory -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize-memory-track-origins -fsanitize-memory-use-after-dtor -stdlib=libc++ -I${CMAKE_SOURCE_DIR}/llvm/build_msan/include -I${CMAKE_SOURCE_DIR}/llvm/build_msan/include/c++/v1")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=memory -stdlib=libc++ -L${CMAKE_SOURCE_DIR}/llvm/build_msan/lib -lc++abi -lpthread -Wl,-rpath,${CMAKE_SOURCE_DIR}/llvm/build_msan/lib")
+    set(ENABLE_PCH FALSE)
 endif()
 
 #Required for Clang/LLVM address sanitizer
@@ -117,7 +121,7 @@ add_executable(ACoreTest projects/ACore/test/CommandLineTest.cpp
                          projects/ACore/test/ReferenceTest.cpp
                          projects/ACore/test/UndoStackTest.cpp
                          projects/ACore/test/VariantTest.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(ACoreTest PRIVATE projects/ACore/test/pch.hpp)
 endif()
 target_link_libraries(ACoreTest ACore Catch2)
@@ -149,7 +153,7 @@ add_library(AFile STATIC projects/AFile/include/AFile.hpp
                          projects/AFile/PersistentDictionary.cpp
                          projects/AFile/PersistentDictionaryData.cpp
                          projects/AFile/WAL.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(AFile PRIVATE projects/AFile/pch.hpp)
 endif()
 target_link_libraries(AFile ACore)
@@ -162,7 +166,7 @@ add_executable(AFileTest projects/AFile/test/FileTest.cpp
                          projects/AFile/test/PersistentDataIndexMapTest.cpp
                          projects/AFile/test/PersistentDictionaryTest.cpp
                          projects/AFile/test/PersistentVectorTest.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(AFileTest PRIVATE projects/AFile/test/pch.hpp)
 endif()
 target_link_libraries(AFileTest AFile Catch2)
@@ -189,7 +193,7 @@ add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/Graph.cpp
                           projects/AGraph/PersistentGraph.cpp
                           projects/AGraph/PersistentGraphData.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(AGraph PRIVATE projects/AGraph/pch.hpp)
 endif()
 target_link_libraries(AGraph ACore AFile)
@@ -206,7 +210,7 @@ add_executable(AGraphTest projects/AGraph/test/BreadthFirstSearchTest.cpp
                           projects/AGraph/test/NodeTest.cpp
                           projects/AGraph/test/PathSearchTest.cpp
                           projects/AGraph/test/PersistentGraphTest.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(AGraphTest PRIVATE projects/AGraph/test/pch.hpp)
 endif()
 target_link_libraries(AGraphTest AGraph Catch2)
@@ -244,7 +248,7 @@ add_library(ADb STATIC projects/ADb/include/ADb.hpp
                        projects/ADb/SelectQuery.cpp
                        projects/ADb/SubQuery.cpp
                        projects/ADb/Value.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
    target_precompile_headers(ADb PRIVATE projects/ADb/pch.hpp)
 endif()
 target_link_libraries(ADb ACore AFile AGraph)
@@ -259,7 +263,7 @@ add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
                        projects/ADb/test/QueryTest.cpp
                        projects/ADb/test/ResultTest.cpp
                        projects/ADb/test/ValueTest.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(ADbTest PRIVATE projects/ADb/test/pch.hpp)
 endif()
 target_link_libraries(ADbTest ADb Catch2)
@@ -270,7 +274,7 @@ target_link_libraries(ADbTest ADb Catch2)
 #ABenchmarks
 add_executable(ABenchmarks projects/ABenchmarks/DataIndexMapBenchmark.cpp
                            projects/ABenchmarks/VariantBenchmark.cpp)
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")
+if(ENABLE_PCH)
     target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
 endif()
 target_link_libraries(ABenchmarks ACore Catch2)
