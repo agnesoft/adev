@@ -18,6 +18,7 @@
 #include "ADb/Condition.hpp"
 #include "ADb/Element.hpp"
 #include "ADb/KeyValue.hpp"
+#include "ADb/Queries.hpp"
 #include "ADb/Query.hpp"
 #include "ADb/Result.hpp"
 #include "ADb/Value.hpp"

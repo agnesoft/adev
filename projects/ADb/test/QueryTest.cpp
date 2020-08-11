@@ -33,6 +33,19 @@ TEST_CASE("[adb::Query]")
     REQUIRE(std::is_nothrow_destructible_v<adb::Query>);
 }
 
+TEST_CASE("Query(const Query &other) [adb::Query]")
+{
+    SECTION("[copy with subquery]")
+    {
+        const auto query = adb::insert().nodes(adb::select().count());
+        const auto other{query}; //NOLINT(performance-unnecessary-copy-initialization)
+        auto subQueries = other.subQueries();
+
+        REQUIRE(subQueries.size() == 1);
+        REQUIRE(std::get<adb::InsertNodesCount>(query.data()).count == 0);
+    }
+}
+
 TEST_CASE("bind(std::string_view name, PlaceholderValue value) -> void [adb::Query]")
 {
     SECTION("[missing]")
@@ -46,6 +59,11 @@ TEST_CASE("bind(std::string_view name, PlaceholderValue value) -> void [adb::Que
         auto query = adb::insert().node(adb::PlaceholderValues{":placeholder"});
 
         REQUIRE_NOTHROW(query.bind(":placeholder", std::vector<adb::KeyValue>{}));
+    }
+
+    SECTION("[duplicate]")
+    {
+        REQUIRE_THROWS_AS(adb::insert().edge().from(adb::PlaceholderId{":id"}).to(adb::PlaceholderId{":id"}), acore::Exception);
     }
 }
 

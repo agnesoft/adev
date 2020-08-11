@@ -220,8 +220,11 @@ add_library(ADb STATIC projects/ADb/include/ADb.hpp
                        projects/ADb/include/ADb/Condition.hpp
                        projects/ADb/include/ADb/Element.hpp
                        projects/ADb/include/ADb/InsertQuery.hpp
+                       projects/ADb/include/ADb/InsertEdgeQuery.hpp
+                       projects/ADb/include/ADb/InsertEdgeFromQuery.hpp
                        projects/ADb/include/ADb/KeyValue.hpp
                        projects/ADb/include/ADb/Placeholders.hpp
+                       projects/ADb/include/ADb/Queries.hpp
                        projects/ADb/include/ADb/Query.hpp
                        projects/ADb/include/ADb/QueryData.hpp
                        projects/ADb/include/ADb/Result.hpp
@@ -231,6 +234,8 @@ add_library(ADb STATIC projects/ADb/include/ADb.hpp
                        projects/ADb/Condition.cpp
                        projects/ADb/Element.cpp
                        projects/ADb/InsertQuery.cpp
+                       projects/ADb/InsertEdgeQuery.cpp
+                       projects/ADb/InsertEdgeFromQuery.cpp
                        projects/ADb/KeyValue.cpp
                        projects/ADb/Placeholders.cpp
                        projects/ADb/Query.cpp
@@ -250,7 +255,6 @@ target_include_directories(ADb PUBLIC projects/ADb/include)
 add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
                        projects/ADb/test/ElementTest.cpp
                        projects/ADb/test/KeyValueTest.cpp
-                       projects/ADb/test/QueryDataTest.cpp
                        projects/ADb/test/InsertQueryTest.cpp
                        projects/ADb/test/QueryTest.cpp
                        projects/ADb/test/ResultTest.cpp

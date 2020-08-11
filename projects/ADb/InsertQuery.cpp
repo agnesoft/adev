@@ -14,6 +14,7 @@
 
 #include "pch.hpp"
 
+#include "InsertEdgeQuery.hpp"
 #include "InsertQuery.hpp"
 #include "Query.hpp"
 
@@ -38,6 +39,11 @@ auto InsertQuery::createSubQueryQuery(Query &&subQuery, BindResultFunction bind)
     return IdsQuery{std::move(query)};
 }
 
+auto InsertQuery::edge() && -> InsertEdgeQuery
+{
+    return InsertEdgeQuery{};
+}
+
 auto InsertQuery::node() && -> IdsQuery
 {
     return IdsQuery{Query{InsertNodesCount{1}}};
@@ -50,16 +56,12 @@ auto InsertQuery::node(std::vector<KeyValue> values) && -> IdsQuery
 
 auto InsertQuery::node(PlaceholderValues placeholder) && -> IdsQuery
 {
-    return createPlaceholderQuery<InsertNodeValues>(placeholder.name, [](PlaceholderValue &&value, QueryData *data) {
-        std::get<InsertNodeValues>(*data).values = std::move(std::get<std::vector<adb::KeyValue>>(value));
-    });
+    return createPlaceholderQuery<InsertNodeValues>(placeholder.name, bindInsertNodeValues);
 }
 
 auto InsertQuery::node(ValuesQuery subQuery) && -> IdsQuery
 {
-    return createSubQueryQuery<InsertNodeValues>(std::move(subQuery), [](PlaceholderValue &&value, QueryData *data) {
-        std::get<InsertNodeValues>(*data).values = std::move(std::get<std::vector<adb::KeyValue>>(value));
-    });
+    return createSubQueryQuery<InsertNodeValues>(std::move(subQuery), bindInsertNodeValues);
 }
 
 auto InsertQuery::nodes(acore::size_type count) && -> IdsQuery
@@ -69,9 +71,12 @@ auto InsertQuery::nodes(acore::size_type count) && -> IdsQuery
 
 auto InsertQuery::nodes(PlaceholderCount placeholder) && -> IdsQuery
 {
-    return createPlaceholderQuery<InsertNodesCount>(placeholder.name, [](PlaceholderValue &&value, QueryData *data) {
-        std::get<InsertNodesCount>(*data).count = std::get<acore::size_type>(value);
-    });
+    return createPlaceholderQuery<InsertNodesCount>(placeholder.name, bindInsertNodesCount);
+}
+
+auto InsertQuery::nodes(CountQuery subQuery) && -> IdsQuery
+{
+    return createSubQueryQuery<InsertNodesCount>(std::move(subQuery), bindInsertNodesCount);
 }
 
 auto InsertQuery::nodes(std::vector<std::vector<KeyValue>> values) && -> IdsQuery
@@ -81,22 +86,11 @@ auto InsertQuery::nodes(std::vector<std::vector<KeyValue>> values) && -> IdsQuer
 
 auto InsertQuery::nodes(PlaceholderValues placeholder) && -> IdsQuery
 {
-    return createPlaceholderQuery<InsertNodesValues>(placeholder.name, [](PlaceholderValue &&value, QueryData *data) {
-        std::get<InsertNodesValues>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
-    });
-}
-
-auto InsertQuery::nodes(CountQuery subQuery) && -> IdsQuery
-{
-    return createSubQueryQuery<InsertNodesCount>(std::move(subQuery), [](PlaceholderValue &&value, QueryData *data) {
-        std::get<InsertNodesCount>(*data).count = std::get<acore::size_type>(value);
-    });
+    return createPlaceholderQuery<InsertNodesValues>(placeholder.name, bindInsertNodesValues);
 }
 
 auto InsertQuery::nodes(ValuesQuery subQuery) && -> IdsQuery
 {
-    return createSubQueryQuery<InsertNodesValues>(std::move(subQuery), [](PlaceholderValue &&value, QueryData *data) {
-        std::get<InsertNodesValues>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
-    });
+    return createSubQueryQuery<InsertNodesValues>(std::move(subQuery), bindInsertNodesValues);
 }
 }

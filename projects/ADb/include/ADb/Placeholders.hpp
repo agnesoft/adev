@@ -33,10 +33,10 @@ using PlaceholderValue = std::variant<acore::size_type,
 
 //! \relates adb::Query
 //! Wrapper around the name of placeholder.
-struct Placeholder
+struct PlaceholderBase
 {
     //! Constructs the placeholder with name \a n.
-    Placeholder(std::string n) :
+    PlaceholderBase(std::string n) :
         name(std::move(n))
     {
     }
@@ -47,22 +47,52 @@ struct Placeholder
 
 //! \relates adb::Query
 //! Used when the placeholder represents count.
-struct PlaceholderCount : Placeholder
+struct PlaceholderCount : PlaceholderBase
 {
-    using Placeholder::Placeholder;
+    using PlaceholderBase::PlaceholderBase;
+};
+
+struct PlaceholderId : PlaceholderBase
+{
+    using PlaceholderBase::PlaceholderBase;
 };
 
 //! \relates adb::Query
 //! Used when the placeholder represents values.
-struct PlaceholderValues : Placeholder
+struct PlaceholderValues : PlaceholderBase
 {
-    using Placeholder::Placeholder;
+    using PlaceholderBase::PlaceholderBase;
 };
 
 //! \cond IMPLEMENTAION_DETAIL
 using BindPlaceholderFunction = auto (*)(PlaceholderValue &&value, QueryData *data) -> void;
 
-struct PlaceholderData
+inline auto bindInsertNodeValues(PlaceholderValue &&value, QueryData *data)
+{
+    std::get<InsertNodeValues>(*data).values = std::move(std::get<std::vector<adb::KeyValue>>(value));
+}
+
+inline auto bindInsertNodesValues(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertNodesValues>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
+}
+
+inline auto bindInsertNodesCount(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertNodesCount>(*data).count = std::get<acore::size_type>(value);
+}
+
+inline auto bindInsertEdgesCountFrom(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgesCount>(*data).from = std::get<acore::size_type>(value);
+}
+
+inline auto bindInsertEdgesCountTo(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgesCount>(*data).to = std::get<acore::size_type>(value);
+}
+
+struct Placeholder
 {
     std::string name;
     BindPlaceholderFunction bind;

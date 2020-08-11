@@ -103,21 +103,15 @@ public:
     }
 
     //! Returns the list of sub queries of this query.
-    [[nodiscard]] auto subQueries() const noexcept -> std::vector<Query *>
+    [[nodiscard]] auto subQueries() const noexcept -> const std::vector<SubQuery> &
     {
-        std::vector<Query *> queries;
-        queries.reserve(mSubQueries.size());
-
-        for (auto q : mSubQueries)
-        {
-            queries.push_back(q.query.get());
-        }
-
-        return queries;
+        return mSubQueries;
     }
 
 private:
     friend class InsertQuery;
+    friend class InsertEdgeQuery;
+    friend class InsertEdgeFromQuery;
     friend class SelectQuery;
 
     template<typename DataT>
@@ -146,35 +140,50 @@ private:
     }
 
     QueryData mData;
-    std::vector<PlaceholderData> mPlaceholders;
+    std::vector<Placeholder> mPlaceholders;
     std::vector<SubQuery> mSubQueries;
 };
 
-class CountQuery : public Query
+//! Base class of specialized query wrappers that
+//! indicate the result type.
+class BaseQuery : public Query
 {
 public:
-    CountQuery(Query &&query) :
+    //! Constructs the query by moving from \a query.
+    BaseQuery(Query &&query) :
         Query{std::move(query)}
     {
     }
 };
 
-class IdsQuery : public Query
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c count value.
+//! Typically used as a sub query where \c count is
+//! the expected argument.
+class CountQuery : public BaseQuery
 {
 public:
-    IdsQuery(Query &&query) :
-        Query{std::move(query)}
-    {
-    }
+    using BaseQuery::BaseQuery;
 };
 
-class ValuesQuery : public Query
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a list of \c ids.
+//! Typically used as a sub query where \c id or
+//! \c ids are the expected argument.
+class IdsQuery : public BaseQuery
 {
 public:
-    ValuesQuery(Query &&query) :
-        Query{std::move(query)}
-    {
-    }
+    using BaseQuery::BaseQuery;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c values.
+//! Typically used as a sub query where \c values
+//! are the expected argument.
+class ValuesQuery : public BaseQuery
+{
+public:
+    using BaseQuery::BaseQuery;
 };
 
 //! \relates adb::Query

@@ -21,6 +21,107 @@
 
 namespace insertquerytest
 {
+TEST_CASE("adb::insert().edge().from(acore::size_type id).to(acore::size_type id) [adb::Query]")
+{
+    const auto query = adb::insert()
+                           .edge()
+                           .from(0)
+                           .to(1);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == 0);
+    REQUIRE(data.to == 1);
+    REQUIRE(data.count == 1);
+}
+
+TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(acore::size_type id) [adb::Query]")
+{
+    auto query = adb::insert()
+                     .edge()
+                     .from(adb::PlaceholderId{":from"})
+                     .to(1);
+    query.bind(":from", 4);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == 4);
+    REQUIRE(data.to == 1);
+    REQUIRE(data.count == 1);
+}
+
+TEST_CASE("adb::insert().edge().from(acore::size_type id).to(PlaceholderId placeholder) [adb::Query]")
+{
+    auto query = adb::insert()
+                     .edge()
+                     .from(0)
+                     .to(adb::PlaceholderId{":to"});
+    query.bind(":to", 3);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == 0);
+    REQUIRE(data.to == 3);
+    REQUIRE(data.count == 1);
+}
+
+TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(PlaceholderId placeholder) [adb::Query]")
+{
+    auto query = adb::insert()
+                     .edge()
+                     .from(adb::PlaceholderId{":from"})
+                     .to(adb::PlaceholderId{":to"});
+    query.bind(":from", 2);
+    query.bind(":to", 0);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == 2);
+    REQUIRE(data.to == 0);
+    REQUIRE(data.count == 1);
+}
+
+TEST_CASE("adb::insert().edge().from(IdsQuery subQuery).to(acore::size_type id) [adb::Query]")
+{
+    const auto query = adb::insert()
+                           .edge()
+                           .from(adb::insert().node())
+                           .to(2);
+
+    REQUIRE(query.subQueries().size() == 1);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == acore::INVALID_INDEX);
+    REQUIRE(data.to == 2);
+    REQUIRE(data.count == 1);
+}
+
+TEST_CASE("adb::insert().edge().from(acore::size_type id).to(IdsQuery subQuery) [adb::Query]")
+{
+    const auto query = adb::insert()
+                           .edge()
+                           .from(1)
+                           .to(adb::insert().node());
+
+    REQUIRE(query.subQueries().size() == 1);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == 1);
+    REQUIRE(data.to == acore::INVALID_INDEX);
+    REQUIRE(data.count == 1);
+}
+
+TEST_CASE("adb::insert().edge().from(IdsQuery subQuery).to(IdsQuery subQuery) [adb::Query]")
+{
+    const auto query = adb::insert()
+                           .edge()
+                           .from(adb::insert().node())
+                           .to(adb::insert().node());
+
+    REQUIRE(query.subQueries().size() == 2);
+
+    const auto data = std::get<adb::InsertEdgesCount>(query.data());
+    REQUIRE(data.from == acore::INVALID_INDEX);
+    REQUIRE(data.to == acore::INVALID_INDEX);
+    REQUIRE(data.count == 1);
+}
+
 TEST_CASE("adb::insert().node() -> Query [adb::Query]")
 {
     const auto query = adb::insert()
