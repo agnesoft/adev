@@ -12,15 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_ADB_HPP
-#define ADB_ADB_HPP
+#include "pch.hpp"
 
-#include "ADb/Condition.hpp"
-#include "ADb/Element.hpp"
-#include "ADb/KeyValue.hpp"
-#include "ADb/Queries.hpp"
-#include "ADb/Query.hpp"
-#include "ADb/Result.hpp"
-#include "ADb/Value.hpp"
+#include "Query.hpp"
+#include "SubQuery.hpp"
 
-#endif
+namespace adb
+{
+SubQuery::~SubQuery() = default;
+
+SubQuery::SubQuery(Query &&subQuery, BindResultFunction bindFunction) :
+    query{std::make_unique<Query>(std::move(subQuery))},
+    bind{bindFunction}
+{
+}
+
+SubQuery::SubQuery(const SubQuery &other)
+{
+    *this = other;
+}
+
+auto SubQuery::operator=(const SubQuery &other) -> SubQuery &
+{
+    if (&other != this)
+    {
+        query = std::make_unique<Query>(*other.query);
+        bind = other.bind;
+    }
+
+    return *this;
+}
+}

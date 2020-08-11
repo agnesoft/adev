@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_ADB_HPP
-#define ADB_ADB_HPP
+#include "pch.hpp"
 
-#include "ADb/Condition.hpp"
-#include "ADb/Element.hpp"
-#include "ADb/KeyValue.hpp"
-#include "ADb/Queries.hpp"
-#include "ADb/Query.hpp"
-#include "ADb/Result.hpp"
-#include "ADb/Value.hpp"
+#include "Query.hpp"
+#include "SelectQuery.hpp"
 
-#endif
+namespace adb
+{
+auto SelectQuery::count() && -> CountQuery //NOLINT(readability-convert-member-functions-to-static)
+{
+    return CountQuery{Query{SelectData{}}};
+}
+
+auto SelectQuery::values() && -> ValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+{
+    return ValuesQuery{Query{SelectData{}}};
+}
+}

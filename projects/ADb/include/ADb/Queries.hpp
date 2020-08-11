@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_ADB_HPP
-#define ADB_ADB_HPP
+#ifndef ADB_QUERIES_HPP
+#define ADB_QUERIES_HPP
 
-#include "ADb/Condition.hpp"
-#include "ADb/Element.hpp"
-#include "ADb/KeyValue.hpp"
-#include "ADb/Queries.hpp"
-#include "ADb/Query.hpp"
-#include "ADb/Result.hpp"
-#include "ADb/Value.hpp"
+#include "InsertEdgeFromQuery.hpp"
+#include "InsertEdgeQuery.hpp"
 
 #endif

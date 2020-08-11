@@ -12,15 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_ADB_HPP
-#define ADB_ADB_HPP
+#ifndef ADB_SELECTQUERY_HPP
+#define ADB_SELECTQUERY_HPP
 
-#include "ADb/Condition.hpp"
-#include "ADb/Element.hpp"
-#include "ADb/KeyValue.hpp"
-#include "ADb/Queries.hpp"
-#include "ADb/Query.hpp"
-#include "ADb/Result.hpp"
-#include "ADb/Value.hpp"
+#include "ADbModule.hpp"
+
+namespace adb
+{
+class CountQuery;
+class ValuesQuery;
+
+//! The SelectQuery class helps constructing a
+//! select query. Its public methods can only be
+//! called on an r-value (temporary) object.
+class SelectQuery
+{
+public:
+    //! DUMMY
+    [[nodiscard]] auto count() && -> CountQuery;
+
+    //! DUMMY
+    [[nodiscard]] auto values() && -> ValuesQuery;
+};
+}
 
 #endif

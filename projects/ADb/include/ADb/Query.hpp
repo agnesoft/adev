@@ -17,10 +17,17 @@
 
 #include "ADbModule.hpp"
 #include "Condition.hpp"
+#include "InsertQuery.hpp"
 #include "KeyValue.hpp"
+#include "Placeholders.hpp"
+#include "QueryData.hpp"
+#include "SelectQuery.hpp"
+#include "SubQuery.hpp"
 #include "Value.hpp"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -31,7 +38,7 @@ namespace adb
 //! Queries are constructed using fluent interface
 //! in order to provide semantic correctness (not
 //! necessarily data correctness) and readability
-//! to writing queries.
+//! to writing queries (unlike plain text queries).
 //!
 //! To start constructing a query use one of the three
 //! basic standalone functions in the namespace adb:
@@ -42,138 +49,163 @@ namespace adb
 //!
 //! When using IDE you will experience essentially
 //! a guided construction of your query.
+//!
+//! The Query supports both nested queries and placeholder
+//! values. Nested queries are passed in during the
+//! construction of the query in place of values where
+//! it makes sense (e.g. list of element ids, list
+//! of values etc.). Placeholders can be used in
+//! essentially the same places and must be later
+//! bound using bind() method on the resulting query.
 class Query
 {
+    class Select;
+
 public:
-    //! \cond IMPLEMENTAION_DETAIL
-    class Insert;
-
-    struct SubQuery
+    //! Binds a value of a placehodler associated
+    //! with \a name to \a value. Note that if the
+    //! \a value 's type does not match the type
+    //! expected by the placeholding value an exception
+    //! is thrown.
+    auto bind(std::string_view name, PlaceholderValue value) -> void
     {
-        SubQuery() = default;
+        const auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const auto &placeholder) {
+            return placeholder.name == name;
+        });
 
-        SubQuery(std::unique_ptr<Query> subQuery) :
-            query{std::move(subQuery)}
+        if (it == mPlaceholders.end())
         {
+            throw acore::Exception{} << "Placeholder '" << name << "' not found.";
         }
 
-        SubQuery(const SubQuery &other)
-        {
-            *this = other;
-        }
+        it->bind(std::move(value), &mData);
+    }
 
-        SubQuery(SubQuery &&other) noexcept = default;
-        ~SubQuery() = default;
-
-        auto operator=(const SubQuery &other) -> SubQuery &
-        {
-            query = std::make_unique<Query>(*other.query);
-            return *this;
-        }
-
-        auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
-
-        std::unique_ptr<Query> query;
-    };
-
-    struct InsertNodeQuery : SubQuery
+    //! Convenience overload for binding a list of
+    //! values to a single element.
+    auto bind(std::string_view name, std::vector<adb::KeyValue> values) -> void
     {
-    };
+        bind(name, PlaceholderValue{std::move(values)});
+    }
 
-    struct InsertNodeValues
+    //! Convenience overload for binding a list of
+    //! values to multiple elements.
+    auto bind(std::string_view name, std::vector<std::vector<adb::KeyValue>> values) -> void
     {
-        std::vector<adb::KeyValue> values;
-    };
-
-    struct InsertNodesCount
-    {
-        acore::size_type count = 0;
-    };
-
-    struct InsertNodesQuery : SubQuery
-    {
-    };
-
-    struct InsertNodesValues
-    {
-        std::vector<std::vector<adb::KeyValue>> values;
-    };
-    //! \endcond
-
-    //! Alias for all the possible query data types.
-    using Data = std::variant<std::monostate,
-                              InsertNodeQuery,
-                              InsertNodeValues,
-                              InsertNodesCount,
-                              InsertNodesQuery,
-                              InsertNodesValues>;
+        bind(name, PlaceholderValue{std::move(values)});
+    }
 
     //! Returns the data of the query. Used by the
     //! database to access the query's data to execute.
-    [[nodiscard]] auto data() const noexcept -> const Data &
+    [[nodiscard]] auto data() const noexcept -> const QueryData &
     {
         return mData;
     }
 
-    //! \relates adb::Query
-    //! Stand alone function that begins composing
-    //! the insert command. Used for inserting nodes
-    //! and edges, inserting values to eisting nodes
-    //! and edges (elements) as well as updating the
-    //! existing values (overwriting).
-    friend auto insert() noexcept -> Insert;
+    //! Returns the list of sub queries of this query.
+    [[nodiscard]] auto subQueries() const noexcept -> const std::vector<SubQuery> &
+    {
+        return mSubQueries;
+    }
 
 private:
+    friend class InsertQuery;
+    friend class InsertEdgeQuery;
+    friend class InsertEdgeFromQuery;
+    friend class SelectQuery;
+
     template<typename DataT>
     explicit Query(DataT data) noexcept :
         mData{std::move(data)}
     {
     }
 
-    Data mData;
+    auto addPlaceholder(std::string placeholder, BindPlaceholderFunction bindFunction) -> void
+    {
+        const auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const auto &p) {
+            return p.name == placeholder;
+        });
+
+        if (it != mPlaceholders.end())
+        {
+            throw acore::Exception{} << "Placeholder '" << placeholder << "' already exists.";
+        }
+
+        mPlaceholders.push_back({std::move(placeholder), bindFunction});
+    }
+
+    auto addSubQuery(Query query, BindResultFunction bindFunction) -> void
+    {
+        mSubQueries.push_back({std::move(query), bindFunction});
+    }
+
+    QueryData mData;
+    std::vector<Placeholder> mPlaceholders;
+    std::vector<SubQuery> mSubQueries;
 };
 
-//! \cond IMPLEMENTAION_DETAIL
-class Query::Insert
+//! Base class of specialized query wrappers that
+//! indicate the result type.
+class BaseQuery : public Query
 {
 public:
-    [[nodiscard]] auto node() -> Query
+    //! Constructs the query by moving from \a query.
+    BaseQuery(Query &&query) :
+        Query{std::move(query)}
     {
-        return Query{InsertNodesCount{1}};
-    }
-
-    [[nodiscard]] auto node(std::vector<adb::KeyValue> values) -> Query
-    {
-        return Query{InsertNodeValues{std::move(values)}};
-    }
-
-    [[nodiscard]] auto node(Query query) -> Query
-    {
-        return Query{InsertNodeQuery{std::make_unique<Query>(std::move(query))}};
-    }
-
-    [[nodiscard]] auto
-        nodes(acore::size_type count) -> Query
-    {
-        return Query{InsertNodesCount{count}};
-    }
-
-    [[nodiscard]] auto nodes(std::vector<std::vector<adb::KeyValue>> values) -> Query
-    {
-        return Query{InsertNodesValues{std::move(values)}};
-    }
-
-    [[nodiscard]] auto nodes(Query query) -> Query
-    {
-        return Query{InsertNodesQuery{std::make_unique<Query>(std::move(query))}};
     }
 };
 
-[[nodiscard]] inline auto insert() noexcept -> Query::Insert
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c count value.
+//! Typically used as a sub query where \c count is
+//! the expected argument.
+class CountQuery : public BaseQuery
 {
-    return Query::Insert{};
+public:
+    using BaseQuery::BaseQuery;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a list of \c ids.
+//! Typically used as a sub query where \c id or
+//! \c ids are the expected argument.
+class IdsQuery : public BaseQuery
+{
+public:
+    using BaseQuery::BaseQuery;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c values.
+//! Typically used as a sub query where \c values
+//! are the expected argument.
+class ValuesQuery : public BaseQuery
+{
+public:
+    using BaseQuery::BaseQuery;
+};
+
+//! \relates adb::Query
+//! Stand alone function that begins composing
+//! the insert query. Used for inserting nodes
+//! and edges, inserting values to eisting nodes
+//! and edges (elements) as well as updating the
+//! existing values (overwriting).
+[[nodiscard]] inline auto insert() noexcept -> InsertQuery
+{
+    return InsertQuery{};
 }
-//! \endcond
+
+//! \relates adb::Query
+//! Stand alone function that begins composing
+//! the select query. Used for selecting data,
+//! meta data, aggregate data etc. from the
+//! database.
+[[nodiscard]] inline auto select() noexcept -> SelectQuery
+{
+    return SelectQuery{};
+}
 }
 
 #endif
