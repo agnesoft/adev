@@ -17,7 +17,6 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL "SanitizeMemory")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=memory -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize-memory-track-origins -fsanitize-memory-use-after-dtor -stdlib=libc++ -I${CMAKE_SOURCE_DIR}/llvm/build_msan/include -I${CMAKE_SOURCE_DIR}/llvm/build_msan/include/c++/v1")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=memory -stdlib=libc++ -L${CMAKE_SOURCE_DIR}/llvm/build_msan/lib -lc++abi -lpthread -Wl,-rpath,${CMAKE_SOURCE_DIR}/llvm/build_msan/lib")
-    set(ENABLE_PCH FALSE)
 endif()
 
 #Required for Clang/LLVM address sanitizer
