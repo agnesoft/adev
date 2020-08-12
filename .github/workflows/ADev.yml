@@ -10,7 +10,6 @@ jobs:
   analysis:
     name: Analysis
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install CMake
@@ -27,7 +26,6 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install CMake
@@ -56,7 +54,6 @@ jobs:
   documentation:
     name: Documentation
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install Doxygen
@@ -72,7 +69,6 @@ jobs:
   formatting:
     name: Formatting
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install Clang-Format
@@ -83,7 +79,6 @@ jobs:
   sanitize-address:
     name: Sanitize Address
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install CMake
@@ -120,7 +115,6 @@ jobs:
   sanitize-ub:
     name: Sanitize Undefined Behavior
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install CMake
@@ -139,7 +133,6 @@ jobs:
   build:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
-    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -192,7 +185,6 @@ jobs:
   build-vue:
     name: "Build Vue.js"
     runs-on: ubuntu-20.04
-    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install Vue.js
