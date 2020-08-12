@@ -258,7 +258,10 @@ target_include_directories(ADb PUBLIC projects/ADb/include)
 add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
                        projects/ADb/test/ElementTest.cpp
                        projects/ADb/test/KeyValueTest.cpp
-                       projects/ADb/test/InsertQueryTest.cpp
+                       projects/ADb/test/InsertEdgeQueryTest.cpp
+                       projects/ADb/test/InsertEdgesQueryTest.cpp
+                       projects/ADb/test/InsertNodeQueryTest.cpp
+                       projects/ADb/test/InsertNodesQueryTest.cpp
                        projects/ADb/test/QueryTest.cpp
                        projects/ADb/test/ResultTest.cpp
                        projects/ADb/test/ValueTest.cpp)

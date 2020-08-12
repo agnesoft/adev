@@ -44,6 +44,18 @@ public:
     //! the database.
     [[nodiscard]] auto edge() && -> InsertEdgeQuery;
 
+    //! Inserts a single edge with \a values.
+    [[nodiscard]] auto edge(std::vector<adb::KeyValue> values) && -> InsertEdgeQuery;
+
+    //! Insert a single edge with values being
+    //! bound later in place of \a placeholder.
+    [[nodiscard]] auto edge(const PlaceholderValues &placeholder) && -> InsertEdgeQuery;
+
+    //! Insert a single edge with value being
+    //! obtained as a result of executing the
+    //! \a subQuery.
+    [[nodiscard]] auto edge(ValuesQuery subQuery) && -> InsertEdgeQuery;
+
     //! Insert a single node without any values.
     [[nodiscard]] auto node() && -> IdsQuery;
 
@@ -90,10 +102,8 @@ public:
     [[nodiscard]] auto nodes(ValuesQuery subQuery) && -> IdsQuery;
 
 private:
-    template<typename Data>
-    [[nodiscard]] auto createPlaceholderQuery(std::string name, BindPlaceholderFunction bind) -> IdsQuery;
-    template<typename Data>
-    [[nodiscard]] auto createSubQueryQuery(Query &&subQuery, BindResultFunction bind) -> IdsQuery;
+    [[nodiscard]] auto createInsertNodeQuery(std::string name, BindPlaceholderFunction bind) -> IdsQuery;
+    [[nodiscard]] auto createInsertNodeQuery(Query &&subQuery, BindResultFunction bind) -> IdsQuery;
 };
 }
 

@@ -20,19 +20,19 @@ namespace adb
 {
 auto InsertEdgeFromQuery::to(acore::size_type id) && -> IdsQuery
 {
-    std::get<InsertEdgesCount>(mQuery.mData).to = id;
+    std::get<InsertEdgeData>(mQuery.mData).to.push_back(id);
     return IdsQuery{std::move(mQuery)};
 }
 
 auto InsertEdgeFromQuery::to(const PlaceholderId &placeholder) && -> IdsQuery
 {
-    mQuery.addPlaceholder(placeholder.name, bindInsertEdgesCountTo);
+    mQuery.addPlaceholder(placeholder.name, bindInsertEdgeTo);
     return IdsQuery{std::move(mQuery)};
 }
 
 auto InsertEdgeFromQuery::to(IdsQuery subQuery) && -> IdsQuery
 {
-    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgesCountTo);
+    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeTo);
     return IdsQuery{std::move(mQuery)};
 }
 }

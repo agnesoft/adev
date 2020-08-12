@@ -16,26 +16,24 @@
 
 #include "InsertEdgeFromQuery.hpp"
 #include "InsertEdgeQuery.hpp"
-#include "Query.hpp"
 
 namespace adb
 {
-auto InsertEdgeQuery::from(acore::size_type id) && -> InsertEdgeFromQuery //NOLINT(readability-convert-member-functions-to-static)
+auto InsertEdgeQuery::from(acore::size_type id) && -> InsertEdgeFromQuery
 {
-    return InsertEdgeFromQuery{Query{InsertEdgesCount{id, acore::INVALID_INDEX, 1}}};
+    std::get<InsertEdgeData>(mQuery.mData).from.push_back(id);
+    return InsertEdgeFromQuery{std::move(mQuery)};
 }
 
-auto InsertEdgeQuery::from(const PlaceholderId &placeholder) && -> InsertEdgeFromQuery //NOLINT(readability-convert-member-functions-to-static)
+auto InsertEdgeQuery::from(const PlaceholderId &placeholder) && -> InsertEdgeFromQuery
 {
-    Query query{InsertEdgesCount{acore::INVALID_INDEX, acore::INVALID_INDEX, 1}};
-    query.addPlaceholder(placeholder.name, bindInsertEdgesCountFrom);
-    return InsertEdgeFromQuery{std::move(query)};
+    mQuery.addPlaceholder(placeholder.name, bindInsertEdgeFrom);
+    return InsertEdgeFromQuery{std::move(mQuery)};
 }
 
-auto InsertEdgeQuery::from(IdsQuery subQuery) && -> InsertEdgeFromQuery //NOLINT(readability-convert-member-functions-to-static)
+auto InsertEdgeQuery::from(IdsQuery subQuery) && -> InsertEdgeFromQuery
 {
-    Query query{InsertEdgesCount{acore::INVALID_INDEX, acore::INVALID_INDEX, 1}};
-    query.addSubQuery(std::move(subQuery), bindInsertEdgesCountFrom);
-    return InsertEdgeFromQuery{std::move(query)};
+    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeFrom);
+    return InsertEdgeFromQuery{std::move(mQuery)};
 }
 }

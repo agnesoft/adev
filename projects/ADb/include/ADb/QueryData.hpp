@@ -26,24 +26,14 @@
 namespace adb
 {
 //! \cond IMPLEMENTAION_DETAIL
-struct InsertEdgesCount
+struct InsertEdgeData
 {
-    acore::size_type from = acore::INVALID_INDEX;
-    acore::size_type to = acore::INVALID_INDEX;
-    acore::size_type count = 0;
+    std::vector<std::vector<adb::KeyValue>> values;
+    std::vector<acore::size_type> from;
+    std::vector<acore::size_type> to;
 };
 
-struct InsertNodeValues
-{
-    std::vector<adb::KeyValue> values;
-};
-
-struct InsertNodesCount
-{
-    acore::size_type count = 0;
-};
-
-struct InsertNodesValues
+struct InsertNodeData
 {
     std::vector<std::vector<adb::KeyValue>> values;
 };
@@ -56,10 +46,8 @@ struct SelectData
 //! \relates adb::Query
 //! Represents the possible internal data types
 //! of the database query.
-using QueryData = std::variant<InsertEdgesCount,
-                               InsertNodeValues,
-                               InsertNodesCount,
-                               InsertNodesValues,
+using QueryData = std::variant<InsertEdgeData,
+                               InsertNodeData,
                                SelectData>;
 }
 
