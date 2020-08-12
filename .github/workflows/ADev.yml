@@ -192,6 +192,7 @@ jobs:
   build-vue:
     name: "Build Vue.js"
     runs-on: ubuntu-20.04
+    if: false
     steps:
       - uses: actions/checkout@v2
       - name: Install Vue.js
