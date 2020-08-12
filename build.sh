@@ -137,7 +137,9 @@ function installCMake () {
         choco install -y cmake
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get install -y cmake
+        sudo apt-get purge cmake -y
+        sudo apt-get install snap -y
+        sudo snap install cmake --classic
     else
         brew install cmake
     fi
@@ -538,7 +540,7 @@ function buildLibCppWithMemorySanitizer () {
     detectClang
 
     if [ ! -d "llvm" ]; then
-        git clone --depth=1 https://github.com/llvm/llvm-project llvm
+        git clone --depth=1 -b llvmorg-10.0.1 https://github.com/llvm/llvm-project.git llvm
     fi
     
     cd llvm
