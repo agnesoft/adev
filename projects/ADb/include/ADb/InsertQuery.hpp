@@ -94,7 +94,7 @@ public:
     //! later in place of \a placeholder. Number of
     //! nodes will correspond to the number of entries
     //! in the bound values.
-    [[nodiscard]] auto nodes(const PlaceholderValues &placeholder) && -> IdsQuery;
+    [[nodiscard]] auto nodes(const PlaceholderMultiValues &placeholder) && -> IdsQuery;
 
     //! Insert ndoes with values that will be obtained
     //! as a result of executing the \a subQuery.

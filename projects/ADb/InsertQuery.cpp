@@ -28,19 +28,19 @@ auto InsertQuery::edge() && -> InsertEdgeQuery //NOLINT(readability-convert-memb
     return InsertEdgeQuery{Query{InsertEdgeData{}}};
 }
 
-auto InsertQuery::edge(std::vector<KeyValue> values) && -> InsertEdgeQuery
+auto InsertQuery::edge(std::vector<KeyValue> values) && -> InsertEdgeQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return InsertEdgeQuery{Query{InsertEdgeData{{std::move(values)}, {}, {}}}};
 }
 
-auto InsertQuery::edge(const PlaceholderValues &placeholder) && -> InsertEdgeQuery
+auto InsertQuery::edge(const PlaceholderValues &placeholder) && -> InsertEdgeQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertEdgeData{}};
     query.addPlaceholder(placeholder.name, BindInsertEdgeValues);
     return InsertEdgeQuery{std::move(query)};
 }
 
-auto InsertQuery::edge(ValuesQuery subQuery) && -> InsertEdgeQuery
+auto InsertQuery::edge(ValuesQuery subQuery) && -> InsertEdgeQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertEdgeData{}};
     query.addSubQuery(std::move(subQuery), BindInsertEdgeValues);
@@ -87,7 +87,7 @@ auto InsertQuery::nodes(std::vector<std::vector<KeyValue>> values) && -> IdsQuer
     return IdsQuery{Query{InsertNodeData{std::move(values)}}};
 }
 
-auto InsertQuery::nodes(const PlaceholderValues &placeholder) && -> IdsQuery
+auto InsertQuery::nodes(const PlaceholderMultiValues &placeholder) && -> IdsQuery
 {
     return IdsQuery{createInsertNodeQuery(placeholder.name, bindInsertNodesValues)};
 }
@@ -97,14 +97,14 @@ auto InsertQuery::nodes(MultiValuesQuery subQuery) && -> IdsQuery
     return IdsQuery{createInsertNodeQuery(std::move(subQuery), bindInsertNodesValues)};
 }
 
-auto InsertQuery::createInsertNodeQuery(std::string name, BindPlaceholderFunction bind) -> Query
+auto InsertQuery::createInsertNodeQuery(std::string name, BindPlaceholderFunction bind) -> Query //NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertNodeData{}};
     query.addPlaceholder(std::move(name), bind);
     return query;
 }
 
-auto InsertQuery::createInsertNodeQuery(Query &&subQuery, BindResultFunction bind) -> Query
+auto InsertQuery::createInsertNodeQuery(Query &&subQuery, BindResultFunction bind) -> Query //NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertNodeData{}};
     query.addSubQuery(std::move(subQuery), bind);

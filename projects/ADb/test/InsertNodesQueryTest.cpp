@@ -65,8 +65,8 @@ TEST_CASE("adb::insert().nodes(std::vector<std::vector<adb::KeyValue>> values) -
 TEST_CASE("adb::insert().nodes(PlaceholderValues values) -> Query [adb::Query]")
 {
     auto query = adb::insert()
-                     .nodes(adb::PlaceholderValues{":values"});
-    query.bind(":values", {{{"Key1", "Value1"}, {"Key2", 4}}, {{"Key1", "Value2"}}, {{1, 2}, {-3, -4}}});
+                     .nodes(adb::PlaceholderMultiValues{":multiValues"});
+    query.bind(":multiValues", {{{"Key1", "Value1"}, {"Key2", 4}}, {{"Key1", "Value2"}}, {{1, 2}, {-3, -4}}});
 
     REQUIRE(std::get<adb::InsertNodeData>(query.data()).values
             == std::vector<std::vector<adb::KeyValue>>{
@@ -81,7 +81,7 @@ TEST_CASE("adb::insert().nodes(SelectCountQuery query) -> Query [adb::Query]")
                            .nodes(adb::select().count());
 
     REQUIRE(query.subQueries().size() == 1);
-    REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 0);
+    REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 0); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().nodes(SelectValuesQuery query) -> Query [adb::Query]")
