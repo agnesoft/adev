@@ -41,7 +41,7 @@ TEST_CASE("Query(const Query &other) [adb::Query]")
         const auto other{query}; //NOLINT(performance-unnecessary-copy-initialization)
 
         REQUIRE(other.subQueries().size() == 1);
-        REQUIRE(std::get<adb::InsertNodesCount>(query.data()).count == 0);
+        REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 0); //NOLINT(readability-container-size-empty)
     }
 }
 

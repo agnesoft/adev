@@ -24,6 +24,11 @@ auto SelectQuery::count() && -> CountQuery //NOLINT(readability-convert-member-f
     return CountQuery{Query{SelectData{}}};
 }
 
+auto SelectQuery::multiValues() && -> MultiValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+{
+    return MultiValuesQuery{Query{SelectData{}}};
+}
+
 auto SelectQuery::values() && -> ValuesQuery //NOLINT(readability-convert-member-functions-to-static)
 {
     return ValuesQuery{Query{SelectData{}}};

@@ -61,8 +61,17 @@ struct PlaceholderId : PlaceholderBase
 };
 
 //! \relates adb::Query
-//! Used when the placeholder represents values.
+//! Used when the placeholder represents single
+//! element's values.
 struct PlaceholderValues : PlaceholderBase
+{
+    using PlaceholderBase::PlaceholderBase;
+};
+
+//! \relates adb::Query
+//! Used when the placeholder represents multiple
+//! elements' values.
+struct PlaceholderMultiValues : PlaceholderBase
 {
     using PlaceholderBase::PlaceholderBase;
 };
@@ -72,27 +81,32 @@ using BindPlaceholderFunction = auto (*)(PlaceholderValue &&value, QueryData *da
 
 inline auto bindInsertNodeValues(PlaceholderValue &&value, QueryData *data)
 {
-    std::get<InsertNodeValues>(*data).values = std::move(std::get<std::vector<adb::KeyValue>>(value));
+    std::get<InsertNodeData>(*data).values = std::vector<std::vector<adb::KeyValue>>{std::move(std::get<std::vector<adb::KeyValue>>(value))};
 }
 
 inline auto bindInsertNodesValues(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertNodesValues>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
+    std::get<InsertNodeData>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
 }
 
 inline auto bindInsertNodesCount(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertNodesCount>(*data).count = std::get<acore::size_type>(value);
+    std::get<InsertNodeData>(*data).values.resize(std::get<acore::size_type>(value));
 }
 
-inline auto bindInsertEdgesCountFrom(PlaceholderValue &&value, QueryData *data) -> void
+inline auto bindInsertEdgeFrom(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertEdgesCount>(*data).from = std::get<acore::size_type>(value);
+    std::get<InsertEdgeData>(*data).from = std::vector<acore::size_type>{std::get<acore::size_type>(value)};
 }
 
-inline auto bindInsertEdgesCountTo(PlaceholderValue &&value, QueryData *data) -> void
+inline auto bindInsertEdgeTo(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertEdgesCount>(*data).to = std::get<acore::size_type>(value);
+    std::get<InsertEdgeData>(*data).to = std::vector<acore::size_type>{std::get<acore::size_type>(value)};
+}
+
+inline auto BindInsertEdgeValues(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgeData>(*data).values = std::vector<std::vector<adb::KeyValue>>{std::move(std::get<std::vector<adb::KeyValue>>(value))};
 }
 
 struct Placeholder
