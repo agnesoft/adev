@@ -61,17 +61,37 @@ TEST_CASE("adb::insert().edge().from(acore::size_type id).to(PlaceholderId place
 
 TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(PlaceholderId placeholder) [adb::Query]")
 {
-    auto query = adb::insert()
-                     .edge()
-                     .from(adb::PlaceholderId{":from"})
-                     .to(adb::PlaceholderId{":to"});
-    query.bind(":from", 2);
-    query.bind(":to", 0);
+    SECTION("[single bind]")
+    {
+        auto query = adb::insert()
+                         .edge()
+                         .from(adb::PlaceholderId{":from"})
+                         .to(adb::PlaceholderId{":to"});
+        query.bind(":from", 2);
+        query.bind(":to", 0);
 
-    const auto data = std::get<adb::InsertEdgeData>(query.data());
-    REQUIRE(data.from == std::vector<acore::size_type>{2});
-    REQUIRE(data.to == std::vector<acore::size_type>{0});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+        const auto data = std::get<adb::InsertEdgeData>(query.data());
+        REQUIRE(data.from == std::vector<acore::size_type>{2});
+        REQUIRE(data.to == std::vector<acore::size_type>{0});
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    }
+
+    SECTION("[multi bind]")
+    {
+        auto query = adb::insert()
+                         .edge()
+                         .from(adb::PlaceholderId{":from"})
+                         .to(adb::PlaceholderId{":to"});
+        query.bind(":from", 2);
+        query.bind(":from", 3);
+        query.bind(":to", 0);
+        query.bind(":to", 1);
+
+        const auto data = std::get<adb::InsertEdgeData>(query.data());
+        REQUIRE(data.from == std::vector<acore::size_type>{3});
+        REQUIRE(data.to == std::vector<acore::size_type>{1});
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    }
 }
 
 TEST_CASE("adb::insert().edge().from(IdsQuery subQuery).to(acore::size_type id) [adb::Query]")
@@ -136,16 +156,34 @@ TEST_CASE("adb::insert().edge(std::vector<adb::KeyValue> values).from(acore::siz
 
 TEST_CASE("adb::insert().edge(PlaceholderValues placeholder).from(acore::size_type id).to(acore::size_type id) [adb::Query]")
 {
-    auto query = adb::insert()
-                     .edge(adb::PlaceholderValues{":values"})
-                     .from(0)
-                     .to(1);
-    query.bind(":values", {{"Key", "Value"}, {1, 4}, {"Id", -4}});
+    SECTION("[single bind]")
+    {
+        auto query = adb::insert()
+                         .edge(adb::PlaceholderValues{":values"})
+                         .from(0)
+                         .to(1);
+        query.bind(":values", {{"Key", "Value"}, {1, 4}, {"Id", -4}});
 
-    const auto data = std::get<adb::InsertEdgeData>(query.data());
-    REQUIRE(data.from == std::vector<acore::size_type>{0});
-    REQUIRE(data.to == std::vector<acore::size_type>{1});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"Key", "Value"}, {1, 4}, {"Id", -4}}});
+        const auto data = std::get<adb::InsertEdgeData>(query.data());
+        REQUIRE(data.from == std::vector<acore::size_type>{0});
+        REQUIRE(data.to == std::vector<acore::size_type>{1});
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"Key", "Value"}, {1, 4}, {"Id", -4}}});
+    }
+
+    SECTION("[multi bind]")
+    {
+        auto query = adb::insert()
+                         .edge(adb::PlaceholderValues{":values"})
+                         .from(0)
+                         .to(1);
+        query.bind(":values", {{"Key", "Value"}, {1, 4}, {"Id", -4}});
+        query.bind(":values", {{1, 0}});
+
+        const auto data = std::get<adb::InsertEdgeData>(query.data());
+        REQUIRE(data.from == std::vector<acore::size_type>{0});
+        REQUIRE(data.to == std::vector<acore::size_type>{1});
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{1, 0}}});
+    }
 }
 
 TEST_CASE("adb::insert().edge(IdsQuery subQuery).from(acore::size_type id).to(acore::size_type id) [adb::Query]")

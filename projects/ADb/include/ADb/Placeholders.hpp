@@ -72,7 +72,7 @@ using BindPlaceholderFunction = auto (*)(PlaceholderValue &&value, QueryData *da
 
 inline auto bindInsertNodeValues(PlaceholderValue &&value, QueryData *data)
 {
-    std::get<InsertNodeData>(*data).values.emplace_back(std::move(std::get<std::vector<adb::KeyValue>>(value)));
+    std::get<InsertNodeData>(*data).values = std::vector<std::vector<adb::KeyValue>>{std::move(std::get<std::vector<adb::KeyValue>>(value))};
 }
 
 inline auto bindInsertNodesValues(PlaceholderValue &&value, QueryData *data) -> void
@@ -87,17 +87,17 @@ inline auto bindInsertNodesCount(PlaceholderValue &&value, QueryData *data) -> v
 
 inline auto bindInsertEdgeFrom(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertEdgeData>(*data).from.push_back(std::get<acore::size_type>(value));
+    std::get<InsertEdgeData>(*data).from = std::vector<acore::size_type>{std::get<acore::size_type>(value)};
 }
 
 inline auto bindInsertEdgeTo(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertEdgeData>(*data).to.push_back(std::get<acore::size_type>(value));
+    std::get<InsertEdgeData>(*data).to = std::vector<acore::size_type>{std::get<acore::size_type>(value)};
 }
 
 inline auto BindInsertEdgeValues(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertEdgeData>(*data).values.emplace_back(std::move(std::get<std::vector<adb::KeyValue>>(value)));
+    std::get<InsertEdgeData>(*data).values = std::vector<std::vector<adb::KeyValue>>{std::move(std::get<std::vector<adb::KeyValue>>(value))};
 }
 
 struct Placeholder

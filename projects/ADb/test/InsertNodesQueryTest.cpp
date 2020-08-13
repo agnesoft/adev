@@ -28,11 +28,24 @@ TEST_CASE("adb::insert().nodes(acore::size_type count) -> Query [adb::Query]")
 
 TEST_CASE("adb::insert().nodes(PlaceholderCount placeholder) -> Query [adb::Query]")
 {
-    auto query = adb::insert()
-                     .nodes(adb::PlaceholderCount{":count"});
-    query.bind(":count", 4);
+    SECTION("[single bind]")
+    {
+        auto query = adb::insert()
+                         .nodes(adb::PlaceholderCount{":count"});
+        query.bind(":count", 4);
 
-    REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 4);
+        REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 4);
+    }
+
+    SECTION("[multi bind]")
+    {
+        auto query = adb::insert()
+                         .nodes(adb::PlaceholderCount{":count"});
+        query.bind(":count", 4);
+        query.bind(":count", 2);
+
+        REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 2);
+    }
 }
 
 TEST_CASE("adb::insert().nodes(std::vector<std::vector<adb::KeyValue>> values) -> Query [adb::Query]")
