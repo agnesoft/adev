@@ -18,11 +18,13 @@ const router = new VueRouter({routes: [
  import BaseIcon from "@/components/base/BaseIcon.vue";
  import BaseButton from "@/components/base/BaseButton.vue";
  import BaseMessage from "@/components/base/BaseMessage.vue";
+ import BaseBox from "@/components/base/BaseBox.vue";
 
 // localVue.component("BaseSelect", BaseSelect);
  localVue.component("BaseIcon", BaseIcon);
  localVue.component("BaseButton", BaseButton);
  localVue.component("BaseMessage", BaseMessage);
+ localVue.component("BaseBox", BaseBox);
 
 
  const scene_state = {
@@ -55,6 +57,7 @@ const router = new VueRouter({routes: [
             x: 0.7,
             y: 0.7,
         },
+        nodes:[1,2],
         data: {
             foo: "bar",
             foo1: "bar1",

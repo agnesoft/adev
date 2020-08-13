@@ -56,8 +56,7 @@ export default {
         cursor: pointer;
         transition: all var(--transition-ease);
         font-weight: 700;
-    }
-    
+    }   
     .node:hover{
         box-shadow:  0 0 3px var(--primary-color), 2px 2px 5px var(--dark-color);
     }

@@ -95,7 +95,7 @@ describe('Scene',() => {
         await wrapper.findComponent(SearchField).vm.$emit('search','fdad');
         expect(wrapper.find(".search-wrap .error").exists()).toBe(true);
     });
-    it('displays search result after searching ivalid element', async () => {
+    it('displays search result after searching invalid element', async () => {
         expect(wrapper.find(".search-wrap .info").exists()).toBe(false);
         await wrapper.findComponent(SearchField).vm.$emit('search','1');
         expect(wrapper.find(".search-wrap .info").exists()).toBe(true);
@@ -103,10 +103,10 @@ describe('Scene',() => {
         expect(wrapper.find(".node.selected").exists()).toBe(true);
     });
     it("rendres element data after hovering element in the view",async () => {
-        expect(wrapper.find(".element-data").exists()).toBe(false);
+        expect(wrapper.find(".data-wrapper").exists()).toBe(false);
         let element = wrapper.find('.adb-view .element');
         await element.trigger("mouseenter");
-        expect(wrapper.find(".element-data").exists()).toBe(true);
+        expect(wrapper.find(".data-wrapper").exists()).toBe(true);
     })
     it('resets the scene after clicking reset button',async () => {
         wrapper.vm.move.x = -1;
@@ -139,12 +139,11 @@ describe('Scene',() => {
         await wrapper.findComponent(SearchField).vm.$emit('search','fdad');
         expect(wrapper.find(".search-wrap .error").exists()).toBe(true);
     });
-    it('displays search result after searching ivalid element', async () => {
+    it('displays search result after searching invalid element', async () => {
         expect(wrapper.find(".search-wrap .info").exists()).toBe(false);
         await wrapper.findComponent(SearchField).vm.$emit('search','1');
         expect(wrapper.find(".search-wrap .info").exists()).toBe(true);
         expect(wrapper.find(".search-mode").exists()).toBe(true);
         expect(wrapper.find(".node.selected").exists()).toBe(true);
-
     });
 })

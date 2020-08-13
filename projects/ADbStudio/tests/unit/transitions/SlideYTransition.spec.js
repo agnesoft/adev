@@ -1,9 +1,9 @@
 import { shallowMount  } from '@vue/test-utils'
-import SlideXTransition from '@/components/transitions/SlideXTransition.vue'
+import SlideYTransition from '@/components/transitions/SlideYTransition.vue'
 
-describe("SlideXTransition",() => {
+describe("SlideYTransition",() => {
     it('should render fake element', async () => {
-        const wrapper = shallowMount(SlideXTransition, {
+        const wrapper = shallowMount(SlideYTransition, {
             slots: {
               default: '<div class="fake-elem"></div>'
             },
@@ -16,7 +16,7 @@ describe("SlideXTransition",() => {
       
       it('should not render fake element', async () => {
              
-        const wrapper = shallowMount(SlideXTransition, {
+        const wrapper = shallowMount(SlideYTransition, {
             slots: {
               default: '<div class="fake-elem"></div>'
             },
