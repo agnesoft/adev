@@ -1,9 +1,11 @@
 {
+  "edge-id": "Hrana {id}",
   "element-not-found": "Prvek nebyl nalezen.",
   "list-of-edges": "Seznam hran",
   "list-of-nodes": "Seznam uzlů",
   "message": "ahoj i18n !!",
   "no-data-selected": "Nebyla vybrána žádná data.",
+  "node-id": "Uzel {id}",
   "raw-data": "Surová data",
   "reset-view": "Resetovat pohled",
   "run": "Spustit",

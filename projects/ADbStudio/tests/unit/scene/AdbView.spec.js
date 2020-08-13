@@ -1,8 +1,6 @@
-import { shallowMount  } from '@vue/test-utils';
+import { mount  } from '@vue/test-utils';
 import Vuex from 'vuex';
 import ADbView from '@/components/scene/ADbView.vue';
-import Node from '@/components/scene/Node.vue';
-import Edge from '@/components/scene/Edge.vue';
 import scene_store from '../../../src/store/modules/scene'
 
 import { localVue,scene_state } from '../TestUtils'
@@ -24,13 +22,13 @@ describe('ADbView',() => {
                 }
               }
         });
-        wrapper = shallowMount(ADbView, {
+        wrapper = mount(ADbView, {
             localVue,
             store
           });
     })
     it('renders nodes and edges',() => {
-        expect(wrapper.findComponent(Node).exists()).toBe(true);
-        expect(wrapper.findComponent(Edge).exists()).toBe(true);
+        expect(wrapper.find('.node').exists()).toBe(true);
+        expect(wrapper.find('.edge').exists()).toBe(true);
     })
 })

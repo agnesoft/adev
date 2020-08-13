@@ -3,7 +3,8 @@
         <use v-if="isIcon('nodes')" xlink:href="../../assets/images/icons.svg#nodes" x = 0 y = 0></use>   
         <use v-else-if="isIcon('edges')" xlink:href="../../assets/images/icons.svg#edges" x = 0 y = 0></use> 
         <use v-else-if="isIcon('data')" xlink:href="../../assets/images/icons.svg#data" x = 0 y = 0></use>   
-        <use v-else-if="isIcon('close')" xlink:href="../../assets/images/icons.svg#close" x = 0 y = 0></use>     
+        <use v-else-if="isIcon('close')" xlink:href="../../assets/images/icons.svg#close" x = 0 y = 0></use>  
+        <use v-else-if="isIcon('arrow')" xlink:href="../../assets/images/icons.svg#arrow" x = 0 y = 0></use>    
     </svg>
 </template>
 
