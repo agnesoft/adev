@@ -35,7 +35,7 @@ To build Vue.js run (use Git Bash on **Windows**):
 ./build.sh build-vuejs
 ```
 
-To print other avilable actions run `./build.sh` without parameters.
+To print other avilable build actions run `./build.sh` without parameters.
 
 #### Prerequisites
 
@@ -58,9 +58,9 @@ All required tools except for _C++ compilers_ themselves can be installed with `
 | [apt](<https://en.wikipedia.org/wiki/APT_(software)>)                | any     | Linux   | -        | -                      | `install-xxx`                                                                                          |
 | [Homebrew](https://brew.sh/)                                         | any     | macOS   | -        | -                      | `install-xxx`                                                                                          |
 
-## Build Actions & Continuous Integration (GitHub Actions)
+## Continuous Integration (GitHub Actions)
 
-All of the following are part of the **build.sh** script and can be run locally on your system. Run `./build.sh` without parameters for details. The following table describes the status checks that are run with every pull request and master build:
+All of the following checks are part of the **build.sh** script and can be run locally on your system. Run `./build.sh` without parameters for details. The following table describes the status checks that are run with every pull request and master build:
 
 | Check                       | Requirement                                                               | Description                                                                                                                                                                                                       | OS      | `build.sh`                               | Link                                                                 |
 | --------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ---------------------------------------- | -------------------------------------------------------------------- |
