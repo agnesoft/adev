@@ -41,22 +41,22 @@ To print other avilable actions run `./build.sh` without parameters.
 
 All required tools except for _C++ compilers_ themselves can be installed with `./build.sh instal-xxx`. Run `./build.sh` without parameters to see all the available options.
 
-| Prerequisite                                                         | Version | ./build.sh           | Required For (`./build.sh`)                                                                                |
-| -------------------------------------------------------------------- | ------- | -------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [CMake](https://cmake.org/)                                          | 3.15+   | install-cmake        | C++ `build`                                                                                                |
-| [Ninja](https://ninja-build.org/)                                    | 1.10+   | install-ninja        | C++ `build`                                                                                                |
-| [MSVC](https://visualstudio.microsoft.com/cs/vs/features/cplusplus/) | 14+     | install-msvc         | Only on Windows. C++ `build` & `tests` & `benchmarks`                                                      |
-| [GCC](https://gcc.gnu.org/)                                          | 9+      | install-gcc          | Only on Linux. C++ `build` & `tests` & `benchmarks`                                                        |
-| [Clang](https://clang.llvm.org/)                                     | 9+      | install-clang        | C++ `build` & `tests` & `benchmarks` & `sanitize-address` & `sanitize-memory` & `sanitize-ub` & `coverage` |
-| [Node.js](https://nodejs.org/)                                       | 12+     | install-vuejs        | JS `build-vuejs` & `tests-vuejs`                                                                           |
-| [Vue.js](https://vuejs.org/)                                         | 2.2     | install-vuejs        | JS `build-vuejs` & `tests-vuejs`                                                                           |
-| [Doxygen](https://www.doxygen.nl/index.html)                         | 1.8+    | install-doxygen      | C++ `documentation`                                                                                        |
-| [LLVM](https://www.llvm.org)                                         | 9+      | install-llvm         | C++ `coverage`                                                                                             |
-| [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html)         | 9+      | install-clang-format | C++ `formatting`                                                                                           |
-| [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/)               | 9+      | install-clang-tidy   | C++ `analysis`                                                                                             |
-| [Chocolatey](https://chocolatey.org/)                                | any     | -                    | Only on Windows. Required for `install-xxx` to work.                                                       |
-| [apt](<https://en.wikipedia.org/wiki/APT_(software)>)                | any     | -                    | Only on Linux. Required for `install-xxx` to work.                                                         |
-| [Homebrew](https://brew.sh/)                                         | any     | -                    | Only on macOS. Require for `install-xxx` to work.                                                          |
+| Prerequisite                                                         | Version | OS      | Language | ./build.sh             | Required For (`./build.sh`)                                                                            |
+| -------------------------------------------------------------------- | ------- | ------- | -------- | ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| [CMake](https://cmake.org/)                                          | 3.15+   | Any     | C++      | `install-cmake`        | `build`                                                                                                |
+| [Ninja](https://ninja-build.org/)                                    | 1.10+   | Any     | C++      | `install-ninja`        | `build`                                                                                                |
+| [MSVC](https://visualstudio.microsoft.com/cs/vs/features/cplusplus/) | 14+     | Windows | C++      | `install-msvc`         | `build` & `tests` & `benchmarks`                                                                       |
+| [GCC](https://gcc.gnu.org/)                                          | 9+      | Linux   | C++      | `install-gcc`          | `build` & `tests` & `benchmarks`                                                                       |
+| [Clang](https://clang.llvm.org/)                                     | 9+      | Any     | C++      | `install-clang`        | `build` & `tests` & `benchmarks` & `sanitize-address` & `sanitize-memory` & `sanitize-ub` & `coverage` |
+| [Node.js](https://nodejs.org/)                                       | 12+     | Any     | JS       | `install-vuejs`        | `build-vuejs` & `tests-vuejs`                                                                          |
+| [Vue.js](https://vuejs.org/)                                         | 2.2     | Any     | JS       | `install-vuejs`        | `build-vuejs` & `tests-vuejs`                                                                          |
+| [Doxygen](https://www.doxygen.nl/index.html)                         | 1.8+    | Any     | C++      | `install-doxygen`      | `documentation`                                                                                        |
+| [LLVM](https://www.llvm.org)                                         | 9+      | Any     | C++      | `install-llvm`         | `coverage`                                                                                             |
+| [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html)         | 9+      | Any     | C++      | `install-clang-format` | `formatting`                                                                                           |
+| [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/)               | 9+      | Any     | C++      | `install-clang-tidy`   | `analysis`                                                                                             |
+| [Chocolatey](https://chocolatey.org/)                                | any     | Windows | -        | -                      | `install-xxx`                                                                                          |
+| [apt](<https://en.wikipedia.org/wiki/APT_(software)>)                | any     | Linux   | -        | -                      | `install-xxx`                                                                                          |
+| [Homebrew](https://brew.sh/)                                         | any     | macOS   | -        | -                      | `install-xxx`                                                                                          |
 
 ## Build Actions & Continuous Integration (GitHub Actions)
 
