@@ -1,22 +1,10 @@
 # ADev
 
-[Builds & Artifacts](https://github.com/Agnesoft/ADev/actions?query=branch%3Amaster)
+## [BINARIES & ARTIFACTS](https://github.com/Agnesoft/ADev/actions?query=branch%3Amaster)
 
 ![Build](https://github.com/Agnesoft/ADev/workflows/ADev/badge.svg)
 
-Central development repository providing shared cross platform infrastructure to projects.
-
-## Build
-
-All build actions are done using **build.sh** script. Bash scripts are native on Linux and macOS, on Windows use **Git Bash**. When run without any commands it prints extensive readme with all avaiable actions, requirements and used environment variables for each action. It also auto-detects the prerequisites for each action. If any prerequisites for a given action are missing it offers a platform independent installation action (./build.sh install-xxx). This requires you to have a package manager though:
-
-- [Chocolatey](https://chocolatey.org/) on Windows
-- [apt](<https://en.wikipedia.org/wiki/APT_(software)>) on Linux
-- [Homebrew](https://brew.sh/index_cs) on macOS
-
-For simply building all of ADev you will require CMake generator, Ninja build system and a C++ toolchain, then run:
-
-`./build.sh build`
+Central development repository that hosts all the Agnesoft projects providing common development & release (CI/CD) infrastructure. Use `./build.sh` script (see below) for setting things up, building, running checks, installing prerequisites & more.
 
 ## Projects
 
@@ -28,95 +16,76 @@ For simply building all of ADev you will require CMake generator, Ninja build sy
 - [AFile](projects/AFile/README.md) C++ file based containers.
 - [AGraph](proejcts/AFile/README.md) C++ graph implementation.
 
-## Third Party Projects
+#### Third Party Projects
 
 - [Catch2](https://github.com/catchorg/Catch2) C++ a multi-paradigm test framework.
 - [tiny-process-library](https://gitlab.com/eidheim/tiny-process-library) C++ platform independent process library.
 
+## Build
+
+To build **C++** run (use Git Bash on _Windows_):
+
+```
+./build.sh build
+```
+
+To build **Vue.js** run (use Git Bash on _Windows_):
+
+```
+./build.sh build-vuejs
+```
+
+To print all avilable actions run (use Git Bash on _Windows_):
+
+```
+./build.sh
+```
+
+#### Prerequisites
+
+All required tools except the OS package managers can be installed with `./build.sh instal-xxx`. Run `./build.sh` without parameters to see all the available options or refer to the table below:
+
+| Prerequisite                                                         | Version | OS      | Language | `./build.sh`           | Required For (`./build.sh`)                                                                            |
+| -------------------------------------------------------------------- | ------- | ------- | -------- | ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| [Chocolatey](https://chocolatey.org/)                                | any     | Windows | -        | -                      | `install-xxx`                                                                                          |
+| [apt](<https://en.wikipedia.org/wiki/APT_(software)>)                | any     | Linux   | -        | -                      | `install-xxx`                                                                                          |
+| [Homebrew](https://brew.sh/)                                         | any     | macOS   | -        | -                      | `install-xxx`                                                                                          |
+| [CMake](https://cmake.org/)                                          | 3.15+   | Any     | C++      | `install-cmake`        | `build`                                                                                                |
+| [Ninja](https://ninja-build.org/)                                    | 1.10+   | Any     | C++      | `install-ninja`        | `build`                                                                                                |
+| [GCC](https://gcc.gnu.org/)                                          | 9+      | Linux   | C++      | `install-gcc`          | `build` & `tests` & `benchmarks`                                                                       |
+| [MSVC](https://visualstudio.microsoft.com/cs/vs/features/cplusplus/) | 14+     | Windows | C++      | `install-msvc`         | `build` & `tests` & `benchmarks`                                                                       |
+| [Clang](https://clang.llvm.org/)                                     | 9+      | Any     | C++      | `install-clang`        | `build` & `tests` & `benchmarks` & `sanitize-address` & `sanitize-memory` & `sanitize-ub` & `coverage` |
+| [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html)         | 9+      | Any     | C++      | `install-clang-format` | `formatting`                                                                                           |
+| [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/)               | 9+      | Any     | C++      | `install-clang-tidy`   | `analysis`                                                                                             |
+| [Doxygen](https://www.doxygen.nl/index.html)                         | 1.8+    | Any     | C++      | `install-doxygen`      | `documentation`                                                                                        |
+| [LLVM](https://www.llvm.org)                                         | 9+      | Any     | C++      | `install-llvm`         | `coverage`                                                                                             |
+| [Node.js](https://nodejs.org/)                                       | 12+     | Any     | JS       | `install-vuejs`        | `build-vuejs` & `tests-vuejs`                                                                          |
+| [Vue.js](https://vuejs.org/)                                         | 2.2     | Any     | JS       | `install-vuejs`        | `build-vuejs` & `tests-vuejs`                                                                          |
+
 ## Continuous Integration (GitHub Actions)
 
-All of the following are part of the **build.sh** script and can be run locally on your system.
+All of the following checks are part of the `build.sh` script and can be run locally on your system. Run `./build.sh` without parameters for details. The following table describes the status checks that are run with every pull request and master build:
 
-#### Analysis (./build.sh analysis)
+| Check                       | Requirement                                                               | Description                                                                                                                                                                                                       | OS      | Language | `build.sh`                               | Link                                                                 |
+| --------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| Build (**MSVC**)            | Compiles <br/> No warnings <br/> 100x Tests Pass <br/> 1x Benchmarks Pass | Windows MSVC x64 Release build. Runs tests 100 times to prevent flaky tests. Runs benchmarks once.                                                                                                                | Windows | C++      | `build` <br/> `tests` <br/> `benchmarks` | [MSVC](https://visualstudio.microsoft.com/cs/vs/features/cplusplus/) |
+| Build (**GCC**)             | Compiles <br/> No warnings <br/> 100x Tests Pass <br/> 1x Benchmarks Pass | Linux GCC x64 Release build. Runs tests 100 times to prevent flaky tests. Runs benchmarks once.                                                                                                                   | Linux   | C++      | `build` <br/> `tests` <br/> `benchmarks` | [GCC](https://gcc.gnu.org/)                                          |
+| Build (**macOS**)           | Compiles <br/> No warnings <br/> 100x Tests Pass <br/> 1x Benchmarks Pass | macOS Clang x64 Release build. Runs tests 100 times to prevent flaky tests. Runs benchmarks once.                                                                                                                 | Any     | C++      | `build` <br/> `tests` <br/> `benchmarks` | [Clang](https://clang.llvm.org/)                                     |
+| Build (**Vue.js**)          | Compiles <br/> Tests pass                                                 | Builds Vue.js applications & runs the tests.                                                                                                                                                                      | Any     | JS       | `build-vuejs` <br/> `tests-vuejs`        | [Vue.js](https://vuejs.org/)                                         |
+| Analysis                    | No warnings                                                               | Clang-Tidy static analysis. Runs on all the C++ sources except the third party code. Suppress undesirable warnings and diagnostics with `NOLINT`.                                                                 | Any     | C++      | `analysis`                               | [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/)               |
+| Coverage                    | 100 % line <br/> 100% function _any%_ region                              | LLVM code coverage. Region (branch) coverage is _any%_ due to the tooling's inability to handle `constexpr`.                                                                                                      | Any     | C++      | `coverage`                               | [LLVM Cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html) |
+| Documentation               | Full documentation                                                        | Doxygen code documentation. All public/protected entities must be documented unless they are explicitly part of the implementation detail (guard these with `//! \cond IMPLEMENTAION_DETAIL` and `//! \endcond`). | Any     | C++      | `documentation`                          | [Doxygen](https://www.doxygen.nl/index.html)                         |
+| Formatting                  | Everything formatted                                                      | Clang-Format formatting tool. Runs on all the C++ sources except the third party code. Use `// clang-format off` and `// clang-format on` to selectively suppress the automatic formatting.                       | Any     | C++      | `formatting`                             | [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html)         |
+| Sanitize Address            | No bug                                                                    | Clang's Address Sanitizer. Builds with Clang & runs tests.                                                                                                                                                        | Linux   | C++      | `sanitize-address`                       | [ASAN](https://clang.llvm.org/docs/AddressSanitizer.html)            |
+| Sanitize Memory             | No bug                                                                    | Clang's Memory Sanitizer. Builds with Clang & runs tests. Downloads and builds LLVM/Clang `libc++` that is required for this sanitizer.                                                                           | Linux   | C++      | `sanitize-memory`                        | [MEMSAN](https://clang.llvm.org/docs/MemorySanitizer.html)           |
+| Sanitize Undefined Behavior | No bug                                                                    | Clang's Undefined Behavior Sanitizer. Builds with Clang & runs tests.                                                                                                                                             | Linux   | C++      | `sanitize-ub`                            | [UBSAN](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html) |
 
-Requirements: No warnings produced.
+## Development
 
-Static analysis using [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/). Use `//NOLINT` to suprress irrelevant warnings.
+#### C++
 
-#### Coverage (./build.sh coverage)
+Open `CMakeLists.txt` in your favorite IDE.
 
-Requirements: 100 % line, 100 % function, any% region coverage.
+#### Vue.js
 
-Test/code coverage using [LLVM Source Code Coverage Tools](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html).
-
-_Code coverage report is part of the build artifacts._
-
-#### Documentation (./build.sh documentation)
-
-Requirements: Full documentation of all sources.
-
-HTML documentation generated by [Doxygen](https://www.doxygen.nl/index.html). Use `//! \cond IMPLEMENTAION_DETAIL` and `//! \endcond` to remove non-public code from documentation.
-
-_Documentation is part of the build artifacts._
-
-#### Formatting (./build.sh formatting)
-
-Requirements: Correct formatting of all sources.
-
-Code formatting using [Clang-Format](https://clang.llvm.org/docs/ClangFormat.html). Use `// clang-format off` and `// clang-format on` to selectively suppress the automatic formatting.
-
-#### Sanitize Address (./build.sh sanitize-address)
-
-Requirements: No bug detected.
-
-Builds & run tests with [Clang's Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html).
-
-#### Sanitize Memory (./build.sh sanitize-memory)
-
-Requirements: No bug detected.
-
-Builds & run tests with [Clang's Memory Sanitizer](https://clang.llvm.org/docs/MemorySanitizer.html).
-
-#### Sanitize Undefined Behavior (./build.sh sanitize-ub)
-
-Requirements: No bug detected.
-
-Builds & run tests with [Clang's Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html).
-
-#### Windows MSVC x64 Build (./build.sh build)
-
-Requirements: Builds, tests and benchmarks pass.
-
-Builds optimized (Release) 64-bit configuration on Windows using Visual Studio (MSVC). Runs tests. Runs benchmarks.
-
-_Binaries are part of the build artifacts._
-
-#### Linux GCC x64 Build (./build.sh build)
-
-Requirements: Builds, tests and benchmarks pass.
-
-Builds optimized (Release) 64-bit configuration on Linux (Ubuntu) using GCC. Runs tests. Runs benchmarks.
-
-_Binaries are part of the build artifacts._
-
-#### macOS Clang x64 Build (./build.sh build)
-
-Requirements: Builds, tests and benchmarks pass.
-
-Builds optimized (Release) 64-bit configuration on macOS using Clang. Runs tests. Runs benchmarks.
-
-_Binaries are part of the build artifacts._
-
-#### Tests & Benchmarks (./build.sh tests, ./build.sh benchmarks)
-
-For each build configuration the tests are run 100x times to detect flaky tests. Therefore all tests must run as fast as possible.
-
-For each build configuration the benchmarks are run. Every benchmark has preset requirements and they can fail if the performance of the benchmarked code deteriorates.
-
-#### Vue.js build & tests
-
-Requirements: Builds and tests pass.
-
-Build Vue.js applications and run their tests.
-
-_Compiled and production ready applications are part of the build artifacts._
+Choose from [Vue.js Dev Tools](https://vuejs.org/v2/guide/installation.html).
