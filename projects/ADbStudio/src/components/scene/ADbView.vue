@@ -1,7 +1,7 @@
 <template>
     <div class="adb-view" :class="{'search-mode': searchedWord !== ''}">
         <div class="view">
-            <Edge v-for="edge in edges" :key="edge.id" :element="edge" :viewSize="viewSize" :class="{selected: edge.id == searchedWord}" v-on="$listeners" />
+            <Edge v-for="(edges,key) in edgesGrouped" :key="key" :elements="edges" :viewSize="viewSize" :class="{selected: edgeIsSelected(edges)}" v-on="$listeners" />
             <Node v-for="node in nodes" :key="node.id" :element="node" :viewSize="viewSize" :class="{selected: node.id == searchedWord}" v-on="$listeners" />
         </div>
     </div>
@@ -31,6 +31,7 @@ export default {
         ...mapGetters({
             nodes: 'scene/getNodes',
             edges: 'scene/getEdges',
+            edgesGrouped: 'scene/getEdgesGrouped',
         }),
         viewSize(){
             return {
@@ -43,6 +44,9 @@ export default {
         onResize() {
             this.viewWidth = document.documentElement.clientWidth;
             this.viewHeight = document.documentElement.clientHeight;
+        },
+        edgeIsSelected(edges){
+            return edges.find((edge) => edge.id == this.searchedWord) ? true : false;
         }
     },
     mounted() {

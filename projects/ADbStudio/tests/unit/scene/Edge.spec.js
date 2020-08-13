@@ -10,7 +10,7 @@ describe('Edge',() => {
         wrapper = mount(Edge, {
             localVue,
             propsData: {
-                element: {
+                elements: [{
                     id: -1,
                     coordinates1: {
                         x: 0.2,
@@ -19,8 +19,9 @@ describe('Edge',() => {
                     coordinates2: {
                         x: 0.6,
                         y: 0.3,
-                    }
-                },
+                    },
+                    nodes: [1,2]
+                }],
                 viewSize: {
                     width: 200,
                     height: 100

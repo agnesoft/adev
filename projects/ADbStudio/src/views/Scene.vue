@@ -9,15 +9,15 @@
             <ADbView id="adb-view" ref="adb_view" :zoom="zoom" draggable="true" :style="viewStyle" :searchedWord="searchedWord"  @showData="showData"/>
             <div class="search-wrap">    
                 <SearchField @search="search"/>          
-                    <BaseMessage class="error" :opened="error === 'search'" @close="error=''">
-                        {{ $t("element-not-found") }}
-                    </BaseMessage> 
-                    <BaseMessage class="info" :opened="searchedWord != ''" @close="resetView">
-                        {{ $t('searched-element-word',{word: searchedWord}) }}
-                    </BaseMessage>
+                <BaseMessage class="error" :opened="error === 'search'" @close="error=''">
+                    {{ $t("element-not-found") }}
+                </BaseMessage> 
+                <BaseMessage class="info" :opened="searchedWord != ''" @close="resetView">
+                    {{ $t('searched-element-word',{word: searchedWord}) }}
+                </BaseMessage>
             </div>
         </div>
-        <ElementData :show="dataShow" :data="data" :dataStyle="elementDataStyle" />
+        <DataWrapper :show="displayData" :elements="elementsData" :dataStyle="elementDataStyle" @exploreData="exploreData" />
         <div class="controls">
             <BaseButton class="btn-default reset" @click="resetView">{{$t('reset-view')}}</BaseButton>
             <BaseButton class="btn-default plus" @click="zoomPlus">+</BaseButton>
@@ -30,7 +30,7 @@
 import ADbView from '@/components/scene/ADbView.vue';
 import LeftPanel from '@/components/scene/LeftPanel.vue';
 import SearchField from '@/components/scene/SearchField.vue';
-import ElementData from "@/components/scene/ElementData";
+import DataWrapper from "@/components/scene/DataWrapper";
 
 import { mapActions,mapGetters } from 'vuex';
 
@@ -39,7 +39,7 @@ export default {
     components: {
         SearchField,
         ADbView,
-        ElementData,
+        DataWrapper,
         LeftPanel,
     },
     data(){
@@ -57,7 +57,8 @@ export default {
             searchedWord: '',
             error: '',
             dataShow: false,
-            data: {},
+            dataExporation: false,
+            elementsData: [],
             dataPos: {
                 x: 0,
                 y: 0
@@ -127,19 +128,22 @@ export default {
                 }
             } 
         },
-        showData(element,event) {
-            this.data = {};
-            if(element === false){
-                this.dataShow = false;
+        showData(elements,event) {
+            //this.elementsData = [];
+            if(elements === false || elements.length === 0){
+                setTimeout(() => this.dataShow = false, 1000);
             } else {
-                if(Object.prototype.hasOwnProperty.call(element, 'data')){
-                    this.data = element.data;
-                }
+                this.elementsData = elements;
+                // if(Object.prototype.hasOwnProperty.call(element, 'data')){
+                //     this.data = element.data;
+                // }
                 this.dataShow = true;
-                element = this.$el; //this.$el.querySelector("#adb-view");
-                this.dataPos.y = event.clientY - element.getBoundingClientRect().top + 15;
-                this.dataPos.x = event.clientX - element.getBoundingClientRect().left + 15;
+                this.dataPos.y = event.clientY - this.$el.getBoundingClientRect().top + 15;
+                this.dataPos.x = event.clientX - this.$el.getBoundingClientRect().left + 15;
             }
+        },
+        exploreData(explore){
+            this.dataExporation = explore;
         }
     },
     computed: {
@@ -165,7 +169,11 @@ export default {
                 top: this.dataPos.y+"px",
                 left: this.dataPos.x+"px"
             }
+        },
+        displayData(){
+            return this.dataShow || this.dataExporation;
         }
+
     }
 }
 </script>
@@ -239,7 +247,7 @@ export default {
     .base-message{
         grid-area: message;
     }
-    .element-data{
+    .data-wrapper{
         position: absolute;
     }
 </style>

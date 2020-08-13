@@ -13,7 +13,7 @@ export default {
     methods: {        
         showData(show,event){
             if(show){
-                this.$emit('showData',this.element,event);
+                this.$emit('showData',[this.element],event);
             } else {
                 this.$emit('showData',false,event);
             }

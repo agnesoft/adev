@@ -1,9 +1,11 @@
 {
+  "edge-id": "Edge {id}",
   "element-not-found": "Element was not found.",
   "list-of-edges": "List of Edges",
   "list-of-nodes": "List of Nodes",
   "message": "hello i18n !!",
   "no-data-selected": "No data selected",
+  "node-id": "Node {id}",
   "raw-data": "Raw Data",
   "reset-view": "Reset view",
   "run": "Execute",
