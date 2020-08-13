@@ -1,5 +1,5 @@
 # Description
 
-\-
 
-Resolves #(issue)
+
+Resolves #
