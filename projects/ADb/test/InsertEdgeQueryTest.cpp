@@ -28,7 +28,7 @@ TEST_CASE("adb::insert().edge().from(acore::size_type id).to(acore::size_type id
     const auto data = std::get<adb::InsertEdgeData>(query.data());
     REQUIRE(data.from == std::vector<acore::size_type>{0});
     REQUIRE(data.to == std::vector<acore::size_type>{1});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(acore::size_type id) [adb::Query]")
@@ -42,7 +42,7 @@ TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(acore::size_t
     const auto data = std::get<adb::InsertEdgeData>(query.data());
     REQUIRE(data.from == std::vector<acore::size_type>{4});
     REQUIRE(data.to == std::vector<acore::size_type>{1});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().edge().from(acore::size_type id).to(PlaceholderId placeholder) [adb::Query]")
@@ -56,7 +56,7 @@ TEST_CASE("adb::insert().edge().from(acore::size_type id).to(PlaceholderId place
     const auto data = std::get<adb::InsertEdgeData>(query.data());
     REQUIRE(data.from == std::vector<acore::size_type>{0});
     REQUIRE(data.to == std::vector<acore::size_type>{3});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(PlaceholderId placeholder) [adb::Query]")
@@ -73,7 +73,7 @@ TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(PlaceholderId
         const auto data = std::get<adb::InsertEdgeData>(query.data());
         REQUIRE(data.from == std::vector<acore::size_type>{2});
         REQUIRE(data.to == std::vector<acore::size_type>{0});
-        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
     }
 
     SECTION("[multi bind]")
@@ -90,7 +90,7 @@ TEST_CASE("adb::insert().edge().from(PlaceholderId placeholder).to(PlaceholderId
         const auto data = std::get<adb::InsertEdgeData>(query.data());
         REQUIRE(data.from == std::vector<acore::size_type>{3});
         REQUIRE(data.to == std::vector<acore::size_type>{1});
-        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
     }
 }
 
@@ -104,9 +104,9 @@ TEST_CASE("adb::insert().edge().from(IdsQuery subQuery).to(acore::size_type id) 
     REQUIRE(query.subQueries().size() == 1);
 
     const auto data = std::get<adb::InsertEdgeData>(query.data());
-    REQUIRE(data.from == std::vector<acore::size_type>{});
+    REQUIRE(data.from == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
     REQUIRE(data.to == std::vector<acore::size_type>{2});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().edge().from(acore::size_type id).to(IdsQuery subQuery) [adb::Query]")
@@ -120,8 +120,8 @@ TEST_CASE("adb::insert().edge().from(acore::size_type id).to(IdsQuery subQuery) 
 
     const auto data = std::get<adb::InsertEdgeData>(query.data());
     REQUIRE(data.from == std::vector<acore::size_type>{1});
-    REQUIRE(data.to == std::vector<acore::size_type>{});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.to == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().edge().from(IdsQuery subQuery).to(IdsQuery subQuery) [adb::Query]")
@@ -134,9 +134,9 @@ TEST_CASE("adb::insert().edge().from(IdsQuery subQuery).to(IdsQuery subQuery) [a
     REQUIRE(query.subQueries().size() == 2);
 
     const auto data = std::get<adb::InsertEdgeData>(query.data());
-    REQUIRE(data.from == std::vector<acore::size_type>{});
-    REQUIRE(data.to == std::vector<acore::size_type>{});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.from == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
+    REQUIRE(data.to == std::vector<acore::size_type>{}); //NOLINT(readability-container-size-empty)
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert().edge(std::vector<adb::KeyValue> values).from(acore::size_type id).to(acore::size_type id) [adb::Query]")
@@ -198,6 +198,6 @@ TEST_CASE("adb::insert().edge(IdsQuery subQuery).from(acore::size_type id).to(ac
     const auto data = std::get<adb::InsertEdgeData>(query.data());
     REQUIRE(data.from == std::vector<acore::size_type>{0});
     REQUIRE(data.to == std::vector<acore::size_type>{1});
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 }
