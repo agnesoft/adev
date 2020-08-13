@@ -34,16 +34,16 @@ public:
     //! Sets the \c to parameter to \a id in the
     //! query. The \a id must be a valid node in
     //! the database.
-    [[nodiscard]] auto to(acore::size_type id) && -> IdsQuery;
+    [[nodiscard]] auto to(acore::size_type id) && -> IdQuery;
 
     //! Sets the \c to parameter of the query to
     //! a \a placeholder to be bound later.
-    [[nodiscard]] auto to(const PlaceholderId &placeholder) && -> IdsQuery;
+    [[nodiscard]] auto to(const PlaceholderId &placeholder) && -> IdQuery;
 
     //! Sets the \c to parameter of the query to
     //! the \a subQuery. The \c from parameter will
     //! come from the result of the \a subQuery.
-    [[nodiscard]] auto to(IdsQuery subQuery) && -> IdsQuery;
+    [[nodiscard]] auto to(IdQuery subQuery) && -> IdQuery;
 
 private:
     friend class InsertEdgeQuery;

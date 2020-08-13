@@ -87,7 +87,7 @@ TEST_CASE("adb::insert().nodes(SelectCountQuery query) -> Query [adb::Query]")
 TEST_CASE("adb::insert().nodes(SelectValuesQuery query) -> Query [adb::Query]")
 {
     const auto query = adb::insert()
-                           .nodes(adb::select().values());
+                           .nodes(adb::select().multiValues());
 
     REQUIRE(query.subQueries().size() == 1);
     REQUIRE(std::get<adb::InsertNodeData>(query.data()).values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)

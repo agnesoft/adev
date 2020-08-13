@@ -167,10 +167,30 @@ public:
 };
 
 //! Wrapper around adb::Query indicating that the
+//! result of the query will be a single \c id.
+//! Typically used as a sub query where \c id is
+//! the expected argument.
+class IdQuery : public BaseQuery
+{
+public:
+    using BaseQuery::BaseQuery;
+};
+
+//! Wrapper around adb::Query indicating that the
 //! result of the query will be a list of \c ids.
-//! Typically used as a sub query where \c id or
+//! Typically used as a sub query where the
 //! \c ids are the expected argument.
 class IdsQuery : public BaseQuery
+{
+public:
+    using BaseQuery::BaseQuery;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c values of
+//! multiple elements. Typically used as a sub query
+//! where \c values are the expected argument.
+class MultiValuesQuery : public BaseQuery
 {
 public:
     using BaseQuery::BaseQuery;

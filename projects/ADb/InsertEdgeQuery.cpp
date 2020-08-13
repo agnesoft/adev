@@ -31,7 +31,7 @@ auto InsertEdgeQuery::from(const PlaceholderId &placeholder) && -> InsertEdgeFro
     return InsertEdgeFromQuery{std::move(mQuery)};
 }
 
-auto InsertEdgeQuery::from(IdsQuery subQuery) && -> InsertEdgeFromQuery
+auto InsertEdgeQuery::from(IdQuery subQuery) && -> InsertEdgeFromQuery
 {
     mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeFrom);
     return InsertEdgeFromQuery{std::move(mQuery)};
