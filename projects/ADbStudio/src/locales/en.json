@@ -11,5 +11,6 @@
   "run": "Execute",
   "search-element": "Search element",
   "searched-element-word": "Searched element: {word}",
-  "write-command": "Write command"
+  "write-command": "Write command",
+  "hide-all-data": "Hide all data"
 }

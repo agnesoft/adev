@@ -1,14 +1,31 @@
 import { shallowMount  } from '@vue/test-utils';
 import Element from '@/components/scene/Element.vue';
+import Vuex from 'vuex';
 
 import { localVue } from '../TestUtils'
 
 
 describe('Element',() => {
-    let wrapper
+    let wrapper;
+    let actions;
+    let store;
     beforeEach(() => {
+        
+        localVue.use(Vuex);
+        actions = {
+            fetchElementData: jest.fn(),
+        }
+        store = new Vuex.Store({
+            modules: {
+                scene: {
+                    namespaced: true,
+                    actions,
+                }
+              }
+        });
         wrapper = shallowMount(Element, {
             localVue,
+            store,
             propsData: {
                 element: {
                     id: 1,
@@ -43,5 +60,9 @@ describe('Element',() => {
         expect(wrapper.emitted().showData).toBeTruthy();
         expect(wrapper.emitted().showData.length).toBe(1);
         expect(wrapper.emitted().showData[0][0]).toBe(false);
+    })
+    it('fetches element data for right panel', async () => {
+        await wrapper.find(".element").trigger("click");
+        expect(actions.fetchElementData).toHaveBeenCalled();
     })
 })

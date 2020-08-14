@@ -18,6 +18,7 @@
             </div>
         </div>
         <DataWrapper :show="displayData" :elements="elementsData" :dataStyle="elementDataStyle" @exploreData="exploreData" />
+        <RightPanel />
         <div class="controls">
             <BaseButton class="btn-default reset" @click="resetView">{{$t('reset-view')}}</BaseButton>
             <BaseButton class="btn-default plus" @click="zoomPlus">+</BaseButton>
@@ -31,6 +32,7 @@ import ADbView from '@/components/scene/ADbView.vue';
 import LeftPanel from '@/components/scene/LeftPanel.vue';
 import SearchField from '@/components/scene/SearchField.vue';
 import DataWrapper from "@/components/scene/DataWrapper";
+import RightPanel from "@/components/scene/RightPanel";
 
 import { mapActions,mapGetters } from 'vuex';
 
@@ -41,6 +43,7 @@ export default {
         ADbView,
         DataWrapper,
         LeftPanel,
+        RightPanel
     },
     data(){
         return {
@@ -182,12 +185,12 @@ export default {
     .scene{
         position: relative;
         display: grid;
-        grid-template-columns: max-content 1fr;
-        grid-template-rows: max-content 1fr max-content;
+        grid-template-columns: max-content 1fr max-content;
+        grid-template-rows: max-content minmax(0, 1fr) max-content;
         grid-template-areas: 
-            'command command'
-            'leftpanel view'
-            'leftpanel controls '
+            'command command command'
+            'leftpanel view rightpanel'
+            'leftpanel controls rightpanel'
             ;
         grid-gap: 0.4rem;
     }
@@ -249,5 +252,8 @@ export default {
     }
     .data-wrapper{
         position: absolute;
+    }
+    .right-panel{
+        grid-area: rightpanel;
     }
 </style>

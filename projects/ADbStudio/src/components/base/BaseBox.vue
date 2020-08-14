@@ -65,7 +65,7 @@ export default {
         border: solid var(--border-width) var(--border-color,var(--light-primary-color));
         padding: 0;
         box-shadow:  1px 0 3px var(--primary-color);
-        --button-size: 1.8rem;
+        --button-size: 1.44rem;
     }
     .header{
         display: flex;
@@ -84,7 +84,7 @@ export default {
         margin: 0;
         color: var(--primary-color);
     }
-    .toggle-button, .controls a, .controls div{
+    .toggle-button, .controls a, .controls div, .controls button{
         display: block;
         overflow: hidden;
         height: var(--button-size);
@@ -95,7 +95,6 @@ export default {
     .controls{
         display: flex;
         justify-content: flex-end;
-        --button-size: 1.44rem;
 
     }
     .controls a:hover{

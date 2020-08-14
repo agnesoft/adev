@@ -4,7 +4,6 @@ import Scene from '@/views/Scene.vue';
 import SearchField from "@/components/scene/SearchField";
 import ADbView from "@/components/scene/ADbView";
 import LeftPanel from "@/components/scene/LeftPanel";
-import ElementData from "@/components/scene/ElementData";
 import scene_store from '../../../src/store/modules/scene'
 //import NodeInfo from "@/components/scene/NodeInfo";
 
@@ -58,7 +57,7 @@ describe('Scene',() => {
         expect(wrapper.find(".plus").exists()).toBe(true);
         expect(wrapper.find(".minus").exists()).toBe(true);
     })
-    it('sends command, fetches data and clear the input', async () => {
+    it('sends command, fetches data and clears the input', async () => {
         wrapper.setData({command: 'test command'});
         await wrapper.find('form.command-form').trigger('submit.prevent');
         expect(wrapper.find(".command").element.value).toBe("");

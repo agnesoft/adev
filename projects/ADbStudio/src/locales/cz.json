@@ -11,5 +11,6 @@
   "run": "Spustit",
   "search-element": "Vyhledat prvek",
   "searched-element-word": "Vyhledán prvek: {word}",
-  "write-command": "Napište příkaz"
+  "write-command": "Napište příkaz",
+  "hide-all-data": "Skrýt všechna data"
 }
