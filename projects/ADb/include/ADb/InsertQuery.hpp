@@ -28,8 +28,10 @@ namespace adb
 {
 class CountQuery;
 class Query;
+class IdQuery;
 class IdsQuery;
 class InsertEdgeQuery;
+class MultiValuesQuery;
 class ValuesQuery;
 
 //! The InsertQuery class helps constructing an
@@ -44,20 +46,32 @@ public:
     //! the database.
     [[nodiscard]] auto edge() && -> InsertEdgeQuery;
 
+    //! Inserts a single edge with \a values.
+    [[nodiscard]] auto edge(std::vector<adb::KeyValue> values) && -> InsertEdgeQuery;
+
+    //! Insert a single edge with values being
+    //! bound later in place of \a placeholder.
+    [[nodiscard]] auto edge(const PlaceholderValues &placeholder) && -> InsertEdgeQuery;
+
+    //! Insert a single edge with value being
+    //! obtained as a result of executing the
+    //! \a subQuery.
+    [[nodiscard]] auto edge(ValuesQuery subQuery) && -> InsertEdgeQuery;
+
     //! Insert a single node without any values.
-    [[nodiscard]] auto node() && -> IdsQuery;
+    [[nodiscard]] auto node() && -> IdQuery;
 
     //! Insert a single node with \a values.
-    [[nodiscard]] auto node(std::vector<adb::KeyValue> values) && -> IdsQuery;
+    [[nodiscard]] auto node(std::vector<adb::KeyValue> values) && -> IdQuery;
 
     //! Insert a single node with values being
     //! bound later in place of \a placeholder.
-    [[nodiscard]] auto node(const PlaceholderValues &placeholder) && -> IdsQuery;
+    [[nodiscard]] auto node(const PlaceholderValues &placeholder) && -> IdQuery;
 
     //! Insert a single node with value being
     //! obtained as a result of executing the
     //! \a subQuery.
-    [[nodiscard]] auto node(ValuesQuery subQuery) && -> IdsQuery;
+    [[nodiscard]] auto node(ValuesQuery subQuery) && -> IdQuery;
 
     //! Insert \a count nodes without any values.
     [[nodiscard]] auto nodes(acore::size_type count) && -> IdsQuery;
@@ -80,20 +94,18 @@ public:
     //! later in place of \a placeholder. Number of
     //! nodes will correspond to the number of entries
     //! in the bound values.
-    [[nodiscard]] auto nodes(const PlaceholderValues &placeholder) && -> IdsQuery;
+    [[nodiscard]] auto nodes(const PlaceholderMultiValues &placeholder) && -> IdsQuery;
 
     //! Insert ndoes with values that will be obtained
     //! as a result of executing the \a subQuery.
     //! Number of inserted nodes will correspond to
     //! the number of elements returned in the \a subQuery
     //! result.
-    [[nodiscard]] auto nodes(ValuesQuery subQuery) && -> IdsQuery;
+    [[nodiscard]] auto nodes(MultiValuesQuery subQuery) && -> IdsQuery;
 
 private:
-    template<typename Data>
-    [[nodiscard]] auto createPlaceholderQuery(std::string name, BindPlaceholderFunction bind) -> IdsQuery;
-    template<typename Data>
-    [[nodiscard]] auto createSubQueryQuery(Query &&subQuery, BindResultFunction bind) -> IdsQuery;
+    [[nodiscard]] auto createInsertNodeQuery(std::string name, BindPlaceholderFunction bind) -> Query;
+    [[nodiscard]] auto createInsertNodeQuery(Query &&subQuery, BindResultFunction bind) -> Query;
 };
 }
 

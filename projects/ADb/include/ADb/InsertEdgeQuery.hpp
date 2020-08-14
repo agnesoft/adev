@@ -17,6 +17,7 @@
 
 #include "ADbModule.hpp"
 #include "Placeholders.hpp"
+#include "Query.hpp"
 #include "SubQuery.hpp"
 
 namespace adb
@@ -42,7 +43,17 @@ public:
     //! Sets the \c from parameter of the query to
     //! the \a subQuery. The \c from parameter will
     //! come from the result of the \a subQuery.
-    [[nodiscard]] auto from(IdsQuery subQuery) && -> InsertEdgeFromQuery;
+    [[nodiscard]] auto from(IdQuery subQuery) && -> InsertEdgeFromQuery;
+
+private:
+    friend class InsertQuery;
+
+    explicit InsertEdgeQuery(Query &&query) :
+        mQuery{std::move(query)}
+    {
+    }
+
+    Query mQuery;
 };
 }
 

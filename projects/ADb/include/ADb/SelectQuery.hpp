@@ -20,6 +20,7 @@
 namespace adb
 {
 class CountQuery;
+class MultiValuesQuery;
 class ValuesQuery;
 
 //! The SelectQuery class helps constructing a
@@ -30,6 +31,9 @@ class SelectQuery
 public:
     //! DUMMY
     [[nodiscard]] auto count() && -> CountQuery;
+
+    //! DUMMY
+    [[nodiscard]] auto multiValues() && -> MultiValuesQuery;
 
     //! DUMMY
     [[nodiscard]] auto values() && -> ValuesQuery;

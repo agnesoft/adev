@@ -70,5 +70,4 @@ describe('Elements',() => {
         await wrapper.find(".elements").trigger("click");
         expect(actions.fetchElementData).toHaveBeenCalledTimes(3);
     })
-
 })
