@@ -12,8 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pch.hpp"
+#ifndef ADB_QUERY_SELECT_HPP
+#define ADB_QUERY_SELECT_HPP
+
+#include "Query.hpp"
 
 namespace adb
 {
+//! The SelectQuery class helps constructing a
+//! select query. Its public methods can only be
+//! called on an r-value (temporary) object.
+class Query::Select
+{
+public:
+    //! DUMMY
+    [[nodiscard]] auto count() && -> CountQuery;
+
+    //! DUMMY
+    [[nodiscard]] auto multiValues() && -> MultiValuesQuery;
+
+    //! DUMMY
+    [[nodiscard]] auto values() && -> ValuesQuery;
+};
 }
+
+#endif

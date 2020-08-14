@@ -12,25 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_INSERTEDGEFROMQUERY_HPP
-#define ADB_INSERTEDGEFROMQUERY_HPP
+#ifndef ADB_QUERY_INSERTEDGEFROM_HPP
+#define ADB_QUERY_INSERTEDGEFROM_HPP
 
-#include "ADbModule.hpp"
-#include "Placeholders.hpp"
 #include "Query.hpp"
-#include "SubQuery.hpp"
 
 namespace adb
 {
-class IdsQuery;
-class Query;
-
 //! The InsertEdgeFromQuery class is a helper class
 //! that facilitates creating a query that insert
 //! edges.
-class InsertEdgeFromQuery
+class Query::InsertEdgeFrom : public Query::Base
 {
 public:
+    using Query::Base::Base;
+
     //! Sets the \c to parameter to \a id in the
     //! query. The \a id must be a valid node in
     //! the database.
@@ -44,16 +40,6 @@ public:
     //! the \a subQuery. The \c from parameter will
     //! come from the result of the \a subQuery.
     [[nodiscard]] auto to(IdQuery subQuery) && -> IdQuery;
-
-private:
-    friend class InsertEdgeQuery;
-
-    explicit InsertEdgeFromQuery(Query &&query) :
-        mQuery{std::move(query)}
-    {
-    }
-
-    Query mQuery;
 };
 }
 

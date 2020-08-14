@@ -17,11 +17,9 @@
 
 #include "ADbModule.hpp"
 #include "Condition.hpp"
-#include "InsertQuery.hpp"
 #include "KeyValue.hpp"
 #include "Placeholders.hpp"
 #include "QueryData.hpp"
-#include "SelectQuery.hpp"
 #include "SubQuery.hpp"
 #include "Value.hpp"
 
@@ -59,9 +57,10 @@ namespace adb
 //! bound using bind() method on the resulting query.
 class Query
 {
+public:
+    class Insert;
     class Select;
 
-public:
     //! Binds a value of a placehodler associated
     //! with \a name to \a value. Note that if the
     //! \a value 's type does not match the type
@@ -109,10 +108,11 @@ public:
     }
 
 private:
-    friend class InsertQuery;
-    friend class InsertEdgeQuery;
-    friend class InsertEdgeFromQuery;
-    friend class SelectQuery;
+    class Base;
+    class InsertEdge;
+    class InsertEdges;
+    class InsertEdgeFrom;
+    class InsertEdgesFrom;
 
     template<typename DataT>
     explicit Query(DataT data) noexcept :
@@ -142,6 +142,33 @@ private:
     QueryData mData;
     std::vector<Placeholder> mPlaceholders;
     std::vector<SubQuery> mSubQueries;
+};
+
+//! \relates adb::Query
+//! Stand alone function that begins composing
+//! the insert query. Used for inserting nodes
+//! and edges, inserting values to eisting nodes
+//! and edges (elements) as well as updating the
+//! existing values (overwriting).
+using insert = Query::Insert;
+
+//! \relates adb::Query
+//! Stand alone function that begins composing
+//! the select query. Used for selecting data,
+//! meta data, aggregate data etc. from the
+//! database.
+using select = Query::Select;
+
+class Query::Base
+{
+public:
+    explicit Base(Query &&query) :
+        mQuery{std::move(query)}
+    {
+    }
+
+protected:
+    Query mQuery;
 };
 
 //! Base class of specialized query wrappers that
@@ -205,27 +232,6 @@ class ValuesQuery : public BaseQuery
 public:
     using BaseQuery::BaseQuery;
 };
-
-//! \relates adb::Query
-//! Stand alone function that begins composing
-//! the insert query. Used for inserting nodes
-//! and edges, inserting values to eisting nodes
-//! and edges (elements) as well as updating the
-//! existing values (overwriting).
-[[nodiscard]] inline auto insert() noexcept -> InsertQuery
-{
-    return InsertQuery{};
-}
-
-//! \relates adb::Query
-//! Stand alone function that begins composing
-//! the select query. Used for selecting data,
-//! meta data, aggregate data etc. from the
-//! database.
-[[nodiscard]] inline auto select() noexcept -> SelectQuery
-{
-    return SelectQuery{};
-}
 }
 
 #endif

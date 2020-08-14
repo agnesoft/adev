@@ -14,26 +14,26 @@
 
 #include "pch.hpp"
 
-#include "InsertEdgeFromQuery.hpp"
-#include "InsertEdgeQuery.hpp"
+#include "Query_InsertEdge.hpp"
+#include "Query_InsertEdgeFrom.hpp"
 
 namespace adb
 {
-auto InsertEdgeQuery::from(acore::size_type id) && -> InsertEdgeFromQuery
+auto Query::InsertEdge::from(acore::size_type id) && -> InsertEdgeFrom
 {
     std::get<InsertEdgeData>(mQuery.mData).from.push_back(id);
-    return InsertEdgeFromQuery{std::move(mQuery)};
+    return InsertEdgeFrom{std::move(mQuery)};
 }
 
-auto InsertEdgeQuery::from(const PlaceholderId &placeholder) && -> InsertEdgeFromQuery
+auto Query::InsertEdge::from(const PlaceholderId &placeholder) && -> InsertEdgeFrom
 {
     mQuery.addPlaceholder(placeholder.name, bindInsertEdgeFrom);
-    return InsertEdgeFromQuery{std::move(mQuery)};
+    return InsertEdgeFrom{std::move(mQuery)};
 }
 
-auto InsertEdgeQuery::from(IdQuery subQuery) && -> InsertEdgeFromQuery
+auto Query::InsertEdge::from(IdQuery subQuery) && -> InsertEdgeFrom
 {
     mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeFrom);
-    return InsertEdgeFromQuery{std::move(mQuery)};
+    return InsertEdgeFrom{std::move(mQuery)};
 }
 }

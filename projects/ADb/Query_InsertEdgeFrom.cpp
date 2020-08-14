@@ -14,23 +14,25 @@
 
 #include "pch.hpp"
 
-#include "Query.hpp"
-#include "SelectQuery.hpp"
+#include "Query_InsertEdgeFrom.hpp"
 
 namespace adb
 {
-auto SelectQuery::count() && -> CountQuery //NOLINT(readability-convert-member-functions-to-static)
+auto Query::InsertEdgeFrom::to(acore::size_type id) && -> IdQuery
 {
-    return CountQuery{Query{SelectData{}}};
+    std::get<InsertEdgeData>(mQuery.mData).to.push_back(id);
+    return IdQuery{std::move(mQuery)};
 }
 
-auto SelectQuery::multiValues() && -> MultiValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+auto Query::InsertEdgeFrom::to(const PlaceholderId &placeholder) && -> IdQuery
 {
-    return MultiValuesQuery{Query{SelectData{}}};
+    mQuery.addPlaceholder(placeholder.name, bindInsertEdgeTo);
+    return IdQuery{std::move(mQuery)};
 }
 
-auto SelectQuery::values() && -> ValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+auto Query::InsertEdgeFrom::to(IdQuery subQuery) && -> IdQuery
 {
-    return ValuesQuery{Query{SelectData{}}};
+    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeTo);
+    return IdQuery{std::move(mQuery)};
 }
 }

@@ -12,51 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_INSERTQUERY_HPP
-#define ADB_INSERTQUERY_HPP
+#ifndef ADB_QUERY_INSERT_HPP
+#define ADB_QUERY_INSERT_HPP
 
-#include "ADbModule.hpp"
-#include "KeyValue.hpp"
-#include "Placeholders.hpp"
-#include "QueryData.hpp"
-#include "SubQuery.hpp"
-
-#include <string>
-#include <vector>
+#include "Query.hpp"
 
 namespace adb
 {
-class CountQuery;
-class Query;
-class IdQuery;
-class IdsQuery;
-class InsertEdgeQuery;
-class MultiValuesQuery;
-class ValuesQuery;
-
 //! The InsertQuery class helps constructing an
 //! insert query. Its public methods can only be
 //! called on an r-value (temporary) object.
-class InsertQuery
+class Query::Insert
 {
 public:
     //! Inserts a single edge without any data from
     //! the origin \a from to the end \a to. Both
     //! \a from and \a to must be existing nodes in
     //! the database.
-    [[nodiscard]] auto edge() && -> InsertEdgeQuery;
+    [[nodiscard]] auto edge() && -> Query::InsertEdge;
 
     //! Inserts a single edge with \a values.
-    [[nodiscard]] auto edge(std::vector<adb::KeyValue> values) && -> InsertEdgeQuery;
+    [[nodiscard]] auto edge(std::vector<adb::KeyValue> values) && -> Query::InsertEdge;
 
     //! Insert a single edge with values being
     //! bound later in place of \a placeholder.
-    [[nodiscard]] auto edge(const PlaceholderValues &placeholder) && -> InsertEdgeQuery;
+    [[nodiscard]] auto edge(const PlaceholderValues &placeholder) && -> Query::InsertEdge;
 
     //! Insert a single edge with value being
     //! obtained as a result of executing the
     //! \a subQuery.
-    [[nodiscard]] auto edge(ValuesQuery subQuery) && -> InsertEdgeQuery;
+    [[nodiscard]] auto edge(ValuesQuery subQuery) && -> Query::InsertEdge;
 
     //! Insert a single node without any values.
     [[nodiscard]] auto node() && -> IdQuery;
@@ -104,6 +89,8 @@ public:
     [[nodiscard]] auto nodes(MultiValuesQuery subQuery) && -> IdsQuery;
 
 private:
+    class Edge;
+
     [[nodiscard]] auto createInsertNodeQuery(std::string name, BindPlaceholderFunction bind) -> Query;
     [[nodiscard]] auto createInsertNodeQuery(Query &&subQuery, BindResultFunction bind) -> Query;
 };

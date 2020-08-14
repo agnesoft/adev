@@ -12,8 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pch.hpp"
+#ifndef ADB_QUERY_INSERTEDGES_HPP
+#define ADB_QUERY_INSERTEDGES_HPP
+
+#include "Query_InsertEdge.hpp"
 
 namespace adb
 {
+class Query::InsertEdges : public Query::InsertEdge
+{
+public:
+    using Query::InsertEdge::InsertEdge;
+
+    [[nodiscard]] auto from(std::vector<acore::size_type> ids) && -> InsertEdgesFrom;
+
+    [[nodiscard]] auto from(PlaceholderIds placeholder) && -> InsertEdgesFrom;
+
+    [[nodiscard]] auto from(IdsQuery subQuery) && -> InsertEdgesFrom;
+};
 }
+
+#endif

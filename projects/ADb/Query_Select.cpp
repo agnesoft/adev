@@ -14,6 +14,22 @@
 
 #include "pch.hpp"
 
+#include "Query_Select.hpp"
+
 namespace adb
 {
+auto Query::Select::count() && -> CountQuery //NOLINT(readability-convert-member-functions-to-static)
+{
+    return CountQuery{Query{SelectData{}}};
+}
+
+auto Query::Select::multiValues() && -> MultiValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+{
+    return MultiValuesQuery{Query{SelectData{}}};
+}
+
+auto Query::Select::values() && -> ValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+{
+    return ValuesQuery{Query{SelectData{}}};
+}
 }

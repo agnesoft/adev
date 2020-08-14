@@ -61,6 +61,14 @@ struct PlaceholderId : PlaceholderBase
 };
 
 //! \relates adb::Query
+//! Used when the placeholder represents an elements'
+//! ids.
+struct PlaceholderIds : PlaceholderBase
+{
+    using PlaceholderBase::PlaceholderBase;
+};
+
+//! \relates adb::Query
 //! Used when the placeholder represents single
 //! element's values.
 struct PlaceholderValues : PlaceholderBase

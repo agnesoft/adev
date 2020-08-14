@@ -15,7 +15,11 @@
 #ifndef ADB_QUERIES_HPP
 #define ADB_QUERIES_HPP
 
-#include "InsertEdgeFromQuery.hpp"
-#include "InsertEdgeQuery.hpp"
+#include "Query_Insert.hpp"
+#include "Query_InsertEdge.hpp"
+#include "Query_InsertEdgeFrom.hpp"
+#include "Query_InsertEdges.hpp"
+#include "Query_InsertEdgesFrom.hpp"
+#include "Query_Select.hpp"
 
 #endif

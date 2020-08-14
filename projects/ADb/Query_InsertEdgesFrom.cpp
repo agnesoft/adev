@@ -14,6 +14,9 @@
 
 #include "pch.hpp"
 
+#include "Query_InsertEdgesFrom.hpp"
+
 namespace adb
 {
+
 }
