@@ -1,9 +1,9 @@
 <template>
     <div class="edge" :style="'--top_pos:'+ top_pos+'; --left_pos:'+ left_pos+'; --length:'+ length+'; --angle:'+ angle">
         <div class="arrow back" v-if="direction <= 0"></div>
+        <div class="arrow front" v-if="direction >= 0"></div>
         <Element v-if="elements.length === 1" :element="elements[0]" v-on="$listeners" />
         <Elements v-else :elements="elements" v-on="$listeners" />
-        <div class="arrow front" v-if="direction >= 0"></div>
     </div>
 </template>
 
@@ -87,7 +87,7 @@ export default {
             let a = (this.coordinates.c1.x - this.coordinates.c2.x) * this.viewSize.width;
             let b = (this.coordinates.c1.y - this.coordinates.c2.y) * this.viewSize.height;
             return Math.sqrt(a * a + b * b);
-        } 
+        },
     }
 }
 </script>
@@ -108,12 +108,12 @@ export default {
         left: var(--left_pos);
         cursor: pointer;
         transition: all var(--transition-ease); 
+        --size: 0.8rem;
     }
     
     .edge:before,.edge:after{
         content: "";
         display: block;
-        --size: 0.8rem;
         width: var(--size);
         height: var(--size);
         background-color: var(--secondary-color);
@@ -144,7 +144,9 @@ export default {
     }
     .element{
         position: relative;
-        top: var(--width);
+        top: -1rem;
+        width: 100%;
+        height: 2rem;
     }
     .arrow{
         --arrow-size: 0.5rem;
@@ -167,9 +169,5 @@ export default {
         top: calc(-1 * var(--arrow-size));
         transform: rotate(135deg);
         -webkit-transform: rotate(135deg);
-    }
-    .elements{
-        left: calc(0.5 * (var(--length) - var(--size)));
-        top: calc(0.5 * (var(--width) - var(--size)));
     }
 </style>

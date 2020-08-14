@@ -60,6 +60,7 @@ export default {
             searchedWord: '',
             error: '',
             dataShow: false,
+            startedClosingData: false,
             dataExporation: false,
             elementsData: [],
             dataPos: {
@@ -134,12 +135,15 @@ export default {
         showData(elements,event) {
             //this.elementsData = [];
             if(elements === false || elements.length === 0){
-                setTimeout(() => this.dataShow = false, 1000);
+                this.startedClosingData = true;
+                setTimeout(() => {
+                    if(this.startedClosingData){
+                        this.dataShow = false
+                    }
+                }, 500);
             } else {
                 this.elementsData = elements;
-                // if(Object.prototype.hasOwnProperty.call(element, 'data')){
-                //     this.data = element.data;
-                // }
+                this.startedClosingData = false;
                 this.dataShow = true;
                 this.dataPos.y = event.clientY - this.$el.getBoundingClientRect().top + 15;
                 this.dataPos.x = event.clientX - this.$el.getBoundingClientRect().left + 15;

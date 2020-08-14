@@ -1,5 +1,6 @@
 <template>
     <div class="elements"  @mouseenter="showData(true,$event)" @mouseleave="showData(false,$event)" @click="openDataBoxes()">
+        <div></div>
     </div>
 </template>
 
@@ -29,16 +30,23 @@ export default {
 </script>
 
 <style scoped>
-    .elements{
+    .elements>div{
         content: "";
         display: block;
-        --size: 0.8rem;
         width: var(--size);
         height: var(--size);
         background-color: var(--secondary-color);
         border-radius: 50%;
         transition: all var(--transition-ease); 
         position: absolute;
+        left: calc(0.5 * (var(--length) - var(--size)));
+    }
+    
+    .elements{
+        width: 100%;
+        height: var(--size);
+        top: calc(0.5 * (var(--width) - var(--size)));
+        position: relative;
     }
 
 </style>
