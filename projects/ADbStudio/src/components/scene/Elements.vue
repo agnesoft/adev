@@ -1,21 +1,28 @@
 <template>
-    <div class="elements"  @mouseenter="showData(true,$event)" @mouseleave="showData(false,$event)">
+    <div class="elements"  @mouseenter="showData(true,$event)" @mouseleave="showData(false,$event)" @click="openDataBoxes()">
     </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
     name: "Element",
     props: {
         elements: Array,
     },
-    methods: {        
+    methods: {     
+        ...mapActions({
+            fetchElementData: 'scene/fetchElementData',
+        }),      
         showData(show,event){
             if(show){
                 this.$emit('showData',this.elements,event);
             } else {
                 this.$emit('showData',false,event);
             }
+        },
+        openDataBoxes(){
+            this.elements.forEach((element) => this.fetchElementData({id: element.id}));
         }
     }
 }

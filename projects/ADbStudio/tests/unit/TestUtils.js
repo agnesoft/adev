@@ -64,6 +64,29 @@ const router = new VueRouter({routes: [
             foo2: "bar2",
         }
     }],
+    elementsData: [
+        {
+            id: 1,
+            coordinates: {
+                x: 0.3,
+                y: 0.3,
+            },
+            data: {
+                name: "Jana",
+                number: 18,
+            }
+        },
+        {
+            id: -2,
+            coordinates: {
+                x: 0.3,
+                y: 0.3,
+            },
+            data: {
+                foo: "bar",
+            }
+        }
+    ]
 };
 
 

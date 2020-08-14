@@ -3,7 +3,7 @@
 const state = {
     nodes: [],
     edges: [],
-    searchError: -1,
+    elementsData: [],
 };
 
 const getters = {
@@ -40,6 +40,7 @@ const getters = {
         return data
     },
     getSearchError: state => state.searchError,
+    getElementsData: state => state.elementsData,
 };
 
 const actions = {
@@ -52,6 +53,15 @@ const actions = {
     
         // commit('setData', response.data);
     },
+    async fetchElementData({ commit },{ id }) {
+        commit('newElementData',{ id: id , newelement: getTestElement(id) });
+    },
+    async removeElementData({ commit },{ id }){
+        commit('removeElementData',id);
+    },
+    async removeAllElementsData({ commit }){
+        commit('removeAllElementsData');
+    }
 };
 
 const mutations = {
@@ -68,28 +78,22 @@ const mutations = {
             state.edges = [];
         }
     },
-    search(state,word) {
-        state.searchError = 1;
-        state.edges.map(edge => edge.selected = false);
-        state.nodes.map(node => node.selected = false);
-        if(isNaN(word) || word == 0){
-            return false;
+    newElementData: (state,{id,newelement}) => {
+        let index = state.elementsData.findIndex((element) => element.id === id);
+        if(index >= 0){
+            state.elementsData.splice(index,1);
         }
-        if(word < 0){
-            let edge = state.edges.find((edge) => edge.id == word);
-            if(edge){
-                state.searchError = 0;
-                edge.selected = true;
-                state.searched = word;
-            }
-        } else if(word > 0) {
-            let node = state.nodes.find((node) => node.id == word);
-            if(node){
-                state.searchError = 0;
-                node.selected = true;
-                state.searched = word;
-            }
-        } 
+        state.elementsData.push(newelement);
+    },
+    removeElementData: (state,id) => {
+        let index = state.elementsData.findIndex((element) => element.id === id);
+        if(index < 0){
+            return;
+        }
+        state.elementsData.splice(index,1);
+    },
+    removeAllElementsData: (state) => {
+        state.elementsData.splice(0,state.elementsData.length);
     }
 };
 
@@ -243,5 +247,19 @@ function getTestData(command){
                 20
             ],
         }],
+    }
+}
+
+function getTestElement(id){
+    return {
+        id: id,
+        coordinates: {
+            x: 0.3,
+            y: 0.3,
+        },
+        data: {
+            name: "Jana",
+            number: 18,
+        }
     }
 }
