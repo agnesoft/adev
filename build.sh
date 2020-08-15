@@ -4,6 +4,7 @@
 ACTION=$1
 GCC_VERSION=10
 LLVM_VERSION=10
+COUNTER=0
 
 function printHelp () {
     echo "ADev Build Script"
@@ -433,7 +434,7 @@ function analysis() {
 
     for source in $SOURCE_FILES
     do
-        analyseFile "$source" &
+        analyseFile "$source"
     done
     wait
 
@@ -446,7 +447,8 @@ function analysis() {
 }
 
 function analyseFile () {
-    LINT_RESULT=$($CLANG_TIDY "$1" -p "$(pwd)" 2>&1)
+    COUNTER=$(($COUNTER + 1))
+    LINT_RESULT=$($CLANG_TIDY --enable-check-profile "$1" -p "$(pwd)" 2> perf/$COUNTER.log 1> perf/$COUNTER.log)
 
     if test $? -ne 0; then
         echo ""

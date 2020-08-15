@@ -11,6 +11,10 @@ performance-*,
 portability-*,
 readability-*,
 -hicpp-exception-baseclass
+-cert-dcl16-c,
+-readability-uppercase-literal-suffix,
+-hicpp-uppercase-literal-suffix,
+-hicpp-named-parameter
 '
 WarningsAsErrors: '
 -*,
