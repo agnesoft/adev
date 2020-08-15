@@ -428,21 +428,21 @@ function analysis() {
             fi
         fi
     done < "compile_commands.json"
-    echo "Analysing..."
-    $CLANG_TIDY -p "$(pwd)" $SOURCE_FILES 2>&1
 
-    #for source in $SOURCE_FILES
-    #do
-    #    analyseFile "$source" &
-    #done
-    #wait
-#
-    #if test -f "clang_tidy_error"; then
-    #    printError "ERROR: Static analysis found issues. See the log above for details."
-    #    exit 1
-    #else
-    #    printOK "Analysis OK"
-    #fi
+    echo "Analysing..."
+
+    for source in $SOURCE_FILES
+    do
+        analyseFile "$source" &
+    done
+    wait
+
+    if test -f "clang_tidy_error"; then
+        printError "ERROR: Static analysis found issues. See the log above for details."
+        exit 1
+    else
+        printOK "Analysis OK"
+    fi
 }
 
 function analyseFile () {
