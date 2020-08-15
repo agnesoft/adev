@@ -19,9 +19,7 @@
 
 namespace adb
 {
-//! The SelectQuery class helps constructing a
-//! select query. Its public methods can only be
-//! called on an r-value (temporary) object.
+//! DUMMY
 class Query::Select
 {
 public:

@@ -19,13 +19,28 @@
 
 namespace adb
 {
+//! The Query::InsertEdgesToEach class is part of
+//! the builder of the adb::Query.
 class Query::InsertEdgesToEach : public Query::Wrapper
 {
 public:
     using Query::Wrapper::Wrapper;
 
+    //! Sets the query's destination nodes to \a ids.
+    //! The edges will be inserted from each of the
+    //! \c from ids to each of the \a ids.
     [[nodiscard]] auto toEach(std::vector<acore::size_type> ids) && -> Query::InsertEdgesValues;
+
+    //! Sets the query's destination nodes to a named
+    //! \a placeholder to be bound later with ids.
+    //! The edges wil be inserted from each of the
+    //! \c from ids to each of the bound ids.
     [[nodiscard]] auto toEach(const Placeholder::Ids &placeholder) && -> Query::InsertEdgesValues;
+
+    //! Sets the query's destination nodes to a
+    //! result of the \a subQuery. The edges will
+    //! be inserted from each of the \c from ids to
+    //! each of the ids from the subquery's result.
     [[nodiscard]] auto toEach(Query::Ids subQuery) && -> Query::InsertEdgesValues;
 };
 }

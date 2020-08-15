@@ -39,12 +39,6 @@ auto Query::InsertNodesValuesOptional::values(Query::Values subQuery) && -> Quer
 auto Query::InsertNodesValuesOptional::values(std::vector<std::vector<KeyValue>> values) && -> Query::Ids
 {
     auto &data = std::get<InsertNodeData>(mData);
-
-    if (data.count == 0)
-    {
-        data.count = static_cast<acore::size_type>(values.size());
-    }
-
     data.values = std::move(values);
     return Query::Ids{std::move(*this)};
 }

@@ -19,13 +19,24 @@
 
 namespace adb
 {
+//! The Query::InsertNodeValues class is part of
+//! the builder of the adb::Query.
 class Query::InsertNodeValues : public Query::Ids
 {
 public:
     using Query::Ids::Ids;
 
+    //! Sets the values to be inserted to the node
+    //! to \a values.
     [[nodiscard]] auto values(std::vector<adb::KeyValue> values) && -> Query::Id;
+
+    //! Sets the values to be inserted to the node
+    //! to \a placeholder to be bound later with single
+    //! element's values.
     [[nodiscard]] auto values(const Placeholder::Values &placeholder) && -> Query::Id;
+
+    //! Sets the values to be inserted to the node
+    //! to the result of the \a subQuery.
     [[nodiscard]] auto values(Query::Values subQuery) && -> Query::Id;
 };
 }

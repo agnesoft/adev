@@ -19,13 +19,24 @@
 
 namespace adb
 {
+//! The Query::InsertEdgeValues class is part of
+//! the builder of the adb::Query.
 class Query::InsertEdgeValues : public Query::Id
 {
 public:
     using Query::Id::Id;
 
+    //! Sets the values to be inserted to the edge
+    //! to \a values.
     [[nodiscard]] auto values(std::vector<adb::KeyValue> values) && -> Query::Id;
+
+    //! Sets the values to be inserted to the edge
+    //! to \a placeholder to be bound later with
+    //! single values set.
     [[nodiscard]] auto values(const Placeholder::Values &placeholder) && -> Query::Id;
+
+    //! Sets the values to be inserted to the edge
+    //! to the result of the \a subQuery.
     [[nodiscard]] auto values(Query::Values subQuery) && -> Query::Id;
 };
 }

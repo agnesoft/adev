@@ -19,13 +19,31 @@
 
 namespace adb
 {
+//! The Query::InsertEdgesTo class is part of
+//! the builder of the adb::Query.
 class Query::InsertEdgesTo : public Query::Wrapper
 {
 public:
     using Query::Wrapper::Wrapper;
 
+    //! Sets the query's destination nodes to \a ids.
+    //! The edges will be inserted symmetrically to
+    //! \c from ids. There must be exactly the same
+    //! number of \c from and \c to ids.
     [[nodiscard]] auto to(std::vector<acore::size_type> ids) && -> Query::InsertEdgesValues;
+
+    //! Sets the query's destination nodes to a named
+    //! \a placeholder to be bound later with ids.
+    //! The edges will be inserted symmetrically to
+    //! \c from ids. There must be exactly the same
+    //! number of \c from and \c to ids.
     [[nodiscard]] auto to(const Placeholder::Ids &placeholder) && -> Query::InsertEdgesValues;
+
+    //! Sets the query's destination nodes to a
+    //! result of the \a subQuery. The edges will
+    //! be inserted   symmetrically to \c from ids.
+    //! There must be exactly the same number of
+    //! \c from and \c to ids.
     [[nodiscard]] auto to(Query::Ids subQuery) && -> Query::InsertEdgesValues;
 };
 }

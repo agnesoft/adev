@@ -58,9 +58,6 @@ namespace adb
 class Query
 {
 public:
-    class Insert;
-    class Select;
-
     class Count;
     class Id;
     class Ids;
@@ -126,6 +123,8 @@ public:
 
 private:
     class Base;
+    class Insert;
+    class Select;
     class Wrapper;
 
     class InsertEdgeFrom;
@@ -140,6 +139,9 @@ private:
     class InsertNodeValues;
     class InsertNodesValues;
     class InsertNodesValuesOptional;
+
+    friend auto insert_into() -> Query::Insert;
+    friend auto select() -> Query::Select;
 
     template<typename DataT>
     explicit Query(DataT data) noexcept :
@@ -186,6 +188,7 @@ private:
 //! database.
 [[nodiscard]] auto select() -> Query::Select;
 
+//! \cond IMPLEMENTAION_DETAIL
 class Query::Wrapper
 {
 public:
@@ -206,6 +209,7 @@ public:
     {
     }
 };
+//! \endcond
 
 //! Wrapper around adb::Query indicating that the
 //! result of the query will be a \c count value.

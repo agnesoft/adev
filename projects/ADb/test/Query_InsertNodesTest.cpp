@@ -51,7 +51,7 @@ TEST_CASE("adb::insert_into().nodes(adb::Query::Count subQuery) && -> adb::Query
     REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
-TEST_CASE("adb::insert_into().nodes(acore::size_type count).values(adb::vector<adb::KeyValue>> values) && -> adb::Query::Ids [adb::Query]")
+TEST_CASE("adb::insert_into().nodes(acore::size_type count).values(std::vector<adb::KeyValue>> values) && -> adb::Query::Ids [adb::Query]")
 {
     const auto query = adb::insert_into()
                            .nodes(4)
@@ -80,6 +80,50 @@ TEST_CASE("adb::insert_into().nodes(acore::size_type count).values(adb::Query::V
     const auto query = adb::insert_into()
                            .nodes(4)
                            .values(adb::select().values());
+
+    REQUIRE(query.subQueries().size() == 1);
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 4);
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
+}
+
+TEST_CASE("adb::insert_into().nodes(acore::size_type count).values(std::vector<std::vector<adb::KeyValue>>> values) && -> adb::Query::Ids [adb::Query]")
+{
+    const auto query = adb::insert_into()
+                           .nodes(4)
+                           .values({{{"Key", "Value"}, {"Id", 1}},
+                                    {{1, 2}, {3, 4}}});
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 4);
+    REQUIRE(data.values
+            == std::vector<std::vector<adb::KeyValue>>{
+                {{"Key", "Value"}, {"Id", 1}},
+                {{1, 2}, {3, 4}}});
+}
+
+TEST_CASE("adb::insert_into().nodes(acore::size_type count).values(adb::Placeholder::MultiValues placeholder) && -> adb::Query::Ids [adb::Query]")
+{
+    auto query = adb::insert_into()
+                     .nodes(2)
+                     .values(adb::Placeholder::MultiValues{":values"});
+
+    query.bind(":values", {{{"Key", "Value"}, {"Id", 3}}, {{"Key", "Value"}}});
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 2);
+    REQUIRE(data.values
+            == std::vector<std::vector<adb::KeyValue>>{
+                {{"Key", "Value"}, {"Id", 3}},
+                {{"Key", "Value"}}});
+}
+
+TEST_CASE("adb::insert_into().nodes(acore::size_type count).values(adb::Query::MultiValues subQuery) && -> adb::Query::Ids [adb::Query]")
+{
+    const auto query = adb::insert_into()
+                           .nodes(4)
+                           .values(adb::select().multiValues());
 
     REQUIRE(query.subQueries().size() == 1);
 
@@ -126,6 +170,43 @@ TEST_CASE("adb::insert_into().nodes().values(adb::Query::MultiValues query) && -
     const auto query = adb::insert_into()
                            .nodes()
                            .values(adb::select().multiValues());
+
+    REQUIRE(query.subQueries().size() == 1);
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 0);
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
+}
+
+TEST_CASE("adb::insert_into().nodes().values(std::vector<adb::KeyValue>> values) && -> adb::Query::Ids [adb::Query]")
+{
+    const auto query = adb::insert_into()
+                           .nodes()
+                           .values({{"Key", "Value"}, {"Id", 1}});
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 0);
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"Key", "Value"}, {"Id", 1}}});
+}
+
+TEST_CASE("adb::insert_into().nodes().values(adb::Placeholder::Values placeholder) && -> adb::Query::Ids [adb::Query]")
+{
+    auto query = adb::insert_into()
+                     .nodes()
+                     .values(adb::Placeholder::Values{":values"});
+
+    query.bind(":values", {{"Key", "Value"}, {"Id", 3}});
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 0);
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"Key", "Value"}, {"Id", 3}}});
+}
+
+TEST_CASE("adb::insert_into().nodes().values(adb::Query::Values subQuery) && -> adb::Query::Ids [adb::Query]")
+{
+    const auto query = adb::insert_into()
+                           .nodes()
+                           .values(adb::select().values());
 
     REQUIRE(query.subQueries().size() == 1);
 

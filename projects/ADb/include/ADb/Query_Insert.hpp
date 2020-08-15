@@ -19,18 +19,43 @@
 
 namespace adb
 {
+//! The Query::Insert class is part of the builder
+//! of the adb::Query.
 class Query::Insert
 {
 public:
+    //! Insert single edge query.
     [[nodiscard]] auto edge() && -> Query::InsertEdgeFrom;
+
+    //! Insert multiple edges query.
     [[nodiscard]] auto edges() && -> Query::InsertEdgesFrom;
+
+    //! Insert \a count edges query.
     [[nodiscard]] auto edges(acore::size_type count) && -> Query::InsertEdgesFrom;
+
+    //! Insert multiple edges query with the count
+    //! being bound to a \a placeholder.
     [[nodiscard]] auto edges(const Placeholder::Count &placeholder) && -> Query::InsertEdgesFrom;
+
+    //! Insert multiple edges query with the count
+    //! being bound to the result of the \a subQuery.
     [[nodiscard]] auto edges(Query::Count subQuery) && -> Query::InsertEdgesFrom;
+
+    //! Insert single node query.
     [[nodiscard]] auto node() && -> Query::InsertNodesValuesOptional;
+
+    //! Insert multiple nodes query.
     [[nodiscard]] auto nodes() && -> Query::InsertNodesValues;
+
+    //! Insert \a count nodes query.
     [[nodiscard]] auto nodes(acore::size_type count) && -> Query::InsertNodesValuesOptional;
+
+    //! Insert multiple nodes query with the count
+    //! being bound to a \a placeholder.
     [[nodiscard]] auto nodes(const Placeholder::Count &placeholder) && -> Query::InsertNodesValuesOptional;
+
+    //! Insert multiple nodes query with the count
+    //! being bound to the result of the \a subQuery.
     [[nodiscard]] auto nodes(Query::Count subQuery) && -> Query::InsertNodesValuesOptional;
 };
 }
