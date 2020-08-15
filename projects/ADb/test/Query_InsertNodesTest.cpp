@@ -36,7 +36,7 @@ TEST_CASE("adb::insert_into().nodes(adb::Placeholder::Count placeholder) && -> a
 
     const auto &data = std::get<adb::InsertNodeData>(query.data());
     REQUIRE(data.count == 4);
-    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
 TEST_CASE("adb::insert_into().nodes(adb::Query::Count subQuery) && -> adb::Query::Ids [adb::Query]")

@@ -36,8 +36,7 @@ TEST_CASE("adb::insert_into().node().values(std::vector<adb::KeyValue> values) -
 
     const auto &data = std::get<adb::InsertNodeData>(query.data());
     REQUIRE(data.count == 1);
-    REQUIRE(data.values
-            == std::vector<std::vector<adb::KeyValue>>{{{"Key1", "Value1"}, {"Key2", 4}}});
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"Key1", "Value1"}, {"Key2", 4}}});
 }
 
 TEST_CASE("adb::insert_into().node().values(adb::Placeholder::Values placeholder) -> adb::Query::Id [adb::Query]")

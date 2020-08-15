@@ -23,58 +23,58 @@
 
 namespace adb
 {
-auto Query::Insert::edge() && -> Query::InsertEdgeFrom
+auto Query::Insert::edge() && -> Query::InsertEdgeFrom // NOLINT(readability-convert-member-functions-to-static)
 {
     return Query::InsertEdgeFrom{Query{InsertEdgeData{1, {}, {}, {}}}};
 }
 
-auto Query::Insert::edges() && -> Query::InsertEdgesFrom
+auto Query::Insert::edges() && -> Query::InsertEdgesFrom // NOLINT(readability-convert-member-functions-to-static)
 {
     return Query::InsertEdgesFrom{Query{InsertEdgeData{0, {}, {}, {}}}};
 }
 
-auto Query::Insert::edges(acore::size_type count) && -> Query::InsertEdgesFrom
+auto Query::Insert::edges(acore::size_type count) && -> Query::InsertEdgesFrom // NOLINT(readability-convert-member-functions-to-static)
 {
     return Query::InsertEdgesFrom{Query{InsertEdgeData{count, {}, {}, {}}}};
 }
 
-auto Query::Insert::edges(const Placeholder::Count &placeholder) && -> Query::InsertEdgesFrom
+auto Query::Insert::edges(const Placeholder::Count &placeholder) && -> Query::InsertEdgesFrom // NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertEdgeData{}};
     query.addPlaceholder(placeholder.name, bindInsertEdgesCount);
     return Query::InsertEdgesFrom{std::move(query)};
 }
 
-auto Query::Insert::edges(Query::Count subQuery) && -> Query::InsertEdgesFrom
+auto Query::Insert::edges(Query::Count subQuery) && -> Query::InsertEdgesFrom // NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertEdgeData{}};
     query.addSubQuery(std::move(subQuery), bindInsertEdgesCount);
     return Query::InsertEdgesFrom{std::move(query)};
 }
 
-auto Query::Insert::node() && -> Query::InsertNodesValuesOptional
+auto Query::Insert::node() && -> Query::InsertNodesValuesOptional // NOLINT(readability-convert-member-functions-to-static)
 {
     return Query::InsertNodesValuesOptional{Query{InsertNodeData{1, {}}}};
 }
 
-auto Query::Insert::nodes() && -> InsertNodesValues
+auto Query::Insert::nodes() && -> InsertNodesValues // NOLINT(readability-convert-member-functions-to-static)
 {
     return Query::InsertNodesValues{Query{InsertNodeData{}}};
 }
 
-auto Query::Insert::nodes(acore::size_type count) && -> Query::InsertNodesValuesOptional
+auto Query::Insert::nodes(acore::size_type count) && -> Query::InsertNodesValuesOptional // NOLINT(readability-convert-member-functions-to-static)
 {
     return Query::InsertNodesValuesOptional{Query{InsertNodeData{count, {}}}};
 }
 
-auto Query::Insert::nodes(const Placeholder::Count &placeholder) && -> Query::InsertNodesValuesOptional
+auto Query::Insert::nodes(const Placeholder::Count &placeholder) && -> Query::InsertNodesValuesOptional // NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertNodeData{}};
     query.addPlaceholder(placeholder.name, bindInsertNodesCount);
     return Query::InsertNodesValuesOptional{std::move(query)};
 }
 
-auto Query::Insert::nodes(Query::Count subQuery) && -> Query::InsertNodesValuesOptional
+auto Query::Insert::nodes(Query::Count subQuery) && -> Query::InsertNodesValuesOptional // NOLINT(readability-convert-member-functions-to-static)
 {
     Query query{InsertNodeData{}};
     query.addSubQuery(std::move(subQuery), bindInsertNodesCount);
