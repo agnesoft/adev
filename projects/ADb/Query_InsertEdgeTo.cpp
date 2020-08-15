@@ -12,20 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_QUERIES_HPP
-#define ADB_QUERIES_HPP
+#include "pch.hpp"
 
-#include "Query_Insert.hpp"
-#include "Query_InsertEdgeFrom.hpp"
 #include "Query_InsertEdgeTo.hpp"
 #include "Query_InsertEdgeValues.hpp"
-#include "Query_InsertEdgesFrom.hpp"
-#include "Query_InsertEdgesTo.hpp"
-#include "Query_InsertEdgesToEach.hpp"
-#include "Query_InsertEdgesValues.hpp"
-#include "Query_InsertNodeValues.hpp"
-#include "Query_InsertNodesValues.hpp"
-#include "Query_InsertNodesValuesOptional.hpp"
-#include "Query_Select.hpp"
 
-#endif
+namespace adb
+{
+auto Query::InsertEdgeTo::to(acore::size_type id) && -> Query::InsertEdgeValues
+{
+    std::get<InsertEdgeData>(mQuery.mData).to.resize(1, id);
+    return Query::InsertEdgeValues{std::move(mQuery)};
+}
+
+auto Query::InsertEdgeTo::to(const Placeholder::Id &placeholder) && -> Query::InsertEdgeValues
+{
+    mQuery.addPlaceholder(placeholder.name, bindInsertEdgeTo);
+    return Query::InsertEdgeValues{std::move(mQuery)};
+}
+
+auto Query::InsertEdgeTo::to(Query::Id subQuery) && -> Query::InsertEdgeValues
+{
+    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeTo);
+    return Query::InsertEdgeValues{std::move(mQuery)};
+}
+}

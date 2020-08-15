@@ -17,11 +17,9 @@
 
 #include "ADbModule.hpp"
 #include "Condition.hpp"
-#include "InsertQuery.hpp"
 #include "KeyValue.hpp"
 #include "Placeholders.hpp"
 #include "QueryData.hpp"
-#include "SelectQuery.hpp"
 #include "SubQuery.hpp"
 #include "Value.hpp"
 
@@ -59,15 +57,19 @@ namespace adb
 //! bound using bind() method on the resulting query.
 class Query
 {
-    class Select;
-
 public:
+    class Count;
+    class Id;
+    class Ids;
+    class Values;
+    class MultiValues;
+
     //! Binds a value of a placehodler associated
     //! with \a name to \a value. Note that if the
     //! \a value 's type does not match the type
     //! expected by the placeholding value an exception
     //! is thrown.
-    auto bind(std::string_view name, PlaceholderValue value) -> void
+    auto bind(std::string_view name, PlaceholderValue value) & -> void
     {
         const auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const auto &placeholder) {
             return placeholder.name == name;
@@ -82,37 +84,64 @@ public:
     }
 
     //! Convenience overload for binding a list of
+    //! element ids.
+    auto bind(std::string_view name, std::vector<acore::size_type> ids) & -> void
+    {
+        bind(name, PlaceholderValue{std::move(ids)});
+    }
+
+    //! Convenience overload for binding a list of
     //! values to a single element.
-    auto bind(std::string_view name, std::vector<adb::KeyValue> values) -> void
+    auto bind(std::string_view name, std::vector<adb::KeyValue> values) & -> void
     {
         bind(name, PlaceholderValue{std::move(values)});
     }
 
     //! Convenience overload for binding a list of
     //! values to multiple elements.
-    auto bind(std::string_view name, std::vector<std::vector<adb::KeyValue>> values) -> void
+    auto bind(std::string_view name, std::vector<std::vector<adb::KeyValue>> values) & -> void
     {
         bind(name, PlaceholderValue{std::move(values)});
     }
 
     //! Returns the data of the query. Used by the
     //! database to access the query's data to execute.
-    [[nodiscard]] auto data() const noexcept -> const QueryData &
+    [[nodiscard]] auto data() const &noexcept -> const QueryData &
     {
         return mData;
     }
 
+    auto data() const &&noexcept -> const QueryData & = delete;
+
     //! Returns the list of sub queries of this query.
-    [[nodiscard]] auto subQueries() const noexcept -> const std::vector<SubQuery> &
+    [[nodiscard]] auto subQueries() const &noexcept -> const std::vector<SubQuery> &
     {
         return mSubQueries;
     }
 
+    auto subQueries() const &&noexcept -> const std::vector<SubQuery> & = delete;
+
 private:
-    friend class InsertQuery;
-    friend class InsertEdgeQuery;
-    friend class InsertEdgeFromQuery;
-    friend class SelectQuery;
+    class Base;
+    class Insert;
+    class Select;
+    class Wrapper;
+
+    class InsertEdgeFrom;
+    class InsertEdgeTo;
+    class InsertEdgeValues;
+
+    class InsertEdgesFrom;
+    class InsertEdgesTo;
+    class InsertEdgesToEach;
+    class InsertEdgesValues;
+
+    class InsertNodeValues;
+    class InsertNodesValues;
+    class InsertNodesValuesOptional;
+
+    friend auto insert_into() -> Query::Insert;
+    friend auto select() -> Query::Select;
 
     template<typename DataT>
     explicit Query(DataT data) noexcept :
@@ -134,76 +163,14 @@ private:
         mPlaceholders.push_back({std::move(placeholder), bindFunction});
     }
 
-    auto addSubQuery(Query query, BindResultFunction bindFunction) -> void
+    auto addSubQuery(Query &&query, BindResultFunction bindFunction) -> void
     {
         mSubQueries.push_back({std::move(query), bindFunction});
     }
 
     QueryData mData;
-    std::vector<Placeholder> mPlaceholders;
+    std::vector<PlaceholderData> mPlaceholders;
     std::vector<SubQuery> mSubQueries;
-};
-
-//! Base class of specialized query wrappers that
-//! indicate the result type.
-class BaseQuery : public Query
-{
-public:
-    //! Constructs the query by moving from \a query.
-    BaseQuery(Query &&query) :
-        Query{std::move(query)}
-    {
-    }
-};
-
-//! Wrapper around adb::Query indicating that the
-//! result of the query will be a \c count value.
-//! Typically used as a sub query where \c count is
-//! the expected argument.
-class CountQuery : public BaseQuery
-{
-public:
-    using BaseQuery::BaseQuery;
-};
-
-//! Wrapper around adb::Query indicating that the
-//! result of the query will be a single \c id.
-//! Typically used as a sub query where \c id is
-//! the expected argument.
-class IdQuery : public BaseQuery
-{
-public:
-    using BaseQuery::BaseQuery;
-};
-
-//! Wrapper around adb::Query indicating that the
-//! result of the query will be a list of \c ids.
-//! Typically used as a sub query where the
-//! \c ids are the expected argument.
-class IdsQuery : public BaseQuery
-{
-public:
-    using BaseQuery::BaseQuery;
-};
-
-//! Wrapper around adb::Query indicating that the
-//! result of the query will be a \c values of
-//! multiple elements. Typically used as a sub query
-//! where \c values are the expected argument.
-class MultiValuesQuery : public BaseQuery
-{
-public:
-    using BaseQuery::BaseQuery;
-};
-
-//! Wrapper around adb::Query indicating that the
-//! result of the query will be a \c values.
-//! Typically used as a sub query where \c values
-//! are the expected argument.
-class ValuesQuery : public BaseQuery
-{
-public:
-    using BaseQuery::BaseQuery;
 };
 
 //! \relates adb::Query
@@ -212,20 +179,87 @@ public:
 //! and edges, inserting values to eisting nodes
 //! and edges (elements) as well as updating the
 //! existing values (overwriting).
-[[nodiscard]] inline auto insert() noexcept -> InsertQuery
-{
-    return InsertQuery{};
-}
+[[nodiscard]] auto insert_into() -> Query::Insert;
 
 //! \relates adb::Query
 //! Stand alone function that begins composing
 //! the select query. Used for selecting data,
 //! meta data, aggregate data etc. from the
 //! database.
-[[nodiscard]] inline auto select() noexcept -> SelectQuery
+[[nodiscard]] auto select() -> Query::Select;
+
+//! \cond IMPLEMENTAION_DETAIL
+class Query::Wrapper
 {
-    return SelectQuery{};
-}
+public:
+    explicit Wrapper(Query &&query) :
+        mQuery{std::move(query)}
+    {
+    }
+
+protected:
+    Query mQuery;
+};
+
+class Query::Base : public Query
+{
+public:
+    Base(Query &&query) :
+        Query{std::move(query)}
+    {
+    }
+};
+//! \endcond
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c count value.
+//! Typically used as a sub query where \c count is
+//! the expected argument.
+class Query::Count : public Query::Base
+{
+public:
+    using Query::Base::Base;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a single \c id.
+//! Typically used as a sub query where \c id is
+//! the expected argument.
+class Query::Id : public Query::Base
+{
+public:
+    using Query::Base::Base;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a list of \c ids.
+//! Typically used as a sub query where the
+//! \c ids are the expected argument.
+class Query::Ids : public Query::Base
+{
+public:
+    using Query::Base::Base;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c values of
+//! multiple elements. Typically used as a sub query
+//! where \c values are the expected argument.
+class Query::MultiValues : public Query::Base
+{
+public:
+    using Query::Base::Base;
+};
+
+//! Wrapper around adb::Query indicating that the
+//! result of the query will be a \c values.
+//! Typically used as a sub query where \c values
+//! are the expected argument.
+class Query::Values : public Query::Base
+{
+public:
+    using Query::Base::Base;
+};
 }
 
 #endif

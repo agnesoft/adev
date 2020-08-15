@@ -222,7 +222,7 @@ auto CommandLineOption::shortName() const noexcept -> char
 }
 
 CommandLineOption::Base::Base(CommandLineOption *option) noexcept :
-    mOption(option)
+    mOption{option}
 {
 }
 

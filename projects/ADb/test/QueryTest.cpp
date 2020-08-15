@@ -37,10 +37,13 @@ TEST_CASE("Query(const Query &other) [adb::Query]")
 {
     SECTION("[copy with subquery]")
     {
-        const auto query = adb::insert().nodes(adb::select().count());
+        const auto query = adb::insert_into()
+                               .nodes(adb::select()
+                                          .count());
         const auto other{query}; //NOLINT(performance-unnecessary-copy-initialization)
 
         REQUIRE(other.subQueries().size() == 1);
+        REQUIRE(std::get<adb::InsertNodeData>(query.data()).count == 0); //NOLINT(readability-container-size-empty)
         REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 0); //NOLINT(readability-container-size-empty)
     }
 }
@@ -49,26 +52,43 @@ TEST_CASE("bind(std::string_view name, PlaceholderValue value) -> void [adb::Que
 {
     SECTION("[missing]")
     {
-        auto query = adb::insert().node();
+        auto query = adb::insert_into()
+                         .node();
         REQUIRE_THROWS_AS(query.bind(":placeholder", 1), acore::Exception);
     }
 
     SECTION("[existing]")
     {
-        auto query = adb::insert().node(adb::PlaceholderValues{":placeholder"});
+        auto query = adb::insert_into()
+                         .node()
+                         .values(adb::Placeholder::Values{":placeholder"});
 
-        REQUIRE_NOTHROW(query.bind(":placeholder", std::vector<adb::KeyValue>{}));
+        query.bind(":placeholder", std::vector<adb::KeyValue>{{"Key", "Value"}});
+        REQUIRE(std::get<adb::InsertNodeData>(query.data()).values == std::vector<std::vector<adb::KeyValue>>{{{"Key", "Value"}}});
     }
 
     SECTION("[duplicate]")
     {
-        REQUIRE_THROWS_AS(adb::insert().edge().from(adb::PlaceholderId{":id"}).to(adb::PlaceholderId{":id"}), acore::Exception);
+        REQUIRE_THROWS_AS(adb::insert_into()
+                              .edge()
+                              .from(adb::Placeholder::Id{":id"})
+                              .to(adb::Placeholder::Id{":id"}),
+                          acore::Exception);
+    }
+
+    SECTION("[multi bind]")
+    {
+        auto query = adb::insert_into()
+                         .nodes(adb::Placeholder::Count{":count"});
+        query.bind(":count", 4);
+        query.bind(":count", 2);
+        REQUIRE(std::get<adb::InsertNodeData>(query.data()).count == 2);
     }
 }
 
 TEST_CASE("data() const noexcept -> const QueryData & [adb::Query]")
 {
-    const auto query = adb::insert().node();
+    const auto query = adb::insert_into().node();
     REQUIRE(noexcept(query.data()));
 }
 }

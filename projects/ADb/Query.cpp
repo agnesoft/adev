@@ -15,7 +15,18 @@
 #include "pch.hpp"
 
 #include "Query.hpp"
+#include "Query_Insert.hpp"
+#include "Query_Select.hpp"
 
 namespace adb
 {
+auto insert_into() -> Query::Insert
+{
+    return Query::Insert{};
+}
+
+auto select() -> Query::Select
+{
+    return Query::Select{};
+}
 }
