@@ -18,18 +18,18 @@
 
 namespace adb
 {
-auto Query::Select::count() && -> CountQuery //NOLINT(readability-convert-member-functions-to-static)
+auto Query::Select::count() && -> Query::Count //NOLINT(readability-convert-member-functions-to-static)
 {
-    return CountQuery{Query{SelectData{}}};
+    return Query::Count{Query{SelectData{}}};
 }
 
-auto Query::Select::multiValues() && -> MultiValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+auto Query::Select::multiValues() && -> Query::MultiValues //NOLINT(readability-convert-member-functions-to-static)
 {
-    return MultiValuesQuery{Query{SelectData{}}};
+    return Query::MultiValues{Query{SelectData{}}};
 }
 
-auto Query::Select::values() && -> ValuesQuery //NOLINT(readability-convert-member-functions-to-static)
+auto Query::Select::values() && -> Query::Values //NOLINT(readability-convert-member-functions-to-static)
 {
-    return ValuesQuery{Query{SelectData{}}};
+    return Query::Values{Query{SelectData{}}};
 }
 }

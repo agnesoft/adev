@@ -16,55 +16,68 @@
 
 #include <catch2/catch.hpp>
 
-namespace insertnodequerytest
+namespace query_insertnodetest
 {
-TEST_CASE("adb::insert().node() -> Query [adb::Query]")
+TEST_CASE("adb::insert_into().node() -> adb::Query::Id [adb::Query]")
 {
-    const auto query = adb::insert()
+    const auto query = adb::insert_into()
                            .node();
 
-    REQUIRE(std::get<adb::InsertNodeData>(query.data()).values.size() == 1);
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 1);
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
-TEST_CASE("adb::insert().node(std::vector<adb::KeyValue> values) -> Query [adb::Query]")
+TEST_CASE("adb::insert_into().node().values(std::vector<adb::KeyValue> values) -> adb::Query::Id [adb::Query]")
 {
-    const auto query = adb::insert()
-                           .node({{"Key1", "Value1"}, {"Key2", 4}});
+    const auto query = adb::insert_into()
+                           .node()
+                           .values({{"Key1", "Value1"}, {"Key2", 4}});
 
-    REQUIRE(std::get<adb::InsertNodeData>(query.data()).values
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 1);
+    REQUIRE(data.values
             == std::vector<std::vector<adb::KeyValue>>{{{"Key1", "Value1"}, {"Key2", 4}}});
 }
 
-TEST_CASE("adb::insert().node(SelectValuesQuery query) -> Query [adb::Query]")
-{
-    const auto query = adb::insert()
-                           .node(adb::select().values());
-
-    REQUIRE(query.subQueries().size() == 1);
-    REQUIRE(std::get<adb::InsertNodeData>(query.data()).values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
-}
-
-TEST_CASE("adb::insert().node(PlaceholderValues placeholder) -> Query [adb::Query]")
+TEST_CASE("adb::insert_into().node().values(adb::Placeholder::Values placeholder) -> adb::Query::Id [adb::Query]")
 {
     SECTION("[single bind]")
     {
-        auto query = adb::insert()
-                         .node(adb::PlaceholderValues{":values"});
+        auto query = adb::insert_into()
+                         .node()
+                         .values(adb::Placeholder::Values{":values"});
         query.bind(":values", {{"Key1", "Value1"}, {"Key2", 4}});
 
-        REQUIRE(std::get<adb::InsertNodeData>(query.data()).values
-                == std::vector<std::vector<adb::KeyValue>>{{{"Key1", "Value1"}, {"Key2", 4}}});
+        const auto &data = std::get<adb::InsertNodeData>(query.data());
+        REQUIRE(data.count == 1);
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"Key1", "Value1"}, {"Key2", 4}}});
     }
 
     SECTION("[multi bind]")
     {
-        auto query = adb::insert()
-                         .node(adb::PlaceholderValues{":values"});
+        auto query = adb::insert_into()
+                         .node()
+                         .values(adb::Placeholder::Values{":values"});
         query.bind(":values", {{"Key1", "Value1"}, {"Key2", 4}});
         query.bind(":values", {{"K", "V"}, {"K2", 3}});
 
-        REQUIRE(std::get<adb::InsertNodeData>(query.data()).values
-                == std::vector<std::vector<adb::KeyValue>>{{{"K", "V"}, {"K2", 3}}});
+        const auto &data = std::get<adb::InsertNodeData>(query.data());
+        REQUIRE(data.count == 1);
+        REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{{{"K", "V"}, {"K2", 3}}});
     }
+}
+
+TEST_CASE("adb::insert_into().node().values(adb::Query::Values query) -> adb::Query::Id [adb::Query]")
+{
+    const auto query = adb::insert_into()
+                           .node()
+                           .values(adb::select().values());
+
+    REQUIRE(query.subQueries().size() == 1);
+
+    const auto &data = std::get<adb::InsertNodeData>(query.data());
+    REQUIRE(data.count == 1);
+    REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 }

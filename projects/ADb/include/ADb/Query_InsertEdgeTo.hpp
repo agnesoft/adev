@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pch.hpp"
+#ifndef ADB_QUERY_INSERTEDGETO_HPP
+#define ADB_QUERY_INSERTEDGETO_HPP
 
 #include "Query.hpp"
-#include "Query_Insert.hpp"
-#include "Query_Select.hpp"
 
 namespace adb
 {
-auto insert_into() -> Query::Insert
+class Query::InsertEdgeTo : public Query::Wrapper
 {
-    return Query::Insert{};
+public:
+    using Query::Wrapper::Wrapper;
+
+    [[nodiscard]] auto to(acore::size_type id) && -> Query::InsertEdgeValues;
+    [[nodiscard]] auto to(const Placeholder::Id &placeholder) && -> Query::InsertEdgeValues;
+    [[nodiscard]] auto to(Query::Id subQuery) && -> Query::InsertEdgeValues;
+};
 }
 
-auto select() -> Query::Select
-{
-    return Query::Select{};
-}
-}
+#endif

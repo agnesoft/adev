@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ADB_QUERY_INSERTEDGESFROM_HPP
-#define ADB_QUERY_INSERTEDGESFROM_HPP
+#ifndef ADB_QUERY_INSERTNODESVALUES_HPP
+#define ADB_QUERY_INSERTNODESVALUES_HPP
 
 #include "Query.hpp"
 
 namespace adb
 {
-class Query::InsertEdgesFrom : public Query::Wrapper
+class Query::InsertNodesValues : public Query::Wrapper
 {
 public:
     using Query::Wrapper::Wrapper;
 
-    [[nodiscard]] auto from(std::vector<acore::size_type> ids) && -> Query::InsertEdgesTo;
-    [[nodiscard]] auto from(const Placeholder::Ids &placeholder) && -> Query::InsertEdgesTo;
-    [[nodiscard]] auto from(Query::Ids subQuery) && -> Query::InsertEdgesTo;
-    [[nodiscard]] auto fromEach(std::vector<acore::size_type> ids) && -> Query::InsertEdgesToEach;
-    [[nodiscard]] auto fromEach(const Placeholder::Ids &placeholder) && -> Query::InsertEdgesToEach;
-    [[nodiscard]] auto fromEach(Query::Ids subQuery) && -> Query::InsertEdgesToEach;
+    [[nodiscard]] auto values(std::vector<adb::KeyValue> values) && -> Query::Ids;
+    [[nodiscard]] auto values(const Placeholder::Values &placeholder) && -> Query::Ids;
+    [[nodiscard]] auto values(Query::Values subQuery) && -> Query::Ids;
+    [[nodiscard]] auto values(std::vector<std::vector<adb::KeyValue>> values) && -> Query::Ids;
+    [[nodiscard]] auto values(const Placeholder::MultiValues &placeholder) && -> Query::Ids;
+    [[nodiscard]] auto values(Query::MultiValues subQuery) && -> Query::Ids;
 };
 }
 

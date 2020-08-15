@@ -28,13 +28,22 @@ namespace adb
 //! \cond IMPLEMENTAION_DETAIL
 struct InsertEdgeData
 {
-    std::vector<std::vector<adb::KeyValue>> values;
+    enum class Type : char
+    {
+        Assymmetric,
+        Symmetric
+    };
+
+    acore::size_type count = 0;
     std::vector<acore::size_type> from;
     std::vector<acore::size_type> to;
+    std::vector<std::vector<adb::KeyValue>> values;
+    Type type = Type::Symmetric;
 };
 
 struct InsertNodeData
 {
+    acore::size_type count = 0;
     std::vector<std::vector<adb::KeyValue>> values;
 };
 

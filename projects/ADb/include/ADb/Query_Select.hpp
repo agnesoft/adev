@@ -26,13 +26,13 @@ class Query::Select
 {
 public:
     //! DUMMY
-    [[nodiscard]] auto count() && -> CountQuery;
+    [[nodiscard]] auto count() && -> Query::Count;
 
     //! DUMMY
-    [[nodiscard]] auto multiValues() && -> MultiValuesQuery;
+    [[nodiscard]] auto multiValues() && -> Query::MultiValues;
 
     //! DUMMY
-    [[nodiscard]] auto values() && -> ValuesQuery;
+    [[nodiscard]] auto values() && -> Query::Values;
 };
 }
 

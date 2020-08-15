@@ -14,24 +14,25 @@
 
 #include "pch.hpp"
 
-#include "Query_InsertEdges.hpp"
-#include "Query_InsertEdgesFrom.hpp"
+#include "Query_InsertNodeValues.hpp"
 
 namespace adb
 {
-auto Query::InsertEdges::from(std::vector<acore::size_type> ids) && -> InsertEdgesFrom
+auto Query::InsertNodeValues::values(std::vector<KeyValue> values) && -> Query::Id
 {
-    return {};
+    std::get<InsertNodeData>(mData).values = std::vector<std::vector<adb::KeyValue>>{std::move(values)};
+    return Query::Id{std::move(*this)};
 }
 
-auto Query::InsertEdges::from(PlaceholderIds placeholder) && -> InsertEdgesFrom
+auto Query::InsertNodeValues::values(const Placeholder::Values &placeholder) && -> Query::Id
 {
-    return {};
+    addPlaceholder(placeholder.name, bindInsertNodeValues);
+    return Query::Id{std::move(*this)};
 }
 
-auto Query::InsertEdges::from(IdsQuery subQuery) && -> InsertEdgesFrom
+auto Query::InsertNodeValues::values(Query::Values subQuery) && -> Query::Id
 {
-    return {};
+    addSubQuery(std::move(subQuery), bindInsertNodeValues);
+    return Query::Id{std::move(*this)};
 }
-
 }

@@ -15,24 +15,25 @@
 #include "pch.hpp"
 
 #include "Query_InsertEdgeFrom.hpp"
+#include "Query_InsertEdgeTo.hpp"
 
 namespace adb
 {
-auto Query::InsertEdgeFrom::to(acore::size_type id) && -> IdQuery
+auto Query::InsertEdgeFrom::from(acore::size_type id) && -> Query::InsertEdgeTo
 {
-    std::get<InsertEdgeData>(mQuery.mData).to.push_back(id);
-    return IdQuery{std::move(mQuery)};
+    std::get<InsertEdgeData>(mQuery.mData).from.resize(1, id);
+    return Query::InsertEdgeTo{std::move(mQuery)};
 }
 
-auto Query::InsertEdgeFrom::to(const PlaceholderId &placeholder) && -> IdQuery
+auto Query::InsertEdgeFrom::from(const Placeholder::Id &placeholder) && -> Query::InsertEdgeTo
 {
-    mQuery.addPlaceholder(placeholder.name, bindInsertEdgeTo);
-    return IdQuery{std::move(mQuery)};
+    mQuery.addPlaceholder(placeholder.name, bindInsertEdgeFrom);
+    return Query::InsertEdgeTo{std::move(mQuery)};
 }
 
-auto Query::InsertEdgeFrom::to(IdQuery subQuery) && -> IdQuery
+auto Query::InsertEdgeFrom::from(Query::Id subQuery) && -> Query::InsertEdgeTo
 {
-    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeTo);
-    return IdQuery{std::move(mQuery)};
+    mQuery.addSubQuery(std::move(subQuery), bindInsertEdgeFrom);
+    return Query::InsertEdgeTo{std::move(mQuery)};
 }
 }

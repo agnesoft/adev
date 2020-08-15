@@ -19,27 +19,14 @@
 
 namespace adb
 {
-//! The InsertEdgeFromQuery class is a helper class
-//! that facilitates creating a query that insert
-//! edges.
-class Query::InsertEdgeFrom : public Query::Base
+class Query::InsertEdgeFrom : public Query::Wrapper
 {
 public:
-    using Query::Base::Base;
+    using Query::Wrapper::Wrapper;
 
-    //! Sets the \c to parameter to \a id in the
-    //! query. The \a id must be a valid node in
-    //! the database.
-    [[nodiscard]] auto to(acore::size_type id) && -> IdQuery;
-
-    //! Sets the \c to parameter of the query to
-    //! a \a placeholder to be bound later.
-    [[nodiscard]] auto to(const PlaceholderId &placeholder) && -> IdQuery;
-
-    //! Sets the \c to parameter of the query to
-    //! the \a subQuery. The \c from parameter will
-    //! come from the result of the \a subQuery.
-    [[nodiscard]] auto to(IdQuery subQuery) && -> IdQuery;
+    [[nodiscard]] auto from(acore::size_type id) && -> Query::InsertEdgeTo;
+    [[nodiscard]] auto from(const Placeholder::Id &placeholder) && -> Query::InsertEdgeTo;
+    [[nodiscard]] auto from(Query::Id subQuery) && -> Query::InsertEdgeTo;
 };
 }
 

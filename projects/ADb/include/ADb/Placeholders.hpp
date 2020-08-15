@@ -33,10 +33,16 @@ using PlaceholderValue = std::variant<acore::size_type,
 
 //! \relates adb::Query
 //! Wrapper around the name of placeholder.
-struct PlaceholderBase
+struct Placeholder
 {
+    struct Count;
+    struct Id;
+    struct Ids;
+    struct Values;
+    struct MultiValues;
+
     //! Constructs the placeholder with name \a n.
-    PlaceholderBase(std::string n) :
+    explicit Placeholder(std::string n) :
         name(std::move(n))
     {
     }
@@ -47,41 +53,41 @@ struct PlaceholderBase
 
 //! \relates adb::Query
 //! Used when the placeholder represents count.
-struct PlaceholderCount : PlaceholderBase
+struct Placeholder::Count : Placeholder
 {
-    using PlaceholderBase::PlaceholderBase;
+    using Placeholder::Placeholder;
 };
 
 //! \relates adb::Query
 //! Used when the placeholder represents an element
 //! id.
-struct PlaceholderId : PlaceholderBase
+struct Placeholder::Id : Placeholder
 {
-    using PlaceholderBase::PlaceholderBase;
+    using Placeholder::Placeholder;
 };
 
 //! \relates adb::Query
 //! Used when the placeholder represents an elements'
 //! ids.
-struct PlaceholderIds : PlaceholderBase
+struct Placeholder::Ids : Placeholder
 {
-    using PlaceholderBase::PlaceholderBase;
+    using Placeholder::Placeholder;
 };
 
 //! \relates adb::Query
 //! Used when the placeholder represents single
 //! element's values.
-struct PlaceholderValues : PlaceholderBase
+struct Placeholder::Values : Placeholder
 {
-    using PlaceholderBase::PlaceholderBase;
+    using Placeholder::Placeholder;
 };
 
 //! \relates adb::Query
 //! Used when the placeholder represents multiple
 //! elements' values.
-struct PlaceholderMultiValues : PlaceholderBase
+struct Placeholder::MultiValues : Placeholder
 {
-    using PlaceholderBase::PlaceholderBase;
+    using Placeholder::Placeholder;
 };
 
 //! \cond IMPLEMENTAION_DETAIL
@@ -94,12 +100,13 @@ inline auto bindInsertNodeValues(PlaceholderValue &&value, QueryData *data)
 
 inline auto bindInsertNodesValues(PlaceholderValue &&value, QueryData *data) -> void
 {
+    std::get<InsertNodeData>(*data).count = static_cast<acore::size_type>(std::get<std::vector<std::vector<adb::KeyValue>>>(value).size());
     std::get<InsertNodeData>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
 }
 
 inline auto bindInsertNodesCount(PlaceholderValue &&value, QueryData *data) -> void
 {
-    std::get<InsertNodeData>(*data).values.resize(std::get<acore::size_type>(value));
+    std::get<InsertNodeData>(*data).count = std::get<acore::size_type>(value);
 }
 
 inline auto bindInsertEdgeFrom(PlaceholderValue &&value, QueryData *data) -> void
@@ -107,17 +114,37 @@ inline auto bindInsertEdgeFrom(PlaceholderValue &&value, QueryData *data) -> voi
     std::get<InsertEdgeData>(*data).from = std::vector<acore::size_type>{std::get<acore::size_type>(value)};
 }
 
+inline auto bindInsertEdgesFrom(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgeData>(*data).from = std::move(std::get<std::vector<acore::size_type>>(value));
+}
+
 inline auto bindInsertEdgeTo(PlaceholderValue &&value, QueryData *data) -> void
 {
     std::get<InsertEdgeData>(*data).to = std::vector<acore::size_type>{std::get<acore::size_type>(value)};
 }
 
-inline auto BindInsertEdgeValues(PlaceholderValue &&value, QueryData *data) -> void
+inline auto bindInsertEdgesTo(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgeData>(*data).to = std::move(std::get<std::vector<acore::size_type>>(value));
+}
+
+inline auto bindInsertEdgeValues(PlaceholderValue &&value, QueryData *data) -> void
 {
     std::get<InsertEdgeData>(*data).values = std::vector<std::vector<adb::KeyValue>>{std::move(std::get<std::vector<adb::KeyValue>>(value))};
 }
 
-struct Placeholder
+inline auto bindInsertEdgesValues(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgeData>(*data).values = std::move(std::get<std::vector<std::vector<adb::KeyValue>>>(value));
+}
+
+inline auto bindInsertEdgesCount(PlaceholderValue &&value, QueryData *data) -> void
+{
+    std::get<InsertEdgeData>(*data).count = std::get<acore::size_type>(value);
+}
+
+struct PlaceholderData
 {
     std::string name;
     BindPlaceholderFunction bind;
