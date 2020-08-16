@@ -56,11 +56,6 @@ public:
     //! Returns the currently used working directory.
     [[nodiscard]] auto workingDirectory() const noexcept -> const std::string &;
 
-    int foo()
-    {
-        return 10;
-    }
-
 private:
     [[nodiscard]] auto executeProcess() -> int;
 
