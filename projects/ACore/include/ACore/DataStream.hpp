@@ -34,11 +34,6 @@ public:
     //! Creates an empty stream object.
     DataStream() = default;
 
-    int foo()
-    {
-        return 10;
-    }
-
     //! Constructs the stream with \a data as
     //! the internal buffer.
     explicit DataStream(std::vector<char> data) :
