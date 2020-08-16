@@ -17,6 +17,8 @@
 
 #include "DataIndexMapElement.hpp"
 
+#include <algorithm>
+
 namespace acore
 {
 //! \cond IMPLEMENTAION_DETAIL
