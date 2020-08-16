@@ -18,7 +18,6 @@
 #include "ACoreModule.hpp"
 
 #include <cmath>
-#include <cstdint>
 
 namespace acore
 {

@@ -15,6 +15,8 @@
 #ifndef ACORE_PROCESS_HPP
 #define ACORE_PROCESS_HPP
 
+#include "ACoreModule.hpp"
+
 #include <string>
 
 namespace acore
@@ -55,7 +57,7 @@ public:
     [[nodiscard]] auto workingDirectory() const noexcept -> const std::string &;
 
 private:
-    int executeProcess();
+    [[nodiscard]] auto executeProcess() -> int;
 
     std::string mCommand;
     std::string mError;

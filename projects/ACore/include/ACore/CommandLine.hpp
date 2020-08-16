@@ -18,10 +18,6 @@
 #include "CommandLineOption.hpp"
 #include "Exception.hpp"
 
-#include <sstream>
-#include <string>
-#include <vector>
-
 namespace acore
 {
 //! The \c CommandLine is the strongly typed command

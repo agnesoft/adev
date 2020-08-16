@@ -39,21 +39,21 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # CATCH2 #
 ##########
 # Catch2 Static Library
-add_library(Catch2 STATIC projects/Catch2/Catch2.cpp)
+add_library(Catch2 STATIC dependencies/Catch2/Catch2.cpp)
 target_compile_features(Catch2 PUBLIC cxx_std_17)
-target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/single_include)
+target_include_directories(Catch2 SYSTEM PUBLIC dependencies/Catch2/single_include)
 
 ########################
 # TINY-PROCESS-LIBRARY #
 ########################
 # tiny-process-library Static Library
-add_library(tiny-process-library STATIC projects/tiny-process-library/process.cpp)
+add_library(tiny-process-library STATIC dependencies/tiny-process-library/process.cpp)
 
 if(MSVC)
-  target_sources(tiny-process-library PRIVATE projects/tiny-process-library/process_win.cpp)
+  target_sources(tiny-process-library PRIVATE dependencies/tiny-process-library/process_win.cpp)
   target_compile_options(tiny-process-library PRIVATE "")
 else()
-  target_sources(tiny-process-library PRIVATE projects/tiny-process-library/process_unix.cpp)
+  target_sources(tiny-process-library PRIVATE dependencies/tiny-process-library/process_unix.cpp)
   target_compile_options(tiny-process-library PRIVATE -Wall -Wextra)
 endif()
 
@@ -61,7 +61,7 @@ find_package(Threads REQUIRED)
 
 target_compile_features(tiny-process-library PUBLIC cxx_std_17)
 target_link_libraries(tiny-process-library ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(tiny-process-library PUBLIC projects)
+target_include_directories(tiny-process-library SYSTEM PUBLIC dependencies)
 
 #########
 # ACORE #

@@ -16,12 +16,6 @@
 #define ACORE_VARIANT_HPP
 
 #include "DataStream.hpp"
-#include "Exception.hpp"
-
-#include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
 
 namespace acore
 {

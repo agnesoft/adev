@@ -15,7 +15,6 @@
 #ifndef ACORE_DATASTREAMBUFFER_HPP
 #define ACORE_DATASTREAMBUFFER_HPP
 
-#include "ACoreModule.hpp"
 #include "Numeric.hpp"
 
 #include <cstring>

@@ -14,12 +14,7 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 #include <filesystem>
-#include <string>
-#include <type_traits>
-#include <utility>
 
 namespace processtest
 {

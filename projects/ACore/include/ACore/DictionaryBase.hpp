@@ -15,16 +15,10 @@
 #ifndef ACORE_DICTIONARYBASE_HPP
 #define ACORE_DICTIONARYBASE_HPP
 
-#include "ACoreModule.hpp"
-#include "Exception.hpp"
 #include "ForwardIterator.hpp"
 #include "Variant.hpp"
 
-#include <cstring>
 #include <functional>
-#include <string_view>
-#include <type_traits>
-#include <vector>
 
 namespace acore
 {
@@ -139,10 +133,8 @@ public:
         {
             return mData.count(index);
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     //! Returns an invalid const_iterator.

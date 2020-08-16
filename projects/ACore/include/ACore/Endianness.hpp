@@ -17,8 +17,6 @@
 
 #include "ACoreModule.hpp"
 
-#include <cstdint>
-
 namespace acore
 {
 //! \cond IMPLEMENTAION_DETAIL
@@ -41,9 +39,11 @@ template<>
     constexpr std::uint16_t FIRST_BYTE_MASK = 0x00ffU;
     constexpr std::uint16_t SECOND_BYTE_MASK = 0xff00U;
 
-    return static_cast<std::uint16_t>(BASE
-                                      | static_cast<std::uint16_t>(value & FIRST_BYTE_MASK) << ONE_BYTE
-                                      | static_cast<std::uint16_t>(value & SECOND_BYTE_MASK) >> ONE_BYTE);
+    return static_cast<std::uint16_t>(
+        static_cast<std::uint16_t>(
+            BASE
+            | static_cast<std::uint16_t>(static_cast<std::uint16_t>(value & FIRST_BYTE_MASK) << ONE_BYTE))
+        | static_cast<std::uint16_t>(static_cast<std::uint16_t>(value & SECOND_BYTE_MASK) >> ONE_BYTE));
 }
 
 //! 32-bit specialization of the byte swapping function.

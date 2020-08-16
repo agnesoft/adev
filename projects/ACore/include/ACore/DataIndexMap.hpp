@@ -15,12 +15,8 @@
 #ifndef ACORE_DATAINDEXMAP_HPP
 #define ACORE_DATAINDEXMAP_HPP
 
-#include "ACoreModule.hpp"
 #include "DataIndexMapBase.hpp"
 #include "DataIndexMapData.hpp"
-
-#include <utility>
-#include <vector>
 
 namespace acore
 {

@@ -46,7 +46,7 @@ public:
     //! values are observed as usual. The indexes
     //! assigned start from 0.
     template<typename... Args>
-    Dictionary(Args... values)
+    explicit Dictionary(Args... values)
     {
         insertValues(values...);
     }

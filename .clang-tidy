@@ -47,6 +47,7 @@ hicpp-no-assembler,
 hicpp-signed-bitwise,
 -readability-uppercase-literal-suffix
 '
+
 WarningsAsErrors: '
 -*,
 bugprone-*,
@@ -96,3 +97,5 @@ hicpp-no-assembler,
 hicpp-signed-bitwise,
 -readability-uppercase-literal-suffix
 '
+
+HeaderFilterRegex: '.*ADev.*projects.*\.hpp'

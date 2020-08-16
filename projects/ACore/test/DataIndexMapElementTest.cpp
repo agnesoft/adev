@@ -14,10 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <type_traits>
-
 namespace dataindexmapelementtest
 {
 TEST_CASE("[acore::DataIndexMapElement]")

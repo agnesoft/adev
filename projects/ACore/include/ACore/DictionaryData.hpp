@@ -15,13 +15,10 @@
 #ifndef ACORE_DICTIONARYDATA_HPP
 #define ACORE_DICTIONARYDATA_HPP
 
-#include "ACoreModule.hpp"
 #include "Variant.hpp"
 
 #include <iterator>
 #include <unordered_map>
-#include <utility>
-#include <vector>
 
 namespace acore
 {

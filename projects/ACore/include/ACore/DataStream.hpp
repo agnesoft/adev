@@ -18,9 +18,6 @@
 #include "DataStreamBase.hpp"
 #include "DataStreamBuffer.hpp"
 
-#include <utility>
-#include <vector>
-
 namespace acore
 {
 //! The DataStream class provides in-memory

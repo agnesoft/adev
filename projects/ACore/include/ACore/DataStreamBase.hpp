@@ -15,17 +15,13 @@
 #ifndef ACORE_DATASTREAMBASE_HPP
 #define ACORE_DATASTREAMBASE_HPP
 
-#include "ACoreModule.hpp"
 #include "Endianness.hpp"
 #include "Exception.hpp"
 
 #include <array>
-#include <cstdint>
 #include <cstring>
 #include <initializer_list>
-#include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 namespace acore
@@ -185,7 +181,7 @@ auto load(DataStreamBase<Buffer> &stream, T &value) -> DataStreamBase<Buffer> &
         value = fromLittleEndian(value);
     }
 
-    return stream;
+    return stream; //NOLINT(readability-misleading-indentation)
 }
 
 template<typename Temp, typename Buffer, typename T>
@@ -205,7 +201,7 @@ auto save(DataStreamBase<Buffer> &stream, T value) -> DataStreamBase<Buffer> &
         value = toLittleEndian(value);
     }
 
-    std::array<char, sizeof(T)> bytes{};
+    std::array<char, sizeof(T)> bytes{}; //NOLINT(readability-misleading-indentation)
     std::memcpy(bytes.data(), &value, bytes.size());
     stream.write(bytes.data(), static_cast<size_type>(bytes.size()));
     return stream;
