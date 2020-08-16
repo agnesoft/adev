@@ -98,4 +98,4 @@ hicpp-signed-bitwise,
 -readability-uppercase-literal-suffix
 '
 
-HeaderFilterRegex: '.*ADev.*projects.*\.hpp'
+HeaderFilterRegex: 'ABuild|ACore|ADb|AFile|AGraph'

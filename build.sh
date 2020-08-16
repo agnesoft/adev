@@ -423,40 +423,20 @@ function analysis() {
     do
         local file=$(echo $line | perl -nle 'print "$1" while /"file": "(.+)"/g;')
         if test "$file"; then
-            if [[ $file != *"cmake_pch"* ]] && [[ $file != *"tiny-process-library"* ]]; then
+            if [[ $file != *"cmake_pch"* ]] && [[ $file != *"tiny-process-library"* ]] && [[ $file != *"Catch2"* ]]; then
                 SOURCE_FILES="$file $SOURCE_FILES"
             fi
         fi
     done < "compile_commands.json"
 
     echo "Analysing..."
+    $CLANG_TIDY --quiet -p "$(pwd)" $SOURCE_FILES
 
-    for source in $SOURCE_FILES
-    do
-        analyseFile "$source" &
-    done
-    wait
-
-    if test -f "clang_tidy_error"; then
+    if test $? -ne 0; then
         printError "ERROR: Static analysis found issues. See the log above for details."
         exit 1
     else
         printOK "Analysis OK"
-    fi
-}
-
-function analyseFile () {
-    LINT_RESULT=$($CLANG_TIDY "$1" -p "$(pwd)" 2>&1)
-
-    if test $? -ne 0; then
-        echo ""
-        echo "$LINT_RESULT"
-        echo ""
-        printError "Run 'clang-tidy --fix \"$1\" -p \"\$(pwd)\"' (adjust the paths to your system) or resolve the issues manually and commit the result."
-        echo ""
-        touch "clang_tidy_error"
-    else
-        printOK "$1 (OK)"
     fi
 }
 
