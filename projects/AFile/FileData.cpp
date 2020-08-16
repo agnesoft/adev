@@ -16,9 +16,6 @@
 
 #include "FileData.hpp"
 
-#include <string>
-#include <vector>
-
 namespace afile
 {
 FileData::FileData(const char *filename) :

@@ -15,12 +15,7 @@
 #ifndef AFILE_FILE_HPP
 #define AFILE_FILE_HPP
 
-#include "AFileModule.hpp"
-#include "FileData.hpp"
 #include "FileRecords.hpp"
-
-#include <filesystem>
-#include <vector>
 
 namespace afile
 {
@@ -181,7 +176,7 @@ public:
 
     //! Returns \c true if the File contains the \a index
     //! or \c false otherwise.
-    [[nodiscard]] auto contains(acore::size_type index) const -> bool;
+    [[nodiscard]] auto contains(acore::size_type index) const noexcept -> bool;
 
     //! Copies the \a size bytes inside a value identified
     //! by the \a index from the \a offset to the
@@ -312,7 +307,7 @@ public:
     //! Returns the \c size of the value associated
     //! with the \a index or the acore::INVALID_INDEX
     //! when the \a index is not valid.
-    [[nodiscard]] auto size(acore::size_type index) const -> acore::size_type;
+    [[nodiscard]] auto size(acore::size_type index) const noexcept -> acore::size_type;
 
     //! Returns a value of type \c T deserialized
     //! from the data associated with the \a index.

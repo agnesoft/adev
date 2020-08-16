@@ -15,16 +15,7 @@
 #ifndef AFILE_PERSISTENTVECTOR_HPP
 #define AFILE_PERSISTENTVECTOR_HPP
 
-#include "AFileModule.hpp"
 #include "File.hpp"
-
-#include <algorithm>
-#include <initializer_list>
-#include <iterator>
-#include <limits>
-#include <type_traits>
-#include <utility>
-#include <vector>
 
 namespace afile
 {
@@ -81,6 +72,7 @@ public:
 
     //! Constructs a new vector in the \a file.
     explicit PersistentVector(File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>{})}
     {
@@ -89,6 +81,7 @@ public:
     //! Constructs a vector from existing data in
     //! the \a file at the \a index.
     PersistentVector(File *file, acore::size_type index) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{index},
         mSize{mFile->value<acore::size_type>(mIndex, 0)}
@@ -103,6 +96,7 @@ public:
     //! it to a given \a size of default constructed
     //! elements.
     PersistentVector(acore::size_type size, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>(size))},
         mSize{size}
@@ -112,6 +106,7 @@ public:
     //! Constructs a new vector in the \a file initializing
     //! it to a given \a size of \a value.
     PersistentVector(acore::size_type size, const T &value, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>(size, value))},
         mSize{size}
@@ -122,6 +117,7 @@ public:
     //! it to values from the range \a first to \a last.
     template<typename It, std::enable_if_t<!std::is_same_v<typename std::iterator_traits<It>::iterator_category, void>, int> = 0>
     PersistentVector(It first, It last, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>(first, last))},
         mSize{static_cast<acore::size_type>(std::distance(first, last))}
@@ -131,6 +127,7 @@ public:
     //! Constructs a new vector in the \a file with
     //! values from the \a list.
     PersistentVector(std::initializer_list<T> list, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(list)},
         mSize{static_cast<acore::size_type>(list.size())}
@@ -141,7 +138,11 @@ public:
     PersistentVector(const PersistentVector &other) = delete;
 
     //! Move constructor.
-    PersistentVector(PersistentVector &&other) noexcept = default;
+    PersistentVector(PersistentVector &&other) noexcept :
+        SIZE_T{other.SIZE_T}
+    {
+        *this = std::move(other);
+    }
 
     //! Destructor.
     ~PersistentVector() = default;
@@ -215,9 +216,9 @@ public:
     //! allocate space for more elements than is needed
     //! for its size() to avoid frequent reallocations
     //! when inserting new elements.
-    auto capacity() const noexcept -> acore::size_type
+    [[nodiscard]] auto capacity() const noexcept -> acore::size_type
     {
-        return (mFile->size(mIndex) - static_cast<acore::size_type>(sizeof(acore::size_type))) / serializedSize();
+        return (mFile->size(mIndex) - static_cast<acore::size_type>(sizeof(acore::size_type))) / SIZE_T;
     }
 
     //! Same as begin() const.
@@ -357,7 +358,7 @@ public:
     //! pointing to the inserted element.
     auto insert(const_iterator pos, T &&value) -> iterator
     {
-        const acore::size_type i = static_cast<acore::size_type>(std::distance<decltype(pos)>(cbegin(), pos));
+        const auto i = static_cast<acore::size_type>(std::distance<decltype(pos)>(cbegin(), pos));
         resizeRealloc(size() + 1);
         iterator it = begin();
         std::advance(it, i);
@@ -373,7 +374,7 @@ public:
     //! pointing to the first inserted element.
     auto insert(const_iterator pos, size_type count, const T &value) -> iterator
     {
-        const acore::size_type i = static_cast<acore::size_type>(std::distance<decltype(pos)>(cbegin(), pos));
+        const auto i = static_cast<acore::size_type>(std::distance<decltype(pos)>(cbegin(), pos));
         resizeRealloc(size() + count);
         iterator it = begin();
         std::advance(it, i);
@@ -419,7 +420,7 @@ public:
 
     //! Returns the last index of \a value or acore::INVALID_INDEX
     //! if the \a value is not in the vector.
-    constexpr size_type max_size() const noexcept
+    [[nodiscard]] constexpr auto max_size() const noexcept -> acore::size_type
     {
         return std::numeric_limits<acore::size_type>::max();
     }
@@ -489,7 +490,7 @@ public:
     {
         if (capacity() < size)
         {
-            mFile->resize(mIndex, static_cast<acore::size_type>(sizeof(acore::size_type)) + size * serializedSize());
+            mFile->resize(mIndex, static_cast<acore::size_type>(sizeof(acore::size_type)) + size * SIZE_T);
         }
     }
 
@@ -555,7 +556,20 @@ public:
     auto operator=(const PersistentVector &other) -> PersistentVector & = delete;
 
     //! Move assignment operator.
-    auto operator=(PersistentVector &&other) noexcept -> PersistentVector & = default;
+    auto operator=(PersistentVector &&other) noexcept -> PersistentVector &
+    {
+        if (this != &other)
+        {
+            mFile = other.mFile;
+            mIndex = other.mIndex;
+            mSize = other.mSize;
+            other.mFile = nullptr;
+            other.mIndex = acore::INVALID_INDEX;
+            other.mSize = 0;
+        }
+
+        return *this;
+    }
 
     //! Replace the current content of the vector with \a values;
     auto operator=(std::initializer_list<T> values) -> PersistentVector &
@@ -605,9 +619,9 @@ private:
         return index + steps;
     }
 
-    [[nodiscard]] constexpr auto offset(acore::size_type index) const noexcept -> acore::size_type
+    [[nodiscard]] constexpr auto offset(acore::size_type index) const -> acore::size_type
     {
-        return static_cast<acore::size_type>(sizeof(acore::size_type)) + index * serializedSize();
+        return static_cast<acore::size_type>(sizeof(acore::size_type)) + index * SIZE_T;
     }
 
     [[nodiscard]] constexpr auto previousIndex(acore::size_type index, acore::size_type steps) const noexcept -> acore::size_type
@@ -642,13 +656,9 @@ private:
 
     [[nodiscard]] static auto serializedSize() -> acore::size_type
     {
-        static const acore::size_type SIZE_T = []() {
-            acore::DataStream stream;
-            stream << T{};
-            return stream.buffer().size();
-        }();
-
-        return SIZE_T;
+        acore::DataStream stream;
+        stream << T{};
+        return stream.buffer().size();
     }
 
     constexpr auto setValue(size_type index, const T &value) -> void
@@ -661,6 +671,7 @@ private:
         return mFile->value<T>(mIndex, offset(index));
     }
 
+    const acore::size_type SIZE_T = 0;
     File *mFile = nullptr;
     acore::size_type mIndex = acore::INVALID_INDEX;
     acore::size_type mSize = 0;
@@ -670,7 +681,7 @@ private:
 //! to those of the \a right. Vectors of different sizes
 //! are not equal.
 template<typename T>
-[[nodiscard]] constexpr bool operator==(const PersistentVector<T> &left, const PersistentVector<T> &right) noexcept
+[[nodiscard]] constexpr auto operator==(const PersistentVector<T> &left, const PersistentVector<T> &right) -> bool
 {
     return std::equal(left.cbegin(), left.cend(), right.begin(), right.end());
 }
@@ -679,7 +690,7 @@ template<typename T>
 //! equal to those of the \a right. Vectors of different
 //! sizes are not equal.
 template<typename T>
-[[nodiscard]] constexpr bool operator!=(const PersistentVector<T> &left, const PersistentVector<T> &right) noexcept
+[[nodiscard]] constexpr auto operator!=(const PersistentVector<T> &left, const PersistentVector<T> &right) -> bool
 {
     return !(left == right);
 }
@@ -688,7 +699,7 @@ template<typename T>
 //! less than the \a right.
 //! E.g. {1,2,3} < {2,2,3}
 template<typename T>
-[[nodiscard]] constexpr bool operator<(const PersistentVector<T> &left, const PersistentVector<T> &right)
+[[nodiscard]] constexpr auto operator<(const PersistentVector<T> &left, const PersistentVector<T> &right) -> bool
 {
     return std::lexicographical_compare(left.begin(), left.end(), right.begin(), right.end());
 }
@@ -696,7 +707,7 @@ template<typename T>
 //! Returns \c true if \a left is lexicographically
 //! less than or equal to the \a right.
 template<typename T>
-[[nodiscard]] constexpr bool operator<=(const PersistentVector<T> &left, const PersistentVector<T> &right)
+[[nodiscard]] constexpr auto operator<=(const PersistentVector<T> &left, const PersistentVector<T> &right) -> bool
 {
     return left < right || left == right;
 }
@@ -705,7 +716,7 @@ template<typename T>
 //! greater than the \a right.
 //! E.g. {2,2,3} > {1,2,3}
 template<typename T>
-[[nodiscard]] constexpr bool operator>(const PersistentVector<T> &left, const PersistentVector<T> &right)
+[[nodiscard]] constexpr auto operator>(const PersistentVector<T> &left, const PersistentVector<T> &right) -> bool
 {
     return right < left;
 }
@@ -713,7 +724,7 @@ template<typename T>
 //! Returns \c true if the\a left is lexicographically
 //! greater than or equal to the \a right.
 template<typename T>
-[[nodiscard]] constexpr bool operator>=(const PersistentVector<T> &left, const PersistentVector<T> &right)
+[[nodiscard]] constexpr auto operator>=(const PersistentVector<T> &left, const PersistentVector<T> &right) -> bool
 {
     return left > right || left == right;
 }

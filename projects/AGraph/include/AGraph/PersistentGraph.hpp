@@ -15,9 +15,7 @@
 #ifndef AGRAPH_PERSISTENTGRAPH_HPP
 #define AGRAPH_PERSISTENTGRAPH_HPP
 
-#include "AGraphModule.hpp"
 #include "Graph.hpp"
-#include "GraphBase.hpp"
 #include "PersistentGraphData.hpp"
 
 namespace agraph
@@ -76,10 +74,10 @@ public:
     [[nodiscard]] auto toGraph() const -> Graph;
 
     //! Deleted copy assignment operator.
-    PersistentGraph &operator=(const PersistentGraph &other) = delete;
+    auto operator=(const PersistentGraph &other) -> PersistentGraph & = delete;
 
     //! Move assignment operator.
-    PersistentGraph &operator=(PersistentGraph &&other) noexcept = default;
+    auto operator=(PersistentGraph &&other) noexcept -> PersistentGraph & = default;
 };
 }
 

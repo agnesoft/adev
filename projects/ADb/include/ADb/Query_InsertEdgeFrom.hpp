@@ -21,10 +21,11 @@ namespace adb
 {
 //! The Query::InsertEdgeFrom class is part of
 //! the builder of the adb::Query.
-class Query::InsertEdgeFrom : public Query::Wrapper
+class Query::InsertEdgeFrom
 {
 public:
-    using Query::Wrapper::Wrapper;
+    //! Constructs the builder by moving from \a query.
+    explicit InsertEdgeFrom(Query &&query);
 
     //! Sets the query's destination node to \a id.
     [[nodiscard]] auto from(acore::size_type id) && -> Query::InsertEdgeTo;
@@ -36,6 +37,9 @@ public:
     //! Sets the query's destination node to a
     //! result of the \a subQuery.
     [[nodiscard]] auto from(Query::Id subQuery) && -> Query::InsertEdgeTo;
+
+private:
+    Query mQuery;
 };
 }
 

@@ -15,7 +15,6 @@
 #ifndef AFILE_PERSISTENTDATAINDEXMAP_HPP
 #define AFILE_PERSISTENTDATAINDEXMAP_HPP
 
-#include "AFileModule.hpp"
 #include "PersistentDataIndexMapData.hpp"
 
 namespace afile
@@ -70,10 +69,10 @@ public:
     [[nodiscard]] auto toDataIndexMap() const -> acore::DataIndexMap;
 
     //! Deleted copy assignment operator.
-    PersistentDataIndexMap &operator=(const PersistentDataIndexMap &other) = delete;
+    auto operator=(const PersistentDataIndexMap &other) -> PersistentDataIndexMap & = delete;
 
     //! Move assignment operator.
-    PersistentDataIndexMap &operator=(PersistentDataIndexMap &&other) noexcept = default;
+    auto operator=(PersistentDataIndexMap &&other) noexcept -> PersistentDataIndexMap & = default;
 };
 }
 

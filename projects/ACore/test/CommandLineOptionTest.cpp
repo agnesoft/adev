@@ -14,14 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <cstdint>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 namespace cppcommandlineoptiontest
 {
 TEST_CASE("[acore::CommandLineOption]")

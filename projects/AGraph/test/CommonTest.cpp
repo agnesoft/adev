@@ -14,8 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 namespace commontest
 {
 TEST_CASE("edgeToIndex(acore::size_type index) noexcept -> acore::size_type [agraph]")

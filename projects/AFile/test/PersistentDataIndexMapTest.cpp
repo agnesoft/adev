@@ -14,17 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <algorithm>
-#include <filesystem>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 namespace acore
 {
 [[nodiscard]] auto operator==(const DataIndexMap &map, const std::vector<std::pair<size_type, DataIndexMapElement>> &values) -> bool

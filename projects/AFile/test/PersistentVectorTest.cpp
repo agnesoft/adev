@@ -14,11 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <filesystem>
-#include <type_traits>
-
 namespace afile
 {
 template<typename T, typename Container>
@@ -50,7 +45,7 @@ public:
     TestFile(const TestFile &other) = delete;
     TestFile(TestFile &&other) = default;
 
-    ~TestFile() noexcept
+    ~TestFile()
     {
         try
         {
@@ -1187,7 +1182,6 @@ TEST_CASE("operator>(const Vector<T> &left, const Vector<T> &right) -> bool [afi
     SECTION("[empty]")
     {
         const afile::PersistentVector<int> left{testFile.file()};
-
         const afile::PersistentVector<int> right{testFile.file()};
         REQUIRE_FALSE(left > right);
     }

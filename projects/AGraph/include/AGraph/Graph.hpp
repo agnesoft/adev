@@ -15,7 +15,6 @@
 #ifndef AGRAPH_GRAPH_HPP
 #define AGRAPH_GRAPH_HPP
 
-#include "AGraphModule.hpp"
 #include "GraphBase.hpp"
 #include "GraphData.hpp"
 

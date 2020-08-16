@@ -61,7 +61,7 @@ find_package(Threads REQUIRED)
 
 target_compile_features(tiny-process-library PUBLIC cxx_std_17)
 target_link_libraries(tiny-process-library ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(tiny-process-library PUBLIC projects)
+target_include_directories(tiny-process-library SYSTEM PUBLIC projects)
 
 #########
 # ACORE #
@@ -189,7 +189,6 @@ add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/PathSearch.hpp
                           projects/AGraph/include/AGraph/PersistentGraph.hpp
                           projects/AGraph/include/AGraph/PersistentGraphData.hpp
-                          projects/AGraph/Graph.cpp
                           projects/AGraph/PersistentGraph.cpp
                           projects/AGraph/PersistentGraphData.cpp)
 if(ENABLE_PCH)

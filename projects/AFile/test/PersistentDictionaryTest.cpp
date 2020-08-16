@@ -14,16 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <algorithm>
-#include <cstring>
-#include <filesystem>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
 namespace acore
 {
 [[nodiscard]] auto operator==(const Dictionary &left, const Dictionary &right) -> bool

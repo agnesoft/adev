@@ -72,7 +72,7 @@ public:
 
     //! Implicitly converts the Reference to the
     //! \c T by returning the \c Data::value().
-    [[nodiscard]] constexpr operator T() const //NOLINT(google-explicit-constructor)
+    [[nodiscard]] constexpr operator T() const //NOLINT(hicpp-explicit-conversions)
     {
         return mData->value(mIndex);
     }
@@ -93,9 +93,10 @@ public:
 
     //! Copy assignment operator. It assigns to the
     //! underlying value, not the Reference itself.
-    constexpr auto operator=(const Reference &other) -> Reference &
+    constexpr auto operator=(const Reference &other) -> Reference & //NOLINT(bugprone-unhandled-self-assignment)
     {
-        *this = *other;
+        auto value = *other;
+        mData->setValue(mIndex, std::move(value));
         return *this;
     }
 
@@ -114,7 +115,7 @@ public:
     }
 
     //! The operator is deleted.
-    auto operator&() const -> Reference * = delete; //NOLINT(google-runtime-operator)
+    auto operator&() const -> Reference * = delete;
 
 private:
     size_type mIndex = INVALID_INDEX;

@@ -14,11 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <type_traits>
-#include <vector>
-
 namespace nodetest
 {
 struct ExpectedNodeData

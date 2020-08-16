@@ -16,10 +16,6 @@
 
 #include "PersistentDictionaryData.hpp"
 
-#include <algorithm>
-#include <iterator>
-#include <vector>
-
 namespace afile
 {
 PersistentDictionaryData::PersistentDictionaryData(File *file) :

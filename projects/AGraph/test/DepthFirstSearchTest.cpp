@@ -14,10 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <vector>
-
 namespace depthfirstsearchtest
 {
 class SearchHandler

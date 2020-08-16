@@ -16,13 +16,8 @@
 
 #include "File.hpp"
 
-#include <algorithm>
-#include <filesystem>
-#include <vector>
-
 namespace afile
 {
-
 File::File(const char *filename) :
     mData{validateFileNotInUse(filename)},
     mRecords{&mData}
@@ -51,7 +46,7 @@ auto File::clear() -> void
     mData.reset();
 }
 
-auto File::contains(acore::size_type index) const -> bool
+auto File::contains(acore::size_type index) const noexcept -> bool
 {
     return mRecords.contains(index);
 }
@@ -132,7 +127,7 @@ auto File::size() const noexcept -> acore::size_type
     return mData.size();
 }
 
-auto File::size(acore::size_type index) const -> acore::size_type
+auto File::size(acore::size_type index) const noexcept -> acore::size_type
 {
     if (contains(index))
     {

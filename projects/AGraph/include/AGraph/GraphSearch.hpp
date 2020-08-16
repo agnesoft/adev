@@ -15,11 +15,7 @@
 #ifndef AGRAPH_GRAPHSEARCH_HPP
 #define AGRAPH_GRAPHSEARCH_HPP
 
-#include "AGraphModule.hpp"
 #include "Common.hpp"
-
-#include <utility>
-#include <vector>
 
 namespace agraph
 {
@@ -203,9 +199,9 @@ private:
 
     const GraphType *mGraph = nullptr;
     const void *mHandler = nullptr;
-    HandlerCaller mHandlerCaller;
-    GetEdgeRange mGetEdgeRange;
-    GetDestination mGetDestination;
+    HandlerCaller mHandlerCaller = nullptr;
+    GetEdgeRange mGetEdgeRange = nullptr;
+    GetDestination mGetDestination = nullptr;
     std::vector<bool> mVisited;
     std::vector<Index> mStack;
     std::vector<acore::size_type> mElements;

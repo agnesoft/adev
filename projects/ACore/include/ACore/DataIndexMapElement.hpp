@@ -15,7 +15,6 @@
 #ifndef ACORE_ACOREDATAINDEXMAPELEMENT_HPP
 #define ACORE_ACOREDATAINDEXMAPELEMENT_HPP
 
-#include "ACoreModule.hpp"
 #include "DataStreamBase.hpp"
 
 namespace acore

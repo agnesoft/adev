@@ -14,8 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 namespace query_insertedgetest
 {
 TEST_CASE("adb::insert_into().edge().from(acore::size_type id).to(acore::size_type id) && -> adb::Query::Id [adb::Query]")
@@ -82,7 +80,7 @@ TEST_CASE("adb::insert_into().edge().from(adb::Placeholder::Id placeholder).to(a
     REQUIRE(data.values == std::vector<std::vector<adb::KeyValue>>{}); //NOLINT(readability-container-size-empty)
 }
 
-TEST_CASE("adb::insert_into().edge().from(Query::Ids subQuery).to(acore::size_type id) && -> adb::Query::Id [adb::Query]")
+TEST_CASE("adb::insert_into().edge().from(Query::Id subQuery).to(acore::size_type id) && -> adb::Query::Id [adb::Query]")
 {
     const auto query = adb::insert_into()
                            .edge()

@@ -19,7 +19,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <string>
 
 namespace afile
 {
@@ -39,7 +38,7 @@ public:
     explicit FileStreamBuffer(const char *filename);
     FileStreamBuffer(const FileStreamBuffer &other) = delete;
     FileStreamBuffer(FileStreamBuffer &&other) = default;
-    ~FileStreamBuffer();
+    ~FileStreamBuffer(); //NOLINT(bugprone-exception-escape)
 
     [[nodiscard]] auto filename() const noexcept -> const char *;
     auto flush() -> void;
@@ -62,14 +61,14 @@ public:
     auto operator=(FileStreamBuffer &&other) -> FileStreamBuffer & = default;
 
 private:
-    [[nodiscard]] static std::ios_base::openmode openMode(const std::string &filename);
+    [[nodiscard]] static auto openMode(const std::string &filename) -> std::ios_base::openmode;
 
     std::string mName;
     std::fstream mFile;
     acore::size_type mSize = 0;
 };
 
-[[nodiscard]] FileStreamBuffer::OpenMode operator|(FileStreamBuffer::OpenMode left, FileStreamBuffer::OpenMode right) noexcept;
+[[nodiscard]] auto operator|(FileStreamBuffer::OpenMode left, FileStreamBuffer::OpenMode right) noexcept -> FileStreamBuffer::OpenMode;
 //! \endcond
 }
 

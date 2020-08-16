@@ -62,7 +62,7 @@ public:
     auto operator<<(const T &text) -> Exception &&
     {
         std::stringstream stream;
-        stream << text;
+        stream << text; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
         mMessage += stream.str();
         return std::move(*this);
     }

@@ -14,13 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <filesystem>
-#include <sstream>
-#include <type_traits>
-#include <vector>
-
 namespace filetest
 {
 static constexpr const char *TEST_FILE = "afile.file.testfile";
@@ -424,6 +417,39 @@ TEST_CASE("clear() -> void [afile::File]")
                                                << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         afile::File{testFile.filename()}.clear();
         REQUIRE(testFile.fileContent() == std::vector<char>(8, 0));
+    }
+}
+
+TEST_CASE("contains(acore::size_type index) const noexcept [afile::File]")
+{
+    const TestFile testFile;
+
+    SECTION("[empty]")
+    {
+        const afile::File file{testFile.filename()};
+        REQUIRE(noexcept(file.contains(1)));
+        REQUIRE_FALSE(file.contains(1));
+    }
+
+    SECTION("[existing]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{3}
+                                               << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{1} << acore::size_type{20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        const afile::File file{testFile.filename()};
+        REQUIRE(file.contains(1));
+    }
+
+    SECTION("[removed]")
+    {
+        afile::FileStream{testFile.filename()} << acore::size_type{3}
+                                               << acore::size_type{0} << acore::size_type{28} << std::vector<int>{1, 2, 3, 4, 5} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{1} << acore::size_type{20} << std::vector<int>{1, 2, 3} //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+                                               << acore::size_type{2} << acore::size_type{20} << std::string{"Hello World!"}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        afile::File file{testFile.filename()};
+        file.remove(1);
+        REQUIRE_FALSE(file.contains(1));
     }
 }
 
@@ -903,7 +929,7 @@ TEST_CASE("size() const noexcept -> size_type [afile::File]")
     }
 }
 
-TEST_CASE("size(size_type index) const -> size_type [afile::File]")
+TEST_CASE("size(size_type index) const noexcept -> size_type [afile::File]")
 {
     const TestFile testFile;
     afile::FileStream{testFile.filename()} << acore::size_type{3}
@@ -913,7 +939,9 @@ TEST_CASE("size(size_type index) const -> size_type [afile::File]")
 
     SECTION("[existing]")
     {
-        REQUIRE(afile::File{testFile.filename()}.size(0) == 28);
+        const afile::File file{testFile.filename()};
+        REQUIRE(noexcept(file.size(0)));
+        REQUIRE(file.size(0) == 28);
     }
 
     SECTION("[missing]")

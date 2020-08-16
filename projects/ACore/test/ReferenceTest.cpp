@@ -14,12 +14,8 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 #include <filesystem>
 #include <fstream>
-#include <type_traits>
-#include <vector>
 
 namespace referencetest
 {

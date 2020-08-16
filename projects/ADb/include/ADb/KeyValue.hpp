@@ -15,7 +15,6 @@
 #ifndef ADB_KEYVALUE_HPP
 #define ADB_KEYVALUE_HPP
 
-#include "ADbModule.hpp"
 #include "Value.hpp"
 
 namespace adb
@@ -45,9 +44,9 @@ public:
     //!
     //! \snippet KeyValueTest.cpp [Vector]
     template<typename KeyT, typename ValueT>
-    KeyValue(const KeyT &key, const ValueT &value) :
-        mKey{key},
-        mValue{value}
+    KeyValue(KeyT key, ValueT value) :
+        mKey{std::move(key)},
+        mValue{std::move(value)}
     {
     }
 

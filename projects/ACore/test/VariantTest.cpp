@@ -14,12 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <string>
-#include <type_traits>
-#include <vector>
-
 namespace varianttest
 {
 TEST_CASE("[acore::Variant]")

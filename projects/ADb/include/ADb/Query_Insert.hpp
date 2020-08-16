@@ -42,7 +42,7 @@ public:
     [[nodiscard]] auto edges(Query::Count subQuery) && -> Query::InsertEdgesFrom;
 
     //! Insert single node query.
-    [[nodiscard]] auto node() && -> Query::InsertNodesValuesOptional;
+    [[nodiscard]] auto node() && -> Query::InsertNodeValues;
 
     //! Insert multiple nodes query.
     [[nodiscard]] auto nodes() && -> Query::InsertNodesValues;

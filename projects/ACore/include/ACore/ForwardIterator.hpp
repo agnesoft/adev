@@ -110,7 +110,7 @@ public:
     //! to convert from the non-const to the \c const
     //! version of this iterator.
     template<typename ConstReferenceType>
-    [[nodiscard]] constexpr operator ForwardIterator<ValueType, ConstReferenceType, const Iterable>() const noexcept
+    [[nodiscard]] constexpr operator ForwardIterator<ValueType, ConstReferenceType, const Iterable>() const noexcept //NOLINT(hicpp-explicit-conversions)
     {
         return ForwardIterator<ValueType, ConstReferenceType, const Iterable>(mIndex, mIterable);
     }

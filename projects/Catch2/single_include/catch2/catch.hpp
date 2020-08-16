@@ -13,9 +13,9 @@
 // start catch.hpp
 
 
-#define CATCH_VERSION_MAJOR 2
-#define CATCH_VERSION_MINOR 12
-#define CATCH_VERSION_PATCH 2
+#define CATCH_VERSION_MAJOR 2 //NOLINT(cppcoreguidelines-macro-usage)
+#define CATCH_VERSION_MINOR 12 //NOLINT(cppcoreguidelines-macro-usage)
+#define CATCH_VERSION_PATCH 2 //NOLINT(cppcoreguidelines-macro-usage)
 
 #ifdef __clang__
 #    pragma clang system_header

@@ -16,12 +16,8 @@
 
 #include "PersistentDataIndexMapData.hpp"
 
-#include <utility>
-#include <vector>
-
 namespace afile
 {
-
 PersistentDataIndexMapData::PersistentDataIndexMapData(File *file) :
     mFile{beginInit(file)},
     mDataIndex{file},

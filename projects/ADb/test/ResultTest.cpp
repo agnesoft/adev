@@ -14,12 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 namespace resulttest
 {
 TEST_CASE("[adb::Result]")

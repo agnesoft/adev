@@ -15,7 +15,6 @@
 #ifndef AGRAPH_PERSISTENTGRAPHDATA_HPP
 #define AGRAPH_PERSISTENTGRAPHDATA_HPP
 
-#include "AGraphModule.hpp"
 #include "GraphData.hpp"
 
 namespace agraph

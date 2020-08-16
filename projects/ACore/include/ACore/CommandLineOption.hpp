@@ -15,7 +15,8 @@
 #ifndef ACORE_COMMANDLINEOPTION_HPP
 #define ACORE_COMMANDLINEOPTION_HPP
 
-#include <cstdint>
+#include "ACoreModule.hpp"
+
 #include <string>
 #include <variant>
 #include <vector>

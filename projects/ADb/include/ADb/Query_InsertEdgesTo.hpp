@@ -21,10 +21,11 @@ namespace adb
 {
 //! The Query::InsertEdgesTo class is part of
 //! the builder of the adb::Query.
-class Query::InsertEdgesTo : public Query::Wrapper
+class Query::InsertEdgesTo
 {
 public:
-    using Query::Wrapper::Wrapper;
+    //! Constructs the builder by moving from \a query.
+    explicit InsertEdgesTo(Query &&query);
 
     //! Sets the query's destination nodes to \a ids.
     //! The edges will be inserted symmetrically to
@@ -45,6 +46,9 @@ public:
     //! There must be exactly the same number of
     //! \c from and \c to ids.
     [[nodiscard]] auto to(Query::Ids subQuery) && -> Query::InsertEdgesValues;
+
+private:
+    Query mQuery;
 };
 }
 

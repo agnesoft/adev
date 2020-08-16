@@ -228,7 +228,7 @@ private:
 
     const GraphType *mGraph = nullptr;
     const void *mHandler = nullptr;
-    HandlerCaller mHandlerCaller;
+    HandlerCaller mHandlerCaller = nullptr;
     std::vector<bool> mVisited;
     std::vector<Path> mPaths;
     std::vector<acore::size_type> mElements;

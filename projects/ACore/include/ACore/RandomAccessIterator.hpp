@@ -216,7 +216,7 @@ public:
     //! to convert from the non-const to the \c const
     //! version of this iterator.
     template<typename ConstReferenceType>
-    [[nodiscard]] constexpr operator RandomAccessIterator<const ValueType, ConstReferenceType, const Iterable>() const noexcept //NOLINT(google-explicit-constructor)
+    [[nodiscard]] constexpr operator RandomAccessIterator<const ValueType, ConstReferenceType, const Iterable>() const noexcept //NOLINT(hicpp-explicit-conversions)
     {
         return RandomAccessIterator<const ValueType, ConstReferenceType, const Iterable>(mIndex, mIterable);
     }

@@ -15,6 +15,8 @@
 #ifndef AFILE_TEST_PCH_HPP
 #define AFILE_TEST_PCH_HPP
 
+#include <catch2/catch.hpp>
+
 #ifdef _WIN32
 #    pragma warning(push)
 #    pragma warning(disable : 4702) //Disabled because of File::insert instantiated with BadValue that throws in the middle of the function

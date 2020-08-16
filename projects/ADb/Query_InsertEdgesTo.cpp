@@ -19,6 +19,11 @@
 
 namespace adb
 {
+Query::InsertEdgesTo::InsertEdgesTo(Query &&query) :
+    mQuery{std::move(query)}
+{
+}
+
 auto Query::InsertEdgesTo::to(std::vector<acore::size_type> ids) && -> Query::InsertEdgesValues
 {
     std::get<InsertEdgeData>(mQuery.mData).to = std::move(ids);

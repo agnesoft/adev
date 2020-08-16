@@ -15,6 +15,8 @@
 #ifndef AGRAPH_TEST_PCH_HPP
 #define AGRAPH_TEST_PCH_HPP
 
+#include <catch2/catch.hpp>
+
 #include <AGraph.hpp>
 
 #endif

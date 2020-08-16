@@ -15,8 +15,6 @@
 #ifndef AGRAPH_NODE_HPP
 #define AGRAPH_NODE_HPP
 
-#include "AGraphModule.hpp"
-#include "Common.hpp"
 #include "Element.hpp"
 
 namespace agraph

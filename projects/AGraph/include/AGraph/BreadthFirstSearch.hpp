@@ -15,10 +15,7 @@
 #ifndef AGRAPH_BREADTHFIRSTSEARCH_HPP
 #define AGRAPH_BREADTHFIRSTSEARCH_HPP
 
-#include "AGraphModule.hpp"
 #include "GraphSearch.hpp"
-
-#include <vector>
 
 namespace agraph
 {

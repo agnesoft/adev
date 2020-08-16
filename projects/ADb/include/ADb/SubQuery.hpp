@@ -15,11 +15,8 @@
 #ifndef ADB_SUBQUERY_HPP
 #define ADB_SUBQUERY_HPP
 
-#include "ADbModule.hpp"
 #include "Placeholders.hpp"
 #include "QueryData.hpp"
-
-#include <memory>
 
 namespace adb
 {
@@ -35,18 +32,15 @@ using BindResultFunction = BindPlaceholderFunction;
 //! result to the parent query's data.
 struct SubQuery
 {
-    //! Default constructor.
-    SubQuery() = default;
-
     //! Constructs the SubQuery with \a subQuery
     //! and \a bindFunction.
     SubQuery(Query &&subQuery, BindResultFunction bindFunction);
 
-    //! Copies this sub-query. Provided so that the
-    //! adb::Query class is copyable.
+    //! Copies this sub-query.
     //!
-    //! \note This constructor performs deep
-    //! recursive copy of the internal query.
+    //! \note This constructor performs deep copy
+    //! of the internal query and its subqueries
+    //! recursively.
     SubQuery(const SubQuery &other);
 
     //! Move constructor.
@@ -65,12 +59,20 @@ struct SubQuery
     //! Move assignment operator.
     auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
 
+    //! Return the function used for binding the
+    //! result to the query.
+    [[nodiscard]] auto bind() const noexcept -> BindResultFunction;
+
+    //! Returns the internal query.
+    [[nodiscard]] auto query() const noexcept -> Query *;
+
+private:
     //! Pointer to the query.
-    std::unique_ptr<Query> query;
+    std::unique_ptr<Query> mQuery;
 
     //! Function to bind the query's result to the
     //! parent adb::Query.
-    BindResultFunction bind = nullptr;
+    BindResultFunction mBind = nullptr;
 };
 }
 #endif

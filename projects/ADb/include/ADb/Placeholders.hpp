@@ -15,11 +15,7 @@
 #ifndef ADB_PLACEHOLDERS_HPP
 #define ADB_PLACEHOLDERS_HPP
 
-#include "ADbModule.hpp"
-#include "KeyValue.hpp"
 #include "QueryData.hpp"
-
-#include <vector>
 
 namespace adb
 {
@@ -41,13 +37,7 @@ struct Placeholder
     struct Values;
     struct MultiValues;
 
-    //! Constructs the placeholder with name \a n.
-    explicit Placeholder(std::string n) :
-        name(std::move(n))
-    {
-    }
-
-    //! Placeholder's name.
+    //! Placeholder's identifier used for binding.
     std::string name;
 };
 
@@ -55,7 +45,11 @@ struct Placeholder
 //! Used when the placeholder represents count.
 struct Placeholder::Count : Placeholder
 {
-    using Placeholder::Placeholder;
+    //! Constructs the placeholder with \a name.
+    explicit Count(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -63,7 +57,11 @@ struct Placeholder::Count : Placeholder
 //! id.
 struct Placeholder::Id : Placeholder
 {
-    using Placeholder::Placeholder;
+    //! Constructs the placeholder with \a name.
+    explicit Id(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -71,7 +69,11 @@ struct Placeholder::Id : Placeholder
 //! ids.
 struct Placeholder::Ids : Placeholder
 {
-    using Placeholder::Placeholder;
+    //! Constructs the placeholder with \a name.
+    explicit Ids(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -79,7 +81,11 @@ struct Placeholder::Ids : Placeholder
 //! element's values.
 struct Placeholder::Values : Placeholder
 {
-    using Placeholder::Placeholder;
+    //! Constructs the placeholder with \a name.
+    explicit Values(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -87,7 +93,11 @@ struct Placeholder::Values : Placeholder
 //! elements' values.
 struct Placeholder::MultiValues : Placeholder
 {
-    using Placeholder::Placeholder;
+    //! Constructs the placeholder with \a name.
+    explicit MultiValues(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \cond IMPLEMENTAION_DETAIL

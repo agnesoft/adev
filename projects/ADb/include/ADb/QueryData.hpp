@@ -15,13 +15,7 @@
 #ifndef ADB_QUERYDATA_HPP
 #define ADB_QUERYDATA_HPP
 
-#include "ADbModule.hpp"
 #include "KeyValue.hpp"
-
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace adb
 {

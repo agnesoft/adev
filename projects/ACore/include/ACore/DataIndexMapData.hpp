@@ -15,12 +15,9 @@
 #ifndef ACORE_ACOREDATAINDEXMAPDATA_HPP
 #define ACORE_ACOREDATAINDEXMAPDATA_HPP
 
-#include "ACoreModule.hpp"
 #include "DataIndexMapElement.hpp"
-#include "Exception.hpp"
 
 #include <algorithm>
-#include <vector>
 
 namespace acore
 {
@@ -83,7 +80,7 @@ public:
 
     auto shrink_to_fit() -> void
     {
-        size_type i = static_cast<size_type>(mData.size());
+        auto i = static_cast<size_type>(mData.size());
 
         while (i > 0 && mData[i - 1].empty())
         {

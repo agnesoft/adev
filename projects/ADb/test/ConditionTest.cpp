@@ -14,12 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 namespace adb
 {
 [[nodiscard]] auto operator==(const Condition::Data &left, const Condition::Data &right) -> bool

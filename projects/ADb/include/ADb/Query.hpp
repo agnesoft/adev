@@ -15,20 +15,8 @@
 #ifndef ADB_QUERY_HPP
 #define ADB_QUERY_HPP
 
-#include "ADbModule.hpp"
 #include "Condition.hpp"
-#include "KeyValue.hpp"
-#include "Placeholders.hpp"
-#include "QueryData.hpp"
 #include "SubQuery.hpp"
-#include "Value.hpp"
-
-#include <memory>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <variant>
-#include <vector>
 
 namespace adb
 {
@@ -69,7 +57,7 @@ public:
     //! \a value 's type does not match the type
     //! expected by the placeholding value an exception
     //! is thrown.
-    auto bind(std::string_view name, PlaceholderValue value) & -> void
+    auto bind(std::string_view name, PlaceholderValue value) & -> void //NOLINT(performance-unnecessary-value-param)
     {
         const auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const auto &placeholder) {
             return placeholder.name == name;
@@ -111,7 +99,7 @@ public:
         return mData;
     }
 
-    auto data() const &&noexcept -> const QueryData & = delete;
+    [[nodiscard]] auto data() const &&noexcept -> const QueryData & = delete;
 
     //! Returns the list of sub queries of this query.
     [[nodiscard]] auto subQueries() const &noexcept -> const std::vector<SubQuery> &
@@ -119,13 +107,12 @@ public:
         return mSubQueries;
     }
 
-    auto subQueries() const &&noexcept -> const std::vector<SubQuery> & = delete;
+    [[nodiscard]] auto subQueries() const &&noexcept -> const std::vector<SubQuery> & = delete;
 
 private:
     class Base;
     class Insert;
     class Select;
-    class Wrapper;
 
     class InsertEdgeFrom;
     class InsertEdgeTo;
@@ -160,12 +147,12 @@ private:
             throw acore::Exception{} << "Placeholder '" << placeholder << "' already exists.";
         }
 
-        mPlaceholders.push_back({std::move(placeholder), bindFunction});
+        mPlaceholders.emplace_back(PlaceholderData{std::move(placeholder), bindFunction});
     }
 
     auto addSubQuery(Query &&query, BindResultFunction bindFunction) -> void
     {
-        mSubQueries.push_back({std::move(query), bindFunction});
+        mSubQueries.emplace_back(SubQuery{std::move(query), bindFunction});
     }
 
     QueryData mData;
@@ -189,22 +176,10 @@ private:
 [[nodiscard]] auto select() -> Query::Select;
 
 //! \cond IMPLEMENTAION_DETAIL
-class Query::Wrapper
-{
-public:
-    explicit Wrapper(Query &&query) :
-        mQuery{std::move(query)}
-    {
-    }
-
-protected:
-    Query mQuery;
-};
-
 class Query::Base : public Query
 {
 public:
-    Base(Query &&query) :
+    explicit Base(Query &&query) :
         Query{std::move(query)}
     {
     }

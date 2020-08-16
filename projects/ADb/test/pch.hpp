@@ -15,6 +15,8 @@
 #ifndef ADBTEST_PCH_HPP
 #define ADBTEST_PCH_HPP
 
+#include <catch2/catch.hpp>
+
 #include <ADb.hpp>
 
 #endif

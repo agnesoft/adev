@@ -52,9 +52,9 @@ auto Query::Insert::edges(Query::Count subQuery) && -> Query::InsertEdgesFrom //
     return Query::InsertEdgesFrom{std::move(query)};
 }
 
-auto Query::Insert::node() && -> Query::InsertNodesValuesOptional //NOLINT(readability-convert-member-functions-to-static)
+auto Query::Insert::node() && -> Query::InsertNodeValues //NOLINT(readability-convert-member-functions-to-static)
 {
-    return Query::InsertNodesValuesOptional{Query{InsertNodeData{1, {}}}};
+    return Query::InsertNodeValues{Query{InsertNodeData{1, {}}}};
 }
 
 auto Query::Insert::nodes() && -> InsertNodesValues //NOLINT(readability-convert-member-functions-to-static)

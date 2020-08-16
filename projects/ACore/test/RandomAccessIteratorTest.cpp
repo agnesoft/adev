@@ -14,20 +14,13 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <sstream>
-#include <string>
-#include <type_traits>
-#include <vector>
-
 namespace randomaccessiteratortest
 {
 class Iterable
 {
 public:
     using iterator = acore::RandomAccessIterator<int, int &, Iterable>;
-    using const_iterator = acore::RandomAccessIterator<const int, const int, const Iterable>;
+    using const_iterator = acore::RandomAccessIterator<const int, const int &, const Iterable>;
 
     [[nodiscard]] auto data() const noexcept -> const std::vector<int> &
     {
@@ -54,7 +47,7 @@ public:
         return mData[index];
     }
 
-    [[nodiscard]] auto referenceAt(acore::size_type index) const -> int
+    [[nodiscard]] auto referenceAt(acore::size_type index) const -> const int &
     {
         return mData[index];
     }

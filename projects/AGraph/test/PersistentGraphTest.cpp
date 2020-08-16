@@ -14,14 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <sstream>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 namespace agraph
 {
 [[nodiscard]] auto operator==(const Graph &graph, const std::vector<std::pair<acore::size_type, std::vector<acore::size_type>>> &elements) -> bool;
