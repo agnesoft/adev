@@ -286,17 +286,6 @@ if(ENABLE_PCH)
 endif()
 target_link_libraries(ADbTest ADb Catch2)
 
-###############
-# ABENCHMARKS #
-###############
-#ABenchmarks
-add_executable(ABenchmarks projects/ABenchmarks/DataIndexMapBenchmark.cpp
-                           projects/ABenchmarks/VariantBenchmark.cpp)
-if(ENABLE_PCH)
-    target_precompile_headers(ABenchmarks PRIVATE projects/ABenchmarks/pch.hpp)
-endif()
-target_link_libraries(ABenchmarks ACore Catch2)
-
 ##########
 # ABUILD #
 ##########
@@ -322,7 +311,7 @@ add_executable(ABuildTest projects/ABuild/test/TestFile.hpp
 target_link_libraries(ABuildTest ABuildStatic Catch2)
 
 ### INSTALLATION ###
-install(TARGETS ABuild ABenchmarks DESTINATION bin)
+install(TARGETS ABuild DESTINATION bin)
 install(TARGETS ABuildTest ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
