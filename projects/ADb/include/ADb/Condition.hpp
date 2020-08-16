@@ -15,12 +15,7 @@
 #ifndef ADB_CONDITION_HPP
 #define ADB_CONDITION_HPP
 
-#include "ADbModule.hpp"
 #include "Value.hpp"
-
-#include <utility>
-#include <variant>
-#include <vector>
 
 namespace adb
 {

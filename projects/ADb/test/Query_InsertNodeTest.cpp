@@ -14,8 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 namespace query_insertnodetest
 {
 TEST_CASE("adb::insert_into().node() -> adb::Query::Id [adb::Query]")

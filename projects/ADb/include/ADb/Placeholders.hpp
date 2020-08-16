@@ -15,11 +15,7 @@
 #ifndef ADB_PLACEHOLDERS_HPP
 #define ADB_PLACEHOLDERS_HPP
 
-#include "ADbModule.hpp"
-#include "KeyValue.hpp"
 #include "QueryData.hpp"
-
-#include <vector>
 
 namespace adb
 {

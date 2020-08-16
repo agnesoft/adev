@@ -72,6 +72,7 @@ public:
 
     //! Constructs a new vector in the \a file.
     explicit PersistentVector(File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>{})}
     {
@@ -80,6 +81,7 @@ public:
     //! Constructs a vector from existing data in
     //! the \a file at the \a index.
     PersistentVector(File *file, acore::size_type index) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{index},
         mSize{mFile->value<acore::size_type>(mIndex, 0)}
@@ -94,6 +96,7 @@ public:
     //! it to a given \a size of default constructed
     //! elements.
     PersistentVector(acore::size_type size, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>(size))},
         mSize{size}
@@ -103,6 +106,7 @@ public:
     //! Constructs a new vector in the \a file initializing
     //! it to a given \a size of \a value.
     PersistentVector(acore::size_type size, const T &value, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>(size, value))},
         mSize{size}
@@ -113,6 +117,7 @@ public:
     //! it to values from the range \a first to \a last.
     template<typename It, std::enable_if_t<!std::is_same_v<typename std::iterator_traits<It>::iterator_category, void>, int> = 0>
     PersistentVector(It first, It last, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(std::vector<T>(first, last))},
         mSize{static_cast<acore::size_type>(std::distance(first, last))}
@@ -122,6 +127,7 @@ public:
     //! Constructs a new vector in the \a file with
     //! values from the \a list.
     PersistentVector(std::initializer_list<T> list, File *file) :
+        SIZE_T{serializedSize()},
         mFile{file},
         mIndex{mFile->insert(list)},
         mSize{static_cast<acore::size_type>(list.size())}
@@ -132,7 +138,11 @@ public:
     PersistentVector(const PersistentVector &other) = delete;
 
     //! Move constructor.
-    PersistentVector(PersistentVector &&other) noexcept = default;
+    PersistentVector(PersistentVector &&other) noexcept :
+        SIZE_T{other.SIZE_T}
+    {
+        *this = std::move(other);
+    }
 
     //! Destructor.
     ~PersistentVector() = default;
@@ -208,7 +218,7 @@ public:
     //! when inserting new elements.
     [[nodiscard]] auto capacity() const noexcept -> acore::size_type
     {
-        return (mFile->size(mIndex) - static_cast<acore::size_type>(sizeof(acore::size_type))) / serializedSize();
+        return (mFile->size(mIndex) - static_cast<acore::size_type>(sizeof(acore::size_type))) / SIZE_T;
     }
 
     //! Same as begin() const.
@@ -480,7 +490,7 @@ public:
     {
         if (capacity() < size)
         {
-            mFile->resize(mIndex, static_cast<acore::size_type>(sizeof(acore::size_type)) + size * serializedSize());
+            mFile->resize(mIndex, static_cast<acore::size_type>(sizeof(acore::size_type)) + size * SIZE_T);
         }
     }
 
@@ -546,7 +556,20 @@ public:
     auto operator=(const PersistentVector &other) -> PersistentVector & = delete;
 
     //! Move assignment operator.
-    auto operator=(PersistentVector &&other) noexcept -> PersistentVector & = default;
+    auto operator=(PersistentVector &&other) noexcept -> PersistentVector &
+    {
+        if (this != &other)
+        {
+            mFile = other.mFile;
+            mIndex = other.mIndex;
+            mSize = other.mSize;
+            other.mFile = nullptr;
+            other.mIndex = acore::INVALID_INDEX;
+            other.mSize = 0;
+        }
+
+        return *this;
+    }
 
     //! Replace the current content of the vector with \a values;
     auto operator=(std::initializer_list<T> values) -> PersistentVector &
@@ -598,7 +621,7 @@ private:
 
     [[nodiscard]] constexpr auto offset(acore::size_type index) const -> acore::size_type
     {
-        return static_cast<acore::size_type>(sizeof(acore::size_type)) + index * serializedSize();
+        return static_cast<acore::size_type>(sizeof(acore::size_type)) + index * SIZE_T;
     }
 
     [[nodiscard]] constexpr auto previousIndex(acore::size_type index, acore::size_type steps) const noexcept -> acore::size_type
@@ -631,22 +654,11 @@ private:
         resize(newSize);
     }
 
-    [[nodiscard]] static auto serializedSize() noexcept -> acore::size_type
+    [[nodiscard]] static auto serializedSize() -> acore::size_type
     {
-        static const auto SIZE_T = []() noexcept -> acore::size_type {
-            try
-            {
-                acore::DataStream stream;
-                stream << T{};
-                return stream.buffer().size();
-            }
-            catch (...)
-            {
-                return 0;
-            }
-        }();
-
-        return SIZE_T;
+        acore::DataStream stream;
+        stream << T{};
+        return stream.buffer().size();
     }
 
     constexpr auto setValue(size_type index, const T &value) -> void
@@ -659,6 +671,7 @@ private:
         return mFile->value<T>(mIndex, offset(index));
     }
 
+    const acore::size_type SIZE_T = 0;
     File *mFile = nullptr;
     acore::size_type mIndex = acore::INVALID_INDEX;
     acore::size_type mSize = 0;

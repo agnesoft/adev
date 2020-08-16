@@ -15,7 +15,6 @@
 #ifndef ADB_KEYVALUE_HPP
 #define ADB_KEYVALUE_HPP
 
-#include "ADbModule.hpp"
 #include "Value.hpp"
 
 namespace adb

@@ -14,7 +14,6 @@
 
 #include "pch.hpp"
 
-#include "AGraphModule.hpp"
 #include "PersistentGraphData.hpp"
 
 namespace agraph

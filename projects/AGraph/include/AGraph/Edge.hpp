@@ -15,7 +15,6 @@
 #ifndef AGRAPH_EDGE_HPP
 #define AGRAPH_EDGE_HPP
 
-#include "AGraphModule.hpp"
 #include "Common.hpp"
 #include "Element.hpp"
 

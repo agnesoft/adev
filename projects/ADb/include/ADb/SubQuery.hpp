@@ -15,11 +15,8 @@
 #ifndef ADB_SUBQUERY_HPP
 #define ADB_SUBQUERY_HPP
 
-#include "ADbModule.hpp"
 #include "Placeholders.hpp"
 #include "QueryData.hpp"
-
-#include <memory>
 
 namespace adb
 {

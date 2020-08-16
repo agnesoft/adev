@@ -14,8 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 namespace query_insertnodestest
 {
 TEST_CASE("adb::insert_into().nodes(acore::size_type count) && -> adb::Query::Ids [adb::Query]")

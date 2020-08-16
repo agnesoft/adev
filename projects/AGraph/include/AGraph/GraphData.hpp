@@ -15,7 +15,6 @@
 #ifndef AGRAPH_GRAPHDATA_HPP
 #define AGRAPH_GRAPHDATA_HPP
 
-#include "AGraphModule.hpp"
 #include "Common.hpp"
 
 namespace agraph

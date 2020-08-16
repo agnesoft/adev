@@ -14,13 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <iostream>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
 namespace querytest
 {
 TEST_CASE("[adb::Query]")

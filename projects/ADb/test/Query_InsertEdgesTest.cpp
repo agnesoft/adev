@@ -14,8 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 namespace query_insertedgestest
 {
 TEST_CASE("adb::insert_into().edges().from(std::vector<acore::size_type> id).to(std::vector<acore::size_type> ids) && -> adb::Query::Ids [adb::Query]")

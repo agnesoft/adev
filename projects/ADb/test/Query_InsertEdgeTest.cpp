@@ -14,8 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
 namespace query_insertedgetest
 {
 TEST_CASE("adb::insert_into().edge().from(acore::size_type id).to(acore::size_type id) && -> adb::Query::Id [adb::Query]")

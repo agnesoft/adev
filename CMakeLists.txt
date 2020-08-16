@@ -189,7 +189,6 @@ add_library(AGraph STATIC projects/AGraph/include/AGraph.hpp
                           projects/AGraph/include/AGraph/PathSearch.hpp
                           projects/AGraph/include/AGraph/PersistentGraph.hpp
                           projects/AGraph/include/AGraph/PersistentGraphData.hpp
-                          projects/AGraph/Graph.cpp
                           projects/AGraph/PersistentGraph.cpp
                           projects/AGraph/PersistentGraphData.cpp)
 if(ENABLE_PCH)

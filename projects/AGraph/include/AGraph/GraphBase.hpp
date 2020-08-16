@@ -15,8 +15,6 @@
 #ifndef AGRAPH_GRAPHBASE_HPP
 #define AGRAPH_GRAPHBASE_HPP
 
-#include "AGraphModule.hpp"
-#include "Common.hpp"
 #include "Edge.hpp"
 #include "Node.hpp"
 

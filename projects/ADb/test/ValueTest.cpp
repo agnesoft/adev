@@ -14,13 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <string>
-#include <string_view>
-#include <type_traits>
-#include <vector>
-
 namespace valuetest
 {
 TEST_CASE("[adb::Value]")

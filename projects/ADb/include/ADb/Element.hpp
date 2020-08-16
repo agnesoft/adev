@@ -15,10 +15,7 @@
 #ifndef ADB_ELEMENT_HPP
 #define ADB_ELEMENT_HPP
 
-#include "ADbModule.hpp"
 #include "KeyValue.hpp"
-
-#include <vector>
 
 namespace adb
 {

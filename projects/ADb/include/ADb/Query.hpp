@@ -15,20 +15,8 @@
 #ifndef ADB_QUERY_HPP
 #define ADB_QUERY_HPP
 
-#include "ADbModule.hpp"
 #include "Condition.hpp"
-#include "KeyValue.hpp"
-#include "Placeholders.hpp"
-#include "QueryData.hpp"
 #include "SubQuery.hpp"
-#include "Value.hpp"
-
-#include <memory>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <variant>
-#include <vector>
 
 namespace adb
 {

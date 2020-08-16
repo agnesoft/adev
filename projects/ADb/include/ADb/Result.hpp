@@ -15,10 +15,7 @@
 #ifndef ADB_RESULT_HPP
 #define ADB_RESULT_HPP
 
-#include "ADbModule.hpp"
 #include "Element.hpp"
-
-#include <vector>
 
 namespace adb
 {

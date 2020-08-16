@@ -14,12 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <unordered_map>
-#include <utility>
-#include <vector>
-
 namespace pathsearchtest
 {
 class WightedHandler
