@@ -84,4 +84,12 @@ TEST_CASE("data() const noexcept -> const QueryData & [adb::Query]")
     const auto query = adb::insert_into().node();
     REQUIRE(noexcept(query.data()));
 }
+
+TEST_CASE("subQueries() const noexcept -> const std::vector<SubQuery> & [adb::Query]")
+{
+    const auto query = adb::insert_into().nodes(adb::select().count());
+    REQUIRE(query.subQueries().size() == 1);
+    REQUIRE_NOTHROW(std::get<adb::SelectData>(query.subQueries()[0].query()->data()));
+    REQUIRE(query.subQueries()[0].bind() == adb::bindInsertNodesCount);
+}
 }
