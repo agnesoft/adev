@@ -45,6 +45,7 @@ struct Placeholder
 //! Used when the placeholder represents count.
 struct Placeholder::Count : Placeholder
 {
+    //! Constructs the placeholder with \a name.
     explicit Count(std::string name) :
         Placeholder{std::move(name)}
     {
@@ -56,6 +57,7 @@ struct Placeholder::Count : Placeholder
 //! id.
 struct Placeholder::Id : Placeholder
 {
+    //! Constructs the placeholder with \a name.
     explicit Id(std::string name) :
         Placeholder{std::move(name)}
     {
@@ -67,6 +69,7 @@ struct Placeholder::Id : Placeholder
 //! ids.
 struct Placeholder::Ids : Placeholder
 {
+    //! Constructs the placeholder with \a name.
     explicit Ids(std::string name) :
         Placeholder{std::move(name)}
     {
@@ -78,6 +81,7 @@ struct Placeholder::Ids : Placeholder
 //! element's values.
 struct Placeholder::Values : Placeholder
 {
+    //! Constructs the placeholder with \a name.
     explicit Values(std::string name) :
         Placeholder{std::move(name)}
     {
@@ -89,6 +93,7 @@ struct Placeholder::Values : Placeholder
 //! elements' values.
 struct Placeholder::MultiValues : Placeholder
 {
+    //! Constructs the placeholder with \a name.
     explicit MultiValues(std::string name) :
         Placeholder{std::move(name)}
     {

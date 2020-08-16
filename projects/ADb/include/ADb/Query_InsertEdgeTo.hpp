@@ -24,6 +24,7 @@ namespace adb
 class Query::InsertEdgeTo
 {
 public:
+    //! Constructs the builder by moving from \a query.
     explicit InsertEdgeTo(Query &&query);
 
     //! Sets the query's origin node to \a id.

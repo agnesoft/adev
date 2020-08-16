@@ -24,6 +24,7 @@ namespace adb
 class Query::InsertNodesValues
 {
 public:
+    //! Constructs the builder by moving from \a query.
     explicit InsertNodesValues(Query &&query);
 
     //! Sets the values to be inserted to the nodes

@@ -24,6 +24,7 @@ namespace adb
 class Query::InsertEdgesToEach
 {
 public:
+    //! Constructs the builder by moving from \a query.
     explicit InsertEdgesToEach(Query &&query);
 
     //! Sets the query's destination nodes to \a ids.

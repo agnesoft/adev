@@ -36,11 +36,11 @@ struct SubQuery
     //! and \a bindFunction.
     SubQuery(Query &&subQuery, BindResultFunction bindFunction);
 
-    //! Copies this sub-query. Provided so that the
-    //! adb::Query class is copyable.
+    //! Copies this sub-query.
     //!
-    //! \note This constructor performs deep
-    //! recursive copy of the internal query.
+    //! \note This constructor performs deep copy
+    //! of the internal query and its subqueries
+    //! recursively.
     SubQuery(const SubQuery &other);
 
     //! Move constructor.
@@ -59,8 +59,11 @@ struct SubQuery
     //! Move assignment operator.
     auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
 
+    //! Return the function used for binding the
+    //! result to the query.
     [[nodiscard]] auto bind() const noexcept -> BindResultFunction;
 
+    //! Returns the internal query.
     [[nodiscard]] auto query() const noexcept -> Query *;
 
 private:
