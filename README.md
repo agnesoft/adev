@@ -8,7 +8,6 @@ Central development repository that hosts all the Agnesoft projects providing co
 
 ## Projects
 
-- [ABenchmarks](projects/ABenchmarks/README.md) Collection of benchmarks from other projects.
 - [ABuild](projects/ABuild/README.md) C++ automatic build system.
 - [ACore](projects/ACore/README.md) C++ basic containers and utilities.
 - [ADb](projects/ADb/README.md) C++ graph database.
@@ -16,10 +15,10 @@ Central development repository that hosts all the Agnesoft projects providing co
 - [AFile](projects/AFile/README.md) C++ file based containers.
 - [AGraph](proejcts/AFile/README.md) C++ graph implementation.
 
-#### Third Party Dependencies
+#### Third Party Projects
 
-- [Catch2](https://github.com/catchorg/Catch2) C++ a multi-paradigm test framework.
-- [tiny-process-library](https://gitlab.com/eidheim/tiny-process-library) C++ platform independent process library.
+- [Catch2](projects/Catch2/README.md) C++ a multi-paradigm test framework. [LINK](https://github.com/catchorg/Catch2)
+- [tiny-process-library](projects/tiny-process-library/README.md) C++ platform independent process library. [LINK](https://gitlab.com/eidheim/tiny-process-library)
 
 ## Build
 
