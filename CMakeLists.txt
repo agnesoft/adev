@@ -327,5 +327,5 @@ install(TARGETS ABuildTest ACoreTest ADbTest AFileTest AGraphTest DESTINATION bi
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)
-install(FILES projects/Catch2/LICENSE.txt DESTINATION bin/LICENSE/Catch2)
-install(FILES projects/tiny-process-library/LICENSE DESTINATION bin/LICENSE/tiny-process-library)
+install(FILES dependencies/Catch2/LICENSE.txt DESTINATION bin/LICENSE/Catch2)
+install(FILES dependencies/tiny-process-library/LICENSE DESTINATION bin/LICENSE/tiny-process-library)
