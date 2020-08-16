@@ -15,10 +15,7 @@
 #ifndef AFILE_FILE_RECORDS_HPP
 #define AFILE_FILE_RECORDS_HPP
 
-#include "AFileModule.hpp"
 #include "FileData.hpp"
-
-#include <vector>
 
 namespace afile
 {
@@ -35,7 +32,7 @@ public:
     explicit FileRecords(FileData *data);
 
     auto clear() -> void;
-    [[nodiscard]] auto contains(acore::size_type index) const -> bool;
+    [[nodiscard]] auto contains(acore::size_type index) const noexcept -> bool;
     [[nodiscard]] auto count() const noexcept -> acore::size_type;
     [[nodiscard]] auto endPos(acore::size_type index) const noexcept -> acore::size_type;
     [[nodiscard]] auto indexes() const -> std::vector<acore::size_type>;

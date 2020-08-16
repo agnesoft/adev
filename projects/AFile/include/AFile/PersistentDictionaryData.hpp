@@ -15,12 +15,7 @@
 #ifndef AFILE_AFILEPERSISTENTDICTIONARYDATA_HPP
 #define AFILE_AFILEPERSISTENTDICTIONARYDATA_HPP
 
-#include "AFileModule.hpp"
-#include "File.hpp"
 #include "PersistentVector.hpp"
-
-#include <unordered_map>
-#include <vector>
 
 namespace afile
 {

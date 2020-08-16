@@ -15,12 +15,8 @@
 #ifndef AFILE_PERSISTENTDATAINDEXMAPDATA_HPP
 #define AFILE_PERSISTENTDATAINDEXMAPDATA_HPP
 
-#include "AFileModule.hpp"
 #include "File.hpp"
 #include "PersistentVector.hpp"
-
-#include <utility>
-#include <vector>
 
 namespace afile
 {

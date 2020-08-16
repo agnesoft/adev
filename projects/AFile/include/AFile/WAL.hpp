@@ -15,10 +15,7 @@
 #ifndef AFILE_WAL_HPP
 #define AFILE_WAL_HPP
 
-#include "AFileModule.hpp"
 #include "FileStream.hpp"
-
-#include <vector>
 
 namespace afile
 {
@@ -35,7 +32,7 @@ public:
     explicit WAL(FileStream *file);
     WAL(const WAL &other) = delete;
     WAL(WAL &&other) = default;
-    ~WAL();
+    ~WAL(); //NOLINT(bugprone-exception-escape)
 
     auto begin() noexcept -> void;
     auto end() -> void;

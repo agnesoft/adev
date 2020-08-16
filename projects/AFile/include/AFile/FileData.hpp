@@ -15,11 +15,7 @@
 #ifndef AFILE_FILEDATA_HPP
 #define AFILE_FILEDATA_HPP
 
-#include "AFileModule.hpp"
-#include "FileStream.hpp"
 #include "WAL.hpp"
-
-#include <vector>
 
 namespace afile
 {

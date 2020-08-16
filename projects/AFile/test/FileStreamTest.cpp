@@ -14,21 +14,6 @@
 
 #include "pch.hpp"
 
-#include <catch2/catch.hpp>
-
-#include <AFile.hpp>
-#include <algorithm>
-#include <array>
-#include <cstdint>
-#include <cstdlib>
-#include <filesystem>
-#include <fstream>
-#include <limits>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
-
 namespace filestreamtest
 {
 static constexpr const char *TEST_FILE = "afile.filestream.testfile";
@@ -42,7 +27,7 @@ public:
     }
 
     explicit TestFile(const char *filename) :
-        mFile(filename)
+        mFile{filename}
     {
         removeFile();
     }

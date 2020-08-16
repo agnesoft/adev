@@ -16,10 +16,7 @@
 
 #include "FileRecords.hpp"
 
-#include <algorithm>
-#include <iterator>
 #include <numeric>
-#include <vector>
 
 namespace afile
 {
@@ -36,7 +33,7 @@ auto FileRecords::clear() -> void
     mRecords.clear();
 }
 
-auto FileRecords::contains(acore::size_type index) const -> bool
+auto FileRecords::contains(acore::size_type index) const noexcept -> bool
 {
     if (0 <= index && index < static_cast<acore::size_type>(mRecords.size()))
     {

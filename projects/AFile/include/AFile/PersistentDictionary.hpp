@@ -15,8 +15,6 @@
 #ifndef AFILE_AFILEPERSISTENTDICTIONARY_HPP
 #define AFILE_AFILEPERSISTENTDICTIONARY_HPP
 
-#include "AFileModule.hpp"
-#include "File.hpp"
 #include "PersistentDictionaryData.hpp"
 
 namespace afile
