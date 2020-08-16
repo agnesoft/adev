@@ -25,10 +25,6 @@ function printHelp () {
     echo "    * Requires: CMake, Ninja, C++ Toolchain, clang-tidy"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
     echo "    * Builds and then performs static analysis using Clang-Tidy on all source files using the compile commands database."
-    echo "  benchmarks"
-    echo "    * Requires: None"
-    echo "    * Environment Variables: BUILD_DIR"
-    echo "    * Runs benchmark executables (.*[Bb]enchmark.*) found under \$BUILD_DIR/bin expecting first cases to be always the fastest."
     echo "  build[-analysis|-coverage|-sanitize-address|-sanitize-memory|-sanitize-ub]"
     echo "    * Requires: CMake, Ninja, C++ Toolchain"
     echo "    * Environment Variables: CC, CXX, BUILD_DIR, BUILD_TYPE, [MSVC_ENV_SCRIPT]"
@@ -440,32 +436,6 @@ function analysis() {
     fi
 }
 
-function benchmarks () {
-    detectTestProperties
-
-    cd $BUILD_DIR/bin
-    local EXECUTABLES=$(find . -name "*benchmark*" -o -name "*Benchmark*" -o -name "*benchmark*.exe" -o -name "*Benchmark*" -type f)
-    local RETURN=0
-    local BENCHMARKS_RESULT=0
-
-    for benchmark in $EXECUTABLES
-    do
-        $benchmark
-        RETURN=$?
-
-        if test $RETURN -ne 0; then
-            echo ""
-            echo ""
-            printError "ERROR: $benchmark failed. See the log above for details."
-            BENCHMARKS_RESULT=1
-        else
-            printOK "$benchmark OK"
-        fi
-    done
-
-    exit $BENCHMARKS_RESULT
-}
-
 function build () {
     detectCMake
     detectNinja
@@ -775,8 +745,6 @@ function testsVuejs () {
 
 if test "$ACTION" == "analysis"; then
     analysis
-elif test "$ACTION" == "benchmarks"; then
-    benchmarks
 elif test "$ACTION" == "build"; then
     build
 elif test "$ACTION" == "build-analysis"; then

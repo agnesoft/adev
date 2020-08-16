@@ -171,11 +171,6 @@ jobs:
           export BUILD_DIR=build
           export TEST_REPEAT=100
           ./build.sh tests
-      - name: Benchmarks
-        shell: bash
-        run: |
-          export BUILD_DIR=build
-          ./build.sh benchmarks
       - name: Archive
         uses: actions/upload-artifact@v1
         with:
