@@ -37,13 +37,7 @@ struct Placeholder
     struct Values;
     struct MultiValues;
 
-    //! Constructs the placeholder with name \a n.
-    explicit Placeholder(std::string n) :
-        name(std::move(n))
-    {
-    }
-
-    //! Placeholder's name.
+    //! Placeholder's identifier used for binding.
     std::string name;
 };
 
@@ -51,7 +45,10 @@ struct Placeholder
 //! Used when the placeholder represents count.
 struct Placeholder::Count : Placeholder
 {
-    using Placeholder::Placeholder;
+    explicit Count(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -59,7 +56,10 @@ struct Placeholder::Count : Placeholder
 //! id.
 struct Placeholder::Id : Placeholder
 {
-    using Placeholder::Placeholder;
+    explicit Id(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -67,7 +67,10 @@ struct Placeholder::Id : Placeholder
 //! ids.
 struct Placeholder::Ids : Placeholder
 {
-    using Placeholder::Placeholder;
+    explicit Ids(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -75,7 +78,10 @@ struct Placeholder::Ids : Placeholder
 //! element's values.
 struct Placeholder::Values : Placeholder
 {
-    using Placeholder::Placeholder;
+    explicit Values(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \relates adb::Query
@@ -83,7 +89,10 @@ struct Placeholder::Values : Placeholder
 //! elements' values.
 struct Placeholder::MultiValues : Placeholder
 {
-    using Placeholder::Placeholder;
+    explicit MultiValues(std::string name) :
+        Placeholder{std::move(name)}
+    {
+    }
 };
 
 //! \cond IMPLEMENTAION_DETAIL

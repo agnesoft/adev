@@ -21,10 +21,10 @@ namespace adb
 {
 //! The Query::InsertNodesValues class is part of
 //! the builder of the adb::Query.
-class Query::InsertNodesValues : public Query::Wrapper
+class Query::InsertNodesValues
 {
 public:
-    using Query::Wrapper::Wrapper;
+    explicit InsertNodesValues(Query &&query);
 
     //! Sets the values to be inserted to the nodes
     //! to \a values. This overlod makes the values
@@ -62,6 +62,9 @@ public:
     //! number of values sets must be equal to the
     //! number of nodes being inserted.
     [[nodiscard]] auto values(Query::MultiValues subQuery) && -> Query::Ids;
+
+private:
+    Query mQuery;
 };
 }
 

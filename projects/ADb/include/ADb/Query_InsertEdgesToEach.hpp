@@ -21,10 +21,10 @@ namespace adb
 {
 //! The Query::InsertEdgesToEach class is part of
 //! the builder of the adb::Query.
-class Query::InsertEdgesToEach : public Query::Wrapper
+class Query::InsertEdgesToEach
 {
 public:
-    using Query::Wrapper::Wrapper;
+    explicit InsertEdgesToEach(Query &&query);
 
     //! Sets the query's destination nodes to \a ids.
     //! The edges will be inserted from each of the
@@ -42,6 +42,9 @@ public:
     //! be inserted from each of the \c from ids to
     //! each of the ids from the subquery's result.
     [[nodiscard]] auto toEach(Query::Ids subQuery) && -> Query::InsertEdgesValues;
+
+private:
+    Query mQuery;
 };
 }
 

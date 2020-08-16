@@ -44,9 +44,9 @@ public:
     //!
     //! \snippet KeyValueTest.cpp [Vector]
     template<typename KeyT, typename ValueT>
-    KeyValue(const KeyT &key, const ValueT &value) :
-        mKey{key},
-        mValue{value}
+    KeyValue(KeyT key, ValueT value) :
+        mKey{std::move(key)},
+        mValue{std::move(value)}
     {
     }
 

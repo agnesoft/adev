@@ -32,9 +32,6 @@ using BindResultFunction = BindPlaceholderFunction;
 //! result to the parent query's data.
 struct SubQuery
 {
-    //! Default constructor.
-    SubQuery() = default;
-
     //! Constructs the SubQuery with \a subQuery
     //! and \a bindFunction.
     SubQuery(Query &&subQuery, BindResultFunction bindFunction);
@@ -62,12 +59,17 @@ struct SubQuery
     //! Move assignment operator.
     auto operator=(SubQuery &&other) noexcept -> SubQuery & = default;
 
+    [[nodiscard]] auto bind() const noexcept -> BindResultFunction;
+
+    [[nodiscard]] auto query() const noexcept -> Query *;
+
+private:
     //! Pointer to the query.
-    std::unique_ptr<Query> query;
+    std::unique_ptr<Query> mQuery;
 
     //! Function to bind the query's result to the
     //! parent adb::Query.
-    BindResultFunction bind = nullptr;
+    BindResultFunction mBind = nullptr;
 };
 }
 #endif

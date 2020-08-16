@@ -18,6 +18,11 @@
 
 namespace adb
 {
+Query::InsertNodesValues::InsertNodesValues(Query &&query) :
+    mQuery{std::move(query)}
+{
+}
+
 auto Query::InsertNodesValues::values(std::vector<KeyValue> values) && -> Query::Ids
 {
     std::get<InsertNodeData>(mQuery.mData).values = std::vector<std::vector<adb::KeyValue>>{std::move(values)};

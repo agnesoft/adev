@@ -22,8 +22,8 @@ namespace adb
 SubQuery::~SubQuery() = default;
 
 SubQuery::SubQuery(Query &&subQuery, BindResultFunction bindFunction) :
-    query{std::make_unique<Query>(std::move(subQuery))},
-    bind{bindFunction}
+    mQuery{std::make_unique<Query>(std::move(subQuery))},
+    mBind{bindFunction}
 {
 }
 
@@ -36,10 +36,20 @@ auto SubQuery::operator=(const SubQuery &other) -> SubQuery &
 {
     if (&other != this)
     {
-        query = std::make_unique<Query>(*other.query);
-        bind = other.bind;
+        mQuery = std::make_unique<Query>(*other.mQuery);
+        mBind = other.mBind;
     }
 
     return *this;
+}
+
+auto SubQuery::bind() const noexcept -> BindResultFunction
+{
+    return mBind;
+}
+
+auto SubQuery::query() const noexcept -> Query *
+{
+    return mQuery.get();
 }
 }

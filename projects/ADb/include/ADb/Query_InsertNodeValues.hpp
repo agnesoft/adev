@@ -21,10 +21,10 @@ namespace adb
 {
 //! The Query::InsertNodeValues class is part of
 //! the builder of the adb::Query.
-class Query::InsertNodeValues : public Query::Ids
+class Query::InsertNodeValues : public Query::Id
 {
 public:
-    using Query::Ids::Ids;
+    using Query::Id::Id;
 
     //! Sets the values to be inserted to the node
     //! to \a values.
