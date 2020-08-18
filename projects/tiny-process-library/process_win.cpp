@@ -8,7 +8,7 @@
 
 namespace TinyProcessLib {
 
-Process::Data::Data() noexcept : id(0), handle(NULL) {}
+Process::Data::Data() noexcept : id(0) {}
 
 // Simple HANDLE wrapper to close it automatically from the destructor.
 class Handle {
@@ -50,11 +50,11 @@ Process::id_type Process::open(const std::vector<string_type> &arguments, const 
 //Based on the example at https://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx.
 Process::id_type Process::open(const string_type &command, const string_type &path, const environment_type *environment) noexcept {
   if(open_stdin)
-    stdin_fd = std::unique_ptr<fd_type>(new fd_type(NULL));
+    stdin_fd = std::unique_ptr<fd_type>(new fd_type(nullptr));
   if(read_stdout)
-    stdout_fd = std::unique_ptr<fd_type>(new fd_type(NULL));
+    stdout_fd = std::unique_ptr<fd_type>(new fd_type(nullptr));
   if(read_stderr)
-    stderr_fd = std::unique_ptr<fd_type>(new fd_type(NULL));
+    stderr_fd = std::unique_ptr<fd_type>(new fd_type(nullptr));
 
   Handle stdin_rd_p;
   Handle stdin_wr_p;
@@ -100,6 +100,11 @@ Process::id_type Process::open(const string_type &command, const string_type &pa
   startup_info.hStdError = stderr_wr_p;
   if(stdin_fd || stdout_fd || stderr_fd)
     startup_info.dwFlags |= STARTF_USESTDHANDLES;
+
+  if(config.show_window != Config::ShowWindow::show_default) {
+    startup_info.dwFlags |= STARTF_USESHOWWINDOW;
+    startup_info.wShowWindow = static_cast<WORD>(config.show_window);
+  }
 
   auto process_command = command;
 #ifdef MSYS_PROCESS_USE_SH
@@ -188,40 +193,56 @@ int Process::get_exit_status() noexcept {
   if(data.id == 0)
     return -1;
 
-  DWORD exit_status;
+  if(!data.handle)
+    return data.exit_status;
+
   WaitForSingleObject(data.handle, INFINITE);
+
+  DWORD exit_status;
   if(!GetExitCodeProcess(data.handle, &exit_status))
-    exit_status = -1;
+    data.exit_status = -1; // Store exit status for future calls
+  else
+    data.exit_status = static_cast<int>(exit_status); // Store exit status for future calls
+
   {
     std::lock_guard<std::mutex> lock(close_mutex);
     CloseHandle(data.handle);
+    data.handle = nullptr;
     closed = true;
   }
   close_fds();
 
-  return static_cast<int>(exit_status);
+  return data.exit_status;
 }
 
 bool Process::try_get_exit_status(int &exit_status) noexcept {
   if(data.id == 0)
     return false;
 
-  DWORD wait_status = WaitForSingleObject(data.handle, 0);
+  if(!data.handle) {
+    exit_status = data.exit_status;
+    return true;
+  }
 
+  DWORD wait_status = WaitForSingleObject(data.handle, 0);
   if(wait_status == WAIT_TIMEOUT)
     return false;
 
-  DWORD exit_status_win;
-  if(!GetExitCodeProcess(data.handle, &exit_status_win))
-    exit_status_win = -1;
+  DWORD exit_status_tmp;
+  if(!GetExitCodeProcess(data.handle, &exit_status_tmp))
+    exit_status = -1;
+  else
+    exit_status = static_cast<int>(exit_status_tmp);
+  data.exit_status = exit_status; // Store exit status for future calls
+
   {
     std::lock_guard<std::mutex> lock(close_mutex);
     CloseHandle(data.handle);
+    data.handle = nullptr;
     closed = true;
   }
   close_fds();
 
-  exit_status = static_cast<int>(exit_status_win);
   return true;
 }
 
@@ -234,12 +255,12 @@ void Process::close_fds() noexcept {
   if(stdin_fd)
     close_stdin();
   if(stdout_fd) {
-    if(*stdout_fd != NULL)
+    if(*stdout_fd != nullptr)
       CloseHandle(*stdout_fd);
     stdout_fd.reset();
   }
   if(stderr_fd) {
-    if(*stderr_fd != NULL)
+    if(*stderr_fd != nullptr)
       CloseHandle(*stderr_fd);
     stderr_fd.reset();
   }
@@ -266,7 +287,7 @@ bool Process::write(const char *bytes, size_t n) {
 void Process::close_stdin() noexcept {
   std::lock_guard<std::mutex> lock(stdin_mutex);
   if(stdin_fd) {
-    if(*stdin_fd != NULL)
+    if(*stdin_fd != nullptr)
       CloseHandle(*stdin_fd);
     stdin_fd.reset();
   }

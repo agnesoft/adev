@@ -248,17 +248,17 @@ int Process::get_exit_status() noexcept {
     return -1;
 
   int exit_status;
-  id_type p;
+  id_type pid;
   do {
-    p = waitpid(data.id, &exit_status, 0);
-  } while(p < 0 && errno == EINTR);
+    pid = waitpid(data.id, &exit_status, 0);
+  } while(pid < 0 && errno == EINTR);
 
-  if(p < 0 && errno == ECHILD) {
+  if(pid < 0 && errno == ECHILD) {
     // PID doesn't exist anymore, return previously sampled exit status (or -1)
     return data.exit_status;
   }
   else {
-    // store exit status for future calls
+    // Store exit status for future calls
     if(exit_status >= 256)
       exit_status = exit_status >> 8;
     data.exit_status = exit_status;
@@ -277,13 +277,13 @@ bool Process::try_get_exit_status(int &exit_status) noexcept {
   if(data.id <= 0)
     return false;
 
-  const id_type p = waitpid(data.id, &exit_status, WNOHANG);
-  if(p < 0 && errno == ECHILD) {
+  const id_type pid = waitpid(data.id, &exit_status, WNOHANG);
+  if(pid < 0 && errno == ECHILD) {
     // PID doesn't exist anymore, set previously sampled exit status (or -1)
     exit_status = data.exit_status;
     return true;
   }
-  else if(p <= 0) {
+  else if(pid <= 0) {
     // Process still running (p==0) or error
     return false;
   }

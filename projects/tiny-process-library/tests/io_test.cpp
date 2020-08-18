@@ -16,6 +16,7 @@ int main() {
       *output += string(bytes, n);
     });
     assert(process.get_exit_status() == 0);
+    assert(process.get_exit_status() == 0);
     assert(output->substr(0, 4) == "Test");
     output->clear();
   }
@@ -142,6 +143,8 @@ int main() {
     assert(!process.try_get_exit_status(exit_status));
     assert(exit_status == -2);
     this_thread::sleep_for(chrono::seconds(5));
+    assert(process.try_get_exit_status(exit_status));
+    assert(exit_status == 0);
     assert(process.try_get_exit_status(exit_status));
     assert(exit_status == 0);
   }

@@ -19,6 +19,27 @@ struct Config {
   /// Set to true to inherit file descriptors from parent process. Default is false.
   /// On Windows: has no effect unless read_stdout==nullptr, read_stderr==nullptr and open_stdin==false.
   bool inherit_file_descriptors = false;
+
+  /// On Windows only: controls how the process is started, mimics STARTUPINFO's wShowWindow.
+  /// See: https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/ns-processthreadsapi-startupinfoa
+  /// and https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
+  enum class ShowWindow {
+    hide = 0,
+    show_normal = 1,
+    show_minimized = 2,
+    maximize = 3,
+    show_maximized = 3,
+    show_no_activate = 4,
+    show = 5,
+    minimize = 6,
+    show_min_no_active = 7,
+    show_na = 8,
+    restore = 9,
+    show_default = 10,
+    force_minimize = 11
+  };
+  /// On Windows only: controls how the window is shown.
+  ShowWindow show_window{ShowWindow::show_default};
 };
 
 /// Platform independent class for creating processes.
@@ -48,10 +69,9 @@ private:
     Data() noexcept;
     id_type id;
 #ifdef _WIN32
-    void *handle;
-#else
-    int exit_status{-1};
+    void *handle{nullptr};
 #endif
+    int exit_status{-1};
   };
 
 public:

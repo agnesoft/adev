@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 
 project(tiny-process-library)
 
-if(MSVC)
-  add_definitions(/D_CRT_SECURE_NO_WARNINGS)
-else()
-  add_compile_options(-std=c++11 -Wall -Wextra)
-endif()
-
 add_library(tiny-process-library process.cpp)
+
+if(MSVC)
+  target_compile_definitions(tiny-process-library PRIVATE /D_CRT_SECURE_NO_WARNINGS)
+else()
+  target_compile_options(tiny-process-library PRIVATE -std=c++11 -Wall -Wextra)
+endif()
 
 if(WIN32)
   target_sources(tiny-process-library PRIVATE process_win.cpp)
@@ -29,6 +29,12 @@ option(BUILD_TESTING OFF)
 
 # if tiny-process-library is not a sub-project:
 if(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+  if(MSVC)
+    add_definitions(/D_CRT_SECURE_NO_WARNINGS)
+  else()
+    add_compile_options(-std=c++11 -Wall -Wextra)
+  endif()
+
   add_executable(examples examples.cpp)
   target_link_libraries(examples tiny-process-library)
   
