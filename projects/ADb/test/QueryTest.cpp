@@ -77,6 +77,64 @@ TEST_CASE("bind(std::string_view name, PlaceholderValue value) -> void [adb::Que
         query.bind(":count", 2);
         REQUIRE(std::get<adb::InsertNodeData>(query.data()).count == 2);
     }
+
+    SECTION("[bind subquery]")
+    {
+        auto query = adb::insert_into()
+                         .edges()
+                         .from(adb::insert_into()
+                                   .nodes()
+                                   .values(adb::Placeholder::MultiValues{":node_values"}))
+                         .to(adb::insert_into()
+                                 .nodes()
+                                 .values(adb::Placeholder::MultiValues{":node_values2"}))
+                         .values(adb::Placeholder::MultiValues{":edge_values"});
+        query.bind(":node_values", {{{"Key", "Value"}, {1, 2}}, {{"Key2", "Value2"}, {3, 4}}});
+        query.bind(":node_values2", {{{"Key3", "Value3"}, {-1, -2}}, {{"Key4", "Value4"}, {-3, -4}}});
+        query.bind(":edge_values", {{{"Key5", "Value6"}, {0, 2}}, {{"Key6", "Value6"}, {-3, 1}}});
+
+        REQUIRE(query.subQueries().size() == 2);
+        REQUIRE(std::get<adb::InsertNodeData>(query.subQueries()[0].query()->data()).values
+                == std::vector<std::vector<adb::KeyValue>>{
+                    {{"Key", "Value"}, {1, 2}},
+                    {{"Key2", "Value2"}, {3, 4}}});
+        REQUIRE(std::get<adb::InsertNodeData>(query.subQueries()[1].query()->data()).values
+                == std::vector<std::vector<adb::KeyValue>>{
+                    {{"Key3", "Value3"}, {-1, -2}},
+                    {{"Key4", "Value4"}, {-3, -4}}});
+        REQUIRE(std::get<adb::InsertEdgeData>(query.data()).values
+                == std::vector<std::vector<adb::KeyValue>>{
+                    {{"Key5", "Value6"}, {0, 2}},
+                    {{"Key6", "Value6"}, {-3, 1}}});
+    }
+
+    SECTION("[bind placeholder duplicated in subquery]")
+    {
+        REQUIRE_THROWS_AS(adb::insert_into()
+                              .edges()
+                              .from(adb::insert_into()
+                                        .nodes()
+                                        .values(adb::Placeholder::MultiValues{":values"}))
+                              .to(adb::insert_into()
+                                      .nodes()
+                                      .values(adb::Placeholder::MultiValues{":values2"}))
+                              .values(adb::Placeholder::MultiValues{":values"}),
+                          acore::Exception);
+    }
+
+    SECTION("[bind subquery with duplicate placeholders]")
+    {
+        REQUIRE_THROWS_AS(adb::insert_into()
+                              .edges()
+                              .from(adb::insert_into()
+                                        .nodes()
+                                        .values(adb::Placeholder::MultiValues{":node_values"}))
+                              .to(adb::insert_into()
+                                      .nodes()
+                                      .values(adb::Placeholder::MultiValues{":node_values"}))
+                              .values(adb::Placeholder::MultiValues{":edge_values"}),
+                          acore::Exception);
+    }
 }
 
 TEST_CASE("data() const noexcept -> const QueryData & [adb::Query]")

@@ -57,19 +57,7 @@ public:
     //! \a value 's type does not match the type
     //! expected by the placeholding value an exception
     //! is thrown.
-    auto bind(std::string_view name, PlaceholderValue value) & -> void //NOLINT(performance-unnecessary-value-param)
-    {
-        const auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const auto &placeholder) {
-            return placeholder.name == name;
-        });
-
-        if (it == mPlaceholders.end())
-        {
-            throw acore::Exception{} << "Placeholder '" << name << "' not found.";
-        }
-
-        it->bind(std::move(value), &mData);
-    }
+    auto bind(std::string_view name, PlaceholderValue value) & -> void;
 
     //! Convenience overload for binding a list of
     //! element ids.
@@ -136,24 +124,16 @@ private:
     {
     }
 
-    auto addPlaceholder(std::string placeholder, BindPlaceholderFunction bindFunction) -> void
+    struct PlaceholderBind
     {
-        const auto it = std::find_if(mPlaceholders.begin(), mPlaceholders.end(), [&](const auto &p) {
-            return p.name == placeholder;
-        });
+        BindPlaceholderFunction bind = nullptr;
+        QueryData *queryData = nullptr;
+    };
 
-        if (it != mPlaceholders.end())
-        {
-            throw acore::Exception{} << "Placeholder '" << placeholder << "' already exists.";
-        }
-
-        mPlaceholders.emplace_back(PlaceholderData{std::move(placeholder), bindFunction});
-    }
-
-    auto addSubQuery(Query &&query, BindResultFunction bindFunction) -> void
-    {
-        mSubQueries.emplace_back(SubQuery{std::move(query), bindFunction});
-    }
+    auto addPlaceholder(std::string placeholder, BindPlaceholderFunction bindFunction) -> void;
+    auto addSubQuery(Query &&query, BindResultFunction bindFunction) -> void;
+    [[nodiscard]] auto findPlaceholder(std::string_view name) -> PlaceholderBind;
+    auto validatePlaceholder(std::string_view name) const -> void;
 
     QueryData mData;
     std::vector<PlaceholderData> mPlaceholders;
