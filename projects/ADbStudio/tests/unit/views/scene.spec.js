@@ -57,6 +57,9 @@ describe('Scene',() => {
         expect(wrapper.find(".plus").exists()).toBe(true);
         expect(wrapper.find(".minus").exists()).toBe(true);
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
     it('sends command, fetches data and clears the input', async () => {
         wrapper.setData({command: 'test command'});
         await wrapper.find('form.command-form').trigger('submit.prevent');

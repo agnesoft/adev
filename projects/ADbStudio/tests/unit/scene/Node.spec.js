@@ -37,4 +37,7 @@ describe('Node',() => {
         expect(style).toContain('top: calc(50px - 1.2rem)');
         expect(style).toContain('left: calc(40px - 1.2rem)');
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })

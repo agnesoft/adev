@@ -1,0 +1,414 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Scene renders correctly (snapshot) 1`] = `
+<div
+  class="scene"
+>
+  <form
+    class="command-form"
+  >
+    <textarea
+      class="command"
+      placeholder="Write command"
+      rows="1"
+    />
+     
+    <input
+      class="submit-button btn btn-primary"
+      type="submit"
+      value="Execute"
+    />
+  </form>
+   
+  <transition-stub
+    name="slide-x"
+  >
+    <div
+      class="left-panel"
+    >
+      <div
+        class="tabs"
+      >
+        <div
+          class="tab-button"
+          title="List of Nodes"
+        >
+          <button
+            class="btn btn-circle btn-light"
+          >
+            <svg
+              class="base-icon"
+              height="100%"
+              version="1.1"
+              width="100%"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              <use
+                x="0"
+                xlink:href="../../assets/images/icons.svg#nodes"
+                y="0"
+              />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="tab-button"
+          title="List of Edges"
+        >
+          <button
+            class="btn btn-circle btn-light"
+          >
+            <svg
+              class="base-icon"
+              height="100%"
+              version="1.1"
+              width="100%"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              <use
+                x="0"
+                xlink:href="../../assets/images/icons.svg#edges"
+                y="0"
+              />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="tab-button"
+          title="Raw Data"
+        >
+          <button
+            class="btn btn-circle btn-light"
+          >
+            <svg
+              class="base-icon"
+              height="100%"
+              version="1.1"
+              width="100%"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              <use
+                x="0"
+                xlink:href="../../assets/images/icons.svg#data"
+                y="0"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+       
+      <transition-stub
+        name="slide-x"
+      >
+        <!---->
+      </transition-stub>
+    </div>
+  </transition-stub>
+   
+  <div
+    class="view-container"
+  >
+    <div
+      class="adb-view"
+      draggable="true"
+      id="adb-view"
+      style="--move-x: 0px; --move-y: 0px; --scale: 1;"
+      zoom="0"
+    >
+      <div
+        class="view"
+      >
+        <div
+          class="edge"
+          style="--top_pos: 0px; --left_pos: 0px; --length: 0px; --angle: 0rad;"
+        >
+          <!---->
+           
+          <div
+            class="arrow front"
+          />
+           
+          <div
+            class="element"
+          >
+            
+    -1
+
+          </div>
+        </div>
+         
+        <div
+          class="node"
+          style="--node-size: 2.4rem; top: calc(0px - 1.2rem); left: calc(0px - 1.2rem);"
+        >
+          <div
+            class="element"
+          >
+            
+    1
+
+          </div>
+        </div>
+        <div
+          class="node"
+          style="--node-size: 2.4rem; top: calc(0px - 1.2rem); left: calc(0px - 1.2rem);"
+        >
+          <div
+            class="element"
+          >
+            
+    2
+
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <div
+      class="search-wrap"
+    >
+      <div
+        class="search-field"
+      >
+        <transition-stub
+          name="slide-x"
+        >
+          <!---->
+        </transition-stub>
+         
+        <button
+          class="btn btn-light"
+        >
+          <svg
+            height="100%"
+            width="100%"
+          >
+            <use
+              x="0"
+              xlink:href="../../assets/images/icons.svg#search"
+              y="0"
+            />
+          </svg>
+        </button>
+      </div>
+       
+      <!---->
+       
+      <!---->
+    </div>
+  </div>
+   
+  <transition-stub
+    name="fade"
+  >
+    <!---->
+  </transition-stub>
+   
+  <transition-stub
+    name="slide-x"
+  >
+    <div
+      class="right-panel"
+    >
+      <div>
+        <button
+          class="btn btn-primary"
+        >
+          
+                Hide all data
+            
+        </button>
+         
+        <transition-group-stub
+          name="fade"
+        >
+          <div
+            class="base-box"
+          >
+            <div
+              class="header"
+            >
+              <div
+                class="title"
+              >
+                <h4>
+                  Node 1
+                </h4>
+              </div>
+               
+              <button
+                class="btn btn-light toggle-button opened"
+              >
+                <svg
+                  class="base-icon"
+                  height="100%"
+                  version="1.1"
+                  width="100%"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                >
+                  <use
+                    x="0"
+                    xlink:href="../../assets/images/icons.svg#arrow"
+                    y="0"
+                  />
+                </svg>
+              </button>
+               
+              <div
+                class="controls"
+              >
+                <button
+                  class="btn btn-light"
+                >
+                  <svg
+                    height="100%"
+                    width="100%"
+                  >
+                    <use
+                      x="0"
+                      xlink:href="../../assets/images/icons.svg#close"
+                      y="0"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+             
+            <transition-stub
+              name="slide-y"
+            >
+              <div
+                class="content"
+              >
+                <table
+                  class="element-data"
+                >
+                  <tr>
+                    <td>
+                      name
+                    </td>
+                     
+                    <td>
+                      Jana
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      number
+                    </td>
+                     
+                    <td>
+                      18
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </transition-stub>
+          </div>
+          <div
+            class="base-box"
+          >
+            <div
+              class="header"
+            >
+              <div
+                class="title"
+              >
+                <h4>
+                  Edge -2
+                </h4>
+              </div>
+               
+              <button
+                class="btn btn-light toggle-button opened"
+              >
+                <svg
+                  class="base-icon"
+                  height="100%"
+                  version="1.1"
+                  width="100%"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:xlink="http://www.w3.org/1999/xlink"
+                >
+                  <use
+                    x="0"
+                    xlink:href="../../assets/images/icons.svg#arrow"
+                    y="0"
+                  />
+                </svg>
+              </button>
+               
+              <div
+                class="controls"
+              >
+                <button
+                  class="btn btn-light"
+                >
+                  <svg
+                    height="100%"
+                    width="100%"
+                  >
+                    <use
+                      x="0"
+                      xlink:href="../../assets/images/icons.svg#close"
+                      y="0"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+             
+            <transition-stub
+              name="slide-y"
+            >
+              <div
+                class="content"
+              >
+                <table
+                  class="element-data"
+                >
+                  <tr>
+                    <td>
+                      foo
+                    </td>
+                     
+                    <td>
+                      bar
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </transition-stub>
+          </div>
+        </transition-group-stub>
+      </div>
+    </div>
+  </transition-stub>
+   
+  <div
+    class="controls"
+  >
+    <button
+      class="btn btn-default reset"
+    >
+      Reset view
+    </button>
+     
+    <button
+      class="btn btn-default plus"
+    >
+      +
+    </button>
+     
+    <button
+      class="btn btn-default minus"
+    >
+      -
+    </button>
+  </div>
+</div>
+`;

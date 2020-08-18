@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NodeListData renders correctly (snapshot) 1`] = `
+<ul
+  class="list-data"
+>
+  <li>
+    <div
+      class="element"
+    >
+      
+    1
+
+    </div>
+  </li>
+  <li>
+    <div
+      class="element"
+    >
+      
+    2
+
+    </div>
+  </li>
+</ul>
+`;

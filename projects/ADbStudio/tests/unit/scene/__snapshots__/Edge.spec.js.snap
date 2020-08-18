@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Edge renders correctly (snapshot) 1`] = `
+<div
+  class="edge"
+  style="--top_pos: 40px; --left_pos: 38.76894374382339px; --length: 82.46211251235322px; --angle: 6.038206644052722rad;"
+>
+  <!---->
+   
+  <div
+    class="arrow front"
+  />
+   
+  <div
+    class="element"
+  >
+    
+    -1
+
+  </div>
+</div>
+`;

@@ -40,4 +40,7 @@ describe('Edge',() => {
         expect(style).toContain('--length: 82.46');
         expect(style).toContain('--angle: 6.03');
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })
