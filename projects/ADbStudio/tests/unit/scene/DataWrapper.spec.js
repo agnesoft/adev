@@ -54,4 +54,7 @@ describe('DataWrapper',() => {
         expect(boxes.at(2).find(".no-data").exists()).toBeFalsy();
         expect(boxes.at(2).find(".element-data").exists()).toBeTruthy();
     });
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })

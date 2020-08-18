@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataWrapper renders correctly (snapshot) 1`] = `
+<div>
+  <div
+    class="data-wrapper"
+  >
+    <div
+      class="base-box"
+      closable="true"
+    >
+      <h4>
+        Node 1
+      </h4>
+      <div
+        class="no-data"
+      >
+        
+                No data selected
+            
+      </div>
+    </div>
+    <div
+      class="base-box"
+      closable="true"
+    >
+      <h4>
+        Node 2
+      </h4>
+      <div
+        class="no-data"
+      >
+        
+                No data selected
+            
+      </div>
+    </div>
+    <div
+      class="base-box"
+      closable="true"
+    >
+      <h4>
+        Node 3
+      </h4>
+      <table
+        class="element-data"
+      >
+        <tr>
+          <td>
+            foo
+          </td>
+           
+          <td>
+            bar
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+`;

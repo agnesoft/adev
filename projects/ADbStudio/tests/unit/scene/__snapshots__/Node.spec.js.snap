@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Node renders correctly (snapshot) 1`] = `
+<div
+  class="node"
+  style="--node-size: 2.4rem; top: calc(50px - 1.2rem); left: calc(40px - 1.2rem);"
+>
+  <div
+    class="element"
+  >
+    
+    1
+
+  </div>
+</div>
+`;

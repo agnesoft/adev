@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Scene renders correctly (snapshot) 1`] = `
+<div>
+  <div
+    class="right-panel"
+  >
+    <div>
+      <button
+        class="btn btn-primary"
+      >
+        
+                Hide all data
+            
+      </button>
+       
+      <div
+        name="fade"
+      >
+        <div
+          class="base-box"
+        >
+          <div
+            class="header"
+          >
+            <div
+              class="title"
+            >
+              <h4>
+                Node 1
+              </h4>
+            </div>
+             
+            <button
+              class="btn btn-light toggle-button opened"
+            >
+              <svg
+                class="base-icon"
+                height="100%"
+                version="1.1"
+                width="100%"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+              >
+                <use
+                  x="0"
+                  xlink:href="../../assets/images/icons.svg#arrow"
+                  y="0"
+                />
+              </svg>
+            </button>
+             
+            <div
+              class="controls"
+            >
+              <button
+                class="btn btn-light"
+              >
+                <svg
+                  height="100%"
+                  width="100%"
+                >
+                  <use
+                    x="0"
+                    xlink:href="../../assets/images/icons.svg#close"
+                    y="0"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+           
+          <div
+            name="slide-y"
+          >
+            <div
+              class="content"
+            >
+              <table
+                class="element-data"
+              >
+                <tr>
+                  <td>
+                    name
+                  </td>
+                   
+                  <td>
+                    Jana
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    number
+                  </td>
+                   
+                  <td>
+                    18
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div
+          class="base-box"
+        >
+          <div
+            class="header"
+          >
+            <div
+              class="title"
+            >
+              <h4>
+                Edge -2
+              </h4>
+            </div>
+             
+            <button
+              class="btn btn-light toggle-button opened"
+            >
+              <svg
+                class="base-icon"
+                height="100%"
+                version="1.1"
+                width="100%"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+              >
+                <use
+                  x="0"
+                  xlink:href="../../assets/images/icons.svg#arrow"
+                  y="0"
+                />
+              </svg>
+            </button>
+             
+            <div
+              class="controls"
+            >
+              <button
+                class="btn btn-light"
+              >
+                <svg
+                  height="100%"
+                  width="100%"
+                >
+                  <use
+                    x="0"
+                    xlink:href="../../assets/images/icons.svg#close"
+                    y="0"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+           
+          <div
+            name="slide-y"
+          >
+            <div
+              class="content"
+            >
+              <table
+                class="element-data"
+              >
+                <tr>
+                  <td>
+                    foo
+                  </td>
+                   
+                  <td>
+                    bar
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -31,4 +31,7 @@ describe('ADbView',() => {
         expect(wrapper.find('.node').exists()).toBe(true);
         expect(wrapper.find('.edge').exists()).toBe(true);
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })

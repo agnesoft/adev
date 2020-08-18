@@ -18,4 +18,7 @@ describe('MainHeader',() => {
         expect(wrapper.find("header").exists()).toBe(true);
         expect(wrapper.find(".logo").text()).toBe("ADbStudio");
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })

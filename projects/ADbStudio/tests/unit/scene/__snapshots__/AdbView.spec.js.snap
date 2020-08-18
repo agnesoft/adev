@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ADbView renders correctly (snapshot) 1`] = `
+<div
+  class="adb-view search-mode"
+>
+  <div
+    class="view"
+  >
+    <div
+      class="edge"
+      style="--top_pos: 0px; --left_pos: 0px; --length: 0px; --angle: 0rad;"
+    >
+      <!---->
+       
+      <div
+        class="arrow front"
+      />
+       
+      <div
+        class="element"
+      >
+        
+    -1
+
+      </div>
+    </div>
+     
+    <div
+      class="node"
+      style="--node-size: 2.4rem; top: calc(0px - 1.2rem); left: calc(0px - 1.2rem);"
+    >
+      <div
+        class="element"
+      >
+        
+    1
+
+      </div>
+    </div>
+    <div
+      class="node"
+      style="--node-size: 2.4rem; top: calc(0px - 1.2rem); left: calc(0px - 1.2rem);"
+    >
+      <div
+        class="element"
+      >
+        
+    2
+
+      </div>
+    </div>
+  </div>
+</div>
+`;

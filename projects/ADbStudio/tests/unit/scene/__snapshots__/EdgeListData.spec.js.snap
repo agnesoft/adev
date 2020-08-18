@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EdgeListData renders correctly (snapshot) 1`] = `
+<ul
+  class="list-data"
+>
+  <li>
+    <div
+      class="element"
+    >
+      
+    -1
+
+    </div>
+  </li>
+</ul>
+`;

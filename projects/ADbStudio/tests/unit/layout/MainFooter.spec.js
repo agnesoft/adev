@@ -17,4 +17,7 @@ describe('MainHeader',() => {
         expect(wrapper.find(".copyright").html()).toContain("© 2020 ADbStudio");
         expect(wrapper.find(".copyright").html()).toContain('<a href="https://www.agnesoft.com">Agnesoft</a>');
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })

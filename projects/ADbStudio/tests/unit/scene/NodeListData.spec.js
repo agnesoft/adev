@@ -33,4 +33,7 @@ describe('NodeListData',() => {
         expect(wrapper.findAll('li').at(0).text()).toBe("1");
         expect(wrapper.findAll('li').at(1).text()).toBe("2");
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 })

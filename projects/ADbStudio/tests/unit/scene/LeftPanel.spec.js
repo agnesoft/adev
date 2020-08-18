@@ -53,6 +53,9 @@ describe('LeftPanel',() => {
         expect(buttons.at(1).attributes('title')).toBe("List of Edges");
         expect(buttons.at(2).attributes('title')).toBe("Raw Data");
     });
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
 
     it("renders tab content after button is clicked",async () => {
         expect(wrapper.find('.tab-box').exists()).toBeFalsy();

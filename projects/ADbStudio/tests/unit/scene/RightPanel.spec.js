@@ -56,6 +56,9 @@ describe('Scene',() => {
         expect(wrapper.find(".btn-primary").text()).toBe("Hide all data");
         expect(wrapper.findAll(".base-box").length).toBe(2);
     })
+    it('renders correctly (snapshot)', () => {
+        expect(wrapper.element).toMatchSnapshot()
+    })
     it('renders boxes correctly',() => {        
         let boxes = wrapper.findAll(".base-box");
         expect(boxes.at(0).find('.title').text()).toBe('Node 1');

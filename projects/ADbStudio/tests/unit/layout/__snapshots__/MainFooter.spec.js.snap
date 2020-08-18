@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MainHeader renders correctly (snapshot) 1`] = `
+<footer
+  class="main-footer"
+>
+  <ul
+    class="copyright"
+  >
+    <li>
+      © 2020 ADbStudio
+    </li>
+     
+    <li>
+      <a
+        href="https://www.agnesoft.com"
+      >
+        Agnesoft
+      </a>
+    </li>
+  </ul>
+</footer>
+`;

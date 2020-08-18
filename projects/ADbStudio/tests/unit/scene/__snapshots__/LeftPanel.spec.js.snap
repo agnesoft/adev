@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LeftPanel renders correctly (snapshot) 1`] = `
+<div>
+  <div
+    class="left-panel"
+  >
+    <div
+      class="tabs"
+    >
+      <div
+        class="tab-button"
+        title="List of Nodes"
+      >
+        <button
+          class="btn btn-circle btn-light"
+        >
+          <svg
+            class="base-icon"
+            height="100%"
+            version="1.1"
+            width="100%"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+          >
+            <use
+              x="0"
+              xlink:href="../../assets/images/icons.svg#nodes"
+              y="0"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="tab-button"
+        title="List of Edges"
+      >
+        <button
+          class="btn btn-circle btn-light"
+        >
+          <svg
+            class="base-icon"
+            height="100%"
+            version="1.1"
+            width="100%"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+          >
+            <use
+              x="0"
+              xlink:href="../../assets/images/icons.svg#edges"
+              y="0"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="tab-button"
+        title="Raw Data"
+      >
+        <button
+          class="btn btn-circle btn-light"
+        >
+          <svg
+            class="base-icon"
+            height="100%"
+            version="1.1"
+            width="100%"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+          >
+            <use
+              x="0"
+              xlink:href="../../assets/images/icons.svg#data"
+              y="0"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+     
+    <!---->
+  </div>
+</div>
+`;
