@@ -1,12 +1,12 @@
 # ADbQuery
 
-Node.js code generator of language bindings for ADb. The Adb.json is the main schema of the bindings. It describes known types, their data and layout and functions (methods). It also describes the "builders" to create the Query them. Each language binding is generated from this schema to ensure that any change to it seamlessly propagate to all supported languages.
+Node.js code generator of language bindings for ADb. The ADb.json is the main schema of the bindings. It describes known types, their data, layout and functions (methods). It also describes the "builders" as chained objects to build the queries (see [builder pattern](https://en.wikipedia.org/wiki/Builder_pattern)). Each language binding is generated from this schema to ensure that any change to it propagate seamlessly to all supported languages.
 
 ## Schema
 
--   The root of the schema is object.
+-   The root of the schema is an object.
 -   Each key is the unique name of a type.
--   Each type must have the "kind" key that can have only a string value.
+-   Each type must have the "kind" key that can have only a string value:
     -   "alias"
     -   "array"
     -   "function"
@@ -17,40 +17,40 @@ Node.js code generator of language bindings for ADb. The Adb.json is the main sc
 #### alias
 
 -   Represents an alias of a different type defined in the schema.
--   Must have a key "type" that can have only a string value and the value must be any of the other defined types in the schema.
+-   Must have a key "type" that can have only a string value and the value must be one of the other defined types in the schema.
 
 #### array
 
 -   Represents an array of other types.
--   Must have a key "type" that can have only string value and must be any of the other defined types in the schema.
+-   Must have a key "type" that can have only string value and must be one of the other defined types in the schema.
 -   May have a key "length" that signifies a fixed length array and its value must be a number.
 
 #### function
 
 -   Represents a function.
 -   The key is the function name (applies both to stand alone functions and _object_ functions).
--   May have a key "arguments" that must be an array with only string elements that must be any of the other defined types in the schema.
+-   May have a key "arguments" that must be an array with only string elements that must be one of the other defined types in the schema.
 -   May have a key "body" that must be an array with only string elements. Each element represents an _expression_ (see below).
--   May have a key "return" that must be a string and its value must be any of the other defined types in the schema.
+-   May have a key "return" that must be a string and its value must be one of the other defined types in the schema.
 
 #### native
 
 -   Represents an alias to an in-built type.
--   Must have a key "type" that can have only a string value.
+-   Must have a key "type" that can have only a string value:
     -   int64
     -   string
 
 #### object
 
 -   Represents a compound type.
--   May have a key "fields" that must be an array with only string elements that must be any of the other defined types in the schema.
--   May have a key "base" that represents this type's parent. The value must be a string and must be another object defined in the schema.
+-   May have a key "fields" that must be an array with only string elements that must be one of the other defined types in the schema.
+-   May have a key "base" that represents this type's parent. The value must be a string and must be one of the other types of kind object defined in the schema.
 -   May have a key "functions" that represents this type's methods. The value must be an object with keys being the functions' names. See _function_ for defails on each entry in this object.
 
 #### union
 
--   Represents a union type (a type that can be one of other types).
--   Must have a key "variants" that must be an array with only string elements. Each element must be another type defined in the schema.
+-   Represents a union type (a type that can be one of the other types).
+-   Must have a key "variants" that must be an array with only string elements. Each element must be one of the other types defined in the schema.
 
 ## Schema Expressions
 
@@ -69,8 +69,8 @@ type(.type...) = type(.type...)
     -   One of the "variants" of an union if the parent is of type "union".
 -   Both sides of an assignment must be compatible. One of the following must be true:
     -   Last element on both sides must be of the same type.
-    -   Last element on the right hand side must be a "type" of an array if the last element on the left hand side is of type "array". **In this case the right hand side is appended to the array**.
-    -   Last element on the right hand side must be one of the "variants" of an union if the last element on the right hand side is of type "union".
+    -   Last element on the right hand side must be a "type" of an array if the last element on the left hand side is of kind "array". **In this case the right hand side is appended to the array**.
+    -   Last element on the right hand side must be one of the "variants" of an union if the last element on the right hand side is of kind "union".
     -   Right hand side is a number.
 -   The "alias" types are expanded to their original type for the purposes of determining their _parent_ properties.
 -   For functions in objects:
