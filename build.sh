@@ -100,7 +100,7 @@ function installClang () {
         choco install -y llvm
     elif isLinux; then
         sudo apt-get update -y
-        sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
+        sudo apt-get install -y -f clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
     else
         brew install llvm
     fi
