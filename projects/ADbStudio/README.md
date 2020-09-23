@@ -1,4 +1,4 @@
-# adbstudio
+# ADbStudio
 
 ## Project setup
 ```
