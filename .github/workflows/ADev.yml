@@ -22,166 +22,173 @@ jobs:
         run: ./build.sh build-analysis
       - name: Analysis
         run: ./build.sh analysis
-#  coverage:
-#    name: Coverage
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install CMake
-#        run: ./build.sh install-cmake
-#      - name: Install Ninja
-#        run: ./build.sh install-ninja
-#      - name: Install LLVM
-#        run: ./build.sh install-llvm
-#      - name: Build
-#        run: |
-#          export BUILD_DIR=build
-#          ./build.sh build-coverage
-#      - name: Coverage
-#        run: |
-#          export BUILD_DIR=build
-#          ./build.sh coverage
-#      - name: Archive
-#        if: always()
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: adev-code-coverage
-#          path: build/coverage
-#
-#  documentation:
-#    name: Documentation
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install Doxygen
-#        run: ./build.sh install-doxygen
-#      - name: Documentation
-#        run: ./build.sh documentation
-#      - name: Archive
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: adev-docs
-#          path: docs/html
-#
-#  formatting:
-#    name: Formatting
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install Clang-Format
-#        run: ./build.sh install-clang-format
-#      - name: Formatting
-#        run: ./build.sh formatting
-#
-#  sanitize-address:
-#    name: Sanitize Address
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install CMake
-#        run: ./build.sh install-cmake
-#      - name: Install Ninja
-#        run: ./build.sh install-ninja
-#      - name: Install LLVM
-#        run: ./build.sh install-llvm
-#      - name: Build
-#        run: ./build.sh build-sanitize-address
-#      - name: Sanitize Address
-#        run: ./build.sh sanitize-address
-#
-#  sanitize-memory:
-#    name: Sanitize Memory
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install CMake
-#        run: ./build.sh install-cmake
-#      - name: Install Ninja
-#        run: ./build.sh install-ninja
-#      - name: Install LLVM
-#        run: ./build.sh install-llvm
-#      - name: Build
-#        run: ./build.sh build-sanitize-memory
-#      - name: Sanitize Memory
-#        run: ./build.sh sanitize-memory
-#
-#  sanitize-ub:
-#    name: Sanitize Undefined Behavior
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install CMake
-#        run: ./build.sh install-cmake
-#      - name: Install Ninja
-#        run: ./build.sh install-ninja
-#      - name: Install LLVM
-#        run: ./build.sh install-llvm
-#      - name: Build
-#        run: ./build.sh build-sanitize-ub
-#      - name: Sanitize Undefined Behavior
-#        run: ./build.sh sanitize-ub
-#
-#  build:
-#    name: ${{ matrix.config.name }}
-#    runs-on: ${{ matrix.config.os }}
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        config:
-#          - {
-#              name: "Windows MSVC x64",
-#              os: windows-latest,
-#              platform: windows-msvc2019-x64,
-#            }
-#          - {
-#              name: "Linux GCC x64",
-#              os: ubuntu-20.04,
-#              platform: linux-gcc9-x64,
-#            }
-#          - {
-#              name: "macOS Clang x64",
-#              os: macos-latest,
-#              platform: macOS-clang11-x64,
-#            }
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install CMake
-#        shell: bash
-#        run: ./build.sh install-cmake
-#      - name: Install Ninja
-#        shell: bash
-#        run: ./build.sh install-ninja
-#      - name: Build
-#        shell: bash
-#        run: |
-#          export BUILD_DIR=build
-#          ./build.sh build
-#      - name: Tests
-#        shell: bash
-#        run: |
-#          export BUILD_DIR=build
-#          export TEST_REPEAT=100
-#          ./build.sh tests
-#      - name: Archive
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: adev-${{ matrix.config.platform }}
-#          path: build/bin/
-#
-#  build-vue:
-#    name: "Build Vue.js"
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Install Vue.js
-#        run: ./build.sh install-vuejs
-#      - name: Build
-#        run: ./build.sh build-vuejs
-#      - name: Tests
-#        run: ./build.sh tests-vuejs
-#      - name: Archive
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: adev-adbstudio
-#          path: projects/ADbStudio/dist
-#
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Build
+        run: |
+          export BUILD_DIR=build
+          ./build.sh build-coverage
+      - name: Coverage
+        run: |
+          export BUILD_DIR=build
+          ./build.sh coverage
+      - name: Archive
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-code-coverage
+          path: build/coverage
+
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Doxygen
+        run: ./build.sh install-doxygen
+      - name: Documentation
+        run: ./build.sh documentation
+      - name: Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-docs
+          path: docs/html
+
+  formatting:
+    name: Formatting
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Clang-Format
+        run: ./build.sh install-clang-format
+      - name: Formatting
+        run: ./build.sh formatting
+
+  sanitize-address:
+    name: Sanitize Address
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Build
+        run: ./build.sh build-sanitize-address
+      - name: Sanitize Address
+        run: ./build.sh sanitize-address
+
+  sanitize-memory:
+    name: Sanitize Memory
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Build
+        run: ./build.sh build-sanitize-memory
+      - name: Sanitize Memory
+        run: ./build.sh sanitize-memory
+
+  sanitize-ub:
+    name: Sanitize Undefined Behavior
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install CMake
+        run: ./build.sh install-cmake
+      - name: Install Ninja
+        run: ./build.sh install-ninja
+      - name: Install Clang
+        run: ./build.sh install-clang
+      - name: Install LLVM
+        run: ./build.sh install-llvm
+      - name: Build
+        run: ./build.sh build-sanitize-ub
+      - name: Sanitize Undefined Behavior
+        run: ./build.sh sanitize-ub
+
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows MSVC x64",
+              os: windows-latest,
+              platform: windows-msvc2019-x64,
+            }
+          - {
+              name: "Linux GCC x64",
+              os: ubuntu-20.04,
+              platform: linux-gcc9-x64,
+            }
+          - {
+              name: "macOS Clang x64",
+              os: macos-latest,
+              platform: macOS-clang11-x64,
+            }
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install CMake
+        shell: bash
+        run: ./build.sh install-cmake
+      - name: Install Ninja
+        shell: bash
+        run: ./build.sh install-ninja
+      - name: Build
+        shell: bash
+        run: |
+          export BUILD_DIR=build
+          ./build.sh build
+      - name: Tests
+        shell: bash
+        run: |
+          export BUILD_DIR=build
+          export TEST_REPEAT=100
+          ./build.sh tests
+      - name: Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-${{ matrix.config.platform }}
+          path: build/bin/
+
+  build-vue:
+    name: "Build Vue.js"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vue.js
+        run: ./build.sh install-vuejs
+      - name: Build
+        run: ./build.sh build-vuejs
+      - name: Tests
+        run: ./build.sh tests-vuejs
+      - name: Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-adbstudio
+          path: projects/ADbStudio/dist
