@@ -22,6 +22,7 @@ jobs:
         run: ./build.sh build-analysis
       - name: Analysis
         run: ./build.sh analysis
+
   coverage:
     name: Coverage
     runs-on: ubuntu-20.04
