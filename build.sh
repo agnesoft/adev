@@ -99,6 +99,9 @@ function installClang () {
     if isWindows; then
         choco install -y llvm
     elif isLinux; then
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${LLVM_VERSION}
         sudo apt-get update -y
         sudo apt-get install -y clang-${LLVM_VERSION} clang++-${LLVM_VERSION}
     else
@@ -121,6 +124,9 @@ function installClangTidy () {
     if isWindows; then
         choco install -y llvm
     elif isLinux; then
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${LLVM_VERSION}
         sudo apt-get update -y
         sudo apt-get install -y clang-tidy-${LLVM_VERSION}
     else
