@@ -32,8 +32,6 @@ jobs:
         run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
-      - name: Install Clang
-        run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
       - name: Build
@@ -85,8 +83,6 @@ jobs:
         run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
-      - name: Install Clang
-        run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
       - name: Build
@@ -103,8 +99,6 @@ jobs:
         run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
-      - name: Install Clang
-        run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
       - name: Build
@@ -121,8 +115,6 @@ jobs:
         run: ./build.sh install-cmake
       - name: Install Ninja
         run: ./build.sh install-ninja
-      - name: Install Clang
-        run: ./build.sh install-clang
       - name: Install LLVM
         run: ./build.sh install-llvm
       - name: Build
