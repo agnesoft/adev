@@ -122,6 +122,7 @@ function installClangTidy () {
         choco install -y llvm
     elif isLinux; then
         #sudo apt-get update -y
+        sudo apt-get install -y -f
         sudo apt-get install -y clang-tidy-${LLVM_VERSION}
     else
         brew install llvm
