@@ -123,7 +123,7 @@ function installClangTidy () {
     elif isLinux; then
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        ./llvm.sh ${LLVM_VERSION}
+        sudo ./llvm.sh ${LLVM_VERSION}
         sudo apt-get update -y
         sudo apt-get install -y clang-tidy-${LLVM_VERSION}
     else
