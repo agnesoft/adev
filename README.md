@@ -8,18 +8,18 @@ Central development repository that hosts all the Agnesoft projects providing co
 
 ## Projects
 
-- [ABuild](projects/ABuild/README.md) C++ automatic build system.
-- [ACore](projects/ACore/README.md) C++ basic containers and utilities.
-- [ADb](projects/ADb/README.md) C++ graph database.
-- [ADbQuery] (projects/ADbQuery/README.md) Node.js code generator of language bindings for ADb.
-- [ADbStudio](projects/ADbStudio/README.md) Vue.js app to view & edit ADb database.
-- [AFile](projects/AFile/README.md) C++ file based containers.
-- [AGraph](proejcts/AFile/README.md) C++ graph implementation.
+-   [ABuild](projects/ABuild/README.md) C++ automatic build system.
+-   [ACore](projects/ACore/README.md) C++ basic containers and utilities.
+-   [ADb](projects/ADb/README.md) C++ graph database.
+-   [ADbQuery](projects/ADbQuery/README.md) Node.js code generator of language bindings for ADb.
+-   [ADbStudio](projects/ADbStudio/README.md) Vue.js app to view & edit ADb database.
+-   [AFile](projects/AFile/README.md) C++ file based containers.
+-   [AGraph](proejcts/AFile/README.md) C++ graph implementation.
 
 #### Third Party Projects
 
-- [Catch2](projects/Catch2/README.md) C++ a multi-paradigm test framework. [LINK](https://github.com/catchorg/Catch2)
-- [tiny-process-library](projects/tiny-process-library/README.md) C++ platform independent process library. [LINK](https://gitlab.com/eidheim/tiny-process-library)
+-   [Catch2](projects/Catch2/README.md) C++ a multi-paradigm test framework. [LINK](https://github.com/catchorg/Catch2)
+-   [tiny-process-library](projects/tiny-process-library/README.md) C++ platform independent process library. [LINK](https://gitlab.com/eidheim/tiny-process-library)
 
 ## Build
 
