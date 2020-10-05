@@ -1,0 +1,20 @@
+{
+    "name": "adbquery",
+    "version": "1.0.0",
+    "description": "Code generator of language bindings for ADb.",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Agnesoft/ADev.git",
+        "directory": "projects/ADbQuery"
+    },
+    "author": "Michael Vlach",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "fs": "0.0.1-security"
+    }
+}

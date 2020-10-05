@@ -216,6 +216,9 @@ target_link_libraries(AGraphTest AGraph Catch2)
 #######
 # ADB #
 #######
+#ADb Query
+add_custom_target(ADbQuery COMMAND cd ${CMAKE_SOURCE_DIR}/projects/ADbQuery && npm install && npm build)
+
 #ADb Static Library
 add_library(ADb STATIC projects/ADb/include/ADb.hpp
                        projects/ADb/include/ADb/ADbModule.hpp
@@ -268,6 +271,7 @@ endif()
 target_link_libraries(ADb ACore AFile AGraph)
 target_include_directories(ADb PRIVATE projects/ADb/include/ADb)
 target_include_directories(ADb PUBLIC projects/ADb/include)
+add_dependencies(ADb ADbQuery)
 
 #ADbTest
 add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
