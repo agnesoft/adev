@@ -15,7 +15,7 @@
 #ifndef ACORE_TEST_PCH_HPP
 #define ACORE_TEST_PCH_HPP
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 
 #include <ACore.hpp>
 
