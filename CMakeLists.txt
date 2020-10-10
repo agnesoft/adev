@@ -213,85 +213,8 @@ if(ENABLE_PCH)
 endif()
 target_link_libraries(AGraphTest AGraph Catch2::Catch2WithMain)
 
-#######
-# ADB #
-#######
-#ADb Query
-add_custom_target(ADbQuery COMMAND cd ${CMAKE_SOURCE_DIR}/projects/ADbQuery && npm install && npm build)
-
-#ADb Static Library
-add_library(ADb STATIC projects/ADb/include/ADb.hpp
-                       projects/ADb/include/ADb/ADbModule.hpp
-                       projects/ADb/include/ADb/Condition.hpp
-                       projects/ADb/include/ADb/Element.hpp
-                       projects/ADb/include/ADb/KeyValue.hpp
-                       projects/ADb/include/ADb/Placeholders.hpp
-                       projects/ADb/include/ADb/Queries.hpp
-                       projects/ADb/include/ADb/Query.hpp
-                       projects/ADb/include/ADb/Query_Insert.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgeFrom.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgesFrom.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgeTo.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgesTo.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgesToEach.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgeValues.hpp
-                       projects/ADb/include/ADb/Query_InsertEdgesValues.hpp
-                       projects/ADb/include/ADb/Query_InsertNodeValues.hpp
-                       projects/ADb/include/ADb/Query_InsertNodesValues.hpp
-                       projects/ADb/include/ADb/Query_InsertNodesValuesOptional.hpp
-                       projects/ADb/include/ADb/Query_Select.hpp
-                       projects/ADb/include/ADb/QueryData.hpp
-                       projects/ADb/include/ADb/Result.hpp
-                       projects/ADb/include/ADb/SubQuery.hpp
-                       projects/ADb/include/ADb/Value.hpp
-                       projects/ADb/Condition.cpp
-                       projects/ADb/Element.cpp
-                       projects/ADb/KeyValue.cpp
-                       projects/ADb/Placeholders.cpp
-                       projects/ADb/Query.cpp
-                       projects/ADb/Query_Insert.cpp
-                       projects/ADb/Query_InsertEdgeFrom.cpp
-                       projects/ADb/Query_InsertEdgesFrom.cpp
-                       projects/ADb/Query_InsertEdgeTo.cpp
-                       projects/ADb/Query_InsertEdgesTo.cpp
-                       projects/ADb/Query_InsertEdgesToEach.cpp
-                       projects/ADb/Query_InsertEdgeValues.cpp
-                       projects/ADb/Query_InsertEdgesValues.cpp
-                       projects/ADb/Query_InsertNodeValues.cpp
-                       projects/ADb/Query_InsertNodesValues.cpp
-                       projects/ADb/Query_InsertNodesValuesOptional.cpp
-                       projects/ADb/Query_Select.cpp
-                       projects/ADb/QueryData.cpp
-                       projects/ADb/Result.cpp
-                       projects/ADb/SubQuery.cpp
-                       projects/ADb/Value.cpp)
-if(ENABLE_PCH)
-   target_precompile_headers(ADb PRIVATE projects/ADb/pch.hpp)
-endif()
-target_link_libraries(ADb ACore AFile AGraph)
-target_include_directories(ADb PRIVATE projects/ADb/include/ADb)
-target_include_directories(ADb PUBLIC projects/ADb/include)
-add_dependencies(ADb ADbQuery)
-
-#ADbTest
-add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
-                       projects/ADb/test/ElementTest.cpp
-                       projects/ADb/test/KeyValueTest.cpp
-                       projects/ADb/test/Query_InsertEdgeTest.cpp
-                       projects/ADb/test/Query_InsertEdgesTest.cpp
-                       projects/ADb/test/Query_InsertEdgesEachTest.cpp
-                       projects/ADb/test/Query_InsertNodeTest.cpp
-                       projects/ADb/test/Query_InsertNodesTest.cpp
-                       projects/ADb/test/QueryTest.cpp
-                       projects/ADb/test/ResultTest.cpp
-                       projects/ADb/test/ValueTest.cpp)
-if(ENABLE_PCH)
-    target_precompile_headers(ADbTest PRIVATE projects/ADb/test/pch.hpp)
-endif()
-target_link_libraries(ADbTest ADb Catch2::Catch2WithMain)
-
 ### INSTALLATION ###
-install(TARGETS ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
+install(TARGETS ACoreTest AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)
