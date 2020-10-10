@@ -290,33 +290,8 @@ if(ENABLE_PCH)
 endif()
 target_link_libraries(ADbTest ADb Catch2)
 
-##########
-# ABUILD #
-##########
-#ABuild Static Library
-add_library(ABuildStatic STATIC projects/ABuild/include/ABuild.hpp
-                                projects/ABuild/include/ABuild/File.hpp
-                                projects/ABuild/include/ABuild/Source.hpp
-                                projects/ABuild/File.cpp
-                                projects/ABuild/Source.cpp)
-target_compile_features(ABuildStatic PUBLIC cxx_std_17)
-target_include_directories(ABuildStatic PUBLIC projects/ABuild/include)
-target_include_directories(ABuildStatic PRIVATE projects/ABuild/include/ABuild)
-
-#ABuild
-add_executable(ABuild projects/ABuild/main.cpp)
-target_link_libraries(ABuild ABuildStatic)
-
-#ABuildTest
-add_executable(ABuildTest projects/ABuild/test/TestFile.hpp
-                          projects/ABuild/test/TestFile.cpp
-                          projects/ABuild/test/FileTest.cpp
-                          projects/ABuild/test/SourceTest.cpp)
-target_link_libraries(ABuildTest ABuildStatic Catch2)
-
 ### INSTALLATION ###
-install(TARGETS ABuild DESTINATION bin)
-install(TARGETS ABuildTest ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
+install(TARGETS ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
 
 #Licenses
 install(FILES LICENSE DESTINATION bin/LICENSE)
