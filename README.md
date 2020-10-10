@@ -8,7 +8,6 @@ Central development repository that hosts all the Agnesoft projects providing co
 
 ## Projects
 
--   [ABuild](projects/ABuild/README.md) C++ automatic build system.
 -   [ACore](projects/ACore/README.md) C++ basic containers and utilities.
 -   [ADb](projects/ADb/README.md) C++ graph database.
 -   [ADbQuery](projects/ADbQuery/README.md) Node.js code generator of language bindings for ADb.
