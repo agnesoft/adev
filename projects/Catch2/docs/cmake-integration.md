@@ -36,6 +36,20 @@ add_subdirectory(lib/Catch2)
 target_link_libraries(tests Catch2::Catch2)
 ```
 
+Another possibility is to use [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
+```cmake
+Include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v2.13.1)
+
+FetchContent_MakeAvailable(Catch2)
+
+target_link_libraries(tests Catch2::Catch2)
+```
+
 ## Automatic test registration
 
 Catch2's repository also contains two CMake scripts that help users
@@ -83,6 +97,10 @@ catch_discover_tests(target
                      [TEST_SUFFIX suffix]
                      [PROPERTIES name1 value1...]
                      [TEST_LIST var]
+                     [REPORTER reporter]
+                     [OUTPUT_DIR dir]
+                     [OUTPUT_PREFIX prefix]
+                     [OUTPUT_SUFFIX suffix]
 )
 ```
 
@@ -129,6 +147,32 @@ default `<target>_TESTS`.  This can be useful when the same test
 executable is being used in multiple calls to `catch_discover_tests()`.
 Note that this variable is only available in CTest.
 
+* `REPORTER reporter`
+
+Use the specified reporter when running the test case. The reporter will
+be passed to the test runner as `--reporter reporter`.
+
+* `OUTPUT_DIR dir`
+
+If specified, the parameter is passed along as
+`--out dir/<test_name>` to test executable. The actual file name is the
+same as the test name. This should be used instead of
+`EXTRA_ARGS --out foo` to avoid race conditions writing the result output
+when using parallel test execution.
+
+* `OUTPUT_PREFIX prefix`
+
+May be used in conjunction with `OUTPUT_DIR`.
+If specified, `prefix` is added to each output file name, like so
+`--out dir/prefix<test_name>`.
+
+* `OUTPUT_SUFFIX suffix`
+
+May be used in conjunction with `OUTPUT_DIR`.
+If specified, `suffix` is added to each output file name, like so
+`--out dir/<test_name>suffix`. This can be used to add a file extension to
+the output file name e.g. ".xml".
+
 
 ### `ParseAndAddCatchTests.cmake`
 
@@ -161,7 +205,7 @@ ParseAndAddCatchTests(foo)
 * `PARSE_CATCH_TESTS_VERBOSE` -- When `ON`, the script prints debug
 messages. Defaults to `OFF`.
 * `PARSE_CATCH_TESTS_NO_HIDDEN_TESTS` -- When `ON`, hidden tests (tests
-tagged with any of `[!hide]`, `[.]` or `[.foo]`) will not be registered.
+tagged with either of `[.]` or `[.foo]`) will not be registered.
 Defaults to `OFF`.
 * `PARSE_CATCH_TESTS_ADD_FIXTURE_IN_TEST_NAME` -- When `ON`, adds fixture
 class name to the test name in CTest. Defaults to `ON`.

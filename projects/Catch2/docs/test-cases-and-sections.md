@@ -15,9 +15,17 @@ Instead Catch provides a powerful mechanism for nesting test case sections withi
 Test cases and sections are very easy to use in practice:
 
 * **TEST_CASE(** _test name_ \[, _tags_ \] **)**
-* **SECTION(** _section name_ **)**
+* **SECTION(** _section name_, \[, _section description_ \] **)**
 
-_test name_ and _section name_ are free form, quoted, strings. The optional _tags_ argument is a quoted string containing one or more tags enclosed in square brackets. Tags are discussed below. Test names must be unique within the Catch executable.
+
+_test name_ and _section name_ are free form, quoted, strings.
+The optional _tags_ argument is a quoted string containing one or more
+tags enclosed in square brackets, and are discussed below.
+_section description_ can be used to provide long form description
+of a section while keeping the _section name_ short for use with the
+[`-c` command line parameter](command-line.md#specify-the-section-to-run).
+
+**Test names must be unique within the Catch executable.**
 
 For examples see the [Tutorial](tutorial.md#top)
 
@@ -42,7 +50,7 @@ Tag names are not case sensitive and can contain any ASCII characters. This mean
 
 All tag names beginning with non-alphanumeric characters are reserved by Catch. Catch defines a number of "special" tags, which have meaning to the test runner itself. These special tags all begin with a symbol character. Following is a list of currently defined special tags and their meanings.
 
-* `[!hide]` or `[.]` - causes test cases to be skipped from the default list (i.e. when no test cases have been explicitly selected through tag expressions or name wildcards). The hide tag is often combined with another, user, tag (for example `[.][integration]` - so all integration tests are excluded from the default run but can be run by passing `[integration]` on the command line). As a short-cut you can combine these by simply prefixing your user tag with a `.` - e.g. `[.integration]`. Because the hide tag has evolved to have several forms, all forms are added as tags if you use one of them.
+* `[.]` - causes test cases to be skipped from the default list (i.e. when no test cases have been explicitly selected through tag expressions or name wildcards). The hide tag is often combined with another, user, tag (for example `[.][integration]` - so all integration tests are excluded from the default run but can be run by passing `[integration]` on the command line). As a short-cut you can combine these by simply prefixing your user tag with a `.` - e.g. `[.integration]`.
 
 * `[!throws]` - lets Catch know that this test is likely to throw an exception even if successful. This causes the test to be excluded when running with `-e` or `--nothrow`.
 

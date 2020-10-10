@@ -1,15 +1,14 @@
 <a id="top"></a>
-![catch logo](artwork/catch2-logo-small.png)
+![catch logo](data/artwork/catch2-logo-small.png)
 
 [![Github Releases](https://img.shields.io/github/release/catchorg/catch2.svg)](https://github.com/catchorg/catch2/releases)
 [![Build Status](https://travis-ci.org/catchorg/Catch2.svg?branch=master)](https://travis-ci.org/catchorg/Catch2)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/catchorg/Catch2?svg=true)](https://ci.appveyor.com/project/catchorg/catch2)
 [![codecov](https://codecov.io/gh/catchorg/Catch2/branch/master/graph/badge.svg)](https://codecov.io/gh/catchorg/Catch2)
-[![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/aavJBzemrxUgGV9S)
+<!-- We can eventually bring this back, but the upload script will have to be more complex -->
+<!-- [![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/LzYWgcPrcy9yQmed) -->
 [![Join the chat in Discord: https://discord.gg/4CWS9zD](https://img.shields.io/badge/Discord-Chat!-brightgreen.svg)](https://discord.gg/4CWS9zD)
 
-
-<a href="https://github.com/catchorg/Catch2/releases/download/v2.13.0/catch.hpp">The latest version of the single header can be downloaded directly using this link</a>
 
 ## Catch2 is released!
 
@@ -19,10 +18,7 @@ before moving to Catch2. You might also like to read [this blog post](https://le
 
 ## What's the Catch?
 
-Catch2 is a multi-paradigm test framework for C++. which also supports
-Objective-C (and maybe C).
-It is primarily distributed as a single header file, although certain
-extensions may require additional headers.
+Catch2 is a multi-paradigm test framework for C++.
 
 ## How to use it
 This documentation comprises these three parts:

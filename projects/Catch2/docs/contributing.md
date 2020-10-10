@@ -21,8 +21,8 @@ to the codebase itself.
 
 ## Using Git(Hub)
 
-Ongoing development happens in the `master` branch for Catch2 v2, and in
-`dev-v3` for the next major version, v3.
+Ongoing development happens in the `devel` branch for Catch2 v3, and in
+`v2.x` for maintenance updates to the v2 versions.
 
 Commits should be small and atomic. A commit is atomic when, after it is
 applied, the codebase, tests and all, still works as expected. Small
@@ -30,8 +30,8 @@ commits are also prefered, as they make later operations with git history,
 whether it is bisecting, reverting, or something else, easier.
 
 _When submitting a pull request please do not include changes to the
-single include. This means do not include them in your git commits!_
-
+amalgamated distribution files. This means do not include them in your
+git commits!_
 
 When addressing review comments in a MR, please do not rebase/squash the
 commits immediately. Doing so makes it harder to review the new changes,
@@ -63,15 +63,13 @@ using CTest, either as a direct command invocation + pass/fail regex,
 or by delegating the check to a Python script.
 
 There are also two more kinds of tests, examples and "ExtraTests".
-Examples serve as a compilation test on the single-header distribution,
-and present a small and self-contained snippets of using Catch2 for
-writing tests. ExtraTests then are tests that either take a long time
-to run, or require separate compilation, e.g. because of testing compile
-time configuration options, and take a long time because of that.
-
-Both of these are compiled against the single-header distribution of
-Catch2, and thus might require you to regenerate it manually. This is
-done by calling the `generateSingleHeader.py` script in `scripts`.
+Examples present a small and self-contained snippets of code that
+use Catch2's facilities for specific purpose. Currently they are assumed
+passing if they compile. ExtraTests then are expensive tests, that we
+do not want to run all the time. This can be either because they take
+a long time to run, or because they take a long time to compile, e.g.
+because they test compile time configuration and require separate
+compilation.
 
 Examples and ExtraTests are not compiled by default. To compile them,
 add `-DCATCH_BUILD_EXAMPLES=ON` and `-DCATCH_BUILD_EXTRA_TESTS=ON` to
@@ -80,10 +78,10 @@ the invocation of CMake configuration step.
 Bringing this all together, the steps below should configure, build,
 and run all tests in the `Debug` compilation.
 
-1. Regenerate the single header distribution
+1. Regenerate the amalgamated distribution
 ```
 $ cd Catch2
-$ ./scripts/generateSingleHeader.py
+$ ./tools/scripts/generateAmalgamatedFiles.py
 ```
 2. Configure the full test build
 ```
@@ -99,6 +97,11 @@ $ cd debug-build
 $ ctest -j 4 --output-on-failure -C Debug
 ```
 
+If you added new tests, you will likely see `ApprovalTests` failure.
+After you check that the output difference is expected, you should
+run `tools/scripts/approve.py` to confirm them, and include these changes
+in your commit.
+
 
 ## Writing documentation
 
@@ -106,6 +109,7 @@ If you have added new feature to Catch2, it needs documentation, so that
 other people can use it as well. This section collects some technical
 information that you will need for updating Catch2's documentation, and
 possibly some generic advise as well.
+
 
 ### Technicalities 
 
@@ -214,6 +218,26 @@ If you are using a function from C's stdlib, please include the header
 as `<cfoo>` and call the function qualified. The common knowledge that
 there is no difference is wrong, QNX and VxWorks won't compile if you
 include the header as `<cfoo>` and call the function unqualified.
+
+
+### New source file template
+
+If you are adding new source file, there is a template you should use.
+Specifically, every source file should start with the licence header:
+```cpp
+
+    //              Copyright Catch2 Authors
+    // Distributed under the Boost Software License, Version 1.0.
+    //   (See accompanying file LICENSE_1_0.txt or copy at
+    //        https://www.boost.org/LICENSE_1_0.txt)
+
+    // SPDX-License-Identifier: BSL-1.0
+```
+
+The include guards for header files should follow the pattern `{FILENAME}_INCLUDED`.
+This means that for file `catch_matchers_foo`, the include guard should
+be `CATCH_MATCHERS_FOO_INCLUDED`, for `catch_generators_bar`, the include
+guard should be `CATCH_GENERATORS_BAR_INCLUDED`, and so on.
 
 
 ## CoC

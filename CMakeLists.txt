@@ -9,7 +9,8 @@ set(ENABLE_PCH TRUE)
 
 #Required for llvm-cov
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+    #TODO: -Wno-microsoft-cast is a workaround for Catch2 v3.0.0-preview3 (https://github.com/catchorg/Catch2/issues/2048)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -Wno-microsoft-cast")
     set(ENABLE_PCH FALSE)
 endif()
 
@@ -39,9 +40,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # CATCH2 #
 ##########
 # Catch2 Static Library
-add_library(Catch2 STATIC projects/Catch2/Catch2.cpp)
+add_subdirectory(projects/Catch2)
 target_compile_features(Catch2 PUBLIC cxx_std_17)
-target_include_directories(Catch2 SYSTEM PUBLIC projects/Catch2/single_include)
 
 ########################
 # TINY-PROCESS-LIBRARY #
@@ -123,7 +123,7 @@ add_executable(ACoreTest projects/ACore/test/CommandLineTest.cpp
 if(ENABLE_PCH)
     target_precompile_headers(ACoreTest PRIVATE projects/ACore/test/pch.hpp)
 endif()
-target_link_libraries(ACoreTest ACore Catch2)
+target_link_libraries(ACoreTest ACore Catch2::Catch2WithMain)
 
 #########
 # AFILE #
@@ -168,7 +168,7 @@ add_executable(AFileTest projects/AFile/test/FileTest.cpp
 if(ENABLE_PCH)
     target_precompile_headers(AFileTest PRIVATE projects/AFile/test/pch.hpp)
 endif()
-target_link_libraries(AFileTest AFile Catch2)
+target_link_libraries(AFileTest AFile Catch2::Catch2WithMain)
 
 ##########
 # AGRAPH #
@@ -211,7 +211,7 @@ add_executable(AGraphTest projects/AGraph/test/BreadthFirstSearchTest.cpp
 if(ENABLE_PCH)
     target_precompile_headers(AGraphTest PRIVATE projects/AGraph/test/pch.hpp)
 endif()
-target_link_libraries(AGraphTest AGraph Catch2)
+target_link_libraries(AGraphTest AGraph Catch2::Catch2WithMain)
 
 #######
 # ADB #
@@ -288,7 +288,7 @@ add_executable(ADbTest projects/ADb/test/ConditionTest.cpp
 if(ENABLE_PCH)
     target_precompile_headers(ADbTest PRIVATE projects/ADb/test/pch.hpp)
 endif()
-target_link_libraries(ADbTest ADb Catch2)
+target_link_libraries(ADbTest ADb Catch2::Catch2WithMain)
 
 ### INSTALLATION ###
 install(TARGETS ACoreTest ADbTest AFileTest AGraphTest DESTINATION bin/test)
