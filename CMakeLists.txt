@@ -9,7 +9,8 @@ set(ENABLE_PCH TRUE)
 
 #Required for llvm-cov
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+    #TODO: -Wno-microsoft-cast is a workaround for Catch2 v3.0.0-preview3 (https://github.com/catchorg/Catch2/issues/2048)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping -Wno-microsoft-cast")
     set(ENABLE_PCH FALSE)
 endif()
 
