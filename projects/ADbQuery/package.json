@@ -5,7 +5,8 @@
     "type": "module",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js"
+        "start": "node index.js",
+        "test": "jest"
     },
     "repository": {
         "type": "git",
@@ -15,6 +16,9 @@
     "author": "Michael Vlach",
     "license": "Apache-2.0",
     "dependencies": {
-        "fs": "0.0.1-security"
+        "babel-jest": "^26.5.2",
+        "fs": "0.0.1-security",
+        "jest": "^26.5.3",
+        "@babel/preset-env": "^7.11.5"
     }
 }
