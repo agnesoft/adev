@@ -1,5 +1,3 @@
-import { print } from "./common.js";
-
 export default class Parser {
     constructor(data) {
         this._data = data;
@@ -33,9 +31,9 @@ export default class Parser {
         };
     }
 
-    unionAST(token) {
+    variantAST(token) {
         return {
-            type: "union",
+            type: "variant",
             name: token,
             variants: this._data[token],
         };
@@ -45,7 +43,7 @@ export default class Parser {
         if (this._data[token].length == 1) {
             return this.arrayAST(token);
         } else {
-            return this.unionAST(token);
+            return this.variantAST(token);
         }
     }
 
