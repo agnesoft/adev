@@ -59,24 +59,6 @@ describe("parse()", () => {
     });
 
     describe("[function]", () => {
-        test("[empty]", () => {
-            const data = {
-                foo: {},
-            };
-
-            const ast = [
-                {
-                    type: "function",
-                    name: "foo",
-                    arguments: [],
-                    body: [],
-                    returnValue: undefined,
-                },
-            ];
-
-            expect(new Parser(data).parse()).toEqual(ast);
-        });
-
         test("[return]", () => {
             const data = {
                 foo: {
@@ -239,6 +221,143 @@ describe("parse()", () => {
 
                 expect(new Parser(data).parse()).toEqual(ast);
             });
+        });
+    });
+
+    describe("[object]", () => {
+        test("[empty]", () => {
+            const data = {
+                Obj: {},
+            };
+
+            const ast = [
+                {
+                    type: "object",
+                    name: "Obj",
+                    base: undefined,
+                    fields: [],
+                    functions: [],
+                },
+            ];
+
+            expect(new Parser(data).parse()).toEqual(ast);
+        });
+
+        test("[base]", () => {
+            const data = {
+                Obj: { base: "BaseObj" },
+            };
+
+            const ast = [
+                {
+                    type: "object",
+                    name: "Obj",
+                    base: "BaseObj",
+                    fields: [],
+                    functions: [],
+                },
+            ];
+
+            expect(new Parser(data).parse()).toEqual(ast);
+        });
+
+        test("[fields]", () => {
+            const data = {
+                Obj: { fields: ["field1", "field2"] },
+            };
+
+            const ast = [
+                {
+                    type: "object",
+                    name: "Obj",
+                    base: undefined,
+                    fields: ["field1", "field2"],
+                    functions: [],
+                },
+            ];
+
+            expect(new Parser(data).parse()).toEqual(ast);
+        });
+
+        test("[methods]", () => {
+            const data = {
+                Obj: {
+                    functions: {
+                        foo: {
+                            body: ["String", "String.Size = 1"],
+                        },
+                        bar: {
+                            body: ["MyArr = Ids"],
+                        },
+                    },
+                },
+            };
+
+            const ast = [
+                {
+                    type: "object",
+                    name: "Obj",
+                    base: undefined,
+                    fields: [],
+                    functions: [
+                        {
+                            type: "function",
+                            name: "foo",
+                            arguments: [],
+                            body: [
+                                {
+                                    type: "assignment",
+                                    left: {
+                                        type: "type",
+                                        value: "String",
+                                        parent: undefined,
+                                    },
+                                    right: undefined,
+                                },
+                                {
+                                    type: "assignment",
+                                    left: {
+                                        type: "type",
+                                        value: "Size",
+                                        parent: {
+                                            type: "type",
+                                            value: "String",
+                                            parent: undefined,
+                                        },
+                                    },
+                                    right: {
+                                        type: "number",
+                                        value: 1,
+                                        parent: undefined,
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            type: "function",
+                            name: "bar",
+                            arguments: [],
+                            body: [
+                                {
+                                    type: "assignment",
+                                    left: {
+                                        type: "type",
+                                        value: "MyArr",
+                                        parent: undefined,
+                                    },
+                                    right: {
+                                        type: "type",
+                                        value: "Ids",
+                                        parent: undefined,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ];
+
+            expect(new Parser(data).parse()).toEqual(ast);
         });
     });
 });

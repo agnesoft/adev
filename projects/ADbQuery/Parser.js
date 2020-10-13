@@ -52,12 +52,12 @@ export default class Parser {
     isFunctionToken(token) {
         const keys = Object.keys(this._data[token]);
         const test = (element) => keys.includes(element);
-        return keys.length == 0 || ["arguments", "body", "return"].some(test);
+        return ["arguments", "body", "return"].some(test);
     }
 
-    functionArguments(token) {
-        if ("arguments" in this._data[token]) {
-            return this._data[token]["arguments"];
+    functionArguments(func) {
+        if ("arguments" in func) {
+            return func["arguments"];
         }
 
         return [];
@@ -92,11 +92,11 @@ export default class Parser {
         return ast;
     }
 
-    functionBody(token) {
+    functionBody(func) {
         let expressions = [];
 
-        if ("body" in this._data[token]) {
-            for (const expression of this._data[token]["body"]) {
+        if ("body" in func) {
+            for (const expression of func["body"]) {
                 expressions.push(this.expressionAST(expression));
             }
         }
@@ -104,21 +104,53 @@ export default class Parser {
         return expressions;
     }
 
-    functionAST(token) {
+    functionAST(name, func) {
         return {
             type: "function",
+            name: name,
+            arguments: this.functionArguments(func),
+            body: this.functionBody(func),
+            returnValue: func["return"],
+        };
+    }
+
+    objectFields(token) {
+        if ("fields" in this._data[token]) {
+            return this._data[token]["fields"];
+        }
+
+        return [];
+    }
+
+    objectFunctions(token) {
+        let functions = [];
+
+        if ("functions" in this._data[token]) {
+            for (const func in this._data[token]["functions"]) {
+                functions.push(
+                    this.functionAST(func, this._data[token]["functions"][func])
+                );
+            }
+        }
+
+        return functions;
+    }
+
+    objectAST(token) {
+        return {
+            type: "object",
             name: token,
-            arguments: this.functionArguments(token),
-            body: this.functionBody(token),
-            returnValue: this._data[token]["return"],
+            base: this._data[token]["base"],
+            fields: this.objectFields(token),
+            functions: this.objectFunctions(token),
         };
     }
 
     parseObjectToken(token) {
         if (this.isFunctionToken(token)) {
-            return this.functionAST(token);
+            return this.functionAST(token, this._data[token]);
         } else {
-            return {};
+            return this.objectAST(token);
         }
     }
 
