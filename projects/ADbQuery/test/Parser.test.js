@@ -42,14 +42,22 @@ describe("parse()", () => {
         expect(new Parser(data).parse()).toEqual(ast);
     });
 
+<<<<<<< HEAD
     test("[variant]", () => {
+=======
+    test("[union]", () => {
+>>>>>>> master
         const data = {
             Operator: ["And", "Or"],
         };
 
         const ast = [
             {
+<<<<<<< HEAD
                 type: "variant",
+=======
+                type: "union",
+>>>>>>> master
                 name: "Operator",
                 variants: ["And", "Or"],
             },
