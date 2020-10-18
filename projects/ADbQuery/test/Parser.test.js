@@ -10,6 +10,16 @@ describe("Parser(data)", () => {
 });
 
 describe("parse()", () => {
+    test("[unknown type]", () => {
+        const data = {
+            Value: 10,
+        };
+        const parser = () => {
+            new Parser(data).parse();
+        };
+        expect(parser).toThrow("Unknown token type: Value [number]");
+    });
+
     test("[alias]", () => {
         const data = {
             Size: "int64",
@@ -42,22 +52,14 @@ describe("parse()", () => {
         expect(new Parser(data).parse()).toEqual(ast);
     });
 
-<<<<<<< HEAD
     test("[variant]", () => {
-=======
-    test("[union]", () => {
->>>>>>> master
         const data = {
             Operator: ["And", "Or"],
         };
 
         const ast = [
             {
-<<<<<<< HEAD
                 type: "variant",
-=======
-                type: "union",
->>>>>>> master
                 name: "Operator",
                 variants: ["And", "Or"],
             },

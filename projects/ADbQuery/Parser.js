@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-import { print } from "./common.js";
-
->>>>>>> master
 export default class Parser {
     constructor(data) {
         this._data = data;
@@ -36,15 +31,9 @@ export default class Parser {
         };
     }
 
-<<<<<<< HEAD
     variantAST(token) {
         return {
             type: "variant",
-=======
-    unionAST(token) {
-        return {
-            type: "union",
->>>>>>> master
             name: token,
             variants: this._data[token],
         };
@@ -54,11 +43,7 @@ export default class Parser {
         if (this._data[token].length == 1) {
             return this.arrayAST(token);
         } else {
-<<<<<<< HEAD
             return this.variantAST(token);
-=======
-            return this.unionAST(token);
->>>>>>> master
         }
     }
 

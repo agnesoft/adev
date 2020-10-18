@@ -3,16 +3,20 @@ export default class Analyzer {
         this._ast = ast;
     }
 
-    verifyName(ast) {
-        if (!isNaN(ast["name"][0])) {
-            throw `Analyzer: invalid ${ast["type"]} name '${ast["name"]}' (a type name cannot start with a number)`;
+    verifyType(type, ast) {
+        if (!this.typeExists(type)) {
+            throw `Analyzer: unknown type '${type}' referenced in ${ast["type"]} '${ast["name"]}'.`;
         }
     }
 
-    verifyType(type, ast) {
-        if (!this.typeExists(type)) {
-            throw `Analyzer: unknown type '${type}' referenced in ${ast["type"]} '${ast["name"]}'`;
+    findAST(name) {
+        for (const ast of this._ast) {
+            if (ast["name"] == name) {
+                return ast;
+            }
         }
+
+        return undefined;
     }
 
     typeExists(type) {
@@ -36,12 +40,54 @@ export default class Analyzer {
         }
     }
 
-    analyzeObject(ast) {}
+    realType(ast) {
+        if (!ast) {
+            return undefined;
+        }
+
+        const type = ast["type"];
+
+        if (type == "alias") {
+            return this.realType(this.findAST(ast["aliasedType"]));
+        }
+
+        return type;
+    }
+
+    isObject(ast) {
+        return this.realType(ast) == "object";
+    }
+
+    verifyBaseAST(base, descendant) {
+        if (!this.isObject(base)) {
+            throw `Analyzer: the base '${base["name"]}' of object '${
+                descendant["name"]
+            }' is of type '${this.realType(base)}' (must be 'object').`;
+        }
+    }
+
+    verifyBase(ast) {
+        const base = ast["base"];
+
+        if (base) {
+            const baseAST = this.findAST(base);
+
+            if (baseAST) {
+                this.verifyBaseAST(baseAST, ast);
+            } else {
+                throw `Analyzer: the base '${base}' of object '${ast["name"]}' is not an existing type.`;
+            }
+        }
+    }
+
+    analyzeObject(ast) {
+        this.verifyBase(ast);
+    }
+
+    analyzeFunction(ast) {}
 
     analyze() {
         for (const ast of this._ast) {
-            this.verifyName(ast);
-
             switch (ast["type"]) {
                 case "alias":
                     this.analyzeAlias(ast);
@@ -55,8 +101,11 @@ export default class Analyzer {
                 case "object":
                     this.analyzeObject(ast);
                     break;
+                case "function":
+                    this.analyzeFunction(ast);
+                    break;
                 default:
-                    throw `Analyzer: Unknown type '${ast["type"]}' (name: '${ast["name"]})'`;
+                    throw `Analyzer: Unknown type '${ast["type"]}' (name: '${ast["name"]}').`;
             }
         }
     }
