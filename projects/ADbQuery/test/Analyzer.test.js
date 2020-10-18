@@ -262,4 +262,58 @@ describe("analyze()", () => {
             });
         });
     });
+
+    describe("[functions]", () => {
+        describe("[arguments]", () => {
+            test("[existing types]", () => {
+                const data = {
+                    Id: "int64",
+                    MyArray: ["int64"],
+                    foo: { arguments: ["Id", "MyArray"] },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).not.toThrow();
+            });
+
+            test("[missing types]", () => {
+                const data = {
+                    Id: "int64",
+                    foo: { arguments: ["Id", "MyArray"] },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: the argument 'MyArray' of function 'foo' is not an existing type."
+                );
+            });
+        });
+
+        describe("[return]", () => {
+            test("[existing type]", () => {
+                const data = {
+                    Id: "int64",
+                    foo: { return: "Id" },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).not.toThrow();
+            });
+
+            test("[missing type]", () => {
+                const data = {
+                    foo: { return: "Id" },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: the return value 'Id' of function 'foo' is not an existing type."
+                );
+            });
+        });
+    });
 });

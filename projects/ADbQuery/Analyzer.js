@@ -93,7 +93,26 @@ export default class Analyzer {
         this.verifyFields(ast);
     }
 
-    analyzeFunction(ast) {}
+    verifyArguments(ast) {
+        for (const arg of ast["arguments"]) {
+            if (!this.typeExists(arg)) {
+                throw `Analyzer: the argument '${arg}' of function '${ast["name"]}' is not an existing type.`;
+            }
+        }
+    }
+
+    verifyReturnValue(ast) {
+        if (ast["returnValue"]) {
+            if (!this.typeExists(ast["returnValue"])) {
+                throw `Analyzer: the return value '${ast["returnValue"]}' of function '${ast["name"]}' is not an existing type.`;
+            }
+        }
+    }
+
+    analyzeFunction(ast) {
+        this.verifyArguments(ast);
+        this.verifyReturnValue(ast);
+    }
 
     analyze() {
         for (const ast of this._ast) {
