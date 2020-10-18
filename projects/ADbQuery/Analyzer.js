@@ -109,9 +109,81 @@ export default class Analyzer {
         }
     }
 
-    analyzeFunction(ast) {
+    functionName(func, object) {
+        if (object) {
+            return `${object["name"]}::${func["name"]}`;
+        }
+
+        return func["name"];
+    }
+
+    verifyExpressionPart(part, func, object) {}
+
+    verifyReferencedTypes(expression, func, object) {
+        this.verifyExpressionPart(expression["left"]);
+
+        if (expression["right"]) {
+            this.verifyExpressionPart(expression);
+        }
+
+        if (expression["right"]) {
+            for (const part of expression["right"]) {
+            }
+        }
+    }
+
+    verifyAssignmentTypes(expression, func, object) {
+        if (!expression["right"]) {
+            if (expression["left"]["type"] == "number") {
+                throw `Analyzer: declaring a number does not make sense (in function '${this.functionName(
+                    func,
+                    object
+                )}').`;
+            }
+
+            return;
+        }
+
+        if (expression["left"]["type"] == "number") {
+            if (expression["right"]["type"] == "number") {
+                throw `Analyzer: assigning a number to a number does not make sense (in function '${this.functionName(
+                    func,
+                    object
+                )}')`;
+            }
+        }
+    }
+
+    analyzeAssignment(expression, func, object) {
+        this.verifyReferencedTypes(expression, func, object);
+        this.verifyAssignmentTypes(expression, func, object);
+    }
+
+    analyzeExpression(expression, func, object) {
+        switch (expression["type"]) {
+            case "assignment":
+                this.analyzeAssignment(expression, func, object);
+                break;
+            default:
+                throw `Analyzer: unknown expression type '${
+                    expression["type"]
+                }' in function '${this.functionName(func, object)}'.`;
+        }
+    }
+
+    analyzeBody(ast, obj) {
+        for (const expression of ast["body"]) {
+            this.analyzeExpression(expression, ast, obj);
+        }
+    }
+
+    analyzeFunction(ast, object) {
         this.verifyArguments(ast);
         this.verifyReturnValue(ast);
+
+        if ("body" in ast) {
+            this.analyzeBody(ast, object);
+        }
     }
 
     analyze() {
@@ -130,7 +202,7 @@ export default class Analyzer {
                     this.analyzeObject(ast);
                     break;
                 case "function":
-                    this.analyzeFunction(ast);
+                    this.analyzeFunction(ast, undefined);
                     break;
                 default:
                     throw `Analyzer: Unknown type '${ast["type"]}' (name: '${ast["name"]}').`;

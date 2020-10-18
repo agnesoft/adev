@@ -315,5 +315,98 @@ describe("analyze()", () => {
                 );
             });
         });
+
+        describe("[body]", () => {
+            test("[unknown expression type]", () => {
+                const ast = [
+                    {
+                        type: "function",
+                        name: "foo",
+                        arguments: [],
+                        body: [
+                            {
+                                type: "declaration",
+                            },
+                        ],
+                    },
+                ];
+                const analyze = () => {
+                    new Analyzer(ast).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: unknown expression type 'declaration' in function 'foo'."
+                );
+            });
+
+            test("[declaring number]", () => {
+                const data = {
+                    foo: {
+                        body: ["1"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: declaring a number does not make sense (in function 'foo')."
+                );
+            });
+
+            test("[assign number to number]", () => {
+                const data = {
+                    foo: {
+                        body: ["1 = 1"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: assigning a number to a number does not make sense (in function 'foo')."
+                );
+            });
+
+            test("[invalid side type]", () => {
+                const data = {
+                    Id: "int64",
+                    foo: {
+                        body: ["1 = Id"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: cannot assign 'Id' to '1' (number) in function 'foo'."
+                );
+            });
+
+            test("[assign to missing type]", () => {
+                const data = {
+                    foo: {
+                        body: ["Size = 1"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: type 'Size' referenced in function 'foo' is not an existing type."
+                );
+            });
+
+            test("[assign number to value]", () => {
+                const data = {
+                    Id: "int64",
+                    foo: {
+                        body: ["Id = 1"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).not.toThrow();
+            });
+        });
     });
 });

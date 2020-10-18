@@ -289,7 +289,7 @@ describe("parse()", () => {
             expect(new Parser(data).parse()).toEqual(ast);
         });
 
-        test("[methods]", () => {
+        test("[functions]", () => {
             const data = {
                 Obj: {
                     functions: {
