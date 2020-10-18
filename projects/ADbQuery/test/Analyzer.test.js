@@ -230,5 +230,36 @@ describe("analyze()", () => {
                 );
             });
         });
+
+        describe("[fields]", () => {
+            test("[existing types]", () => {
+                const data = {
+                    MyArray: ["int64"],
+                    Id: "int64",
+                    Obj: {
+                        fields: ["MyArray", "Id"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).not.toThrow();
+            });
+
+            test("[missing types]", () => {
+                const data = {
+                    MyArray: ["int64"],
+                    Obj: {
+                        fields: ["MyArray", "Id"],
+                    },
+                };
+                const analyze = () => {
+                    new Analyzer(new Parser(data).parse()).analyze();
+                };
+                expect(analyze).toThrow(
+                    "Analyzer: the field 'Id' of object 'Obj' is not an existing type."
+                );
+            });
+        });
     });
 });

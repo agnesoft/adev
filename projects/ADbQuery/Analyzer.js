@@ -80,8 +80,17 @@ export default class Analyzer {
         }
     }
 
+    verifyFields(ast) {
+        for (const field of ast["fields"]) {
+            if (!this.typeExists(field)) {
+                throw `Analyzer: the field '${field}' of object '${ast["name"]}' is not an existing type.`;
+            }
+        }
+    }
+
     analyzeObject(ast) {
         this.verifyBase(ast);
+        this.verifyFields(ast);
     }
 
     analyzeFunction(ast) {}
@@ -108,5 +117,7 @@ export default class Analyzer {
                     throw `Analyzer: Unknown type '${ast["type"]}' (name: '${ast["name"]}').`;
             }
         }
+
+        return this._ast;
     }
 }
