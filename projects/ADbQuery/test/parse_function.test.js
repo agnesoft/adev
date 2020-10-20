@@ -35,7 +35,7 @@ describe("arguments", () => {
         expect(parser.parse(data)).toEqual(ast);
     });
 
-    test("multiple", () => {
+    test("multiple arguments", () => {
         const data = {
             foo: { arguments: ["arg1", "arg2"] },
         };

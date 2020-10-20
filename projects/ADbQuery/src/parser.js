@@ -34,7 +34,7 @@ function parseStringToken(token, schema) {
 
 function parseToken(token, schema) {
     const type = tokenType(token, schema);
-
+    console.log(`${token}: ${type}`);
     switch (type) {
         case "string":
             return parseStringToken(token, schema);
@@ -43,7 +43,7 @@ function parseToken(token, schema) {
         case "object":
             return parseObjectToken(token, schema);
         default:
-            throw `Unknown token type: ${token} [${type}]`;
+            throw `Unknown token type '${type}' of token '${token}'.`;
     }
 }
 

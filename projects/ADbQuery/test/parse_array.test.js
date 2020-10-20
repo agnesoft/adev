@@ -1,4 +1,3 @@
-import { TestScheduler } from "jest";
 import * as parser from "../src/parser.js";
 
 test("valid array", () => {

@@ -1,3 +1,5 @@
+import * as parser from "../src/parser.js";
+
 test("number to type", () => {
     const data = {
         foo: { body: ["Id = 1"] },
