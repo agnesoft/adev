@@ -1,7 +1,7 @@
 import { analyzeAlias } from "./analyze_alias.js";
 import { analyzeArray } from "./analyze_array.js";
-import { analyzeFunction } from "./analyze_function";
-import { analyzeObject } from "./analyze_object";
+import { analyzeFunction } from "./analyze_function.js";
+import { analyzeObject } from "./analyze_object.js";
 import { analyzeVariant } from "./analyze_variant.js";
 
 function analyzeType(node, ast) {
@@ -19,7 +19,7 @@ function analyzeType(node, ast) {
             analyzeObject(node, ast);
             break;
         case "function":
-            analyzeFunction(node, ast);
+            analyzeFunction(node, undefined, ast);
             break;
         default:
             throw `Analyzer: unknown type '${node["type"]}' named '${node["name"]}'.`;

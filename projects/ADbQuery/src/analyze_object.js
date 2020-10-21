@@ -1,14 +1,14 @@
 import { realType, typeExists, typeType } from "./analyzer_common.js";
 
 function baseTypeName(baseType, node) {
-    if (node["base"] == baseType) {
-        return baseType;
+    if (!baseType || node["base"] == baseType) {
+        return node["base"];
     } else {
         return `${node["base"]} (aka ${baseType})`;
     }
 }
 
-function validateBaseTypeExists(baseType, node) {
+function validateBaseTypeIsDefined(baseType, node) {
     if (!baseType) {
         throw `Analyzer: the base type '${baseTypeName(
             baseType,
@@ -17,11 +17,11 @@ function validateBaseTypeExists(baseType, node) {
     }
 }
 
-function validateBaseTypeIsObject(baseType, node) {
-    const type = typeType(baseType);
+function validateBaseTypeIsObject(baseType, node, ast) {
+    const type = typeType(baseType, ast);
 
     if (type != "object") {
-        throw `Analyzer: the base '${baseTypeName(
+        throw `Analyzer: the base type '${baseTypeName(
             baseType,
             node
         )}' of object '${
@@ -30,14 +30,14 @@ function validateBaseTypeIsObject(baseType, node) {
     }
 }
 
-function validateBaseType(baseType, node) {
-    validateBaseTypeExists(baseType, node);
-    validateBaseTypeIsObject(baseType, node);
+function validateBaseType(baseType, node, ast) {
+    validateBaseTypeIsDefined(baseType, node);
+    validateBaseTypeIsObject(baseType, node, ast);
 }
 
 function validateBase(node, ast) {
     if (node["base"]) {
-        validateBaseType(realType(node["base"], ast), ast);
+        validateBaseType(realType(node["base"], ast), node, ast);
     }
 }
 
@@ -48,7 +48,7 @@ function validateFieldTypeExists(field, node, ast) {
 }
 
 function validateFieldType(field, node, ast) {
-    const type = typeType(field);
+    const type = typeType(field, ast);
 
     if (type == "function") {
         throw `Analyzer: the field '${field}' of object '${node["name"]}' cannot be a function.`;

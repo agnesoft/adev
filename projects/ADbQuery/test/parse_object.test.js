@@ -17,6 +17,26 @@ test("empty", () => {
     expect(parser.parse(data)).toEqual(ast);
 });
 
+test("base", () => {
+    const data = {
+        MyObj: {
+            base: "SomeObj",
+        },
+    };
+
+    const ast = {
+        MyObj: {
+            type: "object",
+            name: "MyObj",
+            fields: [],
+            functions: [],
+            base: "SomeObj",
+        },
+    };
+
+    expect(parser.parse(data)).toEqual(ast);
+});
+
 test("fields", () => {
     const data = {
         MyObj: {
