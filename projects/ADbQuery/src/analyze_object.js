@@ -1,4 +1,5 @@
 import { realType, typeExists, typeType } from "./analyzer_common.js";
+import { analyzeFunction } from "./analyze_function.js";
 
 function baseTypeName(baseType, node) {
     if (!baseType || node["base"] == baseType) {
@@ -66,7 +67,14 @@ function validateFields(node, ast) {
     }
 }
 
+function analyzeFunctions(node, ast) {
+    for (const func of node["functions"]) {
+        analyzeFunction(func, node, ast);
+    }
+}
+
 export function analyzeObject(node, ast) {
     validateBase(node, ast);
     validateFields(node, ast);
+    analyzeFunctions(node, ast);
 }
