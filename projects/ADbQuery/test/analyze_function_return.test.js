@@ -152,6 +152,150 @@ test("return field of field", () => {
     expect(analyze()).toEqual(ast);
 });
 
+test("return field of field from variant field", () => {
+    const data = {
+        Id: "int64",
+        SubObj: {
+            fields: ["Id"],
+        },
+        MyVar: ["Id", "SubObj"],
+        MyObj: {
+            fields: ["MyVar"],
+            functions: {
+                foo: {
+                    body: ["return MyVar.SubObj.Id"],
+                    return: "Id",
+                },
+            },
+        },
+    };
+
+    const ast = {
+        Id: {
+            type: "alias",
+            name: "Id",
+            aliasedType: "int64",
+        },
+        SubObj: {
+            type: "object",
+            name: "SubObj",
+            base: undefined,
+            fields: ["Id"],
+            functions: [],
+        },
+        MyVar: {
+            type: "variant",
+            name: "MyVar",
+            variants: ["Id", "SubObj"],
+        },
+        MyObj: {
+            type: "object",
+            name: "MyObj",
+            base: undefined,
+            fields: ["MyVar"],
+            functions: [
+                {
+                    type: "function",
+                    name: "foo",
+                    arguments: [],
+                    returnValue: "Id",
+                    body: [
+                        {
+                            type: "return",
+                            value: "Id",
+                            returnType: "field",
+                            parent: {
+                                type: "variant",
+                                value: "SubObj",
+                                parent: {
+                                    type: "field",
+                                    value: "MyVar",
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+
+    const analyze = () => {
+        return analyzer.analyze(parser.parse(data));
+    };
+
+    expect(analyze()).toEqual(ast);
+});
+
+test("return array type from variant field", () => {
+    const data = {
+        Id: "int64",
+        MyArr: ["Id"],
+        MyVar: ["Id", "MyArr"],
+        MyObj: {
+            fields: ["MyVar"],
+            functions: {
+                foo: {
+                    body: ["return MyVar.MyArr.Id"],
+                    return: "Id",
+                },
+            },
+        },
+    };
+
+    const ast = {
+        Id: {
+            type: "alias",
+            name: "Id",
+            aliasedType: "int64",
+        },
+        MyArr: {
+            type: "array",
+            name: "MyArr",
+            arrayType: "Id",
+        },
+        MyVar: {
+            type: "variant",
+            name: "MyVar",
+            variants: ["Id", "MyArr"],
+        },
+        MyObj: {
+            type: "object",
+            name: "MyObj",
+            base: undefined,
+            fields: ["MyVar"],
+            functions: [
+                {
+                    type: "function",
+                    name: "foo",
+                    arguments: [],
+                    returnValue: "Id",
+                    body: [
+                        {
+                            type: "return",
+                            value: "Id",
+                            returnType: "arrayType",
+                            parent: {
+                                type: "variant",
+                                value: "MyArr",
+                                parent: {
+                                    type: "field",
+                                    value: "MyVar",
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+
+    const analyze = () => {
+        return analyzer.analyze(parser.parse(data));
+    };
+
+    expect(analyze()).toEqual(ast);
+});
+
 test("return argument", () => {
     const data = {
         Id: "int64",
