@@ -13,7 +13,7 @@ function functionBody(func) {
 
     if ("body" in func) {
         for (const expression of func["body"]) {
-            expressions.push(expressionAST(expression));
+            expressions.push(expressionAST(expression.trim()));
         }
     }
 

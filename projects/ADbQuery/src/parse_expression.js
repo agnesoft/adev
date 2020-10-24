@@ -33,7 +33,17 @@ function sideAST(side) {
     return ast["parent"];
 }
 
-export function expressionAST(expression) {
+function returnAST(expression) {
+    let ast = {};
+    const parts = expression.substr(7).split(".");
+    parts.reduceRight(expressionASTBuilder, ast);
+    ast = ast["parent"];
+    ast["returnType"] = ast["type"];
+    ast["type"] = "return";
+    return ast;
+}
+
+function assignmentAST(expression) {
     const sides = expression.split("=");
 
     return {
@@ -41,4 +51,12 @@ export function expressionAST(expression) {
         left: sideAST(sides[0].trim()),
         right: sideAST(sides[1].trim()),
     };
+}
+
+export function expressionAST(expression) {
+    if (expression.startsWith("return ")) {
+        return returnAST(expression);
+    } else {
+        return assignmentAST(expression);
+    }
 }
