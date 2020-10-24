@@ -15,3 +15,17 @@ test("valid variant", () => {
 
     expect(parser.parse(data)).toEqual(ast);
 });
+
+test("invalid variant type", () => {
+    const data = {
+        MyVar: [{}, []],
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        "Parser: invalid variant type ('object', must be 'string') of variant 'MyVar'."
+    );
+});

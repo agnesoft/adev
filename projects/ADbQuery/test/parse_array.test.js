@@ -1,6 +1,6 @@
 import * as parser from "../src/parser.js";
 
-test("valid array", () => {
+test("valid", () => {
     const data = {
         String: ["byte"],
     };
@@ -14,4 +14,18 @@ test("valid array", () => {
     };
 
     expect(parser.parse(data)).toEqual(ast);
+});
+
+test("invalid", () => {
+    const data = {
+        MyArr: [{}],
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        `Parser: invalid array type ('object', must be 'string') in array 'MyArr'.`
+    );
 });

@@ -110,3 +110,73 @@ test("functions", () => {
 
     expect(parser.parse(data)).toEqual(ast);
 });
+
+test("invalid base type", () => {
+    const data = {
+        MyObj: { base: {} },
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        "Parser: invalid 'base' type ('object', must be 'string') in object 'MyObj'."
+    );
+});
+
+test("invalid fields type", () => {
+    const data = {
+        MyObj: { fields: {} },
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        "Parser: invalid 'fields' type ('object', must be 'array') in object 'MyObj'."
+    );
+});
+
+test("invalid field type", () => {
+    const data = {
+        MyObj: { fields: [{}] },
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        "Parser: invalid field type ('object', must be 'string') in object 'MyObj'."
+    );
+});
+
+test("invalid functions type", () => {
+    const data = {
+        MyObj: { functions: [] },
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        "Parser: invalid 'functions' type ('array', must be 'object') in object 'MyObj'."
+    );
+});
+
+test("invalid function type", () => {
+    const data = {
+        MyObj: { functions: { foo: [] } },
+    };
+
+    const parse = () => {
+        parser.parse(data);
+    };
+
+    expect(parse).toThrow(
+        "Parser: invalid function type ('array', must be 'object') in function 'MyObj::foo'."
+    );
+});
