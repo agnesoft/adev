@@ -48,17 +48,8 @@ function validateFieldTypeExists(field, node, ast) {
     }
 }
 
-function validateFieldType(field, node, ast) {
-    const type = typeType(field, ast);
-
-    if (type == "function") {
-        throw `Analyzer: the field '${field}' of object '${node["name"]}' cannot be a function.`;
-    }
-}
-
 function validateField(field, node, ast) {
     validateFieldTypeExists(field, node, ast);
-    validateFieldType(field, node, ast);
 }
 
 function validateFields(node, ast) {
