@@ -38,15 +38,19 @@ function expressionType(expression, node, context, ast) {
         }
     }
 
-    if (!expression["parent"] && isArgument(expression["value"], node)) {
-        return "argument";
+    if (!expression["parent"]) {
+        if (isArgument(expression["value"], node)) {
+            return "argument";
+        }
+
+        if (!isNaN(expression["value"])) {
+            return "number";
+        }
+
+        return "new";
     }
 
-    if (!isNaN(expression["value"])) {
-        return "number";
-    }
-
-    return "new";
+    throw `The '${expression["value"]}' cannot be accessed via '${expression["parent"]["value"]}'.`;
 }
 
 function expressionContext(expression, object, ast) {
@@ -93,6 +97,6 @@ export function analyzeExpression(expression, node, object, ast) {
             analyzeAssignment(expression, node, object, ast);
             break;
         default:
-            throw `Analyzer: unknown expressiong type '${expression["type"]}'.`;
+            throw `Unknown expression type '${expression["type"]}'.`;
     }
 }

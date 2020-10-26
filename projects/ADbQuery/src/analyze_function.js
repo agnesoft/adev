@@ -52,7 +52,14 @@ function validateReturn(node, object, ast) {
 
 function analyzeExpressions(node, object, ast) {
     for (let expression of node["body"]) {
-        analyzeExpression(expression, node, object, ast);
+        try {
+            analyzeExpression(expression, node, object, ast);
+        } catch (e) {
+            throw `Analyzer: invalid expression in function '${functionName(
+                node,
+                object
+            )}'. ${e}`;
+        }
     }
 }
 
