@@ -1,7 +1,7 @@
 import { aliasAST } from "./parse_alias.js";
 import { arrayAST } from "./parse_array.js";
 import { objectAST } from "./parse_object.js";
-import { isFunction, functionAST } from "./parse_function";
+import { isFunction, functionAST } from "./parse_function.js";
 import { variantAST } from "./parse_variant.js";
 
 function tokenType(token, schema) {

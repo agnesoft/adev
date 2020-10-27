@@ -1,274 +1,102 @@
 {
-    "Placeholder": {
-        "kind": "native",
-        "type": "string"
-    },
-    "Count": {
-        "kind": "native",
-        "type": "int64"
-    },
-    "CountField": {
-        "kind": "union",
-        "variants": ["Count", "Placeholder", "Query"]
-    },
-    "EqualsCount": {
-        "kind": "object",
-        "fields": ["CountField"]
-    },
-    "NotEqualsCount": {
-        "kind": "object",
-        "fields": ["CountField"]
-    },
-    "LessThanCount": {
-        "kind": "object",
-        "fields": ["CountField"]
-    },
-    "LessThanOrEqualCount": {
-        "kind": "object",
-        "fields": ["CountField"]
-    },
-    "GreaterThanCount": {
-        "kind": "object",
-        "fields": ["CountField"]
-    },
-    "GreaterThanOrEqualCount": {
-        "kind": "object",
-        "fields": ["CountField"]
-    },
-    "CountCompare": {
-        "kind": "union",
-        "variants": [
-            "EqualsCount",
-            "NotEqualsCount",
-            "LessThanCount",
-            "LessThanOrEqualCount",
-            "GreaterThanCount",
-            "GreaterThanOrEqualCount"
-        ]
-    },
+    "Value": "string",
+    "Key": "Value",
+    "Keys": ["Key"],
+    "KeyValue": { "fields": ["Key", "Value"] },
+    "KeyValues": ["KeyValue"],
+    "ElementsData": ["KeyValues"],
+    "Placeholder": "string",
 
-    "Id": {
-        "kind": "native",
-        "type": "int64"
-    },
-    "IdField": {
-        "kind": "union",
-        "variants": ["Id", "Placeholder", "Query"]
-    },
-    "FromIdField": {
-        "kind": "alias",
-        "type": "IdField"
-    },
-    "ToIdField": {
-        "kind": "alias",
-        "type": "IdField"
-    },
-    "Ids": {
-        "kind": "array",
-        "type": "Id"
-    },
-    "IdsField": {
-        "kind": "union",
-        "variants": ["Ids", "Placeholder", "Query"]
-    },
-    "FromIdsField": {
-        "kind": "alias",
-        "type": "IdsField"
-    },
-    "ToIdsField": {
-        "kind": "alias",
-        "type": "IdsField"
-    },
+    "Id": "int64",
+    "FromId": "Id",
+    "ToId": "Id",
+    "Ids": ["Id"],
+    "FromIds": "Ids",
+    "ToIds": "Ids",
+    "Count": "int64",
+    "Distance": "Count",
 
-    "Value": {
-        "kind": "native",
-        "type": "string"
-    },
-    "ValueField": {
-        "kind": "union",
-        "variants": ["Value", "Placeholder", "Query"]
-    },
-    "Key": {
-        "kind": "alias",
-        "type": "Value"
-    },
-    "KeyField": {
-        "kind": "union",
-        "variants": ["Key", "Placeholder", "Query"]
-    },
-    "Keys": {
-        "kind": "array",
-        "type": "Value"
-    },
-    "KeysField": {
-        "kind": "union",
-        "variants": ["Keys", "Placeholder", "Query"]
-    },
-    "KeyValue": {
-        "kind": "object",
-        "fields": ["Key", "Value"]
-    },
-    "KeyValues": {
-        "kind": "array",
-        "type": "KeyValue"
-    },
-    "EqualsValue": {
-        "kind": "object",
-        "fields": ["ValueField"]
-    },
-    "NotEqualsValue": {
-        "kind": "object",
-        "fields": ["ValueField"]
-    },
-    "LessThanValue": {
-        "kind": "object",
-        "fields": ["ValueField"]
-    },
-    "LessThanOrEqualValue": {
-        "kind": "object",
-        "fields": ["ValueField"]
-    },
-    "GreaterThanValue": {
-        "kind": "object",
-        "fields": ["ValueField"]
-    },
-    "GreaterThanOrEqualValue": {
-        "kind": "object",
-        "fields": ["ValueField"]
-    },
-    "ValueCompare": {
-        "kind": "union",
-        "variants": [
-            "EqualsValue",
-            "NotEqualsValue",
-            "LessThanValue",
-            "LessThanOrEqualValue",
-            "GreaterThanValue",
-            "GreaterThanOrEqualValue"
-        ]
-    },
+    "IdField": ["Id", "Placeholder", "Query"],
+    "IdsField": ["Ids", "Placeholder", "Query"],
+    "FromIdField": ["FromId", "Placeholder", "Query"],
+    "FromIdsField": ["FromIds", "Placeholder", "Query"],
+    "ToIdField": ["ToId", "Placeholder", "Query"],
+    "ToIdsField": ["ToIds", "Placeholder", "Query"],
+    "KeyField": ["Key", "Placeholder", "Query"],
+    "KeysField": ["Keys", "Placeholder", "Query"],
+    "CountField": ["Count", "Placeholder", "Query"],
+    "ValueField": ["Key", "Placeholder", "Query"],
+    "ElementsDataField": ["ElementsData", "Placeholder", "Query"],
 
-    "ElementData": {
-        "kind": "alias",
-        "type": "KeyValues"
-    },
-    "ElementDataField": {
-        "kind": "union",
-        "variants": ["ElementData", "Placeholder", "Query"]
-    },
-    "ElementsData": {
-        "kind": "array",
-        "type": "ElementData"
-    },
-    "ElementsDataField": {
-        "kind": "union",
-        "variants": ["ElementsData", "Placeholder", "Query"]
-    },
-    "Element": {
-        "kind": "object",
-        "fields": ["Id", "ElementData"]
-    },
-    "Elements": {
-        "kind": "array",
-        "type": "Element"
-    },
+    "EqualsCount": { "fields": ["CountField"] },
+    "NotEqualsCount": { "fields": ["CountField"] },
+    "LessThanCount": { "fields": ["CountField"] },
+    "LessThanOrEqualCount": { "fields": ["CountField"] },
+    "GreaterThanCount": { "fields": ["CountField"] },
+    "GreaterThanOrEqualCount": { "fields": ["CountField"] },
+    "CountCompare": [
+        "EqualsCount",
+        "NotEqualsCount",
+        "LessThanCount",
+        "LessThanOrEqualCount",
+        "GreaterThanCount",
+        "GreaterThanOrEqualCount"
+    ],
+    "EqualsValue": { "fields": ["ValueField"] },
+    "NotEqualsValue": { "fields": ["ValueField"] },
+    "LessThanValue": { "fields": ["ValueField"] },
+    "LessThanOrEqualValue": { "fields": ["ValueField"] },
+    "GreaterThanValue": { "fields": ["ValueField"] },
+    "GreaterThanOrEqualValue": { "fields": ["ValueField"] },
+    "ValueCompare": [
+        "EqualsValue",
+        "NotEqualsValue",
+        "LessThanValue",
+        "LessThanOrEqualValue",
+        "GreaterThanValue",
+        "GreaterThanOrEqualValue"
+    ],
 
-    "WhereCondition": {
-        "kind": "object",
-        "fields": []
-    },
-    "AndCondition": {
-        "kind": "object",
-        "fields": []
-    },
-    "OrCondition": {
-        "kind": "object",
-        "fields": []
-    },
-    "EndWhereCondition": {
-        "kind": "object",
-        "fields": []
-    },
-    "CountCondition": {
-        "kind": "object",
-        "fields": ["CountCompare"]
-    },
-    "EdgeCountCondition": {
-        "kind": "object",
-        "fields": ["CountCompare"]
-    },
-    "FromCountCondition": {
-        "kind": "object",
-        "fields": ["CountCompare"]
-    },
-    "ToCountCondition": {
-        "kind": "object",
-        "fields": ["CountCompare"]
-    },
-    "DistanceCondition": {
-        "kind": "object",
-        "fields": ["CountCompare"]
-    },
-    "NotBeyondIdsCondition": {
-        "kind": "object",
-        "fields": ["IdsField"]
-    },
-    "NotIdsCondition": {
-        "kind": "object",
-        "fields": ["IdsField"]
-    },
-    "EdgeCondition": {
-        "kind": "object",
-        "fields": []
-    },
-    "NodeCondition": {
-        "kind": "object",
-        "fields": []
-    },
-    "KeysCondition": {
-        "kind": "object",
-        "fields": ["KeysField"]
-    },
-    "NotKeysCondition": {
-        "kind": "object",
-        "fields": ["KeysField"]
-    },
-    "ValueCondition": {
-        "kind": "object",
-        "fields": ["KeyField", "ValueCompare"]
-    },
-    "Condition": {
-        "kind": "union",
-        "variants": [
-            "WhereCondition",
-            "AndCondition",
-            "OrCondition",
-            "EndWhereCondition",
-            "CountCondition",
-            "EdgeCountCondition",
-            "FromCountCondition",
-            "ToCountCondition",
-            "DistanceCondition",
-            "NotBeyondIdsCondition",
-            "NotIdsCondition",
-            "EdgeCondition",
-            "NodeCondition",
-            "KeysCondition",
-            "NotKeysCondition",
-            "ValueCondition"
-        ]
-    },
-    "Conditions": {
-        "kind": "array",
-        "type": "Condition"
-    },
+    "WhereCondition": {},
+    "AndCondition": {},
+    "OrCondition": {},
+    "EndWhereCondition": {},
+    "CountCondition": { "fields": ["CountCompare"] },
+    "EdgeCountCondition": { "fields": ["CountCompare"] },
+    "FromCountCondition": { "fields": ["CountCompare"] },
+    "ToCountCondition": { "fields": ["CountCompare"] },
+    "DistanceCondition": { "fields": ["CountCompare"] },
+    "NotBeyondIdsCondition": { "fields": ["IdsField"] },
+    "NotIdsCondition": { "fields": ["IdsField"] },
+    "EdgeCondition": {},
+    "NodeCondition": {},
+    "KeysCondition": { "fields": ["KeysField"] },
+    "NotKeysCondition": { "fields": ["KeysField"] },
+    "ValueCondition": { "fields": ["KeyField", "ValueCompare"] },
+    "Condition": [
+        "WhereCondition",
+        "AndCondition",
+        "OrCondition",
+        "EndWhereCondition",
+        "CountCondition",
+        "EdgeCountCondition",
+        "FromCountCondition",
+        "ToCountCondition",
+        "DistanceCondition",
+        "NotBeyondIdsCondition",
+        "NotIdsCondition",
+        "EdgeCondition",
+        "NodeCondition",
+        "KeysCondition",
+        "NotKeysCondition",
+        "ValueCondition"
+    ],
+    "Conditions": ["Condition"],
 
     "InsertNodesQueryData": {
-        "kind": "object",
         "fields": ["CountField", "ElementsDataField"]
     },
     "InsertEdgesQueryData": {
-        "kind": "object",
         "fields": [
             "CountField",
             "FromIdsField",
@@ -277,7 +105,6 @@
         ]
     },
     "InsertEdgesEachQueryData": {
-        "kind": "object",
         "fields": [
             "CountField",
             "FromIdsField",
@@ -286,15 +113,13 @@
         ]
     },
     "InsertDataQueryData": {
-        "kind": "object",
         "fields": ["IdsField", "ElementsDataField"]
     },
     "RemoveQueryData": {
-        "kind": "object",
         "fields": ["IdsField", "KeysField"]
     },
+
     "SelectElementsQueryData": {
-        "kind": "object",
         "fields": [
             "IdsField",
             "FromIdField",
@@ -304,73 +129,35 @@
         ]
     },
     "SelectIdsQueryData": {
-        "kind": "object",
         "fields": ["FromIdField", "ToIdField", "Conditions"]
     },
     "SelectCountQueryData": {
-        "kind": "object",
         "fields": ["FromIdField", "ToIdField", "Conditions"]
     },
     "SelectKeyCountQueryData": {
-        "kind": "object",
         "fields": ["IdField", "Conditions"]
     },
     "SelectPathElementsQuery": {
-        "kind": "object",
         "fields": ["FromIdField", "ToIdField", "KeysField", "Conditions"]
     },
     "SelectPathIdsQuery": {
-        "kind": "object",
         "fields": ["FromIdField", "ToIdField", "Conditions"]
     },
-    "QueryData": {
-        "kind": "union",
-        "variants": [
-            "InsertNodesQueryData",
-            "InsertEdgesQueryData",
-            "InsertEdgesEachQueryData",
-            "InsertDataQueryData",
-            "RemoveQueryData",
-            "SelectElementsQueryData",
-            "SelectIdsQueryData",
-            "SelectCountQueryData",
-            "SelectKeyCountQueryData",
-            "SelectPathElementsQuery",
-            "SelectPathIdsQuery"
-        ]
-    },
 
+    "QueryData": [
+        "InsertNodesQueryData",
+        "InsertEdgesQueryData",
+        "InsertEdgesEachQueryData",
+        "InsertDataQueryData",
+        "RemoveQueryData",
+        "SelectElementsQueryData",
+        "SelectIdsQueryData",
+        "SelectCountQueryData",
+        "SelectKeyCountQueryData",
+        "SelectPathElementsQuery",
+        "SelectPathIdsQuery"
+    ],
     "Query": {
-        "kind": "object",
         "fields": ["QueryData"]
-    },
-
-    "InsertIntoNodeData": {
-        "kind": "object",
-        "base": "Query",
-        "functions": {
-            "data": {
-                "arguments": ["ElementsDataField"],
-                "body": [
-                    "Query.QueryData.InsertNodesQueryData.ElementsDataField = ElementsDataField"
-                ]
-            }
-        }
-    },
-
-    "InsertInto": {
-        "kind": "object",
-        "fields": ["Query"],
-        "functions": {
-            "node": {
-                "body": ["Query.QueryData.InsertNodesQueryData.CountField = 1"],
-                "return": "InsertIntoNodeData"
-            }
-        }
-    },
-
-    "insert_into": {
-        "kind": "function",
-        "return": "InsertInto"
     }
 }
