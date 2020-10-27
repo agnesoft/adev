@@ -1,12 +1,11 @@
 {
-    "String": ["byte"],
-    "Value": "String",
+    "Value": "string",
     "Key": "Value",
     "Keys": ["Key"],
     "KeyValue": { "fields": ["Key", "Value"] },
     "KeyValues": ["KeyValue"],
     "ElementsData": ["KeyValues"],
-    "Placeholder": "String",
+    "Placeholder": "string",
 
     "Id": "int64",
     "FromId": "Id",

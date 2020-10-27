@@ -1,5 +1,5 @@
 export function isNative(type) {
-    return ["int64", "byte"].includes(type);
+    return ["int64", "string"].includes(type);
 }
 
 export function typeExists(type, ast) {
