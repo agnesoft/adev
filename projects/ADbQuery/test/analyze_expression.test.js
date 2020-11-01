@@ -194,6 +194,77 @@ describe("assignment", () => {
 
         expect(analyze()).toEqual(ast);
     });
+
+    test("variant", () => {
+        const data = {
+            Id: "int64",
+            Arr: ["Id"],
+            Var: ["Id", "Arr"],
+            foo: {
+                body: ["Var = Arr"],
+            },
+        };
+
+        const ast = {
+            Id: {
+                type: "alias",
+                name: "Id",
+                aliasedType: "int64",
+            },
+            Arr: {
+                type: "array",
+                name: "Arr",
+                arrayType: "Id",
+            },
+            Var: {
+                type: "variant",
+                name: "Var",
+                variants: ["Id", "Arr"],
+            },
+            foo: {
+                type: "function",
+                name: "foo",
+                arguments: [],
+                body: [
+                    {
+                        type: "assignment",
+                        left: {
+                            type: "new",
+                            value: "Var",
+                        },
+                        right: {
+                            type: "new",
+                            value: "Arr",
+                        },
+                    },
+                ],
+                returnValue: undefined,
+            },
+        };
+
+        const analyze = () => {
+            return analyzer.analyze(parser.parse(data));
+        };
+
+        expect(analyze()).toEqual(ast);
+    });
+
+    test("incompatible types", () => {
+        const data = {
+            MyArr: ["byte"],
+            foo: {
+                body: ["MyArr = 1"],
+            },
+        };
+
+        const analyze = () => {
+            return analyzer.analyze(parser.parse(data));
+        };
+
+        expect(analyze).toThrow(
+            "Analyzer: invalid expression in function 'foo'. Cannot assign '1' (native) to 'MyArr' (array)"
+        );
+    });
 });
 
 describe("return", () => {

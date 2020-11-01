@@ -1,5 +1,5 @@
 export function isNative(type) {
-    return ["int64", "string"].includes(type);
+    return ["byte", "int64", "string"].includes(type);
 }
 
 export function typeExists(type, ast) {
@@ -7,7 +7,7 @@ export function typeExists(type, ast) {
 }
 
 export function realType(type, ast) {
-    if (isNative(type)) {
+    if (!isNaN(type) || isNative(type)) {
         return type;
     }
 
@@ -23,9 +23,9 @@ export function realType(type, ast) {
 }
 
 export function typeType(type, ast) {
-    if (isNative(type)) {
+    if (!isNaN(type) || isNative(type)) {
         return "native";
-    } else {
-        return ast[type]["type"];
     }
+
+    return ast[type]["type"];
 }
