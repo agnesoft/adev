@@ -1,4 +1,4 @@
-import { typeExists } from "./analyzer_common.js";
+import { realType, typeType } from "./analyzer_common.js";
 
 function isArgument(type, node) {
     return node["arguments"].includes(type);
@@ -83,7 +83,37 @@ function analyzeReturn(expression, node, object, ast) {
     expression["returnType"] = expressionType(expression, node, context, ast);
 }
 
+function isRightVariantOfLeft(left, right, ast) {
+    return (
+        ast[left] &&
+        "variants" in ast[left] &&
+        ast[left]["variants"].includes(right)
+    );
+}
+
+function validateAssignment(expression, ast) {
+    const leftType = realType(expression["left"]["value"], ast);
+    const leftTypeType = typeType(leftType, ast);
+    const rightType = realType(expression["right"]["value"], ast);
+    const rightTypeType = typeType(rightType, ast);
+
+    if (leftType == rightType) {
+        return;
+    }
+
+    if (leftTypeType == "native" && leftTypeType == rightTypeType) {
+        return;
+    }
+
+    if (isRightVariantOfLeft(leftType, rightType, ast)) {
+        return;
+    }
+
+    throw `Cannot assign '${expression["right"]["value"]}' (${rightTypeType}) to '${expression["left"]["value"]}' (${leftTypeType}).`;
+}
+
 function analyzeAssignment(expression, node, object, ast) {
+    validateAssignment(expression, ast);
     analyzeExpressionPart(expression["left"], node, object, ast);
     analyzeExpressionPart(expression["right"], node, object, ast);
 }
