@@ -17,6 +17,7 @@ Node.js code generator of language bindings for ADb. The ADb.json is the main sc
 
 -   Represents an alias of a different type (including another alias) defined in the schema or of a native type.
 -   Supported native types:
+    -   `byte`
     -   `int64`
     -   `string`
 
@@ -191,3 +192,35 @@ In the example:
 -   Finally the fourth segment references the variant InsertNodesQueryData's field "ElementsDataField" and assigns to it a value of the same type that very likely represents an argument of the function.
 
 ## Serialization
+
+Every native and custom type is serialized in the following layout. The serialization is often language specific and native types used dependent and therefore there is no AST generated. It may take form of stream operators, stand-alone functions or be directly mapped to memory (no actual serialization needed then).
+
+#### native
+
+_byte_
+
+As is.
+
+_int64_
+
+Converted to(from) little-endian and stored as exactly 4 bytes.
+
+_string_
+
+Size of the string in bytes as `int64` followed by the characters as `byte`s. Note that in case the native string have 2-byte characters it needs to be taken into account (i.e. the serialized size will be `size * 2` bytes).
+
+#### array
+
+Size of the array in bytes as `int64` followed by the serialized values.
+
+### function
+
+Not supported.
+
+### object
+
+Individual fields serialized after each other in the order of declaration without padding. Base class' fields are serialized first (recursively).
+
+### variant
+
+Index of currently active variant as `byte` (int8) followed by the serialized active variant.
