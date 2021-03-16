@@ -74,7 +74,7 @@ The `abuild` will attempt to find the compiler toolchain in its typical location
 
 ### Project Structure
 
-The `abuild` will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysys (e.g. `ABuild/main.cpp` -> executable called `ABuild`).
+The `abuild` will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysys (e.g. `abuild/main.cpp` -> executable called `abuild`).
 
 ### Dependency Resolution
 
