@@ -15,13 +15,13 @@ The C++ build model has the following main challenges:
 
 1. There is no way for individual translation units to communicate with each other or to share data. To work around this issue the preprocessor is used. During preprocessing of a source file we embed a different shared file (traditionally called "header") into each translation unit that needs to share the same data. The headers contain mainly declarations of symbols that are shared and used between the translation units (finding these symbols' definitions is the job of the linker). There are many issues with this workaround but until C++20 modules there was literally no other way.
 
-2. It is possible to enable/disable sections of the code using preprocessor. Compilation of every translation unit is entirely independent so even though the headers are "shared" they may be percieved differently in different translation units. Produced binary object files might therefore have different notion of the symbols from the header file than others even though the code was "the same".
+2. It is possible to enable/disable sections of the code using preprocessor. Compilation of every translation unit is entirely independent so even though the headers are "shared" they may be percieved differently in different translation units. Produced binary object files might therefore have a different notion of the symbols from the header file than others even though the code was "the same".
 
 3. Different compiler settings can be used to compile each and every translation unit. This means that the produced binary object files can be incompatible with each other on the binary level due to differing settings. These are called [ABI (Application Binary Interface)](https://en.wikipedia.org/wiki/Application_binary_interface) breaks and include for example calling conventions, name mangling, exception settings etc. The linker has only very limited ways of detecting these incompatibilities and thus might produce crashing binary that is very hard to debug. The only way to guarantee the binary compatibility is to use the very same compiler settings for all translation units that are to be linked together into a final binary.
 
 4. Dependencies are specified multiple times. Once in the code when we include a header or import a module. Then during compilation when we need to supply locations of the headers and module interfaces. And finally during linking we need to supply the libraries (or other object files) that contain the symbols used via these headers and modules.
 
-Authoring calls to the compiler for every source file and then the linker call for every output binary is tedious, error prone and hard to maintain. Especially when targeting multiple compilers and platforms and their combinations. Using third party dependencies is also a significant challenge. Using a compiler toolchain directly is thus not feasible but for a simplest of projects.
+Authoring calls to the compiler for every source file and then the linker call for every output binary is tedious, error-prone and hard to maintain. Especially when targeting multiple compilers and platforms and their combinations. Using third party dependencies is also a significant challenge. Using a compiler toolchain directly is thus not feasible but for the simplest of projects.
 
 ## Requirements
 
@@ -45,8 +45,8 @@ Build generators are special kind of build systems that does not use the compile
 
 The declarative build systems organize translation units (and headers) into projects that typically correspond to the desired outputs (applications, libraries). The dependencies are then set manually between the individual projects. The build itself is orchestrated using generalized "rules" provided by the build system and applied to the project's source files. Optionally user can customize the rules to a certain degree. Examples of declarative build systems are [Bazel](https://en.wikipedia.org/wiki/Bazel_(software)), [build2](https://build2.org/) or [boost.build (b2)](https://boostorg.github.io/build/).
 
-- All of the declarative build systems offer multiple targets and configurations and offer compiler toolchain usage consistency. 
-- Some of the build systems provide transparency so that the actual commands run against the compiler toolchain can be inspected.
+- All the declarative build systems offer multiple targets and configurations and offer compiler toolchain usage consistency. 
+- Only some build systems provide transparency so that the actual commands run against the compiler toolchain can be inspected.
 - None of the existing build systems can run without prior configuration of the project in form of project/build files (often using other languages).
 - None of the existing build systems support automatic dependency resolution - all of them require manual setup of dependencies often in multiple steps: introducing the dependency in the sources, setting up include directories in the build system for a given project and finally adding the dependency to another target.
 - None of the existing build systems currently support C++20 modules.
@@ -54,7 +54,7 @@ The declarative build systems organize translation units (and headers) into proj
 
 ## ABuild
 
-The **Agnesoft Build** or **ABuild** is a C++ build system. It provides fully automatic project detection including dependencies based on source inspection. The goal is to be able to run without any configuration of any kind by adhering to a well defined project structure instead. By ivoking `abuild` in a project root directory it shall detect all targets, their dependencies and build them using sensible defaults for an available compiler toolchain.
+The **Agnesoft Build** or **ABuild** is a C++ build system. It provides fully automatic project detection including dependencies based on source inspection. The goal is to be able to run without any configuration of any kind by adhering to a well-defined project structure instead. By invoking `abuild` in a project root directory it shall detect all targets, their dependencies and build them using sensible defaults for an available compiler toolchain.
 
 Usage example:
 
