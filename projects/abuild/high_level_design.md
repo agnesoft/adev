@@ -4,6 +4,16 @@
 - [Requirements](#requirements)
 - [Existing Solutions](#existing-solutions)
 - [ABuild](#abuild)
+    - [Environment Scanner](#environment-scanner)
+    - [Project Scanner](#project-scanner)
+    - [Translation Unit Analyzer](#translation-unit-analyzer)
+    - [Dependency Resolver](#dependency-resolver)
+    - [Build Cache](#build-cache)
+    - [Configuration](#configuration-file)
+    - [Command Line](#command-line)
+    - [Build](#build)
+    - [Build Installation](#build-installation)
+    - [Bootstrapping](#bootstrapping)
 
 ## Problem
 
@@ -27,7 +37,7 @@ Authoring calls to the compiler for every source file and then the linker call f
 
 The solution to the difficulty of building C++ is to have a build system that:
 
-- Provides compiler toolchain settings consistency.
+- Provides compiler toolchain settings consistency.  
 - Provides automatic dependency resolution.
 - Allows targeting multiple toolchains and platforms.
 - Allows different configurations.
@@ -70,16 +80,90 @@ abuild "{ 'Toolchain': { 'name': 'clang' } }"
 
 ### Environment Scanner
 
-The `abuild` will attempt to find the compiler toolchain in its typical location on the current host and to verify that it is able to use it to produce a binary.
+The environment scanner will attempt to find the compiler toolchain in its typical location on the current host and to verify that it is able to use it to produce a binary. The locations should be configurable (see [Configuration File](#configuration-file)) but it should not be required when everything is installed in standard paths. The main supported compilers are:
 
-### Project Structure
+- MSVC (Windows)
+- GCC (Linux)
+- Clang (Windows, Linux, Unix)
 
-The `abuild` will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysis (e.g. `abuild/main.cpp` -> executable called `abuild`).
+The environment scanner should perform a basic check that the compiler found actually works and give an error if either no compiler could be found or if it does not appear to work (tested by compiling a basic program).
 
-### Dependency Resolution
+The output of this step should be entries in the [Build Cache](#build-cache) with the detected information (paths, default flags etc.).
 
-After the project analysis the dependency resolution will try to find each of the included file (in case of headers) or imported module (in case of modules) and establish dependencies between each translation unit. It will also try to establish dependencies on the third-party libraries if known and found on the system.
+### Project Scanner
 
-### Configuration
+The project scanner will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysis (e.g. `abuild/main.cpp` -> executable called `abuild`).
 
-By default, no configuration of any kind shall be required. Sensible defaults will be used for building. Optionally a configuration file and/or command line arguments can be used to override these defaults and to achieve greater control over the build process.
+Rules for file detection:
+
+- Translation unit: `\.c(pp|xx|c)$/i`.
+- Header unit: `\.h(|pp|xx)$/i`.
+- Module interface unit: `\.(i|m)(xx|pp)$/i`.
+
+Rules for project detection:
+
+- Any directory containing at least one of the C++ files described above is a project including the root directory.
+- The `^src$/i`, `^include$/i` are considered subdirectories of their respective parent project.
+- The `<parent>/include/<project>` is considered subdirectory of a project if `<parent>` is equal to `<project>`.
+- The `^test$/i` will produce an independent project called `<parent>test`.
+- If a project contains another project its name will be concatenated as `<parent>.<project>`.
+
+Rules for project types:
+
+- Any project containing `^main\.c(c|pp|xx)$/i` is an executable.
+- Any other project containing any translation unit is a static  library.
+- Any project containing only header files is a header only library (no build).
+
+The output of the project scanner should be translation units list and the project list containg the translation units.
+
+### Translation Unit Analyzer
+
+The translation unit analyzer will perform basic analysis of each of the translation unit, header and module interface. It will extract primarily `#include`, `export module` and `import module` directives and augment the information about each translation unit with it. The LLVM Clang should be used for performing this analysis.
+
+### Dependency Resolver
+
+The dependency resolver will try to find each of the included file (in case of headers) or imported module (in case of modules) and establish dependencies between the translation units. Standard library headers shall be found within the STL used for building. Third-party dependencies will be looked for in the well-known locations (e.g. `/usr/lib` on Unix systems).
+
+The dependencies between the units will be recorded in the information about each translation unit.
+
+### Build Cache
+
+All of the information detected and used by the `abuild` will be recorded in a single build cache file. The file will be a JSON file with following sections:
+
+- **Toolchains**: list of detected C++ compiler toolchains along with information needed to ivoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
+    -  `release` (default): full optimization for speed, 
+    -  `debug`: no optimization, debugging symbols enabled
+    -  Common settings: exceptions enabled, RTTI enabled, C++20 enabled
+- **Files**: list of C++ files detected with meta information from the analysis and dependency resolving.
+- **Projects**: list of detected projects, their type and collection of files they contain.
+
+The build cache file will be produced in the root of the build directory.
+
+Optionally a build commands JSON file containing actual commands issued to a compiler toolchain can be produced from the build cache as well to the root of the build directory.
+
+### Configuration File
+
+By default, no configuration of any kind shall be required. Sensible defaults will be used for building. Optionally a configuration file and/or command line arguments can be used to override these defaults and to achieve greater control over the build process. The configuration file has the same syntax and structure as the build cache and is applied over it. It is therefore possible to override any part of the build cache thus adding new custom configurations, resolving undetected dependencies, applying additional or different compiler flags down to the file level etc.
+
+The configuration file must be in the root of the working directory with the suffix `.abuild`.
+
+### Command Line
+
+The command line parameters should allow:
+
+- Selecting a toolchain. By default, the first one in the list is used. By supplying `--toolchain=<name> -t=<name>` one can select a different detected (or configuration supplied) toolchain.
+- Selecting a configuration. By default, the first one in the list for a given toolchain is used. By supplying `--configuration=<name> -c=<name>` one can select a different configuration.
+- Building a subset of the project. By default, everything is built. By supplying a subdirectory or a single file (or their list) only the subset will be build (however analysis will still be performed for the entire tree for dependencies etc. Syntax: `--path=<relative path> -p=<relative path>`.
+- Overriding configuration by supplying a JSON string as a positional argument that will take precedence over the file configuration (if any) and build cache. E.g. `abuild "{ ... }"`.
+
+### Build
+
+The build is done based on the dependency graph produced from the build cache. The translation units should be built in maximum parallelization. The projects should be linked as soon as all its translation units (and their dependencies) are built.
+
+### Build Installation
+
+TODO
+
+### Bootstrapping
+
+TODO
