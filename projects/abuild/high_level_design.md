@@ -2,7 +2,7 @@
 
 - [Problem](#problem)
 - [Requirements](#requirements)
-- [Existing Solutions](#excisting-solutions)
+- [Existing Solutions](#existing-solutions)
 - [ABuild](#abuild)
 
 ## Problem
@@ -15,7 +15,7 @@ The C++ build model has the following main challenges:
 
 1. There is no way for individual translation units to communicate with each other or to share data. To work around this issue the preprocessor is used. During preprocessing of a source file we embed a different shared file (traditionally called "header") into each translation unit that needs to share the same data. The headers contain mainly declarations of symbols that are shared and used between the translation units (finding these symbols' definitions is the job of the linker). There are many issues with this workaround but until C++20 modules there was literally no other way.
 
-2. It is possible to enable/disable sections of the code using preprocessor. Compilation of every translation unit is entirely independent so even though the headers are "shared" they may be percieved differently in different translation units. Produced binary object files might therefore have a different notion of the symbols from the header file than others even though the code was "the same".
+2. It is possible to enable/disable sections of the code using preprocessor. Compilation of every translation unit is entirely independent so even though the headers are "shared" they may be perceived differently in different translation units. Produced binary object files might therefore have a different notion of the symbols from the header file than others even though the code was "the same".
 
 3. Different compiler settings can be used to compile each and every translation unit. This means that the produced binary object files can be incompatible with each other on the binary level due to differing settings. These are called [ABI (Application Binary Interface)](https://en.wikipedia.org/wiki/Application_binary_interface) breaks and include for example calling conventions, name mangling, exception settings etc. The linker has only very limited ways of detecting these incompatibilities and thus might produce crashing binary that is very hard to debug. The only way to guarantee the binary compatibility is to use the very same compiler settings for all translation units that are to be linked together into a final binary.
 
@@ -47,7 +47,7 @@ The declarative build systems organize translation units (and headers) into proj
 
 - All the declarative build systems offer multiple targets and configurations and offer compiler toolchain usage consistency. 
 - Only some build systems provide transparency so that the actual commands run against the compiler toolchain can be inspected.
-- None of the existing build systems can run without prior configuration of the project in form of project/build files (often using other languages).
+- None of the existing build systems can run without prior configuration of the project in the form of project/build files (often using other languages).
 - None of the existing build systems support automatic dependency resolution - all of them require manual setup of dependencies often in multiple steps: introducing the dependency in the sources, setting up include directories in the build system for a given project and finally adding the dependency to another target.
 - None of the existing build systems currently support C++20 modules.
 - C++ build systems oddly enough are mostly not written in C++.
@@ -58,7 +58,7 @@ The **Agnesoft Build** or **ABuild** is a C++ build system. It provides fully au
 
 Usage example:
 
-Default behaviour
+Default behavior
 ```
 abuild
 ```
@@ -74,7 +74,7 @@ The `abuild` will attempt to find the compiler toolchain in its typical location
 
 ### Project Structure
 
-The `abuild` will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysys (e.g. `abuild/main.cpp` -> executable called `abuild`).
+The `abuild` will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysis (e.g. `abuild/main.cpp` -> executable called `abuild`).
 
 ### Dependency Resolution
 
@@ -82,4 +82,4 @@ After the project analysis the dependency resolution will try to find each of th
 
 ### Configuration
 
-By default no configuration of any kind shall be required. Sensible defaults will be used for building. Optionally a configuration file and/or command line arguments can be used to override these defaults and to achieve greater control over the build process.
+By default, no configuration of any kind shall be required. Sensible defaults will be used for building. Optionally a configuration file and/or command line arguments can be used to override these defaults and to achieve greater control over the build process.
