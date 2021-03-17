@@ -12,6 +12,7 @@
     - [Configuration](#configuration-file)
     - [Command Line](#command-line)
     - [Build](#build)
+    - [Custom Commands](#custom-commands)
     - [Build Installation](#build-installation)
     - [Bootstrapping](#bootstrapping)
 
@@ -110,9 +111,10 @@ Rules for project detection:
 
 Rules for project types:
 
-- Any project containing `^main\.c(c|pp|xx)$/i` is an executable.
-- Any other project containing any translation unit is a static  library.
+- Any project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
+- Any other project containing any translation unit is a **static  library**.
 - Any project containing only header files is a header only library (no build).
+- Any project fulfilling a custom rule for dynamic library is **dynamic library**.
 
 The output of the project scanner should be translation units list and the project list containg the translation units.
 
@@ -130,6 +132,7 @@ The dependencies between the units will be recorded in the information about eac
 
 All of the information detected and used by the `abuild` will be recorded in a single build cache file. The file will be a JSON file with following sections:
 
+- **Rules**: rules used for detecting toolchains and projects.
 - **Toolchains**: list of detected C++ compiler toolchains along with information needed to ivoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
     -  `release` (default): full optimization for speed, 
     -  `debug`: no optimization, debugging symbols enabled
@@ -158,12 +161,16 @@ The command line parameters should allow:
 
 ### Build
 
-The build is done based on the dependency graph produced from the build cache. The translation units should be built in maximum parallelization. The projects should be linked as soon as all its translation units (and their dependencies) are built.
+The build is done based on the dependency graph produced from the build cache in the "shadow" directory (same structure as the project itself) named by the toolchain and the configuration being built. The translation units will be built in parallel. A project should be linked as soon as all its translation units (and their dependencies) are built. All built dynamic libraries and executables shall be placed in `<build directory>/bin`.
+
+### Custom Commands
+
+Before and after each build step (compilation, linking) as well as before and after the entire build there can be custom command(s) specified to be run. For example to generate source files, support COMs etc.
 
 ### Build Installation
 
-TODO
+By default no installation is done. It can be enabled and customized.
 
 ### Bootstrapping
 
-TODO
+Bootstrapping is done for known hard-coded compiler toolchains. These are used directly using OS specific native shell script (bash/cmd) to build `abuild` first. Built `abuild` will be able to build itself again if desired or be directly used as described.
