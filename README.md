@@ -8,4 +8,4 @@ Agnesoft development repository that hosts all Agnesoft projects and provides co
 
 #### Third Party Projects
 
-- [UT/μt](projects/ut/README.md) C++ single header/single module, macro-free μ(micro)/Unit Testing Framework. [LINK](https://github.com/boost-ext/ut) License: [Boost Software License 1.0](projects/ut/LICENSE.md)
+- [UT/μt](projects/ut/README.md) C++ single header/single module, macro-free μ(micro)/Unit Testing Framework. [LINK](https://github.com/boost-ext/ut) License: [BSL 1.0](projects/ut/LICENSE.md)
