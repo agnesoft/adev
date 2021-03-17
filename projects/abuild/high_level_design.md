@@ -105,18 +105,18 @@ Rules for project detection:
 
 - Any directory containing at least one of the C++ files described above is a project including the root directory.
 - The `^src$/i`, `^include$/i` are considered subdirectories of their respective parent project.
-- The `<parent>/include/<project>` is considered subdirectory of a project if `<parent>` is equal to `<project>`.
+- The `<parent>/include/<project>` is considered a subdirectory of a project if `<parent>` is equal to `<project>`.
 - The `^test$/i` will produce an independent project called `<parent>test`.
 - If a project contains another project its name will be concatenated as `<parent>.<project>`.
 
 Rules for project types:
 
-- Any project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
-- Any other project containing any translation unit is a **static  library**.
-- Any project containing only header files is a header only library (no build).
-- Any project fulfilling a custom rule for dynamic library is **dynamic library**.
+- Project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
+- Project containing any translation unit is a **static  library**.
+- Project containing only header files is a header only library (no build).
+- Project fulfilling custom rules for dynamic library is a **dynamic library**.
 
-The output of the project scanner should be translation units list and the project list containg the translation units.
+The output of the project scanner should be the list of translation units and the list of projects.
 
 ### Translation Unit Analyzer
 
@@ -130,13 +130,13 @@ The dependencies between the units will be recorded in the information about eac
 
 ### Build Cache
 
-All of the information detected and used by the `abuild` will be recorded in a single build cache file. The file will be a JSON file with following sections:
+All the information detected and used by the `abuild` will be recorded in a single build cache file. The file will be a JSON file with the following sections:
 
 - **Rules**: rules used for detecting toolchains and projects.
-- **Toolchains**: list of detected C++ compiler toolchains along with information needed to ivoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
-    -  `release` (default): full optimization for speed, 
-    -  `debug`: no optimization, debugging symbols enabled
-    -  Common settings: exceptions enabled, RTTI enabled, C++20 enabled
+- **Toolchains**: list of detected C++ compiler toolchains along with information needed to invoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
+    -  `release` (default): full optimization for speed, 
+    -  `debug`: no optimization, debugging symbols enabled
+    -  Common settings: exceptions enabled, RTTI enabled, C++20 enabled
 - **Files**: list of C++ files detected with meta information from the analysis and dependency resolving.
 - **Projects**: list of detected projects, their type and collection of files they contain.
 
@@ -156,7 +156,7 @@ The command line parameters should allow:
 
 - Selecting a toolchain. By default, the first one in the list is used. By supplying `--toolchain=<name> -t=<name>` one can select a different detected (or configuration supplied) toolchain.
 - Selecting a configuration. By default, the first one in the list for a given toolchain is used. By supplying `--configuration=<name> -c=<name>` one can select a different configuration.
-- Building a subset of the project. By default, everything is built. By supplying a subdirectory or a single file (or their list) only the subset will be build (however analysis will still be performed for the entire tree for dependencies etc. Syntax: `--path=<relative path> -p=<relative path>`.
+- Building a subset of the project. By default, everything is built. By supplying a subdirectory or a single file (or their list) only the subset will be build (the analysis will still be performed for the entire tree for dependencies etc.). Syntax: `--path=<relative path> -p=<relative path>`.
 - Overriding configuration by supplying a JSON string as a positional argument that will take precedence over the file configuration (if any) and build cache. E.g. `abuild "{ ... }"`.
 
 ### Build
@@ -169,7 +169,7 @@ Before and after each build step (compilation, linking) as well as before and af
 
 ### Build Installation
 
-By default no installation is done. It can be enabled and customized.
+By default, no installation is done. It can be enabled and customized.
 
 ### Bootstrapping
 
