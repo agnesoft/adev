@@ -8,7 +8,7 @@ Agnesoft development repository that hosts all Agnesoft projects and provides co
 | ----------------------------------- | --------------------------- |
 | [ABuild](projects/abuild/README.md) | C++ automatic build system. |
 
-#### Third Party Projects
+## Third Party Projects
 
 | Project                                                                 | Description                                                                  | License                                      |
 | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------- |
