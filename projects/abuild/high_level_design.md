@@ -1,26 +1,26 @@
 # High Level Design
 
-- [Problem](#problem)
-- [Requirements](#requirements)
-- [Existing Solutions](#existing-solutions)
-- [ABuild](#abuild)
-    - [Environment Scanner](#environment-scanner)
-    - [Project Scanner](#project-scanner)
-    - [Translation Unit Analyzer](#translation-unit-analyzer)
-    - [Dependency Resolver](#dependency-resolver)
-    - [Build Cache](#build-cache)
-    - [Configuration](#configuration-file)
-    - [Command Line](#command-line)
-    - [Build](#build)
-    - [Custom Commands](#custom-commands)
-    - [Build Installation](#build-installation)
-    - [Bootstrapping](#bootstrapping)
+-   [Problem](#problem)
+-   [Requirements](#requirements)
+-   [Existing Solutions](#existing-solutions)
+-   [ABuild](#abuild)
+    -   [Environment Scanner](#environment-scanner)
+    -   [Project Scanner](#project-scanner)
+    -   [Translation Unit Analyzer](#translation-unit-analyzer)
+    -   [Dependency Resolver](#dependency-resolver)
+    -   [Build Cache](#build-cache)
+    -   [Configuration](#configuration-file)
+    -   [Command Line](#command-line)
+    -   [Build](#build)
+    -   [Custom Commands](#custom-commands)
+    -   [Build Installation](#build-installation)
+    -   [Bootstrapping](#bootstrapping)
 
 ## Problem
 
 Building C++ is difficult.
 
-There are only two steps to translating C++ sources into binary - compilation and linking. The compilation step takes a single source file (called [translation unit](https://en.wikipedia.org/wiki/Translation_unit_(programming))) and compiles it into a single binary object file. A collection of these object files is then "linked" together into a final binary - either executable (application), dynamic library (to be loaded during runtime) or a static library (to be linked in during compile time). Compiler toolchains implement exactly this build model.
+There are only two steps to translating C++ sources into binary - compilation and linking. The compilation step takes a single source file (called [translation unit](<https://en.wikipedia.org/wiki/Translation_unit_(programming)>)) and compiles it into a single binary object file. A collection of these object files is then "linked" together into a final binary - either executable (application), dynamic library (to be loaded during runtime) or a static library (to be linked in during compile time). Compiler toolchains implement exactly this build model.
 
 The C++ build model has the following main challenges:
 
@@ -38,30 +38,30 @@ Authoring calls to the compiler for every source file and then the linker call f
 
 The solution to the difficulty of building C++ is to have a build system that:
 
-- Provides compiler toolchain settings consistency.  
-- Provides automatic dependency resolution.
-- Allows targeting multiple toolchains and platforms.
-- Allows different configurations.
-- Allow building without project configuration.
-- Is transparent in what and how it does things.
-- Is written in C++.
-- Can bootstrap itself.
-- Supports C++20 modules.
+-   Provides compiler toolchain settings consistency.
+-   Provides automatic dependency resolution.
+-   Allows targeting multiple toolchains and platforms.
+-   Allows different configurations.
+-   Allow building without project configuration.
+-   Is transparent in what and how it does things.
+-   Is written in C++.
+-   Can bootstrap itself.
+-   Supports C++20 modules.
 
 ## Existing Solutions
 
-There are many C++ build systems. They generally fall into two categories - imperative or declarative. The former expects the user to specify what & how to build. Their complexity is generally the same as that of using the compiler toolchain directly. The examples are [Make](https://en.wikipedia.org/wiki/Make_(software)) (gmake, nmake etc.) or [Ninja](https://en.wikipedia.org/wiki/Ninja_(build_system)). Their primary usage is to be produced by a build generator.
+There are many C++ build systems. They generally fall into two categories - imperative or declarative. The former expects the user to specify what & how to build. Their complexity is generally the same as that of using the compiler toolchain directly. The examples are [Make](<https://en.wikipedia.org/wiki/Make_(software)>) (gmake, nmake etc.) or [Ninja](<https://en.wikipedia.org/wiki/Ninja_(build_system)>). Their primary usage is to be produced by a build generator.
 
-Build generators are special kind of build systems that does not use the compiler toolchain directly but rather produces a build in terms of other actual build systems, often the imperative ones such as Make or Ninja. They abstract away the compiler toolchain complexity by leveraging other build systems for actual building. The drawback is that the complexity is actually higher and the build become rather opaque and might seem arbitrary as there are two extra layers between the programmer and the compiler. The examples of build generators are [CMake](https://en.wikipedia.org/wiki/CMake) or [Meson](https://en.wikipedia.org/wiki/Meson_(software)).
+Build generators are special kind of build systems that does not use the compiler toolchain directly but rather produces a build in terms of other actual build systems, often the imperative ones such as Make or Ninja. They abstract away the compiler toolchain complexity by leveraging other build systems for actual building. The drawback is that the complexity is actually higher and the build become rather opaque and might seem arbitrary as there are two extra layers between the programmer and the compiler. The examples of build generators are [CMake](https://en.wikipedia.org/wiki/CMake) or [Meson](<https://en.wikipedia.org/wiki/Meson_(software)>).
 
-The declarative build systems organize translation units (and headers) into projects that typically correspond to the desired outputs (applications, libraries). The dependencies are then set manually between the individual projects. The build itself is orchestrated using generalized "rules" provided by the build system and applied to the project's source files. Optionally user can customize the rules to a certain degree. Examples of declarative build systems are [Bazel](https://en.wikipedia.org/wiki/Bazel_(software)), [build2](https://build2.org/) or [boost.build (b2)](https://boostorg.github.io/build/).
+The declarative build systems organize translation units (and headers) into projects that typically correspond to the desired outputs (applications, libraries). The dependencies are then set manually between the individual projects. The build itself is orchestrated using generalized "rules" provided by the build system and applied to the project's source files. Optionally user can customize the rules to a certain degree. Examples of declarative build systems are [Bazel](<https://en.wikipedia.org/wiki/Bazel_(software)>), [build2](https://build2.org/) or [boost.build (b2)](https://boostorg.github.io/build/).
 
-- All the declarative build systems offer multiple targets and configurations and offer compiler toolchain usage consistency. 
-- Only some build systems provide transparency so that the actual commands run against the compiler toolchain can be inspected.
-- None of the existing build systems can run without prior configuration of the project in the form of project/build files (often using other languages).
-- None of the existing build systems support automatic dependency resolution - all of them require manual setup of dependencies often in multiple steps: introducing the dependency in the sources, setting up include directories in the build system for a given project and finally adding the dependency to another target.
-- None of the existing build systems currently support C++20 modules.
-- C++ build systems oddly enough are mostly not written in C++.
+-   All the declarative build systems offer multiple targets and configurations and offer compiler toolchain usage consistency.
+-   Only some build systems provide transparency so that the actual commands run against the compiler toolchain can be inspected.
+-   None of the existing build systems can run without prior configuration of the project in the form of project/build files (often using other languages).
+-   None of the existing build systems support automatic dependency resolution - all of them require manual setup of dependencies often in multiple steps: introducing the dependency in the sources, setting up include directories in the build system for a given project and finally adding the dependency to another target.
+-   None of the existing build systems currently support C++20 modules.
+-   C++ build systems oddly enough are mostly not written in C++.
 
 ## ABuild
 
@@ -70,11 +70,13 @@ The **Agnesoft Build** or **ABuild** is a C++ build system. It provides fully au
 Usage example:
 
 Default behavior
+
 ```
 abuild
 ```
 
 Overriding configuration on the command line
+
 ```
 abuild "{ 'Toolchain': { 'name': 'clang' } }"
 ```
@@ -83,9 +85,9 @@ abuild "{ 'Toolchain': { 'name': 'clang' } }"
 
 The environment scanner will attempt to find the compiler toolchain in its typical location on the current host and to verify that it is able to use it to produce a binary. The locations should be configurable (see [Configuration File](#configuration-file)) but it should not be required when everything is installed in standard paths. The main supported compilers are:
 
-- MSVC (Windows)
-- GCC (Linux)
-- Clang (Windows, Linux, Unix)
+-   MSVC (Windows)
+-   GCC (Linux)
+-   Clang (Windows, Linux, Unix)
 
 The environment scanner should perform a basic check that the compiler found actually works and give an error if either no compiler could be found or if it does not appear to work (tested by compiling a basic program).
 
@@ -97,24 +99,24 @@ The project scanner will detect all translation units and all headers starting f
 
 Rules for file detection:
 
-- Translation unit: `\.c(pp|xx|c)$/i`.
-- Header unit: `\.h(|pp|xx)$/i`.
-- Module interface unit: `\.(i|m)(xx|pp)$/i`.
+-   Translation unit: `\.c(pp|xx|c)$/i`.
+-   Header unit: `\.h(|pp|xx)$/i`.
+-   Module interface unit: `\.(i|m)(xx|pp)$/i`.
 
 Rules for project detection:
 
-- Any directory containing at least one of the C++ files described above is a project including the root directory.
-- The `^src$/i`, `^include$/i` are considered subdirectories of their respective parent project.
-- The `<parent>/include/<project>` is considered a subdirectory of a project if `<parent>` is equal to `<project>`.
-- The `^test$/i` will produce an independent project called `<parent>test`.
-- If a project contains another project its name will be concatenated as `<parent>.<project>`.
+-   Any directory containing at least one of the C++ files described above is a project including the root directory.
+-   The `^src$/i`, `^include$/i` are considered subdirectories of their respective parent project.
+-   The `<parent>/include/<project>` is considered a subdirectory of a project if `<parent>` is equal to `<project>`.
+-   The `^test$/i` will produce an independent project called `<parent>test`.
+-   If a project contains another project its name will be concatenated as `<parent>.<project>`.
 
 Rules for project types:
 
-- Project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
-- Project containing any translation unit is a **static  library**.
-- Project containing only header files is a header only library (no build).
-- Project fulfilling custom rules for dynamic library is a **dynamic library**.
+-   Project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
+-   Project containing any translation unit is a **static  library**.
+-   Project containing only header files is a header only library (no build).
+-   Project fulfilling custom rules for dynamic library is a **dynamic library**.
 
 The output of the project scanner should be the list of translation units and the list of projects.
 
@@ -132,13 +134,13 @@ The dependencies between the units will be recorded in the information about eac
 
 All the information detected and used by the `abuild` will be recorded in a single build cache file. The file will be a JSON file with the following sections:
 
-- **Rules**: rules used for detecting toolchains and projects.
-- **Toolchains**: list of detected C++ compiler toolchains along with information needed to invoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
-    -  `release` (default): full optimization for speed, 
-    -  `debug`: no optimization, debugging symbols enabled
-    -  Common settings: exceptions enabled, RTTI enabled, C++20 enabled
-- **Files**: list of C++ files detected with meta information from the analysis and dependency resolving.
-- **Projects**: list of detected projects, their type and collection of files they contain.
+-   **Rules**: rules used for detecting toolchains and projects.
+-   **Toolchains**: list of detected C++ compiler toolchains along with information needed to invoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
+        -  `release` (default): full optimization for speed, 
+        -  `debug`: no optimization, debugging symbols enabled
+        -  Common settings: exceptions enabled, RTTI enabled, C++20 enabled
+-   **Files**: list of C++ files detected with meta information from the analysis and dependency resolving.
+-   **Projects**: list of detected projects, their type and collection of files they contain.
 
 The build cache file will be produced in the root of the build directory.
 
@@ -154,10 +156,10 @@ The configuration file must be in the root of the working directory with the suf
 
 The command line parameters should allow:
 
-- Selecting a toolchain. By default, the first one in the list is used. By supplying `--toolchain=<name> -t=<name>` one can select a different detected (or configuration supplied) toolchain.
-- Selecting a configuration. By default, the first one in the list for a given toolchain is used. By supplying `--configuration=<name> -c=<name>` one can select a different configuration.
-- Building a subset of the project. By default, everything is built. By supplying a subdirectory or a single file (or their list) only the subset will be build (the analysis will still be performed for the entire tree for dependencies etc.). Syntax: `--path=<relative path> -p=<relative path>`.
-- Overriding configuration by supplying a JSON string as a positional argument that will take precedence over the file configuration (if any) and build cache. E.g. `abuild "{ ... }"`.
+-   Selecting a toolchain. By default, the first one in the list is used. By supplying `--toolchain=<name> -t=<name>` one can select a different detected (or configuration supplied) toolchain.
+-   Selecting a configuration. By default, the first one in the list for a given toolchain is used. By supplying `--configuration=<name> -c=<name>` one can select a different configuration.
+-   Building a subset of the project. By default, everything is built. By supplying a subdirectory or a single file (or their list) only the subset will be build (the analysis will still be performed for the entire tree for dependencies etc.). Syntax: `--path=<relative path> -p=<relative path>`.
+-   Overriding configuration by supplying a JSON string as a positional argument that will take precedence over the file configuration (if any) and build cache. E.g. `abuild "{ ... }"`.
 
 ### Build
 
