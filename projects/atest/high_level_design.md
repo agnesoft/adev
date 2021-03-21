@@ -8,8 +8,8 @@
     -   [expect()](#expect)
     -   [suite()](#suite)
     -   [Matchers](#matchers)
-    -   [Printers](#printer)
-    -   [Reporters](#reporter)
+    -   [Printers](#printers)
+    -   [Reporters](#reporters)
     -   [Usage](#usage)
 
 ## Problem
