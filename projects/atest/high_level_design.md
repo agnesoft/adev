@@ -23,10 +23,10 @@ Test is a software written to validate assumptions about another software and is
 A modern C++ testing framework should:
 
 -   Be simple to write tests in.
--   Be extensible.
 -   Be a C++20 module.
 -   Not use macros.
 -   Provide good reporting of failures.
+-   Be extensible.
 
 ## Existing Solutions
 
@@ -47,31 +47,48 @@ expect(sum(1, 1)).toBe(3); //jest
 expect(() => { sum(1, 1) }).toThrow("exception text"); //jest
 ```
 
-Particularly with more complex expressions having the textual aid of what is being asserted is simply superior to trying to dechiper plain code and guessing what is the test framework and what is the code being tested.
+Particularly with more complex expressions having the textual aid of what is being asserted (tested) is simply superior to trying to decipher plain code and guessing what is the test framework and what is the code being tested.
 
 ## ATest
 
-The `ATest` is supposed to be lightweight minimalist C++20 module testing library without macros and with builder pattern assertings.
+The `ATest` is supposed to be lightweight and minimalistic C++20 module testing library without macros and with builder pattern assertings.
 
-Example demonstrating the intent:
+Example:
 
 ```
+// Import it as C++20 module
 import atest;
 
+// Code to be tested
 auto sum(int x, int y) -> int
 {
     return x + y;
 }
 
+// Tests are added in main
 auto main(int argc, char *argv[]) -> int
 {
+    // Import testing stuff into local namespace for convenience
     using namespace atest;
 
-    test("Some test", [] {
-        expect(sum(1, 2)).toBe(3);
-        expect([] { return sum(1, 2); }).toBe(3);
-        expect([] { return sum(1, 2); }).toThrow<std::logic_error>("exception message");
-    });
+    // Initialize ATest [OPTIONAL]
+    atest(argc, argv);
+
+    // Adds the tests into a named suite [OPTIONAL]
+    suite("My Test Suite", [] {
+
+        // Starts a named test
+        test("Some test", [] {
+            // Simple assertion
+            expect(sum(1, 2)).toBe(3);
+
+            // Assertion with delayed call to get better exception diagnostics
+            expect([] { return sum(1, 2); }).toBe(3);
+
+            // Assertin of a thrown exception
+            expect([] { return sum(1, 2); }).toThrow<std::logic_error>("exception message");
+        });
+    })
 }
 ```
 
@@ -85,18 +102,35 @@ Running "Some test"... FAILED [150ms]
       Actual  : "different message"
 ```
 
-The `ATest` would get imported as a module that would make all the testing facilities available to the user within the namspace atest. While `using namespace` should generally be avoided it could help with brevity of the testing. The test is declared using a function `test` that takes a freeform description and a lambda (or any callable) containing the test code. Optionally the tests can be grouped in a `suite` that will act as a test collection. Suites are useful to give tests hierarchy or if there are multiple different kinds of tests in a single executable. Within the test code the assertions are always composed starting with `expect`. There are many different assertings one can compose. Validation is done by matchers. The run of the tests is measured and recorded and output using a `Printer` and a `Reporter`. By default, `Printer` will output to standard output and there is no `Reporter`. The printer and the reporter can be selected from the command line.
+### suite()
+
+The `suite(name, fn)` is an optional wrapper function that operates similar to jest's [describe()](https://jestjs.io/docs/api#describename-fn) and is used for grouping tests. The tests are declared inside of the function (i.e. lambda) passed in.
 
 ### test()
 
+The `test(name, fn)` is the core building block in `atest` and declares a test. The test body is passed in as a function that takes no argumetns and returns nothing (i.e. lambda). The test can be declared inside a `suite`. Tests will be run in the order as declared. The tests should be time measured.
+
 ### expect()
 
-### suite()
+Each asserting begins with a call to the `expect` function that takes any expression. The `expect` returns an object that lets you perform actual assertions using various functions such as `toBe`, `toThrow` etc. The `expect` also captures the call site location for reporting purposes.
 
 ### Matchers
 
+The assertion functions imply what matcher to use when comparing the the actual value with the expectation. For example `toBe` implies use of `operator==`. It should be possible to supply your own matcher by either explicitly passing it to the assertion or by defining your own specialization of the `atest::Matcher` class.
+
 ### Printers
+
+By default, the output is written to standard output using `std::cout`. If a different stream is required it can be selected from the in-built ones using a command line parameter. Additional printers can be installed programatically.
 
 ### Reporters
 
+By default, no reports are provided. A reporter can be specified on the command line (e.g. `junit`). Additional reportes can be installed programmatically.
+
 ### Usage
+
+By default, simply building and running the test program. Optionally command line parameters can be supplied and then the `atest` must be initialized with them (i.e. `atest::atest(argc, argv)`). The command line parameters should provide:
+
+-   Ability to filter out `tests` and `suites`
+-   Ability to execute only set of `tests` and `suites`
+-   Choose a Printer
+-   Choose a Reporter
