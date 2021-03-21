@@ -48,7 +48,7 @@ expect(sum(1, 1)).toBe(3); //jest
 expect(() => { sum(1, 1) }).toThrow("exception text"); //jest
 ```
 
-Particularly with more complex expressions having the textual aid of what is being asserted (tested) is simply superior to trying to decipher plain code and guessing what is the test framework and what is the code being tested. Test descriptions or test sections including BDD style given/when/then can come only so far. It also allows arbitrary extension to the assertions such as `toMatchObject` which is an assert that will be true as long as the expectation is the subset of an actual object. A custom matcher that would be used behind the scenes would be traditionally required for the same with assert macros. Debugging such a failed assertion would therefore be... surprising. Transparency in what is going on is essential in aiding the developers using a testing framework. They usually care very little for fancy printing or feature richness but they care a lot for what the experience is like when a test fails.
+Particularly with more complex expressions having the textual aid of what is being asserted (tested) is simply superior to trying to decipher plain code and guessing what is the test framework and what is the code being tested. Test descriptions or test sections including BDD style given/when/then can come only so far. It also allows arbitrary extension to the assertions such as `toMatchObject` which is an assertion that will be true as long as the expectation is the subset of an actual object. A custom matcher that would be used behind the scenes would be traditionally required for the same with assert macros. Debugging such a failed assertion would therefore be... surprising. Transparency in what is going on is essential in aiding the developers using a testing framework. They usually care very little for fancy printing or feature richness, but they care a lot for what the experience is like when a test fails.
 
 ## ATest
 
@@ -113,7 +113,7 @@ The `test(name, fn)` is the core building block in `atest` and declares a test. 
 
 ### expect()
 
-Each assertion begins with a call to the `expect` function that takes any expression. The `expect` returns an object that lets you perform actual assertions using various functions such as `toBe`, `toThrow` etc. The `expect` also captures the call site location for reporting purposes. Various functions can be called on the returned object that lets you finalize the assert with the expected value, optionally passing in a custom matcher.
+Each assertion begins with a call to the `expect` function that takes any expression. The `expect` returns an object that lets you perform actual assertions using various functions such as `toBe`, `toThrow` etc. The `expect` also captures the call site location for reporting purposes. Various functions can be called on the returned object that lets you finalize the assertion with the expected value, optionally passing in a custom matcher.
 
 ### Matchers
 
