@@ -45,7 +45,23 @@ Few things to note:
 
 ### Clang
 
-TODO
+Using `clang++`:
+
+```
+mkdir build
+cd build
+
+CPP_FLAGS=-std=c++2a
+
+clang++ $CPP_FLAGS -Xclang -emit-module-interface -c -x c++ ../atest.ixx -o atest.pcm
+clang++ $CPP_FLAGS -fprebuilt-module-path=. -fimplicit-modules -fimplicit-module-maps ../test/atest_test.cpp
+
+cd ..
+```
+
+Everything must be compiled with the same flags so use a variable for them. The `-Xclang -emit-module-interface` tells clang compiler to create a precompiled module (interface). The `-c` lets it run only compilation and no linking. The `-x c++` tells it to treat the input file as a C++ source file which is required for non-standard (but kind of useful `*ixx` extension). The output specified with `-o` is set to `*.pcm` which is what Clang expects to find when searching for imported module interfaces.
+
+The second command specifies `-fprebuilt-module-path=.` which is the path it will search for imported modules (i.e. when in the source there is `import atest;` it will search this path for `atest.pcm`). The `-fimplicit-module-maps` tells the compiler to implicitly map standard includes into imports of header units.
 
 ### GCC
 
