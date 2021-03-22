@@ -1,4 +1,4 @@
-#import atest;
+import atest;
 
 auto main(int argc, char *argv[]) -> int
 {
