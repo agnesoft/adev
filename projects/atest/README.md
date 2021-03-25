@@ -21,16 +21,16 @@ Using `cl.exe`:
 mkdir build
 cd build
 
-cl /nologo /std:c++latest /EHsc /exportHeader "%VCToolsInstallDir%include\iostream"
-cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" /interface -c ..\atest.ixx
-cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" ..\test\atest_test.cpp
+cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\vector"
+cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" /c /Fo /interface ..\atest.ixx
+cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" ..\test\atest_test.cpp atest.obj vector.obj
 
 cd ..
 ```
 
 Everything must be compiled with the same flags that affect code generation.
 
-The first command will create a `header unit` from an STL header used by `atest`. The header then needs to be mapped to the created `ifc` file when creating `atest.ifc` and also when importing it in other files. The `/interface` flag will generate the `ifc` for `atest` itself in the second command. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively. This will likely be resolved by Microsoft soon (written in 3/2021).
+The first command will create a `header unit` from an STL header used by `atest`. The header then needs to be mapped to the created `ifc` file when creating `atest.ifc` and also when importing it in other files. The `/interface` flag will generate the `ifc` for `atest` itself in the second command. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively. This will likely be resolved by Microsoft soon (written in 3/2021). Note that both header units and the module interfaces must also produce regular object files (`/Fo`) so that the code can be linked together.
 
 -   `/EHsc` is required for C++ exceptions.
 -   `/exportHeader` will compile a header into an `ifc` (a header unit).
@@ -38,6 +38,18 @@ The first command will create a `header unit` from an STL header used by `atest`
 -   `/headerUnit` is used for mapping exported headers in `ifc` form to the original header files and is required for every compilation that uses it even indirectly (transitively).
 -   `/nologo` suppresses compiler banners in the output.
 -   `/std:c++latest` enabled C++20 modules.
+-   `/Fo` to produce an object file.
+-   `/c` to perform compilation only.
+-   `/TP` means that hte input files are all C++ source files.
+
+An alternative to `headerUnits` is to use experimental STL as module:
+
+```
+cl /nologo /std:c++latest /experimental:module /EHsc /MD /c /interface ..\atest.ixx /Foatest.obj
+cl /nologo /std:c++latest /experimental:module /EHsc /MD ..\test\atest_test.cpp atest.obj
+```
+
+Note the `/MD` (dynamically linked runtime) which is required currently as the experimental modules do not support static linking yet.
 
 ### Clang
 
