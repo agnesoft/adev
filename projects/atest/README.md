@@ -54,18 +54,18 @@ clang++-11 -std=c++2a -nostdinc++ -I<libc++pprefix>/include/c++/v1 -L<libc++ppre
 cd ..
 ```
 
-Everything must be compiled with the same flags that affect code generation and you will need to use `libc++` ([Using libc++](https://libcxx.llvm.org/docs/UsingLibcxx.html)) instead of `stdlibc++`. The first command will compile a module interface into a precompiled module `pcm`. The second command will generate a regular object file from the module with the symbols used for linking purposes. The third command will compile the source file that imports the module and will also link to its object file. The header units from STL are created automatically thanks to `-fimplicit-modules` and `-fimplicit-module-maps`. Note that regular `stdlibc++` headers cannot be used for creating `header units`, you will get weird errors. You must use `libc++` that is modules aware. This will likely be resolved once C++20 modules are merged into mainline GCC release soon (written in 3/2021).
+Everything must be compiled with the same flags that affect code generation and you will need to use `libc++` ([Using libc++](https://libcxx.llvm.org/docs/UsingLibcxx.html)) instead of `stdlibc++`. The first command will compile a module interface into a precompiled module `pcm`. The second command will generate a regular object file from the module with the symbols used for linking purposes. The third command will compile the source file that imports the module and will also link to its object file. The header units from STL are created automatically thanks to `-fimplicit-modules` and `-fimplicit-module-maps`. Note that regular `stdlibc++` headers cannot be used for creating `header units`, you will get weird errors. You must use `libc++` that is modules aware. This will likely be resolved once C++20 modules are merged into the mainline GCC release soon (written in 3/2021).
 
 -   `-std=c++2a` enables modules.
 -   `nostdinc++` prevents the use of standard system headers (the `stdlibc++`).
 -   `-I<libc++pprefix>/include/c++/v1` tells the compiler where to get STL headers (`libc++`).
 -   `-fimplicit-modules` will look for precompield modules (`pmc`) based on the import name (e.g. `import atest` -> `atest.pmc`).
 -   `-fimplicit-module-maps` will create header units from imported standard headers (e.g. `import <iostream>;`).
--   `-Xclang -emit-module-interface` compiles a module into `pmc`. Notice the flag needs to be forwared to the compiler with `-Xclang`.
+-   `-Xclang -emit-module-interface` compiles a module into `pmc`. Notice the flag needs to be forwarded to the compiler with `-Xclang`.
 -   `-c` tells clang to only perform compilation and no linking.
 -   `-x c++` tells clang to treat the following input file as C++ file. Required for non-standard extensions such as `*.ixx`.
 -   `-fprebuilt-module-path=.` tells clang where to look for precompiled modules - int this case the current directory.
--   `-L<libc++pprefix>/lib` adds the `libc++` lib directory the library search path for linking.
+-   `-L<libc++pprefix>/lib` adds the `libc++` lib directory to the library search path for linking.
 -   `-lc++` tells clang to link against `libc++`.
 
 Note that if your `libc++` is not installed in the system and you linked to it dynamically you will then need `export LD_LIBRARY_PATH=<libc++pprefix>/lib` before you can run the application.
