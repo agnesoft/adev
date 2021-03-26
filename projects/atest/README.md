@@ -21,9 +21,10 @@ Using `cl.exe`:
 mkdir build
 cd build
 
+cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\iostream"
 cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\vector"
-cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" /c /Fo /interface ..\atest.ixx
-cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" ..\test\atest_test.cpp atest.obj vector.obj
+cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" /c /Fo /interface ..\atest.ixx
+cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" ..\test\atest_test.cpp atest.obj vector.obj
 
 cd ..
 ```
