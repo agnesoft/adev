@@ -17,22 +17,95 @@ struct TestSuite
     std::vector<Test> tests;
 };
 
-std::vector<TestSuite> TEST_SUITES = std::vector<TestSuite>{{"Global", {}}};
-TestSuite &TEST_SUITE = TEST_SUITES.front();
+class TestRunner
+{
+public:
+    ~TestRunner()
+    {
+        try
+        {
+            runTestSuites();
+        }
+        catch (...)
+        {
+            std::cout << "Unexpected exception when running tests.\n";
+        }
+    }
+
+    auto addTest(const char *name, auto (*testBody)()->void) -> void
+    {
+        mCurrentSuite->tests.emplace_back(Test{name, testBody});
+    }
+
+    auto beginSuite(const char *name) -> void
+    {
+        mCurrentSuite = &mTestSuites.emplace_back(TestSuite{name, {}});
+    }
+
+    auto endSuite() -> void
+    {
+        mCurrentSuite = &mTestSuites.front();
+    }
+
+private:
+    auto runTest(Test *test) -> void
+    {
+        std::cout << "  [" << test->description << "]... ";
+
+        try
+        {
+            test->testBody();
+            std::cout << "SUCCESS\n";
+        }
+        catch (std::exception &e)
+        {
+            std::cout << "FAILED\n    " << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "FAILED\n    Unknown exception\n";
+        }
+    }
+
+    auto runTests(TestSuite *testSuite) -> void
+    {
+        for (Test &test : testSuite->tests)
+        {
+            runTest(&test);
+        }
+    }
+
+    auto runTestSuite(TestSuite *testSuite) -> void
+    {
+        std::cout << "Running tests from '" << testSuite->name << "':\n";
+        runTests(testSuite);
+        std::cout << '\n';
+    }
+
+    auto runTestSuites() -> void
+    {
+        for (TestSuite &testSuite : mTestSuites)
+        {
+            runTestSuite(&testSuite);
+        }
+    }
+
+    std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global", {}}};
+    TestSuite *mCurrentSuite = &mTestSuites.front();
+};
+
+TestRunner RUNNER = TestRunner{};
 
 export auto test(const char *description, auto (*testBody)()->void) -> void
 {
-    std::cout << "  Test '" << description << "'\n";
-    TEST_SUITE.tests.push_back(Test{description, testBody});
+    RUNNER.addTest(description, testBody);
 }
 
 export auto suite(const char *name, auto (*suiteBody)()->void) -> int
 {
-    std::cout << "Suite '" << name << "'\n";
-    TEST_SUITES.push_back({name, {}});
-    TEST_SUITE = TEST_SUITES.back();
+    RUNNER.beginSuite(name);
     suiteBody();
-    TEST_SUITE = TEST_SUITES.front();
+    RUNNER.endSuite();
     return 0;
 }
 }

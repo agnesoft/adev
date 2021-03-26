@@ -1,10 +1,12 @@
 import atest;
 
+#include <stdexcept>
+
 auto main(int argc, char *argv[]) -> int
 {
     atest::suite("My Suite", [] {
         atest::test("Register a test", [] {
-
+            throw std::runtime_error{"Some error."};
         });
 
         atest::test("Register another test", [] {
