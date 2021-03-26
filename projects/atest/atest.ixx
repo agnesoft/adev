@@ -1,5 +1,6 @@
 export module atest;
 
+import<cstdlib>;
 import<iostream>;
 import<vector>;
 
@@ -28,8 +29,11 @@ public:
         }
         catch (...)
         {
+            mFailed = true;
             std::cout << "Unexpected exception when running tests.\n";
         }
+
+        std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
     auto addTest(const char *name, auto (*testBody)()->void) -> void
@@ -59,10 +63,12 @@ private:
         }
         catch (std::exception &e)
         {
+            mFailed = true;
             std::cout << "FAILED\n    " << e.what() << '\n';
         }
         catch (...)
         {
+            mFailed = true;
             std::cout << "FAILED\n    Unknown exception\n";
         }
     }
@@ -92,6 +98,7 @@ private:
 
     std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global", {}}};
     TestSuite *mCurrentSuite = &mTestSuites.front();
+    bool mFailed = false;
 };
 
 TestRunner RUNNER = TestRunner{};
