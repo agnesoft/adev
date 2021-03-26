@@ -1,7 +1,5 @@
 import atest;
 
-import<stdexcept>;
-
 auto main(int argc, char *argv[]) -> int
 {
     atest::suite("My Suite", [] {

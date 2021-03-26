@@ -1,11 +1,6 @@
 export module atest;
 
-import<cstdlib>;
-import<iostream>;
-import<stdexcept>;
-export import<sstream>;
-import<string>;
-import<vector>;
+export import "atest_stl.hpp";
 
 namespace atest
 {
@@ -193,8 +188,8 @@ private:
 };
 
 export template<typename T>
-[[nodiscard]] auto expect(const T &value) noexcept -> Expect<T> &&
+[[nodiscard]] auto expect(const T &value) noexcept -> Expect<T>
 {
-    return std::move(Expect<T>{value});
+    return Expect<T>{value};
 }
 }
