@@ -1,6 +1,6 @@
 import atest;
 
-#include <stdexcept>
+import<stdexcept>;
 
 auto main(int argc, char *argv[]) -> int
 {
@@ -10,7 +10,9 @@ auto main(int argc, char *argv[]) -> int
         });
 
         atest::test("Register another test", [] {
-            atest::expect(1);
+            atest::expect([] {
+                return 1 + 1;
+            }).toBe(2);
         });
     });
 
@@ -22,7 +24,7 @@ auto main(int argc, char *argv[]) -> int
 
     atest::suite("Another Suite", [] {
         atest::test("Yet another test", [] {
-
+            atest::expect(1 + 1).toBe(2);
         });
     });
 

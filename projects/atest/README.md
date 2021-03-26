@@ -23,9 +23,15 @@ cd build
 
 cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\cstdlib"
 cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\iostream"
+cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\sstream"
+cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\stdexcept"
+cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\string"
 cl /nologo /std:c++latest /EHsc /c /exportHeader /Fo /TP "%VCToolsInstallDir%include\vector"
-cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" /headerUnit "%VCToolsInstallDir%include\cstdlib=cstdlib.ifc" /c /Fo /interface ..\atest.ixx
-cl /nologo /std:c++latest /EHsc /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc" /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" /headerUnit "%VCToolsInstallDir%include\cstdlib=cstdlib.ifc" ..\test\atest_test.cpp atest.obj vector.obj iostream.obj iomanip.obj
+
+set HEADER_UNNITS=/headerUnit "%VCToolsInstallDir%include\cstdlib=cstdlib.ifc" /headerUnit "%VCToolsInstallDir%include\iostream=iostream.ifc" /headerUnit "%VCToolsInstallDir%include\sstream=sstream.ifc" /headerUnit "%VCToolsInstallDir%include\stdexcept=stdexcept.ifc" /headerUnit "%VCToolsInstallDir%include\string=string.ifc" /headerUnit "%VCToolsInstallDir%include\vector=vector.ifc"
+
+cl /nologo /std:c++latest /EHsc %HEADER_UNNITS% /c /Fo /interface ..\atest.ixx
+cl /nologo /std:c++latest /EHsc %HEADER_UNNITS% ..\test\atest_test.cpp atest.obj cstdlib.obj iostream.obj sstream.obj stdexcept.obj string.obj vector.obj
 
 cd ..
 ```
