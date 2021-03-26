@@ -3,7 +3,7 @@ export module atest;
 import<cstdlib>;
 import<iostream>;
 import<stdexcept>;
-import<sstream>;
+export import<sstream>;
 import<string>;
 import<vector>;
 
@@ -142,7 +142,7 @@ export auto suite(const char *name, auto (*suiteBody)()->void) -> int
     return 0;
 }
 
-template<typename T>
+export template<typename T>
 class Expect
 {
 public:
