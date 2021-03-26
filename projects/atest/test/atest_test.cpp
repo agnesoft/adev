@@ -10,12 +10,14 @@ auto main(int argc, char *argv[]) -> int
         });
 
         atest::test("Register another test", [] {
-
+            atest::expect(1);
         });
     });
 
     atest::test("Test in global suite", [] {
-
+        atest::expect([] {
+            throw std::logic_error{"Callable error"};
+        });
     });
 
     atest::suite("Another Suite", [] {

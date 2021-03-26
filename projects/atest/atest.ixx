@@ -115,4 +115,28 @@ export auto suite(const char *name, auto (*suiteBody)()->void) -> int
     RUNNER.endSuite();
     return 0;
 }
+
+template<typename T>
+class Expect
+{
+public:
+    Expect(const T &value) noexcept :
+        mValue{value}
+    {
+    }
+
+    [[nodiscard]] auto value() const noexcept -> const T &
+    {
+        return mValue;
+    }
+
+private:
+    const T &mValue;
+};
+
+export template<typename T>
+[[nodiscard]] auto expect(const T &value) noexcept -> Expect<T> &&
+{
+    return std::move(Expect<T>{value});
+}
 }
