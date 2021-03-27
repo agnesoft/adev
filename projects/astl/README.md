@@ -9,7 +9,7 @@ C++ Standard Template Library (STL) header unit wrapper.
 
 ## Generator
 
-The generator is written in Node.js and will output the `include/astl.hpp` when run:
+The generator is written in Node.js and will output or update the `include/astl.hpp` when run:
 
 ```
 cd generator
