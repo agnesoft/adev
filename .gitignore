@@ -1,0 +1,8 @@
+#C++
+*.obj
+*.o
+*.a
+*.so
+*.exe
+*.lib
+*.dll
