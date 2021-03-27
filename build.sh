@@ -5,8 +5,8 @@ LIBCXX_PREFIX="/home/mv/llvm-project/BUILD"
 #BUILD SCRIPT
 PROJECTS_ROOT="$(pwd)/projects"
 
-mkdir -p build_clang
-cd build_clang
+mkdir -p build
+cd build
 mkdir -p bin
 
 ASTL_INCLUDE_PATH="$PROJECTS_ROOT/astl/include"

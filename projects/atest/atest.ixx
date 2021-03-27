@@ -174,9 +174,17 @@ public:
         try
         {
             mExpression();
+            throw TestFailedException{"Expected the expression to throw but it did not."};
         }
         catch (E &e)
         {
+            if (typeid(E) != typeid(e))
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
+                throw TestFailedException(stream.str());
+            }
+
             if (!exceptionText.empty() && exceptionText != e.what())
             {
                 std::stringstream stream;
@@ -188,15 +196,32 @@ public:
         }
         catch (...)
         {
+            try
+            {
+                auto eptr = std::current_exception();
+
+                if (eptr)
+                {
+                    std::rethrow_exception(eptr);
+                }
+            }
+            catch (std::exception &e)
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
+                throw TestFailedException(stream.str());
+            }
+
             std::stringstream stream;
-            stream << "Expected exception of type '" << /* typeid(E).name() << */ "' but different exception was thrown.";
+            stream << "Expected exception of type '" << typeid(E).name() << "' but different exception was thrown.";
             throw TestFailedException(stream.str());
         }
     }
 
 private:
     template<typename V>
-    [[nodiscard]] auto expressionValue() const -> V
+    [[nodiscard]] auto
+        expressionValue() const -> V
     {
         if constexpr (std::is_invocable<T>::value)
         {

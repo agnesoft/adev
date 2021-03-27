@@ -1,6 +1,12 @@
+#ifdef _MSC_VER
+#    include <typeinfo> //Required due to MSVC bug
+#endif
+
 import atest;
 
-using namespace atest;
+using atest::suite;
+using atest::test;
+using atest::expect;
 
 static auto s = suite("Expect::toThrow()", [] {
     test("Exception type", [] {
@@ -17,6 +23,14 @@ static auto s = suite("Expect::toThrow()", [] {
         };
 
         expect(throwingCallable).toThrow<std::logic_error>("");
+    });
+
+    test("Base exception expected but derived thrown", [] {
+        const auto throwingCallable = [] {
+            throw std::runtime_error{""};
+        };
+
+        expect(throwingCallable).toThrow<std::exception>("");
     });
 
     test("Exception text", [] {

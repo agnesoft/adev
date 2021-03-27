@@ -1,7 +1,7 @@
 set PROJECTS_ROOT=%cd%\projects
 
-mkdir build_msvc
-cd build_msvc
+mkdir build
+cd build
 mkdir bin
 
 set ASTL_INCLUDE_PATH=%PROJECTS_ROOT%\astl\include

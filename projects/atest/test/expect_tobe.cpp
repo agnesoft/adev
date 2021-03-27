@@ -1,6 +1,8 @@
 import atest;
 
-using namespace atest;
+using atest::suite;
+using atest::test;
+using atest::expect;
 
 static auto s = suite("Expect::toBe()", [] {
     test("value == value", [] {
