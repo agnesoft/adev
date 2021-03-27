@@ -187,7 +187,7 @@ ${stlIncludes()}
 #endif
 `;
 
-    fs.writeFileSync("astl.hpp", data);
+    fs.writeFileSync("../include/astl.hpp", data);
 }
 
 main();

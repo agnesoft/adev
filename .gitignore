@@ -6,3 +6,6 @@
 *.exe
 *.lib
 *.dll
+
+#JS
+node_modules/
