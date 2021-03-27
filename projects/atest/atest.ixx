@@ -219,8 +219,7 @@ public:
 
 private:
     template<typename V>
-    [[nodiscard]] auto
-        expressionValue() const -> V
+    [[nodiscard]] auto expressionValue() const -> V
     {
         if constexpr (std::is_invocable<T>::value)
         {
