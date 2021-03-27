@@ -1,8 +1,6 @@
 export module atest;
 
-import<cstdlib>;
-import<iostream>;
-import<vector>;
+export import "astl.hpp";
 
 namespace atest
 {
