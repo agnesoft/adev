@@ -4,9 +4,9 @@
 
 import atest;
 
+using atest::expect;
 using atest::suite;
 using atest::test;
-using atest::expect;
 
 static auto s = suite("Expect::toThrow()", [] {
     test("Exception type", [] {

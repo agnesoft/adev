@@ -166,11 +166,6 @@ public:
     template<typename E>
     auto toThrow(const std::string &exceptionText) -> void
     {
-        if (!std::is_invocable<T>::value)
-        {
-            throw TestFailedException{"The expression is not callable"};
-        }
-
         bool failed = false;
 
         try
