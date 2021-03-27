@@ -1,0 +1,13 @@
+#C++
+*.obj
+*.o
+*.a
+*.so
+*.exe
+*.lib
+*.dll
+*.ifc
+*.pcm
+
+#JS
+node_modules/
