@@ -139,16 +139,16 @@ function includeGuard() {
     return `//GENERATED FILE. DO NOT MODIFY.
 
 #ifndef ADEV_ASTL_ASTL_HPP
-#define ADEV_ASTL_ASTL_HPP
-`;
+#define ADEV_ASTL_ASTL_HPP`;
 }
 
 function categoryHeading(category) {
-    return `//${category}\n`;
+    return `\n//${category}`;
 }
 
 function stlHeader(name, cppVersion) {
-    return `#if __has_include(<${name}>)
+    return `
+#if __has_include(<${name}>)
 #    include <${name}>${cppVersion ? ` //C++${cppVersion}` : ""}
 #else
 #    ifdef _MSC_VER
@@ -157,7 +157,6 @@ function stlHeader(name, cppVersion) {
 #        warning "<${name}> not available${cppVersion ? ` (C++${cppVersion})` : ""}"
 #    endif
 #endif
-
 `;
 }
 
