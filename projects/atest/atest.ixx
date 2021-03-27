@@ -163,6 +163,60 @@ public:
         }
     }
 
+    template<typename E>
+    auto toThrow(const std::string &exceptionText) -> void
+    {
+        bool failed = false;
+
+        try
+        {
+            mExpression();
+            failed = true;
+        }
+        catch (E &e)
+        {
+            if (typeid(E) != typeid(e))
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
+                throw TestFailedException(stream.str());
+            }
+
+            if (!exceptionText.empty() && exceptionText != e.what())
+            {
+                std::stringstream stream;
+                stream << "Exception text mismatch.\n      "
+                       << "Expected: \"" << exceptionText << "\"\n      "
+                       << "Actual  : \"" << e.what() << "\"";
+                throw TestFailedException{stream.str()};
+            }
+        }
+        catch (...)
+        {
+            try
+            {
+                throw;
+            }
+            catch (std::exception &e)
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
+                throw TestFailedException(stream.str());
+            }
+            catch (...)
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but different exception was thrown.";
+                throw TestFailedException(stream.str());
+            }
+        }
+
+        if (failed)
+        {
+            throw TestFailedException{"Expected the expression to throw but it did not."};
+        }
+    }
+
 private:
     template<typename V>
     [[nodiscard]] auto expressionValue() const -> V

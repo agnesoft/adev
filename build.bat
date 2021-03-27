@@ -1,7 +1,7 @@
 set PROJECTS_ROOT=%cd%\projects
 
-mkdir build_msvc
-cd build_msvc
+mkdir build
+cd build
 mkdir bin
 
 set ASTL_INCLUDE_PATH=%PROJECTS_ROOT%\astl\include
@@ -17,6 +17,6 @@ REM atest
 cl.exe %CPP_FLAGS% /c /Fo /interface "%PROJECTS_ROOT%\atest\atest.ixx"
 
 REM atest_test
-cl.exe %CPP_FLAGS% /Fe"bin\atest_test.exe" "%PROJECTS_ROOT%\atest\test\atest_test.cpp" "%PROJECTS_ROOT%\atest\test\atest_nomain_test.cpp" atest.obj astl.obj
+cl.exe %CPP_FLAGS% /Fe"bin\atest_test.exe" "%PROJECTS_ROOT%\atest\test\atest_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow.cpp" atest.obj astl.obj
 
 cd ..

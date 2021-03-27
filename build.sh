@@ -5,8 +5,8 @@ LIBCXX_PREFIX="/home/mv/llvm-project/BUILD"
 #BUILD SCRIPT
 PROJECTS_ROOT="$(pwd)/projects"
 
-mkdir -p build_clang
-cd build_clang
+mkdir -p build
+cd build
 mkdir -p bin
 
 ASTL_INCLUDE_PATH="$PROJECTS_ROOT/astl/include"
@@ -21,6 +21,6 @@ CPP_AND_LINK_FLAGS="$CPP_FLAGS -lc++ -Wl,-rpath,$LIBCXX_PREFIX/lib"
 "$CLANG" $CPP_FLAGS -c -x c++ "$PROJECTS_ROOT/atest/atest.ixx" -o atest.obj
 
 #atest_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/atest/test/atest_test.cpp" "$PROJECTS_ROOT/atest/test/atest_nomain_test.cpp" atest.obj -o bin/atest_test
+"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/atest/test/atest_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tobe.cpp" "$PROJECTS_ROOT/atest/test/expect_tothrow.cpp" atest.obj -o bin/atest_test
 
 cd ..
