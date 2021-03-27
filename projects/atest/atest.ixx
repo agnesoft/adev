@@ -170,7 +170,7 @@ public:
         {
             throw TestFailedException{"The expression is not callable"};
         }
-        
+
         bool failed = false;
 
         try
@@ -196,21 +196,28 @@ public:
                 throw TestFailedException{stream.str()};
             }
         }
-        catch (std::exception &e)
-        {
-            std::stringstream stream;
-            stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
-            throw TestFailedException(stream.str());
-        }
         catch (...)
         {
-            std::stringstream stream;
-            stream << "Expected exception of type '" << typeid(E).name() << "' but different exception was thrown.";
-            throw TestFailedException(stream.str());
+            try
+            {
+                throw;
+            }
+            catch (std::exception &e)
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
+                throw TestFailedException(stream.str());
+            }
+            catch (...)
+            {
+                std::stringstream stream;
+                stream << "Expected exception of type '" << typeid(E).name() << "' but different exception was thrown.";
+                throw TestFailedException(stream.str());
+            }
         }
 
-	if (failed)
-	{
+        if (failed)
+        {
             throw TestFailedException{"Expected the expression to throw but it did not."};
         }
     }
