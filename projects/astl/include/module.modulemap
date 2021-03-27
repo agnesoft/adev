@@ -1,0 +1,6 @@
+//GENERATED FILE. DO NOT MODIFY.
+
+module astl_hpp {
+    header "astl.hpp"
+    export *
+}

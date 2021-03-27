@@ -9,7 +9,7 @@ C++ Standard Template Library (STL) header unit wrapper.
 
 ## Generator
 
-The generator is written in Node.js and will output or update the `include/astl.hpp` when run:
+The generator is written in Node.js and will output or update the `include/astl.hpp` and `include/module.modulemap` (for clang) when run:
 
 ```
 cd generator
@@ -47,6 +47,6 @@ cl.exe /std:c++latest /headerUnit "<ASTL path>\astl.hpp=<ASTL IFC path>\astl.hpp
 
 -   `/std:c++latest` enables modules.
 -   `/headerUnit` maps the header file being imported to the `ifc` in format (`"<path to hpp>=<path to its ifc>"`).
--   Link againsst the astl.obj as well.
+-   Link against the astl.obj as well.
 
 ## clang

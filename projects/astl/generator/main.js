@@ -182,12 +182,21 @@ function stlIncludes() {
 }
 
 function main() {
-    let data = `${includeGuard()}
+    let header = `${includeGuard()}
 ${stlIncludes()}
 #endif
 `;
 
-    fs.writeFileSync("../include/astl.hpp", data);
+    let moduleMap = `//GENERATED FILE. DO NOT MODIFY.
+
+module astl_hpp {
+    header "astl.hpp"
+    export *
+}
+`;
+
+    fs.writeFileSync("../include/astl.hpp", header);
+    fs.writeFileSync("../include/module.modulemap", moduleMap);
 }
 
 main();
