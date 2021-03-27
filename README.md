@@ -23,4 +23,7 @@ Open Visual Studio Command Prompt and run `build.bat` in the root of the reposit
 
 ### clang
 
-Run `build.sh` in the root of the repository.
+Run `build.sh` in the root of the repository. You may need to set the two variables at the top of the script to reflect your system:
+
+-   `CLANG` is the clang executable to use, e.g. `clang++-11`
+-   `LIBCXX_PREFIX` is the location of your `libc++` installation/build that contains include and lib directories.
