@@ -49,4 +49,21 @@ cl.exe /std:c++latest /headerUnit "<ASTL path>\astl.hpp=<ASTL IFC path>\astl.hpp
 -   `/headerUnit` maps the header file being imported to the `ifc` in format (`"<path to hpp>=<path to its ifc>"`).
 -   Link against the astl.obj as well.
 
-## clang
+### clang
+
+```
+clang++ -std=c++20 -nostdinc++ -fmodules -Iinclude/ -I<libcxx-install-prefix>/include/c++/v1 -L<libcxx-install-prefix>/lib -lc++ -Wl,-rpath,<libcxx-install-prefix>/lib test/main.cpp -o test/test.out
+```
+
+-   Requires `clang` 11 or later.
+-   Requires `libc++` (could possibly work with `stdlibc++` from GCC 10+, does not work with GCC9).
+-   `-std=c++20` language standard.
+-   `-nostdinc++` disables system include paths.
+-   `-fmodules` enables modules including implict modules, implicit header units and implicit module maps.
+-   `-Iinclude/` path to the `astl.hpp`.
+-   `-I<libcxx-install-prefix>/include/c++/v1` path to the `libc++` headers.
+-   `-L<libcxx-install-prefix>/lib` path to the `libc++` libraries.
+-   `-lc++` links against `libc++`.
+-   `-Wl,-rpath,<libcxx-install-prefix>/lib` embeds the `libc++` library path to the binary, so it can be found during runtime.
+
+Note that `clang` is using `module.modulemap` files to map headers to header units. When implicit detection & generation is enabled (implied by `-fmodules`) it will pick these files when located in current directory or beside the header, generate the header unit with the current compiler options and map it to the compilation of the translation unit(s) and adds the object file output to the linker.

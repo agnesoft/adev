@@ -6,6 +6,8 @@
 *.exe
 *.lib
 *.dll
+*.ifc
+*.pcm
 
 #JS
 node_modules/
