@@ -16,6 +16,29 @@ struct TestSuite
     std::vector<Test> tests;
 };
 
+class TestFailedException : public std::exception
+{
+public:
+    explicit TestFailedException(std::string description) noexcept :
+        mDescription{std::move(description)}
+    {
+    }
+
+    [[nodiscard]] auto what() const noexcept -> const char * override
+    {
+        return mDescription.c_str();
+    }
+
+private:
+    std::string mDescription;
+};
+
+class TestThrewException : public TestFailedException
+{
+public:
+    using TestFailedException::TestFailedException;
+};
+
 class TestRunner
 {
 public:
@@ -114,27 +137,59 @@ export auto suite(const char *name, auto (*suiteBody)()->void) -> int
     return 0;
 }
 
-template<typename T>
+export template<typename T>
 class Expect
 {
 public:
-    Expect(const T &value) noexcept :
-        mValue{value}
+    Expect(const T &expression) noexcept :
+        mExpression{expression}
     {
     }
 
-    [[nodiscard]] auto value() const noexcept -> const T &
+    template<typename V>
+    auto toBe(const V &value) -> void
     {
-        return mValue;
+        const auto left = expressionValue<V>();
+
+        if (!(left == value))
+        {
+            std::stringstream stream;
+            stream << left << " != " << value;
+            throw TestFailedException{stream.str()};
+        }
     }
 
 private:
-    const T &mValue;
+    template<typename V>
+    [[nodiscard]] auto expressionValue() const -> V
+    {
+        if constexpr (std::is_invocable<T>::value)
+        {
+            try
+            {
+                return mExpression();
+            }
+            catch (std::exception &e)
+            {
+                throw TestThrewException{e.what()};
+            }
+            catch (...)
+            {
+                throw TestThrewException{"Unknown exception"};
+            }
+        }
+        else
+        {
+            return mExpression;
+        }
+    }
+
+    const T &mExpression;
 };
 
 export template<typename T>
-[[nodiscard]] auto expect(const T &value) noexcept -> Expect<T> &&
+[[nodiscard]] auto expect(const T &value) noexcept -> Expect<T>
 {
-    return std::move(Expect<T>{value});
+    return Expect<T>{value};
 }
 }
