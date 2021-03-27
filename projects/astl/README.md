@@ -2,9 +2,19 @@
 
 C++ Standard Template Library (STL) header unit wrapper.
 
+-   [Generator](#generator)
 -   [Build](#build)
     -   [MSVC](#msvc)
     -   [clang](#clang)
+
+## Generator
+
+The generator is written in Node.js and will output the `astl.hpp` when run in the `astl` directory:
+
+```
+npm install
+npm start
+```
 
 ## Build
 

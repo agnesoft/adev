@@ -1,0 +1,15 @@
+{
+    "name": "astl_generator",
+    "version": "1.0.0",
+    "description": "Generator of Agnesoft C++ STL Wrapper",
+    "main": "main.js",
+    "type": "module",
+    "scripts": {
+        "start": "node main.js"
+    },
+    "author": "Agnesoft <agnesoft@agnesoft.com> (http://www.agnesoft.com/)",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "fs": "0.0.1-security"
+    }
+}
