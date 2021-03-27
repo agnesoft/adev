@@ -23,8 +23,10 @@ Compiler toolchain specific instructions:
 
 ### MSVC
 
+Assumes building in the `astl` directory.
+
 ```
-cl.exe /c /std:c++latest /exportHeader /Fo /TP astl.hpp
+cl.exe /c /std:c++latest /exportHeader /Fo /TP include\astl.hpp
 ```
 
 -   `/c` stop before linking.
@@ -42,10 +44,11 @@ import "astl.hpp";
 Build command of the user:
 
 ```
-cl.exe /std:c++latest /headerUnit "<ASTL path>\astl.hpp=<ASTL IFC path>\astl.hpp.ifc" main.cpp <ASTL obj Path>\astl.obj
+cl.exe /std:c++latest /Iinclude/ /headerUnit "%cd%\astl.hpp=astl.hpp.ifc" test\main.cpp astl.obj
 ```
 
 -   `/std:c++latest` enables modules.
+-   `/include/` adds the include path to find the `astl.hpp`.
 -   `/headerUnit` maps the header file being imported to the `ifc` in format (`"<path to hpp>=<path to its ifc>"`).
 -   Link against the astl.obj as well.
 
