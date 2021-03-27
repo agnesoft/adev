@@ -122,18 +122,22 @@ private:
     bool mFailed = false;
 };
 
-TestRunner RUNNER = TestRunner{};
+auto globalTestRunner() -> TestRunner *
+{
+    static TestRunner runner;
+    return &runner;
+}
 
 export auto test(const char *description, auto (*testBody)()->void) -> void
 {
-    RUNNER.addTest(description, testBody);
+    globalTestRunner()->addTest(description, testBody);
 }
 
 export auto suite(const char *name, auto (*suiteBody)()->void) -> int
 {
-    RUNNER.beginSuite(name);
+    globalTestRunner()->beginSuite(name);
     suiteBody();
-    RUNNER.endSuite();
+    globalTestRunner()->endSuite();
     return 0;
 }
 
