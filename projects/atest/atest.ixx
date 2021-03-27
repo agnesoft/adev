@@ -170,11 +170,13 @@ public:
         {
             throw TestFailedException{"The expression is not callable"};
         }
+        
+        bool failed = false;
 
         try
         {
             mExpression();
-            throw TestFailedException{"Expected the expression to throw but it did not."};
+            failed = true;
         }
         catch (E &e)
         {
@@ -194,27 +196,22 @@ public:
                 throw TestFailedException{stream.str()};
             }
         }
+        catch (std::exception &e)
+        {
+            std::stringstream stream;
+            stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
+            throw TestFailedException(stream.str());
+        }
         catch (...)
         {
-            try
-            {
-                auto eptr = std::current_exception();
-
-                if (eptr)
-                {
-                    std::rethrow_exception(eptr);
-                }
-            }
-            catch (std::exception &e)
-            {
-                std::stringstream stream;
-                stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
-                throw TestFailedException(stream.str());
-            }
-
             std::stringstream stream;
             stream << "Expected exception of type '" << typeid(E).name() << "' but different exception was thrown.";
             throw TestFailedException(stream.str());
+        }
+
+	if (failed)
+	{
+            throw TestFailedException{"Expected the expression to throw but it did not."};
         }
     }
 
