@@ -15,9 +15,9 @@ auto main(int argc, char *argv[]) -> int
     });
 
     atest::test("Test in global suite", [] {
-        atest::expect([] {
+        atest::expect([]() -> int {
             throw std::logic_error{"Callable error"};
-        });
+        }).toBe(0);
     });
 
     atest::suite("Another Suite", [] {
