@@ -1,6 +1,6 @@
 export module atest;
 
-export import "atest_stl.hpp";
+export import "astl.hpp";
 
 namespace atest
 {
