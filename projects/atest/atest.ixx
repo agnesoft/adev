@@ -163,6 +163,37 @@ public:
         }
     }
 
+    template<typename E>
+    auto toThrow(const std::string &exceptionText) -> void
+    {
+        if (!std::is_invocable<T>::value)
+        {
+            throw TestFailedException{"The expression is not callable"};
+        }
+
+        try
+        {
+            mExpression();
+        }
+        catch (E &e)
+        {
+            if (!exceptionText.empty() && exceptionText != e.what())
+            {
+                std::stringstream stream;
+                stream << "Exception text mismatch.\n      "
+                       << "Expected: \"" << exceptionText << "\"\n      "
+                       << "Actual  : \"" << e.what() << "\"";
+                throw TestFailedException{stream.str()};
+            }
+        }
+        catch (...)
+        {
+            std::stringstream stream;
+            stream << "Expected exception of type '" << /* typeid(E).name() << */ "' but different exception was thrown.";
+            throw TestFailedException(stream.str());
+        }
+    }
+
 private:
     template<typename V>
     [[nodiscard]] auto expressionValue() const -> V
