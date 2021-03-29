@@ -9,7 +9,7 @@ C++ testing framework.
 
 ## Dependencies
 
--   [ASTL](projects/astl/README.md)
+-   [ASTL](../astl/README.md)
 
 ## Build
 
@@ -17,7 +17,7 @@ C++ testing framework.
 
 ```
 cl /std:c++latest /headerUnit "project/astl/include/astl.hpp=astl.hpp.ifc" /c /Fo /interface atest.ixx
-cl /std:c++latest /headerUnit "project/astl/include/astl.hpp=astl.hpp.ifc" test\atest_test.cpp test\atest_nomain_test.cpp atest.obj astl.obj
+cl /std:c++latest /headerUnit "project/astl/include/astl.hpp=astl.hpp.ifc" test\atest_test.cpp atest.obj astl.obj
 ```
 
 Everything must be compiled with the same flags that affect code generation including the `astl` dependency.
@@ -41,7 +41,7 @@ cd build
 
 clang++-11 -std=c++2a -I../astl/include -fmodules -Xclang -emit-module-interface -c -x c++ atest.ixx -o atest.pcm
 clang++-11 -std=c++2a -I../astl/include -fmodules -fprebuilt-module-path=. -c -x c++ atest.ixx -o atest.o
-clang++-11 -std=c++2a -I../astl/include -L<libc++pprefix>/lib -lc++ -fmodules -fprebuilt-module-path=. `-Wl,-rpath,<libcxx-install-prefix>/lib` test/atest_test.cpp test/atest_nomain_test.cpp atest.o -o atest_test
+clang++-11 -std=c++2a -I../astl/include -L<libc++pprefix>/lib -lc++ -fmodules -fprebuilt-module-path=. `-Wl,-rpath,<libcxx-install-prefix>/lib` test/atest_test.cpp atest.o -o atest_test
 
 cd ..
 ```
