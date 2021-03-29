@@ -1,3 +1,9 @@
+module;
+
+#ifdef _MSC_VER
+#    include <typeinfo>
+#endif
+
 export module atest;
 
 export import "astl.hpp";
@@ -166,6 +172,9 @@ public:
     template<typename E>
     auto toThrow(const std::string &exceptionText) -> void
     {
+#ifdef _MSC_VER
+        using ::type_info;
+#endif
         bool failed = false;
 
         try

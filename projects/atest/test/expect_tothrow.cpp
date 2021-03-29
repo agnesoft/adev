@@ -1,7 +1,3 @@
-#ifdef _MSC_VER
-#    include <typeinfo> //Required due to MSVC bug
-#endif
-
 import atest;
 
 using atest::expect;
