@@ -10,7 +10,7 @@ static auto s = suite("Expect::toBe()", [] {
     });
 
     test("value != value", [] {
-        expect(1).toBe(2);
+        expect(1).toBe(2).toFail();
     });
 
     test("call == value", [] {
@@ -26,6 +26,6 @@ static auto s = suite("Expect::toBe()", [] {
     });
 
     test("callable throws", [] {
-        expect([]() -> int { throw std::runtime_error{"bad call"}; }).toBe(1);
+        expect([]() -> int { throw std::runtime_error{"bad call"}; }).toBe(1).toFail();
     });
 });

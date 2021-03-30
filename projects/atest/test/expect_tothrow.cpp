@@ -10,11 +10,11 @@ static auto s = suite("Expect::toThrow()", [] {
     });
 
     test("Wrong exception type", [] {
-        expect([] { throw std::runtime_error{""}; }).toThrow<std::logic_error>("");
+        expect([] { throw std::runtime_error{""}; }).toThrow<std::logic_error>("").toFail();
     });
 
     test("Base exception expected but derived thrown", [] {
-        expect([] { throw std::runtime_error{""}; }).toThrow<std::exception>("");
+        expect([] { throw std::runtime_error{""}; }).toThrow<std::exception>("").toFail();
     });
 
     test("Exception text", [] {
@@ -22,10 +22,10 @@ static auto s = suite("Expect::toThrow()", [] {
     });
 
     test("Wrong exception text", [] {
-        expect([] { throw std::runtime_error{"Some exception text"}; }).toThrow<std::runtime_error>("Some different exception text");
+        expect([] { throw std::runtime_error{"Some exception text"}; }).toThrow<std::runtime_error>("Some different exception text").toFail();
     });
 
     test("No throw", [] {
-        expect([] {}).toThrow<std::exception>("");
+        expect([] {}).toThrow<std::exception>("").toFail();
     });
 });

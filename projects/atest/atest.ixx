@@ -10,39 +10,23 @@ export import "astl.hpp";
 
 namespace atest
 {
+struct Failure
+{
+    std::string what;
+};
+
 struct Test
 {
     const char *description = "";
     auto (*testBody)() -> void = nullptr;
+    int expectations = 0;
+    std::vector<Failure> failures;
 };
 
 struct TestSuite
 {
     const char *name = "";
     std::vector<Test> tests;
-};
-
-class TestFailedException : public std::exception
-{
-public:
-    explicit TestFailedException(std::string description) noexcept :
-        mDescription{std::move(description)}
-    {
-    }
-
-    [[nodiscard]] auto what() const noexcept -> const char * override
-    {
-        return mDescription.c_str();
-    }
-
-private:
-    std::string mDescription;
-};
-
-class TestThrewException : public TestFailedException
-{
-public:
-    using TestFailedException::TestFailedException;
 };
 
 class TestRunner
@@ -65,12 +49,17 @@ public:
 
     auto addTest(const char *name, auto (*testBody)()->void) -> void
     {
-        mCurrentSuite->tests.emplace_back(Test{name, testBody});
+        mCurrentSuite->tests.emplace_back(Test{name, testBody, 0, {}});
     }
 
     auto beginSuite(const char *name) -> void
     {
         mCurrentSuite = &mTestSuites.emplace_back(TestSuite{name, {}});
+    }
+
+    auto currentTest() const noexcept -> Test *
+    {
+        return mCurrentTest;
     }
 
     auto endSuite() -> void
@@ -82,21 +71,22 @@ private:
     auto runTest(Test *test) -> void
     {
         std::cout << "  [" << test->description << "]... ";
+        mCurrentTest = test;
+        test->testBody();
 
-        try
+        if (test->failures.empty())
         {
-            test->testBody();
             std::cout << "SUCCESS\n";
         }
-        catch (std::exception &e)
+        else
         {
             mFailed = true;
-            std::cout << "FAILED\n    " << e.what() << '\n';
-        }
-        catch (...)
-        {
-            mFailed = true;
-            std::cout << "FAILED\n    Unknown exception\n";
+            std::cout << "FAILED\n";
+
+            for (const Failure &e : test->failures)
+            {
+                std::cout << "    " << e.what << '\n';
+            }
         }
     }
 
@@ -110,7 +100,7 @@ private:
 
     auto runTestSuite(TestSuite *testSuite) -> void
     {
-        std::cout << "Running tests from '" << testSuite->name << "':\n";
+        std::cout << '"' << testSuite->name << "\":\n";
         runTests(testSuite);
         std::cout << '\n';
     }
@@ -125,6 +115,7 @@ private:
 
     std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global", {}}};
     TestSuite *mCurrentSuite = &mTestSuites.front();
+    Test *mCurrentTest = nullptr;
     bool mFailed = false;
 };
 
@@ -147,40 +138,127 @@ export auto suite(const char *name, auto (*suiteBody)()->void) -> int
     return 0;
 }
 
-export template<typename T>
-class Expect
+export template<typename T, typename V>
+class ExpectToBe
 {
 public:
-    Expect(const T &expression) noexcept :
-        mExpression{expression}
+    ExpectToBe(const T &expression, const V &value) :
+        mExpression{expression},
+        mValue{value}
     {
+        globalTestRunner()->currentTest()->expectations++;
     }
 
-    template<typename V>
-    auto toBe(const V &value) -> void
+    ~ExpectToBe()
     {
-        const auto left = expressionValue<V>();
-
-        if (!(left == value))
+        try
         {
-            std::stringstream stream;
-            stream << left << " != " << value;
-            throw TestFailedException{stream.str()};
+            const auto left = evaluateExpression<V>();
+
+            if (left == mValue)
+            {
+                handleSuccess();
+            }
+            else
+            {
+                std::stringstream stream;
+                stream << left << " != " << mValue;
+                handleFailure(stream.str());
+            }
+        }
+        catch (...)
+        {
+            handleException();
         }
     }
 
-    template<typename E>
-    auto toThrow(const std::string &exceptionText) -> void
+    auto toFail() noexcept
+    {
+        mExpectFailure = true;
+    }
+
+private:
+    template<typename V>
+    [[nodiscard]] auto evaluateExpression() const -> V
+    {
+        if constexpr (std::is_invocable<T>::value)
+        {
+            return mExpression();
+        }
+        else
+        {
+            return mExpression;
+        }
+    }
+
+    auto fail(std::string message) -> void
+    {
+        globalTestRunner()->currentTest()->expectations++;
+        globalTestRunner()->currentTest()->failures.emplace_back(Failure{message});
+    }
+
+    auto handleException() -> void
+    {
+        std::stringstream stream;
+        stream << "Unexpected exception thrown";
+
+        try
+        {
+            throw;
+        }
+        catch (std::exception &e)
+        {
+            stream << ": " << e.what();
+        }
+        catch (...)
+        {
+        }
+
+        handleFailure(stream.str());
+    }
+
+    auto handleFailure(std::string message) -> void
+    {
+        if (!mExpectFailure)
+        {
+            fail(message);
+        }
+    }
+
+    auto handleSuccess() -> void
+    {
+        if (mExpectFailure)
+        {
+            fail("Expected a failure but the test succeeded");
+        }
+    }
+
+    const T &mExpression;
+    const V &mValue;
+    bool mExpectFailure = false;
+};
+
+export template<typename T, typename E>
+class ExpectToThrow
+{
+public:
+    ExpectToThrow(const T &expression, std::string_view exceptionText) :
+        mExpression{expression},
+        mExceptionText{exceptionText}
+    {
+        globalTestRunner()->currentTest()->expectations++;
+    }
+
+    ~ExpectToThrow()
     {
 #ifdef _MSC_VER
         using ::type_info;
 #endif
-        bool failed = false;
 
         try
         {
             mExpression();
-            failed = true;
+            handleFailure("Expected the expression to throw but it did not.");
         }
         catch (E &e)
         {
@@ -188,16 +266,19 @@ public:
             {
                 std::stringstream stream;
                 stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
-                throw TestFailedException(stream.str());
+                handleFailure(stream.str());
             }
-
-            if (!exceptionText.empty() && exceptionText != e.what())
+            else if (!mExceptionText.empty() && mExceptionText != e.what())
             {
                 std::stringstream stream;
                 stream << "Exception text mismatch.\n      "
-                       << "Expected: \"" << exceptionText << "\"\n      "
+                       << "Expected: \"" << mExceptionText << "\"\n      "
                        << "Actual  : \"" << e.what() << "\"";
-                throw TestFailedException{stream.str()};
+                handleFailure(stream.str());
+            }
+            else
+            {
+                handleSuccess();
             }
         }
         catch (...)
@@ -210,47 +291,72 @@ public:
             {
                 std::stringstream stream;
                 stream << "Expected exception of type '" << typeid(E).name() << "' but '" << typeid(e).name() << "' was thrown.";
-                throw TestFailedException(stream.str());
+                handleFailure(stream.str());
             }
             catch (...)
             {
                 std::stringstream stream;
                 stream << "Expected exception of type '" << typeid(E).name() << "' but different exception was thrown.";
-                throw TestFailedException(stream.str());
+                handleFailure(stream.str());
             }
         }
+    }
 
-        if (failed)
-        {
-            throw TestFailedException{"Expected the expression to throw but it did not."};
-        }
+    auto toFail() noexcept
+    {
+        mExpectFailure = true;
     }
 
 private:
-    template<typename V>
-    [[nodiscard]] auto expressionValue() const -> V
+    auto fail(std::string message) -> void
     {
-        if constexpr (std::is_invocable<T>::value)
+        globalTestRunner()->currentTest()->expectations++;
+        globalTestRunner()->currentTest()->failures.emplace_back(Failure{message});
+    }
+
+    auto handleFailure(std::string message) -> void
+    {
+        if (!mExpectFailure)
         {
-            try
-            {
-                return mExpression();
-            }
-            catch (std::exception &e)
-            {
-                throw TestThrewException{e.what()};
-            }
-            catch (...)
-            {
-                throw TestThrewException{"Unknown exception"};
-            }
-        }
-        else
-        {
-            return mExpression;
+            fail(message);
         }
     }
 
+    auto handleSuccess() -> void
+    {
+        if (mExpectFailure)
+        {
+            fail("Expected a failure but the test succeeded");
+        }
+    }
+
+    const T &mExpression;
+    std::string_view mExceptionText;
+    bool mExpectFailure = false;
+};
+
+export template<typename T>
+class Expect
+{
+public:
+    Expect(const T &expression) noexcept :
+        mExpression{expression}
+    {
+    }
+
+    template<typename V>
+    auto toBe(const V &value) -> ExpectToBe<T, V>
+    {
+        return ExpectToBe<T, V>{mExpression, value};
+    }
+
+    template<typename E>
+    auto toThrow(const std::string &exceptionText) -> ExpectToThrow<T, E>
+    {
+        return ExpectToThrow<T, E>{mExpression, exceptionText};
+    }
+
+private:
     const T &mExpression;
 };
 
