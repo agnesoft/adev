@@ -205,7 +205,7 @@ public:
     {
         try
         {
-            const auto left = evaluateExpression<V>();
+            const auto left = evaluateExpression();
 
             if (left == mValue)
             {
@@ -225,7 +225,6 @@ public:
     }
 
 private:
-    template<typename V>
     [[nodiscard]] auto evaluateExpression() const -> V
     {
         if constexpr (std::is_invocable<T>::value)
