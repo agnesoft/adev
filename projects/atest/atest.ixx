@@ -10,9 +10,30 @@ export import "astl.hpp";
 
 namespace atest
 {
+template<typename T, typename... Values>
+auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...values) -> void
+{
+    stream << value;
+
+    if constexpr (sizeof...(Values) > 0)
+    {
+        stringifyImpl(stream, values...);
+    }
+}
+
+template<typename... T>
+[[nodiscard]] auto stringify(const T &...values) -> std::string
+{
+    std::stringstream stream;
+    stringifyImpl(stream, values...);
+    return stream.str();
+}
+
 struct Failure
 {
     std::string what;
+    std::string expected;
+    std::string actual;
 };
 
 struct Test
@@ -49,12 +70,12 @@ public:
 
     auto addTest(const char *name, auto (*testBody)()->void) -> void
     {
-        mCurrentSuite->tests.emplace_back(Test{name, testBody, 0, {}});
+        mCurrentSuite->tests.emplace_back(Test{name, testBody});
     }
 
     auto beginSuite(const char *name) -> void
     {
-        mCurrentSuite = &mTestSuites.emplace_back(TestSuite{name, {}});
+        mCurrentSuite = &mTestSuites.emplace_back(TestSuite{name});
     }
 
     [[nodiscard]] auto currentTest() const noexcept -> Test *
@@ -85,7 +106,16 @@ private:
 
             for (const Failure &e : test->failures)
             {
-                std::cout << "    " << e.what << '\n';
+                if (!e.what.empty())
+                {
+                    std::cout << "    " << e.what << '\n';
+                }
+
+                if (!e.expected.empty())
+                {
+                    std::cout << "      Expected: " << e.expected << '\n'
+                              << "      Actual  : " << e.actual << '\n';
+                }
             }
         }
     }
@@ -113,7 +143,7 @@ private:
         }
     }
 
-    std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global", {}}};
+    std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global"}};
     TestSuite *mCurrentSuite = &mTestSuites.front();
     Test *mCurrentTest = nullptr;
     bool mFailed = false;
@@ -123,19 +153,6 @@ private:
 {
     static TestRunner runner;
     return &runner;
-}
-
-export auto test(const char *description, auto (*testBody)()->void) -> void
-{
-    globalTestRunner()->addTest(description, testBody);
-}
-
-export auto suite(const char *name, auto (*suiteBody)()->void) -> int
-{
-    globalTestRunner()->beginSuite(name);
-    suiteBody();
-    globalTestRunner()->endSuite();
-    return 0;
 }
 
 export template<typename T>
@@ -164,11 +181,11 @@ protected:
         return mExpression;
     }
 
-    auto handleFailure(std::string message) -> void
+    auto handleFailure(Failure &&failure) -> void
     {
         if (!mExpectFailure)
         {
-            fail(message);
+            fail(std::move(failure));
         }
     }
 
@@ -176,15 +193,15 @@ protected:
     {
         if (mExpectFailure)
         {
-            fail("Expected a failure but the test succeeded");
+            fail(Failure{"Expected a failure but the test succeeded."});
         }
     }
 
 private:
-    auto fail(std::string message) -> void
+    auto fail(Failure failure) -> void
     {
         globalTestRunner()->currentTest()->expectations++;
-        globalTestRunner()->currentTest()->failures.emplace_back(Failure{message});
+        globalTestRunner()->currentTest()->failures.emplace_back(std::move(failure));
     }
 
     const T &mExpression;
@@ -203,6 +220,10 @@ public:
 
     ~ExpectToBe()
     {
+#ifdef _MSC_VER
+        using ::type_info;
+#endif
+
         try
         {
             const auto left = evaluateExpression();
@@ -213,14 +234,16 @@ public:
             }
             else
             {
-                std::stringstream stream;
-                stream << left << " != " << mValue;
-                this->handleFailure(stream.str());
+                this->handleFailure(Failure{"Values are not equal", stringify(left), stringify(mValue)});
             }
+        }
+        catch (std::exception &e)
+        {
+            this->handleFailure(Failure{"Unexpected exception thrown", stringify(mValue), stringify(typeid(e).name(), " '", e.what(), '\'')});
         }
         catch (...)
         {
-            handleUnknownException();
+            this->handleFailure(Failure{"Unexpected exception thrown"});
         }
     }
 
@@ -235,26 +258,6 @@ private:
         {
             return this->expression();
         }
-    }
-
-    auto handleUnknownException() -> void
-    {
-        std::stringstream stream;
-        stream << "Unexpected exception thrown";
-
-        try
-        {
-            throw;
-        }
-        catch (std::exception &e)
-        {
-            stream << ": " << e.what();
-        }
-        catch (...)
-        {
-        }
-
-        this->handleFailure(stream.str());
     }
 
     const V &mValue;
@@ -274,10 +277,14 @@ public:
 
     ~ExpectToThrow()
     {
+#ifdef _MSC_VER
+        using ::type_info;
+#endif
+
         try
         {
             this->expression()();
-            this->handleFailure("Expected the expression to throw but it did not.");
+            this->handleFailure(Failure{"No exception thrown", stringify(typeid(E).name(), " '", mExceptionText, '\''), ""});
         }
         catch (E &e)
         {
@@ -302,24 +309,18 @@ private:
         }
     }
 
-    auto exceptionTextMismatch(std::string_view what) -> void
+    auto exceptionTextMismatch(std::string what) -> void
     {
-        std::stringstream stream;
-        stream << "Exception text mismatch.\n      "
-               << "Expected: \"" << mExceptionText << "\"\n      "
-               << "Actual  : \"" << what << "\"";
-        this->handleFailure(stream.str());
+        this->handleFailure(Failure{"Exception text mismatch", mExceptionText, std::move(what)});
     }
 
-    auto exceptionTypeMismatch(const char *recievedExceptionName) -> void
+    auto exceptionTypeMismatch(std::string recievedExceptionName) -> void
     {
 #ifdef _MSC_VER
         using ::type_info;
 #endif
 
-        std::stringstream stream;
-        stream << "Expected exception of type '" << typeid(E).name() << "' but '" << recievedExceptionName << "' was thrown.";
-        this->handleFailure(stream.str());
+        this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), std::move(recievedExceptionName)});
     }
 
     auto handleUnknownException()
@@ -337,7 +338,7 @@ private:
         }
         catch (...)
         {
-            exceptionTypeMismatch("...");
+            exceptionTypeMismatch("unknown exception");
         }
     }
 
@@ -401,6 +402,19 @@ public:
 private:
     const T &mExpression;
 };
+
+export auto suite(const char *name, auto (*suiteBody)()->void) -> int
+{
+    globalTestRunner()->beginSuite(name);
+    suiteBody();
+    globalTestRunner()->endSuite();
+    return 0;
+}
+
+export auto test(const char *description, auto (*testBody)()->void) -> void
+{
+    globalTestRunner()->addTest(description, testBody);
+}
 
 export template<typename T>
 [[nodiscard]] auto expect(const T &value) noexcept -> Expect<T>
