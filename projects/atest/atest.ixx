@@ -131,13 +131,13 @@ public:
 
     auto beginTest(const Test *test) -> void
     {
-        stream() << indent() << std::left << std::setw(mTestWidth + 5) << stringify(sourceLocationToString(test->sourceLocation), '"', test->name, "\"...");
+        stream() << indent() << std::left << std::setw(mTestWidth + 6) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
         mIndentLevel++;
     }
 
     auto beginTestSuite(const TestSuite *testSuite) -> void
     {
-        stream() << sourceLocationToString(testSuite->sourceLocation) << '"' << testSuite->name << "\":\n";
+        stream() << sourceLocationToString(testSuite->sourceLocation) << " \"" << testSuite->name << "\":\n";
         mTestWidth = testsWidth(testSuite);
         mIndentLevel++;
     }
