@@ -165,9 +165,14 @@ public:
 
     auto print(const std::string &text) -> void
     {
+        print("", text);
+    }
+
+    auto print(const std::string &prefix, const std::string &text) -> void
+    {
         if (!text.empty())
         {
-            stream() << indent() << text << '\n';
+            stream() << indent() << prefix << ' ' << text << '\n';
         }
     }
 
@@ -184,9 +189,10 @@ private:
 
     auto printTestFailure(const Failure &failure) -> void
     {
-        print(stringify("at ", sourceLocationToString(failure.sourceLocation), ' ', failure.what));
-        print(stringify("  Expected: ", failure.expected));
-        print(stringify("  Actual  : ", failure.actual));
+        print(stringify("at ", sourceLocationToString(failure.sourceLocation)), failure.what);
+        print("  Expected: ", failure.expected);
+        print("  Actual  : ", failure.actual);
+        stream() << '\n';
     }
 
     auto printTestFailures(const Test *test) -> void
