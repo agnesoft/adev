@@ -299,14 +299,7 @@ public:
 private:
     [[nodiscard]] auto exceptionTextMatches(E &e) -> bool
     {
-        if constexpr (ValidateText)
-        {
-            return mExceptionText == e.what();
-        }
-        else
-        {
-            return true;
-        }
+        return mExceptionText == e.what();
     }
 
     auto exceptionTextMismatch(std::string what) -> void
@@ -359,13 +352,20 @@ private:
 
     auto validateExceptionText(E &e) -> void
     {
-        if (exceptionTextMatches(e))
+        if constexpr (ValidateText)
         {
-            this->handleSuccess();
+            if (exceptionTextMatches(e))
+            {
+                this->handleSuccess();
+            }
+            else
+            {
+                exceptionTextMismatch(e.what());
+            }
         }
         else
         {
-            exceptionTextMismatch(e.what());
+            this->handleSuccess();
         }
     }
 
