@@ -6,6 +6,8 @@ C++ testing framework.
 -   [Build](#build)
     -   [MSVC](#msvc)
     -   [clang](#clang)
+-   [Known Issues](#known-issues)
+    -   [MSVC](#msvc-1)
 
 ## Dependencies
 
@@ -58,3 +60,16 @@ Everything must be compiled with the same flags that affect code generation. The
 -   `-L<libc++pprefix>/lib` adds the `libc++` lib directory to the library search path for linking.
 -   `-lc++` tells clang to link against `libc++`.
 -   `-Wl,-rpath,<libcxx-install-prefix>/lib` embeds the `libc++` library path to the binary, so it can be found during runtime.
+
+## Known Issues
+
+### MSVC
+
+-   [**DOES NOT AFFECT USERS**] Using `type_info` requires `using ::type_info;` otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
+
+-   [**AFFECTS USERS**] Using templated function such as `toThrow` without parameters requires `template` keyword otherwise parser fails: Reported bug: https://developercommunity.visualstudio.com/t/Cannot-instantiate-template-exported-fro/1387974
+
+```
+expect([] { throw 1; }).toThrow<int>(); //DOES NOT WORK WITH MSVC
+expect([] { throw 1; }).template toThrow<int>(); //WORKS WITH MSVC
+```
