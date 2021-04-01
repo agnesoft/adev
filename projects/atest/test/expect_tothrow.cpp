@@ -13,7 +13,7 @@ static auto s = suite("Expect::toThrow()", [] {
         expect([] { throw std::runtime_error{""}; }).template toThrow<std::logic_error>().toFail();
     });
 
-    test("Base exception expected but derived thrown", [] {
+    test("Base expected, derived thrown", [] {
         expect([] { throw std::runtime_error{""}; }).template toThrow<std::exception>().toFail();
     });
 
