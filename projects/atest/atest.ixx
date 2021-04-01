@@ -29,7 +29,7 @@ template<typename... T>
     return stream.str();
 }
 
-template<typename T = int>
+export template<typename T = int>
 class source_location
 {
 public:
