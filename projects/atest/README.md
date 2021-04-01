@@ -67,7 +67,7 @@ Everything must be compiled with the same flags that affect code generation. The
 
 -   [**DOES NOT AFFECT USERS**] Using `type_info` requires `using ::type_info;` otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
 
--   [**AFFECTS USERS**] Using templated function such as `toThrow` without parameters requires `template` keyword otherwise parser fails:
+-   [**AFFECTS USERS**] Using templated function such as `toThrow` without parameters requires `template` keyword otherwise parser fails: Reported bug: https://developercommunity.visualstudio.com/t/Cannot-instantiate-template-exported-fro/1387974
 
 ```
 expect([] { throw 1; }).toThrow<int>(); //DOES NOT WORK WITH MSVC
