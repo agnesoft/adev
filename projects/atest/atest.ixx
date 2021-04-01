@@ -29,17 +29,82 @@ template<typename... T>
     return stream.str();
 }
 
+export template<typename T = int>
+class source_location
+{
+public:
+    source_location() = default;
+
+    source_location(const source_location &other)
+    {
+        *this = other;
+    }
+
+    source_location(const source_location &&other) noexcept
+    {
+        *this = std::move(other);
+    }
+
+    [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> source_location
+    {
+        source_location sourceLocation;
+        sourceLocation.mFile = file;
+        sourceLocation.mLine = line;
+        return sourceLocation;
+    }
+
+    [[nodiscard]] constexpr auto file_name() const noexcept -> const char *
+    {
+        return mFile;
+    }
+
+    [[nodiscard]] constexpr auto line() const noexcept -> int
+    {
+        return mLine;
+    }
+
+    auto operator=(const source_location &other) -> source_location &
+    {
+        if (this != &other)
+        {
+            mFile = other.mFile;
+            mLine = other.mLine;
+        }
+
+        return *this;
+    }
+
+    auto operator=(source_location &&other) noexcept -> source_location &
+    {
+        if (this != &other)
+        {
+            mFile = other.mFile;
+            mLine = other.mLine;
+            other.mFile = nullptr;
+            other.mline = 0;
+        }
+
+        return *this;
+    }
+
+private:
+    const char *mFile = "unknown";
+    int mLine = -1;
+};
+
 struct Failure
 {
     std::string what;
     std::string expected;
     std::string actual;
+    source_location<> sourceLocation;
 };
 
 struct Test
 {
     std::string name;
     auto (*testBody)() -> void = nullptr;
+    source_location<> sourceLocation;
     int expectations = 0;
     std::vector<Failure> failures;
 };
@@ -47,13 +112,14 @@ struct Test
 struct TestSuite
 {
     std::string name;
+    source_location<> sourceLocation;
     std::vector<Test> tests;
 };
 
 class Printer
 {
 public:
-    Printer() noexcept :
+    Printer() :
         mStream{&std::cout}
     {
     }
@@ -65,13 +131,13 @@ public:
 
     auto beginTest(const Test *test) -> void
     {
-        stream() << indent() << "Running \"" << std::left << std::setw(mTestWidth + 4) << (test->name + "\"...");
+        stream() << indent() << std::left << std::setw(mTestWidth + 6) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
         mIndentLevel++;
     }
 
     auto beginTestSuite(const TestSuite *testSuite) -> void
     {
-        stream() << "Running tests from \"" << testSuite->name << "\" test suite:\n";
+        stream() << sourceLocationToString(testSuite->sourceLocation) << " \"" << testSuite->name << "\":\n";
         mTestWidth = testsWidth(testSuite);
         mIndentLevel++;
     }
@@ -99,16 +165,47 @@ public:
 
     auto print(const std::string &text) -> void
     {
+        print("", text);
+    }
+
+    auto print(const std::string &prefix, const std::string &text) -> void
+    {
         if (!text.empty())
         {
-            stream() << indent() << text << '\n';
+            stream() << indent() << prefix << ' ' << text << '\n';
         }
     }
 
 private:
+    [[nodiscard]] auto sourceLocationToString(source_location<> location) const -> std::string
+    {
+        return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
+    }
+
     [[nodiscard]] auto indent() const -> std::string
     {
         return std::string(mIndentLevel * 2, ' ');
+    }
+
+    auto printTestFailure(const Failure &failure) -> void
+    {
+        print(stringify("at ", sourceLocationToString(failure.sourceLocation)), failure.what);
+        print("  Expected: ", failure.expected);
+        print("  Actual  : ", failure.actual);
+        stream() << '\n';
+    }
+
+    auto printTestFailures(const Test *test) -> void
+    {
+        for (const Failure &failure : test->failures)
+        {
+            printTestFailure(failure);
+        }
+    }
+
+    [[nodiscard]] auto stream() noexcept -> std::ostream &
+    {
+        return *mStream;
     }
 
     [[nodiscard]] auto testWidth() const noexcept -> int
@@ -116,7 +213,7 @@ private:
         return mTestWidth;
     }
 
-    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> int
+    [[nodiscard]] auto testNamesWidth(const TestSuite *testSuite) const -> int
     {
         int width = 0;
 
@@ -131,24 +228,9 @@ private:
         return width;
     }
 
-    auto printTestFailure(const Failure &failure) -> void
+    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> int
     {
-        print(failure.what);
-        print("  Expected: " + failure.expected);
-        print("  Actual  : " + failure.actual);
-    }
-
-    auto printTestFailures(const Test *test) -> void
-    {
-        for (const Failure &failure : test->failures)
-        {
-            printTestFailure(failure);
-        }
-    }
-
-    [[nodiscard]] auto stream() noexcept -> std::ostream &
-    {
-        return *mStream;
+        return sourceLocationToString(testSuite->tests.back().sourceLocation).size() + testNamesWidth(testSuite);
     }
 
     std::ostream *mStream = nullptr;
@@ -173,14 +255,14 @@ public:
         std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
-    auto addTest(const char *name, auto (*testBody)()->void) -> void
+    auto addTest(const char *name, auto (*testBody)()->void, source_location<> sourceLocation) -> void
     {
-        mCurrentTestSuite->tests.emplace_back(Test{name, testBody});
+        mCurrentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
     }
 
-    auto beginRecordTests(const char *testSuiteName) -> void
+    auto beginRecordTests(const char *testSuiteName, source_location<> sourceLocation) -> void
     {
-        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName});
+        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, sourceLocation});
     }
 
     [[nodiscard]] auto currentTest() const noexcept -> Test *
@@ -250,8 +332,9 @@ export template<typename T>
 class ExpectBase
 {
 public:
-    explicit ExpectBase(const T &expression) noexcept :
-        mExpression{expression}
+    explicit ExpectBase(const T &expression, source_location<> sourceLocation) noexcept :
+        mExpression{expression},
+        mSourceLocation{sourceLocation}
     {
         globalTestRunner()->currentTest()->expectations++;
     }
@@ -289,22 +372,24 @@ protected:
     }
 
 private:
-    auto fail(Failure failure) -> void
+    auto fail(Failure &&failure) -> void
     {
+        failure.sourceLocation = mSourceLocation;
         globalTestRunner()->currentTest()->expectations++;
         globalTestRunner()->currentTest()->failures.emplace_back(std::move(failure));
     }
 
     const T &mExpression;
     bool mExpectFailure = false;
+    source_location<> mSourceLocation;
 };
 
 export template<typename T, typename V>
 class ExpectToBe : public ExpectBase<T>
 {
 public:
-    ExpectToBe(const T &expression, const V &value) :
-        ExpectBase<T>{expression},
+    ExpectToBe(const T &expression, const V &value, source_location<> sourceLocation) :
+        ExpectBase<T>{expression, sourceLocation},
         mValue{value}
     {
     }
@@ -360,8 +445,8 @@ requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
 public:
     using ExpectBase<T>::ExpectBase;
 
-    ExpectToThrow(const T &expression, std::string exceptionText) :
-        ExpectBase<T>{expression},
+    ExpectToThrow(const T &expression, std::string exceptionText, source_location<> sourceLocation) :
+        ExpectBase<T>{expression, sourceLocation},
         mExceptionText{std::move(exceptionText)}
     {
     }
@@ -467,50 +552,54 @@ export template<typename T>
 class Expect
 {
 public:
-    Expect(const T &expression) noexcept :
-        mExpression{expression}
+    Expect(const T &expression, source_location<> sourceLocation) noexcept :
+        mExpression{expression},
+        mSourceLocation{sourceLocation}
     {
     }
 
     template<typename V>
     auto toBe(const V &value) -> ExpectToBe<T, V>
     {
-        return ExpectToBe<T, V>{mExpression, value};
+        return ExpectToBe<T, V>{mExpression, value, mSourceLocation};
     }
 
     template<typename E>
     requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, false>
     {
-        return ExpectToThrow<T, E, false>{mExpression};
+        return ExpectToThrow<T, E, false>{mExpression, mSourceLocation};
     }
 
     template<typename E>
     requires std::invocable<T> auto toThrow(const std::string &exceptionText) -> ExpectToThrow<T, E, true>
     {
-        return ExpectToThrow<T, E, true>{mExpression, exceptionText};
+        return ExpectToThrow<T, E, true>{mExpression, exceptionText, mSourceLocation};
     }
 
 private:
     const T &mExpression;
+    source_location<> mSourceLocation;
 };
 
-export auto suite(const char *name, auto (*suiteBody)()->void) -> int
+export template<typename T = int>
+auto suite(const char *name, auto (*suiteBody)()->void, source_location<> sourceLocation = source_location<>::current()) -> int
 {
-    globalTestRunner()->beginRecordTests(name);
+    globalTestRunner()->beginRecordTests(name, sourceLocation);
     suiteBody();
     globalTestRunner()->stopRecordTests();
     return 0;
 }
 
-export auto test(const char *name, auto (*testBody)()->void) -> void
+export template<typename T = int>
+auto test(const char *name, auto (*testBody)()->void, source_location<> sourceLocation = source_location<>::current()) -> void
 {
-    globalTestRunner()->addTest(name, testBody);
+    globalTestRunner()->addTest(name, testBody, sourceLocation);
 }
 
 export template<typename T>
-[[nodiscard]] auto expect(const T &value) noexcept -> Expect<T>
+[[nodiscard]] auto expect(const T &value, source_location<> sourceLocation = source_location<>::current()) noexcept -> Expect<T>
 {
-    return Expect<T>{value};
+    return Expect<T>{value, sourceLocation};
 }
 
 export auto setPrinterStream(std::ostream *stream) -> void
