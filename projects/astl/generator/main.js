@@ -151,11 +151,7 @@ function stlHeader(name, cppVersion) {
 #if __has_include(<${name}>)
 #    include <${name}>${cppVersion ? ` //C++${cppVersion}` : ""}
 #else
-#    ifdef _MSC_VER
-#        pragma message("<${name}> not available${cppVersion ? ` (C++${cppVersion})` : ""}")
-#    else
-#        warning "<${name}> not available${cppVersion ? ` (C++${cppVersion})` : ""}"
-#    endif
+#    pragma message("<${name}> not available${cppVersion ? ` (C++${cppVersion})` : ""}")
 #endif
 `;
 }
@@ -182,7 +178,16 @@ function stlIncludes() {
 
 function main() {
     let header = `${includeGuard()}
+
+#ifdef __clang__
+#    pragma clang diagnostic push
+#    pragma clang diagnostic ignored "-Wpedantic"
+#endif
 ${stlIncludes()}
+#ifdef __clang__
+#   pragma clang diagnostic pop
+#endif
+
 #endif
 `;
 
