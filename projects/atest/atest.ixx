@@ -9,7 +9,11 @@ export module atest;
 #ifdef _MSC_VER
 #    pragma warning(push)
 #    pragma warning(disable : 5106)
+#endif
+
 export import "astl.hpp";
+
+#ifdef _MSC_VER
 #    pragma warning(pop)
 #endif
 
