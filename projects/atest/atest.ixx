@@ -744,9 +744,9 @@ auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> 
         suiteBody();
         globalTestRunner()->stopRecordTests();
     }
-    catch(...)
+    catch (...)
     {
-    	return 1;
+        return 1;
     }
 
     return 0;

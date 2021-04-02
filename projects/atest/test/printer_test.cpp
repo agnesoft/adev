@@ -25,4 +25,3 @@ static const auto s = suite("Printer", [] { //NOLINT(cert-err58-cpp)
         expect(S{1}).toBe(S{2}).toFail();
     });
 });
-
