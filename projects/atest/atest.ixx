@@ -6,7 +6,12 @@ module;
 
 export module atest;
 
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 5106)
 export import "astl.hpp";
+#    pragma warning(pop)
+#endif
 
 namespace atest
 {
@@ -105,8 +110,8 @@ struct Test
     std::string name;
     auto (*testBody)() -> void = nullptr;
     source_location<> sourceLocation;
-    int expectations = 0;
-    int failedExpectations = 0;
+    size_t expectations = 0;
+    size_t failedExpectations = 0;
     std::chrono::microseconds duration = std::chrono::microseconds::zero();
     std::vector<Failure> failures;
 };
@@ -120,11 +125,11 @@ struct TestSuite
 
 struct Report
 {
-    int testSuites = 0;
-    int tests = 0;
-    int failedTests = 0;
-    int expectations = 0;
-    int failedExpectations = 0;
+    size_t testSuites = 0;
+    size_t tests = 0;
+    size_t failedTests = 0;
+    size_t expectations = 0;
+    size_t failedExpectations = 0;
     std::chrono::microseconds duration = std::chrono::microseconds::zero();
 };
 
@@ -160,10 +165,10 @@ public:
         mIndentLevel++;
     }
 
-    auto endRun(const Report &report, const std::vector<TestSuite> &testSuites) -> void
+    auto endRun(const Report &report) -> void
     {
-        const int width = std::to_string(std::max(report.tests, report.expectations)).size();
-        const int passedWidth = std::to_string(std::max(report.failedTests, report.failedExpectations)).size();
+        const size_t width = std::to_string(std::max(report.tests, report.expectations)).size();
+        const size_t passedWidth = std::to_string(std::max(report.failedTests, report.failedExpectations)).size();
 
         stream()
             << separator() << "\n"
@@ -247,14 +252,14 @@ private:
         return *mStream;
     }
 
-    [[nodiscard]] auto testWidth() const noexcept -> int
+    [[nodiscard]] auto testWidth() const noexcept -> size_t
     {
         return mTestWidth;
     }
 
-    [[nodiscard]] auto testNamesWidth(const TestSuite *testSuite) const -> int
+    [[nodiscard]] auto testNamesWidth(const TestSuite *testSuite) const -> size_t
     {
-        int width = 0;
+        size_t width = 0;
 
         for (const Test &test : testSuite->tests)
         {
@@ -267,14 +272,14 @@ private:
         return width;
     }
 
-    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> int
+    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> size_t
     {
         return sourceLocationToString(testSuite->tests.back().sourceLocation).size() + testNamesWidth(testSuite);
     }
 
     std::ostream *mStream = nullptr;
     int mIndentLevel = 0;
-    int mTestWidth = 0;
+    size_t mTestWidth = 0;
 };
 
 class Reporter
@@ -297,7 +302,7 @@ public:
     {
         Report report;
         report.testSuites = testSuitesCount(testSuites);
-        report.tests = std::accumulate(testSuites.begin(), testSuites.end(), 0, [](int count, const TestSuite &testSuite) { return count + testSuite.tests.size(); });
+        report.tests = std::accumulate(testSuites.begin(), testSuites.end(), size_t{0}, [](size_t count, const TestSuite &testSuite) { return count + testSuite.tests.size(); });
         return report;
     }
 
@@ -324,7 +329,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto testSuitesCount(const std::vector<TestSuite> &testSuites) const -> int
+    [[nodiscard]] auto testSuitesCount(const std::vector<TestSuite> &testSuites) const -> size_t
     {
         if (testSuites[0].tests.empty())
         {
@@ -353,7 +358,7 @@ public:
             mPrinter.print("Unexpected exception thrown when running tests.");
         }
 
-        mPrinter.endRun(Reporter{}.generateReport(mTestSuites), mTestSuites);
+        mPrinter.endRun(Reporter{}.generateReport(mTestSuites));
         std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
