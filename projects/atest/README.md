@@ -3,6 +3,16 @@
 C++ testing framework.
 
 -   [Dependencies](#dependencies)
+-   [Reference](#reference)
+    -   [test()](#test)
+    -   [suite()](#suite)
+    -   [expect()](#expect)
+        -   [toBe()](#tobe)
+        -   [toMatch()](#tomatch)
+        -   [toThrow()](#tothrow)
+        -   [toFail()](#tofail)
+    -   [Test Runner](#test-runner)
+    -   [Printer](#printer)
 -   [Build](#build)
     -   [MSVC](#msvc)
     -   [clang](#clang)
@@ -12,7 +22,150 @@ C++ testing framework.
 
 ## Dependencies
 
+-   C++20
 -   [ASTL](../astl/README.md)
+
+## Reference
+
+### test()
+
+```
+auto atest::test(const char *name, auto (*testBody)()->void) -> void
+```
+
+Registers a test `testBody` under the name `name` within a test suite. It can be called either within a [test suite](#suite) or in the global context (e.g. `main()`). When called in the global context the tests will be registered in the implicit `Global` test suite. While it is possible to use any function as a test body the typical usage would be using a lambda.
+
+Example:
+
+```
+import atest;
+int main() {
+    test("My test", [] {
+        //...
+    });
+}
+```
+
+### suite()
+
+```
+auto atest::suite(const char *name, auto (*suiteBody)()->void) noexcept -> int
+```
+
+Groups tests into test suites under the `name`. It can be called in `main()` or outside of main capturing the result in a global/static variable in order to let the suite and tests be registered. The function will return `0` if it succeeds or `1` if an exception has been thrown during registration. No exceptions are propagated as the function is typically called before `main()` and thus it is not possible to capture the exceptions.
+
+Example:
+
+```
+import atest;
+static const auto s = suite("My test suite", [] {
+    test("My test", [] {
+        //...
+    });
+});
+```
+
+### expect()
+
+```
+template<typename T>
+auto atest::expect(const T &value) noexcept -> Expect<T>
+```
+
+Starts composition of the test's expectation (assertion). Any `T` is allowed as argument. If `T` is a callable it will be executed once the assertion is finalized (no exceptions will be propagated from the call). The return value is the internal class `Expect` that lets you select from the supported expecations:
+
+#### toBe()
+
+```
+template<typename V>
+auto toBe(const V &value) -> ExpectToMatch
+```
+
+Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be easily supported by simply defining the `operator==` for them.
+
+Examples:
+
+```
+expect(1 + 1).toBe(2); //matching values
+expect([] { return 1 + 1; }).toBe(2); //matching result of a callable and a value
+```
+
+#### toMatch()
+
+```
+template<typename M, typename V>
+auto toMatch(const V &value) -> ExpectToMatch
+```
+
+Completes the expectation using a custom matcher. The custom matcher can be any callable type that takes parameters of type `T` and `V` to perfrom the matching (i.e. `auto operator()(const T&, const V&) -> bool`). Additionally it needs to have following methods:
+
+-   `auto describe() -> std::string`
+-   `auto expected(const T &, const V &) -> std::string`
+-   `auto actual(const T &, const V &) -> std::string`
+
+These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcome of the match and will be given the actual values. These functions do not need to be specified if you do not need to customize the output and inherit from `atest::MatcherBase`.
+
+Example:
+
+```
+struct MyMatcher : atest::MatcherBase
+{
+    auto describe() -> std::string { return "Left value to be less than right value."; }
+    auto expected(int left, int right) -> std::string { return std::to_string(left) + " < " + std::to_string(right) }
+    auto actual(int left, int right) -> std::string { return std::to_string(left) + (left == right ? std::string{" = "} : std::string{" > "}) + std::to_string(right); }
+    auto operator()(int left, int right) -> bool { return left < right; }
+};
+
+expect(1).toMatch<MyMatcher>(2);
+```
+
+#### toThrow()
+
+```
+template<typename E>
+auto toThrow() -> ExpectToThrow
+
+template<typename E>
+auto toThrow(const std::string &exceptionText) -> ExpectToThrow
+```
+
+Completes the matching by expecting an exception. The `T` passed to the `expect()` must be a callable for this expectation. The exception must be specified as a template argument to the call. Optionally an expected exception text can be passed. The type match of the exception thrown and expected is performed using `typeid` (RTTI) and the exact match is required (expecting base class but throwing derived is a failure).
+
+For the text matching to work the exception `E` must provide a method `what()` that returns a string. It is not possible to match an exception text against a throw of an `int` for example.
+
+Examples:
+
+```
+expect([] { throw std::exception{}; }).toThrow<std::exception>();
+expect([] { throw std::logic_error{"Some text"}; }).toThrow<std::logic_error>("Some text");
+expect([] { throw 1; }).toThrow<int>();
+```
+
+#### toFail()
+
+```
+auto toFail() -> void
+```
+
+Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios.
+
+Example:
+
+```
+expect(1).toBe(2).toFail(); //passes despite failing
+```
+
+### Test Runner
+
+The test runner is a global object first created upon first registration of a test suite or a test. All subsequent registrations of the test suites and tests wil be done with this single global test runner. The tests are actually run in its destructor and no exceptions are propagated from it. At the end of the run the test runner will call `std::exit` with either `0` in case all tests passed or `1` if there were any failures.
+
+The registration and running of the tests are automatic operations done typically outside of `main()` and for that reason cannot be controlled from within the program. Usually the `main()` function can remain completely empty but it is possible to register test suites and tests directly in `main()` as well.
+
+### Printer
+
+The `atest` outputs the progress and results to `std::cout` by default. It is possible to change the output stream with `auto atest::setPrinterStream(std::ostream *stream) -> void`. This can be safely done in `main()` before the test run begins (see [Test Runner](#test-runner)).
+
+It is also a requirement for all values used in the expectations to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when building the test. The containers that have `begin()` and `end()` are automatically printed as arrays so usually only the internal type `T` must be made printable unless a custom printing is needed of the entire container.
 
 ## Build
 

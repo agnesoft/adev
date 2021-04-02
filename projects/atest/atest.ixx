@@ -448,7 +448,7 @@ public:
         globalTestRunner()->currentTest()->expectations++;
     }
 
-    auto toFail() noexcept
+    auto toFail() noexcept -> void
     {
         mExpectFailure = true;
     }
