@@ -7,7 +7,8 @@ C++ testing framework.
     -   [MSVC](#msvc)
     -   [clang](#clang)
 -   [Known Issues](#known-issues)
-    -   [MSVC](#msvc-1)
+    -   [Affects Users](#affects-users)
+    -   [Does Not Affect Users](#does-not-affect-users)
 
 ## Dependencies
 
@@ -63,13 +64,12 @@ Everything must be compiled with the same flags that affect code generation. The
 
 ## Known Issues
 
-### MSVC
+### Affects Users
 
--   [**DOES NOT AFFECT USERS**] Using `type_info` requires `using ::type_info;` otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
+-   Using templated function such as `toThrow` (e.g. `expect([] { throw 1; }).toThrow<int>();` does not work and requires `template` keyword (e.g. `expect([] { throw 1; }).template toThrow<int>();`) otherwise parser fails: Reported bug: https://developercommunity.visualstudio.com/t/Cannot-instantiate-template-exported-fro/1387974
 
--   [**AFFECTS USERS**] Using templated function such as `toThrow` without parameters requires `template` keyword otherwise parser fails: Reported bug: https://developercommunity.visualstudio.com/t/Cannot-instantiate-template-exported-fro/1387974
+### Does Not Affect Users
 
-```
-expect([] { throw 1; }).toThrow<int>(); //DOES NOT WORK WITH MSVC
-expect([] { throw 1; }).template toThrow<int>(); //WORKS WITH MSVC
-```
+-   [**All**] No STL vendor currently supports C++20 `source_location`. It is being emulated with `__builtin_FILE` that however is not `consteval` and does not really evaluate at the callsite. To force it to evaluate at the callsite the `source_location` and its callers `suite`. `test` and `expect` are all template functions so they are instantiated at the call site. Once actual `source_location` is available the custom version can be scrapped and `suite` and `test` may stop being template functions.
+-   [**MSVC 16.9.3**] Using `type_info` requires `using ::type_info;` otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
+-   [**libc++ 11.1.0**] C++20 `operator<<(std::chrono::duration)` is missing in `libc++` and requires a workaround in form of `duration.count() << "ms"` to emulate the operator. Should be removed once `libc++` implements this feature.
