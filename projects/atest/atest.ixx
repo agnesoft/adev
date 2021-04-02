@@ -173,12 +173,12 @@ public:
 
     auto endRun(const Report &report) -> void
     {
-        const size_t width = std::to_string(std::max(report.tests, report.expectations)).size();
-        const size_t passedWidth = std::to_string(std::max(report.failedTests, report.failedExpectations)).size();
+        const int width = static_cast<int>(std::to_string(std::max(report.tests, report.expectations)).size());
+        const int passedWidth = static_cast<int>(std::to_string(std::max(report.failedTests, report.failedExpectations)).size());
 
         stream()
             << separator() << "\n"
-            << "Result      : " << (report.failedTests == 0 ? "PASSED" : "FAILED") << '\n'
+            << "Result      : " << std::string_view{report.failedTests == 0 ? "PASSED" : "FAILED"} << '\n'
             << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(report.duration).count() << "ms\n"
             << "Tests       : " << std::left << std::setw(width) << report.tests << " | "
             << std::left << std::setw(passedWidth) << (report.tests - report.failedTests) << " passed | "
@@ -223,7 +223,7 @@ public:
     }
 
 private:
-    [[nodiscard]] auto sourceLocationToString(source_location<> location) const -> std::string
+    [[nodiscard]] static auto sourceLocationToString(source_location<> location) -> std::string
     {
         return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
     }
@@ -248,9 +248,10 @@ private:
         }
     }
 
-    [[nodiscard]] auto separator() const -> std::string
+    [[nodiscard]] static auto separator() -> std::string
     {
-        return std::string(75, '=');
+        constexpr size_t SEPARATOR_WIDTH = 75;
+        return std::string(SEPARATOR_WIDTH, '=');
     }
 
     [[nodiscard]] auto stream() noexcept -> std::ostream &
@@ -263,7 +264,7 @@ private:
         return mTestWidth;
     }
 
-    [[nodiscard]] auto testNamesWidth(const TestSuite *testSuite) const -> size_t
+    [[nodiscard]] static auto testNamesWidth(const TestSuite *testSuite) -> int
     {
         size_t width = 0;
 
@@ -275,17 +276,17 @@ private:
             }
         }
 
-        return width;
+        return static_cast<int>(width);
     }
 
-    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> size_t
+    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> int
     {
-        return sourceLocationToString(testSuite->tests.back().sourceLocation).size() + testNamesWidth(testSuite);
+        return static_cast<int>(sourceLocationToString(testSuite->tests.back().sourceLocation).size()) + testNamesWidth(testSuite);
     }
 
     std::ostream *mStream = nullptr;
     int mIndentLevel = 0;
-    size_t mTestWidth = 0;
+    int mTestWidth = 0;
 };
 
 class Reporter
@@ -313,7 +314,7 @@ public:
     }
 
 private:
-    auto reportTest(Report *report, const Test &test) const -> void
+    static auto reportTest(Report *report, const Test &test) -> void
     {
         report->expectations += test.expectations;
         report->duration += test.duration;
@@ -335,7 +336,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto testSuitesCount(const std::vector<TestSuite> &testSuites) const -> size_t
+    [[nodiscard]] static auto testSuitesCount(const std::vector<TestSuite> &testSuites) -> size_t
     {
         if (testSuites[0].tests.empty())
         {
@@ -351,6 +352,10 @@ private:
 class TestRunner
 {
 public:
+    TestRunner() = default;
+    TestRunner(const TestRunner &testRunner) = delete;
+    TestRunner(TestRunner &&testRunner) noexcept = default;
+
     ~TestRunner()
     {
         try
@@ -370,12 +375,12 @@ public:
 
     auto addTest(const char *name, auto (*testBody)()->void, source_location<> sourceLocation) -> void
     {
-        mCurrentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
+        mCurrentTestSuite->tests.emplace_back(Test{name, testBody, std::move(sourceLocation)});
     }
 
     auto beginRecordTests(const char *testSuiteName, source_location<> sourceLocation) -> void
     {
-        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, sourceLocation});
+        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, std::move(sourceLocation)});
     }
 
     [[nodiscard]] auto currentTest() const noexcept -> Test *
@@ -393,6 +398,9 @@ public:
         mCurrentTestSuite = &mTestSuites.front();
     }
 
+    auto operator=(const TestRunner &testRunner) -> TestRunner & = delete;
+    auto operator=(TestRunner &&testRunner) noexcept -> TestRunner & = default;
+
 private:
     auto runTest(Test *test) -> void
     {
@@ -403,7 +411,7 @@ private:
         mPrinter.endTest(test);
     }
 
-    auto runTestBody(Test *test) -> void
+    static auto runTestBody(Test *test) -> void
     {
         try
         {
@@ -472,7 +480,7 @@ class ExpectBase
 public:
     explicit ExpectBase(const T &expression, source_location<> sourceLocation) noexcept :
         mExpression{expression},
-        mSourceLocation{sourceLocation}
+        mSourceLocation{std::move(sourceLocation)}
     {
         globalTestRunner()->currentTest()->expectations++;
     }
@@ -522,7 +530,7 @@ class ExpectToMatch : public ExpectBase<T>
 {
 public:
     ExpectToMatch(const T &expression, const V &value, source_location<> sourceLocation) :
-        ExpectBase<T>{expression, sourceLocation},
+        ExpectBase<T>{expression, std::move(sourceLocation)},
         mValue{value}
     {
     }
@@ -580,7 +588,7 @@ public:
     using ExpectBase<T>::ExpectBase;
 
     ExpectToThrow(const T &expression, std::string exceptionText, source_location<> sourceLocation) :
-        ExpectBase<T>{expression, sourceLocation},
+        ExpectBase<T>{expression, std::move(sourceLocation)},
         mExceptionText{std::move(exceptionText)}
     {
     }

@@ -46,6 +46,7 @@ hicpp-multiway-paths-covered,
 hicpp-no-assembler,
 hicpp-signed-bitwise,
 -readability-uppercase-literal-suffix
+-readability-else-after-return
 '
 WarningsAsErrors: true
 FormatStyle: file
