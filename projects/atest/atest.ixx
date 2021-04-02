@@ -706,7 +706,7 @@ private:
 export class MatcherBase
 {
 public:
-    [[nodiscard]] auto describe() const -> std::string
+    [[nodiscard]] static auto describe() -> std::string
     {
         return "Values are not equal.";
     }
@@ -740,7 +740,7 @@ class Expect
 public:
     Expect(const T &expression, source_location<> sourceLocation) noexcept :
         mExpression{expression},
-        mSourceLocation{sourceLocation}
+        mSourceLocation{std::move(sourceLocation)}
     {
     }
 
@@ -774,7 +774,7 @@ private:
 };
 
 export template<typename T = int>
-auto suite(const char *name, auto (*suiteBody)()->void, source_location<> sourceLocation = source_location<>::current()) -> int
+auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> int
 {
     globalTestRunner()->beginRecordTests(name, sourceLocation);
     suiteBody();
@@ -783,7 +783,7 @@ auto suite(const char *name, auto (*suiteBody)()->void, source_location<> source
 }
 
 export template<typename T = int>
-auto test(const char *name, auto (*testBody)()->void, source_location<> sourceLocation = source_location<>::current()) -> void
+auto test(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> void
 {
     globalTestRunner()->addTest(name, testBody, sourceLocation);
 }
