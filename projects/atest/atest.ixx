@@ -42,20 +42,6 @@ export template<typename T = int>
 class source_location
 {
 public:
-    source_location() = default;
-
-    source_location(const source_location &other)
-    {
-        *this = other;
-    }
-
-    source_location(const source_location &&other) noexcept
-    {
-        *this = std::move(other);
-    }
-
-    ~source_location() = default;
-
     [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> source_location
     {
         source_location sourceLocation;
@@ -72,30 +58,6 @@ public:
     [[nodiscard]] constexpr auto line() const noexcept -> int
     {
         return mLine;
-    }
-
-    auto operator=(const source_location &other) -> source_location &
-    {
-        if (this != &other)
-        {
-            mFile = other.mFile;
-            mLine = other.mLine;
-        }
-
-        return *this;
-    }
-
-    auto operator=(source_location &&other) noexcept -> source_location &
-    {
-        if (this != &other)
-        {
-            mFile = other.mFile;
-            mLine = other.mLine;
-            other.mFile = nullptr;
-            other.mline = 0;
-        }
-
-        return *this;
     }
 
 private:
@@ -738,9 +700,9 @@ export template<typename T>
 class Expect
 {
 public:
-    Expect(const T &expression, source_location<> sourceLocation) noexcept :
+    Expect(const T &expression, const source_location<> &sourceLocation) noexcept :
         mExpression{expression},
-        mSourceLocation{std::move(sourceLocation)}
+        mSourceLocation{sourceLocation}
     {
     }
 
@@ -789,7 +751,7 @@ auto test(const char *name, auto (*testBody)()->void, const source_location<> &s
 }
 
 export template<typename T>
-[[nodiscard]] auto expect(const T &value, source_location<> sourceLocation = source_location<>::current()) noexcept -> Expect<T>
+[[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T>
 {
     return Expect<T>{value, sourceLocation};
 }
