@@ -22,7 +22,7 @@ namespace atest
 template<typename T, typename... Values>
 auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...values) -> void
 {
-    stream << value;
+    stream << value; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
 
     if constexpr (sizeof...(Values) > 0)
     {
@@ -160,7 +160,8 @@ public:
 
     auto beginTest(const Test *test) -> void
     {
-        stream() << indent() << std::left << std::setw(mTestWidth + 6) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
+        constexpr int EXTRA_WIDTH = 6;
+        stream() << indent() << std::left << std::setw(mTestWidth + EXTRA_WIDTH) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
         mIndentLevel++;
     }
 
@@ -178,7 +179,7 @@ public:
 
         stream()
             << separator() << "\n"
-            << "Result      : " << std::string_view{report.failedTests == 0 ? "PASSED" : "FAILED"} << '\n'
+            << "Result      : " << (report.failedTests == 0 ? std::string_view{"PASSED"} : std::string_view{"FAILED"}) << '\n'
             << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(report.duration).count() << "ms\n"
             << "Tests       : " << std::left << std::setw(width) << report.tests << " | "
             << std::left << std::setw(passedWidth) << (report.tests - report.failedTests) << " passed | "
@@ -223,7 +224,7 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto sourceLocationToString(source_location<> location) -> std::string
+    [[nodiscard]] static auto sourceLocationToString(const source_location<> &location) -> std::string
     {
         return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
     }
@@ -292,7 +293,7 @@ private:
 class Reporter
 {
 public:
-    [[nodiscard]] auto generateReport(const std::vector<TestSuite> &testSuites) const -> Report
+    [[nodiscard]] static auto generateReport(const std::vector<TestSuite> &testSuites) -> Report
     {
         Report report;
         report.testSuites = testSuitesCount(testSuites);
@@ -305,7 +306,7 @@ public:
         return report;
     }
 
-    [[nodiscard]] auto generateStats(const std::vector<TestSuite> &testSuites) const -> Report
+    [[nodiscard]] static auto generateStats(const std::vector<TestSuite> &testSuites) -> Report
     {
         Report report;
         report.testSuites = testSuitesCount(testSuites);
@@ -326,7 +327,7 @@ private:
         }
     }
 
-    auto reportTestSuite(Report *report, const TestSuite &testSuite) const -> void
+    static auto reportTestSuite(Report *report, const TestSuite &testSuite) -> void
     {
         report->tests += testSuite.tests.size();
 
@@ -360,7 +361,7 @@ public:
     {
         try
         {
-            mPrinter.beginRun(Reporter{}.generateStats(mTestSuites));
+            mPrinter.beginRun(Reporter::generateStats(mTestSuites));
             runTestSuites();
         }
         catch (...)
@@ -369,7 +370,7 @@ public:
             mPrinter.print("Unexpected exception thrown when running tests.");
         }
 
-        mPrinter.endRun(Reporter{}.generateReport(mTestSuites));
+        mPrinter.endRun(Reporter::generateReport(mTestSuites));
         std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
