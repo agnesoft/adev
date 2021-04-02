@@ -4,7 +4,7 @@ using atest::expect;
 using atest::suite;
 using atest::test;
 
-static auto s = suite("Expect::toThrow()", [] {
+static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     test("Exception type", [] {
         expect([] { throw std::logic_error{""}; }).template toThrow<std::logic_error>();
     });

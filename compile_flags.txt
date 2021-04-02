@@ -1,0 +1,13 @@
+-std=c++20
+-Wall
+-Wextra
+-pedantic
+-Wno-missing-field-initializers
+-Werror
+-nostdinc++
+-fmodules
+-fprebuilt-module-path=build/
+-Iprojects/astl/include
+-I../llvm-project/BUILD/include/c++/v1
+-c
+-xc++

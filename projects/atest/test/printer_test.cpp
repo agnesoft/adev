@@ -20,7 +20,7 @@ auto operator<<(std::ostream &stream, const S &value) -> std::ostream &
     return stream;
 }
 
-static auto s = suite("Printer", [] {
+static const auto s = suite("Printer", [] { //NOLINT(cert-err58-cpp)
     test("custom type", [] {
         expect(S{1}).toBe(S{2}).toFail();
     });

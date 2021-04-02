@@ -22,7 +22,7 @@ namespace atest
 template<typename T, typename... Values>
 auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...values) -> void
 {
-    stream << value;
+    stream << value; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
 
     if constexpr (sizeof...(Values) > 0)
     {
@@ -42,18 +42,6 @@ export template<typename T = int>
 class source_location
 {
 public:
-    source_location() = default;
-
-    source_location(const source_location &other)
-    {
-        *this = other;
-    }
-
-    source_location(const source_location &&other) noexcept
-    {
-        *this = std::move(other);
-    }
-
     [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> source_location
     {
         source_location sourceLocation;
@@ -72,30 +60,6 @@ public:
         return mLine;
     }
 
-    auto operator=(const source_location &other) -> source_location &
-    {
-        if (this != &other)
-        {
-            mFile = other.mFile;
-            mLine = other.mLine;
-        }
-
-        return *this;
-    }
-
-    auto operator=(source_location &&other) noexcept -> source_location &
-    {
-        if (this != &other)
-        {
-            mFile = other.mFile;
-            mLine = other.mLine;
-            other.mFile = nullptr;
-            other.mline = 0;
-        }
-
-        return *this;
-    }
-
 private:
     const char *mFile = "unknown";
     int mLine = -1;
@@ -103,20 +67,6 @@ private:
 
 struct Failure
 {
-    Failure() = default;
-
-    explicit Failure(std::string description) :
-        what{std::move(description)}
-    {
-    }
-
-    Failure(std::string description, std::string expectation, std::string value) :
-        what{std::move(description)},
-        expected{std::move(expectation)},
-        actual{std::move(value)}
-    {
-    }
-
     std::string what;
     std::string expected;
     std::string actual;
@@ -125,15 +75,6 @@ struct Failure
 
 struct Test
 {
-    Test() = default;
-
-    Test(std::string testName, auto (*body)()->void, source_location<> location) :
-        name{std::move(testName)},
-        testBody{body},
-        sourceLocation{location}
-    {
-    }
-
     std::string name;
     auto (*testBody)() -> void = nullptr;
     source_location<> sourceLocation;
@@ -145,14 +86,6 @@ struct Test
 
 struct TestSuite
 {
-    TestSuite() = default;
-
-    TestSuite(std::string suiteName, source_location<> location) :
-        name{std::move(suiteName)},
-        sourceLocation{location}
-    {
-    }
-
     std::string name;
     source_location<> sourceLocation;
     std::vector<Test> tests;
@@ -189,7 +122,8 @@ public:
 
     auto beginTest(const Test *test) -> void
     {
-        stream() << indent() << std::left << std::setw(mTestWidth + 6) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
+        constexpr int EXTRA_WIDTH = 6;
+        stream() << indent() << std::left << std::setw(mTestWidth + EXTRA_WIDTH) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
         mIndentLevel++;
     }
 
@@ -202,12 +136,12 @@ public:
 
     auto endRun(const Report &report) -> void
     {
-        const size_t width = std::to_string(std::max(report.tests, report.expectations)).size();
-        const size_t passedWidth = std::to_string(std::max(report.failedTests, report.failedExpectations)).size();
+        const int width = static_cast<int>(std::to_string(std::max(report.tests, report.expectations)).size());
+        const int passedWidth = static_cast<int>(std::to_string(std::max(report.failedTests, report.failedExpectations)).size());
 
         stream()
             << separator() << "\n"
-            << "Result      : " << (report.failedTests == 0 ? "PASSED" : "FAILED") << '\n'
+            << "Result      : " << (report.failedTests == 0 ? std::string_view{"PASSED"} : std::string_view{"FAILED"}) << '\n'
             << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(report.duration).count() << "ms\n"
             << "Tests       : " << std::left << std::setw(width) << report.tests << " | "
             << std::left << std::setw(passedWidth) << (report.tests - report.failedTests) << " passed | "
@@ -252,7 +186,7 @@ public:
     }
 
 private:
-    [[nodiscard]] auto sourceLocationToString(source_location<> location) const -> std::string
+    [[nodiscard]] static auto sourceLocationToString(const source_location<> &location) -> std::string
     {
         return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
     }
@@ -277,9 +211,10 @@ private:
         }
     }
 
-    [[nodiscard]] auto separator() const -> std::string
+    [[nodiscard]] static auto separator() -> std::string
     {
-        return std::string(75, '=');
+        constexpr size_t SEPARATOR_WIDTH = 75;
+        return std::string(SEPARATOR_WIDTH, '=');
     }
 
     [[nodiscard]] auto stream() noexcept -> std::ostream &
@@ -292,7 +227,7 @@ private:
         return mTestWidth;
     }
 
-    [[nodiscard]] auto testNamesWidth(const TestSuite *testSuite) const -> size_t
+    [[nodiscard]] static auto testNamesWidth(const TestSuite *testSuite) -> int
     {
         size_t width = 0;
 
@@ -304,23 +239,23 @@ private:
             }
         }
 
-        return width;
+        return static_cast<int>(width);
     }
 
-    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> size_t
+    [[nodiscard]] static auto testsWidth(const TestSuite *testSuite) -> int
     {
-        return sourceLocationToString(testSuite->tests.back().sourceLocation).size() + testNamesWidth(testSuite);
+        return static_cast<int>(sourceLocationToString(testSuite->tests.back().sourceLocation).size()) + testNamesWidth(testSuite);
     }
 
     std::ostream *mStream = nullptr;
     int mIndentLevel = 0;
-    size_t mTestWidth = 0;
+    int mTestWidth = 0;
 };
 
 class Reporter
 {
 public:
-    [[nodiscard]] auto generateReport(const std::vector<TestSuite> &testSuites) const -> Report
+    [[nodiscard]] static auto generateReport(const std::vector<TestSuite> &testSuites) -> Report
     {
         Report report;
         report.testSuites = testSuitesCount(testSuites);
@@ -333,7 +268,7 @@ public:
         return report;
     }
 
-    [[nodiscard]] auto generateStats(const std::vector<TestSuite> &testSuites) const -> Report
+    [[nodiscard]] static auto generateStats(const std::vector<TestSuite> &testSuites) -> Report
     {
         Report report;
         report.testSuites = testSuitesCount(testSuites);
@@ -342,7 +277,7 @@ public:
     }
 
 private:
-    auto reportTest(Report *report, const Test &test) const -> void
+    static auto reportTest(Report *report, const Test &test) -> void
     {
         report->expectations += test.expectations;
         report->duration += test.duration;
@@ -354,7 +289,7 @@ private:
         }
     }
 
-    auto reportTestSuite(Report *report, const TestSuite &testSuite) const -> void
+    static auto reportTestSuite(Report *report, const TestSuite &testSuite) -> void
     {
         report->tests += testSuite.tests.size();
 
@@ -364,7 +299,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto testSuitesCount(const std::vector<TestSuite> &testSuites) const -> size_t
+    [[nodiscard]] static auto testSuitesCount(const std::vector<TestSuite> &testSuites) -> size_t
     {
         if (testSuites[0].tests.empty())
         {
@@ -380,11 +315,15 @@ private:
 class TestRunner
 {
 public:
+    TestRunner() = default;
+    TestRunner(const TestRunner &testRunner) = delete;
+    TestRunner(TestRunner &&testRunner) noexcept = default;
+
     ~TestRunner()
     {
         try
         {
-            mPrinter.beginRun(Reporter{}.generateStats(mTestSuites));
+            mPrinter.beginRun(Reporter::generateStats(mTestSuites));
             runTestSuites();
         }
         catch (...)
@@ -393,16 +332,16 @@ public:
             mPrinter.print("Unexpected exception thrown when running tests.");
         }
 
-        mPrinter.endRun(Reporter{}.generateReport(mTestSuites));
+        mPrinter.endRun(Reporter::generateReport(mTestSuites));
         std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
-    auto addTest(const char *name, auto (*testBody)()->void, source_location<> sourceLocation) -> void
+    auto addTest(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation) -> void
     {
         mCurrentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
     }
 
-    auto beginRecordTests(const char *testSuiteName, source_location<> sourceLocation) -> void
+    auto beginRecordTests(const char *testSuiteName, const source_location<> &sourceLocation) -> void
     {
         mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, sourceLocation});
     }
@@ -422,6 +361,9 @@ public:
         mCurrentTestSuite = &mTestSuites.front();
     }
 
+    auto operator=(const TestRunner &testRunner) -> TestRunner & = delete;
+    auto operator=(TestRunner &&testRunner) noexcept -> TestRunner & = default;
+
 private:
     auto runTest(Test *test) -> void
     {
@@ -432,7 +374,7 @@ private:
         mPrinter.endTest(test);
     }
 
-    auto runTestBody(Test *test) -> void
+    static auto runTestBody(Test *test) -> void
     {
         try
         {
@@ -448,7 +390,7 @@ private:
         }
     }
 
-    auto runTestBodyMeasured(Test *test) -> void
+    static auto runTestBodyMeasured(Test *test) -> void
     {
         const auto start = std::chrono::steady_clock::now();
         runTestBody(test);
@@ -499,7 +441,7 @@ export template<typename T>
 class ExpectBase
 {
 public:
-    explicit ExpectBase(const T &expression, source_location<> sourceLocation) noexcept :
+    explicit ExpectBase(const T &expression, const source_location<> &sourceLocation) noexcept :
         mExpression{expression},
         mSourceLocation{sourceLocation}
     {
@@ -550,11 +492,14 @@ export template<typename T, typename V, typename Matcher>
 class ExpectToMatch : public ExpectBase<T>
 {
 public:
-    ExpectToMatch(const T &expression, const V &value, source_location<> sourceLocation) :
+    ExpectToMatch(const T &expression, const V &value, const source_location<> &sourceLocation) :
         ExpectBase<T>{expression, sourceLocation},
         mValue{value}
     {
     }
+
+    ExpectToMatch(const ExpectToMatch &other) = default;
+    ExpectToMatch(ExpectToMatch &&other) noexcept = default;
 
     ~ExpectToMatch()
     {
@@ -586,6 +531,9 @@ public:
         }
     }
 
+    auto operator=(const ExpectToMatch &other) -> ExpectToMatch & = default;
+    auto operator=(ExpectToMatch &&other) noexcept -> ExpectToMatch & = default;
+
 private:
     [[nodiscard]] auto evaluateExpression() const -> V
     {
@@ -608,11 +556,14 @@ requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
 public:
     using ExpectBase<T>::ExpectBase;
 
-    ExpectToThrow(const T &expression, std::string exceptionText, source_location<> sourceLocation) :
+    ExpectToThrow(const T &expression, std::string exceptionText, const source_location<> &sourceLocation) :
         ExpectBase<T>{expression, sourceLocation},
         mExceptionText{std::move(exceptionText)}
     {
     }
+
+    ExpectToThrow(const ExpectToThrow &other) = default;
+    ExpectToThrow(ExpectToThrow &&other) noexcept = default;
 
     ~ExpectToThrow()
     {
@@ -634,6 +585,9 @@ public:
             handleUnknownException();
         }
     }
+
+    auto operator=(const ExpectToThrow &other) -> ExpectToThrow & = default;
+    auto operator=(ExpectToThrow &&other) noexcept -> ExpectToThrow & = default;
 
 private:
     [[nodiscard]] auto exceptionTextMatches(E &e) -> bool
@@ -714,7 +668,7 @@ private:
 export class MatcherBase
 {
 public:
-    [[nodiscard]] auto describe() const -> std::string
+    [[nodiscard]] static auto describe() -> std::string
     {
         return "Values are not equal.";
     }
@@ -746,7 +700,7 @@ export template<typename T>
 class Expect
 {
 public:
-    Expect(const T &expression, source_location<> sourceLocation) noexcept :
+    Expect(const T &expression, const source_location<> &sourceLocation) noexcept :
         mExpression{expression},
         mSourceLocation{sourceLocation}
     {
@@ -782,22 +736,30 @@ private:
 };
 
 export template<typename T = int>
-auto suite(const char *name, auto (*suiteBody)()->void, source_location<> sourceLocation = source_location<>::current()) -> int
+auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> int
 {
-    globalTestRunner()->beginRecordTests(name, sourceLocation);
-    suiteBody();
-    globalTestRunner()->stopRecordTests();
+    try
+    {
+        globalTestRunner()->beginRecordTests(name, sourceLocation);
+        suiteBody();
+        globalTestRunner()->stopRecordTests();
+    }
+    catch (...)
+    {
+        return 1;
+    }
+
     return 0;
 }
 
 export template<typename T = int>
-auto test(const char *name, auto (*testBody)()->void, source_location<> sourceLocation = source_location<>::current()) -> void
+auto test(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> void
 {
     globalTestRunner()->addTest(name, testBody, sourceLocation);
 }
 
 export template<typename T>
-[[nodiscard]] auto expect(const T &value, source_location<> sourceLocation = source_location<>::current()) noexcept -> Expect<T>
+[[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T>
 {
     return Expect<T>{value, sourceLocation};
 }

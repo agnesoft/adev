@@ -4,7 +4,7 @@ using atest::expect;
 using atest::suite;
 using atest::test;
 
-static auto s = suite("Expect::toBe()", [] {
+static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
     test("value == value", [] {
         expect(1).toBe(1);
     });
@@ -14,7 +14,7 @@ static auto s = suite("Expect::toBe()", [] {
     });
 
     test("call == value", [] {
-        const auto sum = [](int x, int y) {
+        const auto sum = [](int x, int y) noexcept {
             return x + y;
         };
 
