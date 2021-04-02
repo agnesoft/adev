@@ -103,6 +103,20 @@ private:
 
 struct Failure
 {
+    Failure() = default;
+
+    explicit Failure(std::string description) :
+      what{std::move(description)}
+    {
+    }
+
+    Failure(std::string description, std::string expectation, std::string value) :
+      what{std::move(description)},
+      expected{std::move(expectation)},
+      actual{std::move(value)}
+    {
+    }
+
     std::string what;
     std::string expected;
     std::string actual;
@@ -111,6 +125,15 @@ struct Failure
 
 struct Test
 {
+    Test() = default;
+
+    Test(std::string testName, auto (*body)() -> void, source_location<> location) :
+      name{std::move(testName)},
+      testBody{body},
+      sourceLocation{location}
+    {
+    }
+
     std::string name;
     auto (*testBody)() -> void = nullptr;
     source_location<> sourceLocation;
@@ -122,6 +145,14 @@ struct Test
 
 struct TestSuite
 {
+    TestSuite() = default;
+
+    TestSuite(std::string suiteName, source_location<> location) :
+       name{std::move(suiteName)},
+       sourceLocation{location}
+    {
+    }
+
     std::string name;
     source_location<> sourceLocation;
     std::vector<Test> tests;
@@ -452,7 +483,7 @@ private:
     }
 
     Printer mPrinter;
-    std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global"}};
+    std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global", source_location<>::current()}};
     TestSuite *mCurrentTestSuite = &mTestSuites.front();
     Test *mCurrentTest = nullptr;
     bool mFailed = false;
