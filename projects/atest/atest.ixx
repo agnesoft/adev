@@ -506,17 +506,17 @@ private:
     source_location<> mSourceLocation;
 };
 
-export template<typename T, typename V>
-class ExpectToBe : public ExpectBase<T>
+export template<typename T, typename V, typename Matcher>
+class ExpectToMatch : public ExpectBase<T>
 {
 public:
-    ExpectToBe(const T &expression, const V &value, source_location<> sourceLocation) :
+    ExpectToMatch(const T &expression, const V &value, source_location<> sourceLocation) :
         ExpectBase<T>{expression, sourceLocation},
         mValue{value}
     {
     }
 
-    ~ExpectToBe()
+    ~ExpectToMatch()
     {
 #ifdef _MSC_VER
         using ::type_info;
@@ -525,19 +525,20 @@ public:
         try
         {
             const auto left = evaluateExpression();
+            Matcher matcher;
 
-            if (left == mValue)
+            if (matcher(left, mValue))
             {
                 this->handleSuccess();
             }
             else
             {
-                this->handleFailure(Failure{"Values are not equal", stringify(left), stringify(mValue)});
+                this->handleFailure(Failure{matcher.describe(), matcher.expected(left, mValue), matcher.actual(left, mValue)});
             }
         }
         catch (std::exception &e)
         {
-            this->handleFailure(Failure{"Unexpected exception thrown", stringify(mValue), stringify(typeid(e).name(), " '", e.what(), '\'')});
+            this->handleFailure(Failure{stringify("Unexpected exception thrown (", typeid(e).name(), "): '", e.what(), '\'')});
         }
         catch (...)
         {
@@ -670,6 +671,37 @@ private:
     std::string mExceptionText;
 };
 
+export class MatcherBase
+{
+public:
+    [[nodiscard]] auto describe() const -> std::string
+    {
+        return "Values are not equal.";
+    }
+
+    template<typename T, typename V>
+    [[nodiscard]] auto expected(const T &left, [[maybe_unused]] const V &right) const -> std::string
+    {
+        return stringify(left);
+    }
+
+    template<typename T, typename V>
+    [[nodiscard]] auto actual([[maybe_unused]] const T &left, const V &right) const -> std::string
+    {
+        return stringify(right);
+    }
+};
+
+export class Matcher : public MatcherBase
+{
+public:
+    template<typename T, typename V>
+    [[nodiscard]] auto operator()(const T &left, const V &right) const -> bool
+    {
+        return left == right;
+    }
+};
+
 export template<typename T>
 class Expect
 {
@@ -681,9 +713,15 @@ public:
     }
 
     template<typename V>
-    auto toBe(const V &value) -> ExpectToBe<T, V>
+    auto toBe(const V &value) -> ExpectToMatch<T, V, Matcher>
     {
-        return ExpectToBe<T, V>{mExpression, value, mSourceLocation};
+        return ExpectToMatch<T, V, Matcher>{mExpression, value, mSourceLocation};
+    }
+
+    template<typename M, typename V>
+    auto toMatch(const V &value) -> ExpectToMatch<T, V, M>
+    {
+        return ExpectToMatch<T, V, M>{mExpression, value, mSourceLocation};
     }
 
     template<typename E>
