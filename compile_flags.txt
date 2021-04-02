@@ -1,0 +1,12 @@
+-std=c++20
+-Wall
+-Wextra
+-pedantic
+-Werror
+-nostdinc++
+-fmodules
+-fprebuilt-module-path=.
+-Iprojects/astl/include
+-I../llvm-project/BUILD/include/c++/v1
+-c
+-xc++
