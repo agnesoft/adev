@@ -736,11 +736,19 @@ private:
 };
 
 export template<typename T = int>
-auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> int
+auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> int
 {
-    globalTestRunner()->beginRecordTests(name, sourceLocation);
-    suiteBody();
-    globalTestRunner()->stopRecordTests();
+    try
+    {
+        globalTestRunner()->beginRecordTests(name, sourceLocation);
+        suiteBody();
+        globalTestRunner()->stopRecordTests();
+    }
+    catch(...)
+    {
+    	return 1;
+    }
+
     return 0;
 }
 

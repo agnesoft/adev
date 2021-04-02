@@ -7,19 +7,19 @@ using atest::test;
 class MyMatcher : public atest::MatcherBase
 {
 public:
-    [[nodiscard]] auto describe() const -> std::string
+    [[nodiscard]] static auto describe() -> std::string
     {
         return "Left value to be less than right value.";
     }
 
-    [[nodiscard]] auto expected(int left, int right) const -> std::string
+    [[nodiscard]] static auto expected(int left, int right) -> std::string
     {
         return std::to_string(left) + " < " + std::to_string(right);
     }
 
-    [[nodiscard]] auto actual(int left, int right) const -> std::string
+    [[nodiscard]] static auto actual(int left, int right) -> std::string
     {
-        return std::to_string(left) + (left == right ? " = " : " > ") + std::to_string(right);
+        return std::to_string(left) + (left == right ? std::string{" = "} : std::string{" > "}) + std::to_string(right);
     }
 
     [[nodiscard]] auto operator()(int left, int right) -> bool
@@ -28,7 +28,7 @@ public:
     }
 };
 
-static auto s = suite("Expect::toMatch()", [] {
+static const auto s = suite("Expect::toMatch()", [] { //NOLINT(cert-err58-cpp)
     test("Custom comparison", [] {
         expect(1).template toMatch<MyMatcher>(1).toFail();
     });
