@@ -106,14 +106,14 @@ struct Failure
     Failure() = default;
 
     explicit Failure(std::string description) :
-      what{std::move(description)}
+        what{std::move(description)}
     {
     }
 
     Failure(std::string description, std::string expectation, std::string value) :
-      what{std::move(description)},
-      expected{std::move(expectation)},
-      actual{std::move(value)}
+        what{std::move(description)},
+        expected{std::move(expectation)},
+        actual{std::move(value)}
     {
     }
 
@@ -127,10 +127,10 @@ struct Test
 {
     Test() = default;
 
-    Test(std::string testName, auto (*body)() -> void, source_location<> location) :
-      name{std::move(testName)},
-      testBody{body},
-      sourceLocation{location}
+    Test(std::string testName, auto (*body)()->void, source_location<> location) :
+        name{std::move(testName)},
+        testBody{body},
+        sourceLocation{location}
     {
     }
 
@@ -148,8 +148,8 @@ struct TestSuite
     TestSuite() = default;
 
     TestSuite(std::string suiteName, source_location<> location) :
-       name{std::move(suiteName)},
-       sourceLocation{location}
+        name{std::move(suiteName)},
+        sourceLocation{location}
     {
     }
 
