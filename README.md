@@ -6,6 +6,9 @@ Central development repository.
 -   [Build](#build)
     -   [MSVC](#msvc)
     -   [clang](#clang)
+-   [Tools](#tools)
+    -   [clang-format](#clang-format)
+    -   [clang-tidy](#clang-tidy)
 
 ## Projects
 
@@ -27,3 +30,15 @@ Run `build.sh` in the root of the repository. You may need to set the two variab
 
 -   `CLANG` is the clang executable to use, e.g. `clang++-11`
 -   `LIBCXX_PREFIX` is the location of your `libc++` installation/build that contains include and lib directories.
+
+## Tools
+
+### clang-format
+
+The `.clang-format` configuration file is present int the root of the repository and should be used for formatting of all C++ source files.
+
+### clang-tidy
+
+**Currently only clang with libc++ are supported**
+
+The `.clang-tidy` configuration file is present in the root of the repository along with the `compile-flags.txt` that are used by the `clang-tidy` tool to perform the static analysis on the source files. The analysis of all files can be performed with `./clang-tidy.sh`.
