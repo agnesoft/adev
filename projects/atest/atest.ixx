@@ -280,7 +280,7 @@ private:
         return static_cast<int>(width);
     }
 
-    [[nodiscard]] auto testsWidth(const TestSuite *testSuite) const -> int
+    [[nodiscard]] static auto testsWidth(const TestSuite *testSuite) -> int
     {
         return static_cast<int>(sourceLocationToString(testSuite->tests.back().sourceLocation).size()) + testNamesWidth(testSuite);
     }
@@ -374,14 +374,14 @@ public:
         std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
-    auto addTest(const char *name, auto (*testBody)()->void, source_location<> sourceLocation) -> void
+    auto addTest(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation) -> void
     {
-        mCurrentTestSuite->tests.emplace_back(Test{name, testBody, std::move(sourceLocation)});
+        mCurrentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
     }
 
-    auto beginRecordTests(const char *testSuiteName, source_location<> sourceLocation) -> void
+    auto beginRecordTests(const char *testSuiteName, const source_location<> &sourceLocation) -> void
     {
-        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, std::move(sourceLocation)});
+        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, sourceLocation});
     }
 
     [[nodiscard]] auto currentTest() const noexcept -> Test *
@@ -428,7 +428,7 @@ private:
         }
     }
 
-    auto runTestBodyMeasured(Test *test) -> void
+    static auto runTestBodyMeasured(Test *test) -> void
     {
         const auto start = std::chrono::steady_clock::now();
         runTestBody(test);
@@ -479,9 +479,9 @@ export template<typename T>
 class ExpectBase
 {
 public:
-    explicit ExpectBase(const T &expression, source_location<> sourceLocation) noexcept :
+    explicit ExpectBase(const T &expression, const source_location<> &sourceLocation) noexcept :
         mExpression{expression},
-        mSourceLocation{std::move(sourceLocation)}
+        mSourceLocation{sourceLocation}
     {
         globalTestRunner()->currentTest()->expectations++;
     }
@@ -530,11 +530,14 @@ export template<typename T, typename V, typename Matcher>
 class ExpectToMatch : public ExpectBase<T>
 {
 public:
-    ExpectToMatch(const T &expression, const V &value, source_location<> sourceLocation) :
-        ExpectBase<T>{expression, std::move(sourceLocation)},
+    ExpectToMatch(const T &expression, const V &value, const source_location<> &sourceLocation) :
+        ExpectBase<T>{expression, sourceLocation},
         mValue{value}
     {
     }
+
+    ExpectToMatch(const ExpectToMatch &other) = default;
+    ExpectToMatch(ExpectToMatch &&other) noexcept = default;
 
     ~ExpectToMatch()
     {
@@ -566,6 +569,9 @@ public:
         }
     }
 
+    auto operator=(const ExpectToMatch &other) -> ExpectToMatch & = default;
+    auto operator=(ExpectToMatch &&other) noexcept -> ExpectToMatch & = default;
+
 private:
     [[nodiscard]] auto evaluateExpression() const -> V
     {
@@ -588,11 +594,14 @@ requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
 public:
     using ExpectBase<T>::ExpectBase;
 
-    ExpectToThrow(const T &expression, std::string exceptionText, source_location<> sourceLocation) :
-        ExpectBase<T>{expression, std::move(sourceLocation)},
+    ExpectToThrow(const T &expression, std::string exceptionText, const source_location<> &sourceLocation) :
+        ExpectBase<T>{expression, sourceLocation},
         mExceptionText{std::move(exceptionText)}
     {
     }
+
+    ExpectToThrow(const ExpectToThrow &other) = default;
+    ExpectToThrow(ExpectToThrow &&other) noexcept = default;
 
     ~ExpectToThrow()
     {
@@ -614,6 +623,9 @@ public:
             handleUnknownException();
         }
     }
+
+    auto operator=(const ExpectToThrow &other) -> ExpectToThrow & = default;
+    auto operator=(ExpectToThrow &&other) noexcept -> ExpectToThrow & = default;
 
 private:
     [[nodiscard]] auto exceptionTextMatches(E &e) -> bool
