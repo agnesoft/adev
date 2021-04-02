@@ -54,6 +54,8 @@ public:
         *this = std::move(other);
     }
 
+    ~source_location() = default;
+
     [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> source_location
     {
         source_location sourceLocation;
