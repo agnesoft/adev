@@ -147,11 +147,11 @@ public:
     {
         if (test->failures.empty())
         {
-            stream() << " [SUCCESS] " << test->duration << '\n';
+            stream() << " [SUCCESS] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration) << '\n';
         }
         else
         {
-            stream() << " [FAILED] " << test->duration << '\n';
+            stream() << " [FAILED] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration) << '\n';
             printTestFailures(test);
         }
 
