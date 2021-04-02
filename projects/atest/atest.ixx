@@ -106,6 +106,7 @@ struct Test
     auto (*testBody)() -> void = nullptr;
     source_location<> sourceLocation;
     int expectations = 0;
+    std::chrono::microseconds duration = {};
     std::vector<Failure> failures;
 };
 
@@ -146,11 +147,11 @@ public:
     {
         if (test->failures.empty())
         {
-            stream() << " [SUCCESS]\n";
+            stream() << " [SUCCESS] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms\n";
         }
         else
         {
-            stream() << " [FAILED]\n";
+            stream() << " [FAILED] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms\n";
             printTestFailures(test);
         }
 
@@ -285,7 +286,10 @@ private:
     {
         mCurrentTest = test;
         mPrinter.beginTest(test);
+        auto start = std::chrono::steady_clock::now();
         test->testBody();
+        auto end = std::chrono::steady_clock::now();
+        test->duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
         mPrinter.endTest(test);
     }
 
