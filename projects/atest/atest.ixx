@@ -293,7 +293,7 @@ public:
         return report;
     }
 
-    [[nodisrcard]] auto generateStats(const std::vector<TestSuite> &testSuites) const -> Report
+    [[nodiscard]] auto generateStats(const std::vector<TestSuite> &testSuites) const -> Report
     {
         Report report;
         report.testSuites = testSuitesCount(testSuites);
