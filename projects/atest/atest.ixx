@@ -106,7 +106,8 @@ struct Test
     auto (*testBody)() -> void = nullptr;
     source_location<> sourceLocation;
     int expectations = 0;
-    std::chrono::microseconds duration = {};
+    int failedExpectations = 0;
+    std::chrono::microseconds duration = std::chrono::microseconds::zero();
     std::vector<Failure> failures;
 };
 
@@ -115,6 +116,16 @@ struct TestSuite
     std::string name;
     source_location<> sourceLocation;
     std::vector<Test> tests;
+};
+
+struct Report
+{
+    int testSuites = 0;
+    int tests = 0;
+    int failedTests = 0;
+    int expectations = 0;
+    int failedExpectations = 0;
+    std::chrono::microseconds duration = std::chrono::microseconds::zero();
 };
 
 class Printer
@@ -130,6 +141,12 @@ public:
     {
     }
 
+    auto beginRun(const Report &report) -> void
+    {
+        stream() << "Running " << report.tests << " tests from " << report.testSuites << " test suites...\n"
+                 << separator() << "\n\n";
+    }
+
     auto beginTest(const Test *test) -> void
     {
         stream() << indent() << std::left << std::setw(mTestWidth + 6) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
@@ -143,11 +160,28 @@ public:
         mIndentLevel++;
     }
 
+    auto endRun(const Report &report, const std::vector<TestSuite> &testSuites) -> void
+    {
+        const int width = std::to_string(std::max(report.tests, report.expectations)).size();
+        const int passedWidth = std::to_string(std::max(report.failedTests, report.failedExpectations)).size();
+
+        stream()
+            << separator() << "\n"
+            << "Result      : " << (report.failedTests == 0 ? "PASSED" : "FAILED") << '\n'
+            << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(report.duration).count() << "ms\n"
+            << "Tests       : " << std::left << std::setw(width) << report.tests << " | "
+            << std::left << std::setw(passedWidth) << (report.tests - report.failedTests) << " passed | "
+            << report.failedTests << " failed\n"
+            << "Expectations: " << std::left << std::setw(width) << report.expectations << " | "
+            << std::left << std::setw(passedWidth) << (report.expectations - report.failedExpectations) << " passed | "
+            << report.failedExpectations << " failed\n";
+    }
+
     auto endTest(const Test *test) -> void
     {
         if (test->failures.empty())
         {
-            stream() << " [SUCCESS] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms\n";
+            stream() << " [PASSED] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms\n";
         }
         else
         {
@@ -193,7 +227,6 @@ private:
         print(stringify("at ", sourceLocationToString(failure.sourceLocation)), failure.what);
         print("  Expected: ", failure.expected);
         print("  Actual  : ", failure.actual);
-        stream() << '\n';
     }
 
     auto printTestFailures(const Test *test) -> void
@@ -202,6 +235,11 @@ private:
         {
             printTestFailure(failure);
         }
+    }
+
+    [[nodiscard]] auto separator() const -> std::string
+    {
+        return std::string(75, '=');
     }
 
     [[nodiscard]] auto stream() noexcept -> std::ostream &
@@ -239,6 +277,66 @@ private:
     int mTestWidth = 0;
 };
 
+class Reporter
+{
+public:
+    [[nodiscard]] auto generateReport(const std::vector<TestSuite> &testSuites) const -> Report
+    {
+        Report report;
+        report.testSuites = testSuitesCount(testSuites);
+
+        for (const TestSuite &testSuite : testSuites)
+        {
+            reportTestSuite(&report, testSuite);
+        }
+
+        return report;
+    }
+
+    [[nodiscard]] auto generateStats(const std::vector<TestSuite> &testSuites) const -> Report
+    {
+        Report report;
+        report.testSuites = testSuitesCount(testSuites);
+        report.tests = std::accumulate(testSuites.begin(), testSuites.end(), 0, [](int count, const TestSuite &testSuite) { return count + testSuite.tests.size(); });
+        return report;
+    }
+
+private:
+    auto reportTest(Report *report, const Test &test) const -> void
+    {
+        report->expectations += test.expectations;
+        report->duration += test.duration;
+
+        if (!test.failures.empty())
+        {
+            report->failedTests++;
+            report->failedExpectations += test.failedExpectations;
+        }
+    }
+
+    auto reportTestSuite(Report *report, const TestSuite &testSuite) const -> void
+    {
+        report->tests += testSuite.tests.size();
+
+        for (const Test &test : testSuite.tests)
+        {
+            reportTest(report, test);
+        }
+    }
+
+    [[nodiscard]] auto testSuitesCount(const std::vector<TestSuite> &testSuites) const -> int
+    {
+        if (testSuites[0].tests.empty())
+        {
+            return testSuites.size() - 1;
+        }
+        else
+        {
+            return testSuites.size();
+        }
+    }
+};
+
 class TestRunner
 {
 public:
@@ -246,13 +344,16 @@ public:
     {
         try
         {
+            mPrinter.beginRun(Reporter{}.generateStats(mTestSuites));
             runTestSuites();
         }
         catch (...)
         {
-            mPrinter.print("Unexpected exception when running tests.\n");
+            mFailed = true;
+            mPrinter.print("Unexpected exception thrown when running tests.");
         }
 
+        mPrinter.endRun(Reporter{}.generateReport(mTestSuites), mTestSuites);
         std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
@@ -286,11 +387,33 @@ private:
     {
         mCurrentTest = test;
         mPrinter.beginTest(test);
-        auto start = std::chrono::steady_clock::now();
-        test->testBody();
-        auto end = std::chrono::steady_clock::now();
-        test->duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        runTestBodyMeasured(test);
+        mFailed = test->failures.empty();
         mPrinter.endTest(test);
+    }
+
+    auto runTestBody(Test *test) -> void
+    {
+        try
+        {
+            test->testBody();
+        }
+        catch (std::exception &e)
+        {
+            test->failures.emplace_back(Failure{stringify("Unexpected exception thrown: ", e.what())});
+        }
+        catch (...)
+        {
+            test->failures.emplace_back(Failure{"Unexpected exception thrown"});
+        }
+    }
+
+    auto runTestBodyMeasured(Test *test) -> void
+    {
+        const auto start = std::chrono::steady_clock::now();
+        runTestBody(test);
+        const auto end = std::chrono::steady_clock::now();
+        test->duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     }
 
     auto runTests(TestSuite *testSuite) -> void
@@ -349,11 +472,6 @@ public:
     }
 
 protected:
-    [[nodiscard]] auto expectFailure() const noexcept -> bool
-    {
-        return mExpectFailure;
-    }
-
     [[nodiscard]] auto expression() const noexcept -> const T &
     {
         return mExpression;
@@ -379,7 +497,7 @@ private:
     auto fail(Failure &&failure) -> void
     {
         failure.sourceLocation = mSourceLocation;
-        globalTestRunner()->currentTest()->expectations++;
+        globalTestRunner()->currentTest()->failedExpectations++;
         globalTestRunner()->currentTest()->failures.emplace_back(std::move(failure));
     }
 
