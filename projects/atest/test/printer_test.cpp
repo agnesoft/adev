@@ -6,7 +6,7 @@ using atest::test;
 
 struct S
 {
-    int value = 0;
+    int value = 0; //NOLINT(misc-non-private-member-variables-in-classes)
 
     [[nodiscard]] auto operator==(const S &other) const noexcept -> bool
     {
