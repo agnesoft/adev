@@ -26,7 +26,14 @@ concept stringifiable = requires(const T &type)
 };
 
 export template<typename T>
-requires(!stringifiable<T> && std::ranges::range<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
+concept iterable = requires(const T &type)
+{
+    {type.begin()};
+    {type.end()};
+};
+
+export template<typename T>
+requires(!stringifiable<T> && iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
 {
     stream << '{';
 
