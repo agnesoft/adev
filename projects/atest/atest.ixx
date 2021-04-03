@@ -402,7 +402,7 @@ private:
         mCurrentTest = test;
         mPrinter.beginTest(test);
         runTestBodyMeasured(test);
-        mFailed = test->failures.empty();
+        mFailed = mFailed || !test->failures.empty();
         mPrinter.endTest(test);
     }
 
