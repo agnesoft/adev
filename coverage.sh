@@ -1,5 +1,8 @@
 ./build.sh "-fprofile-instr-generate -fcoverage-mapping"
 
+LLVM_COV=llvm-cov-11
+LLVM_PROFDATA=llvm-profdata-11
+
 function printError () {
     echo -e "\033[31m$1\033[0m"
 }
