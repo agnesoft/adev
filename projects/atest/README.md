@@ -81,7 +81,7 @@ template<typename V>
 auto toBe(const V &value) -> ExpectToMatch
 ```
 
-Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be easily supported by simply defining the `operator==` for them.
+Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be easily supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function rather than a standalone function for ADL (argument dependent lookup) to find it.
 
 Examples:
 
@@ -103,7 +103,7 @@ Completes the expectation using a custom matcher. The custom matcher can be any 
 -   `auto expected(const T &, const V &) -> std::string`
 -   `auto actual(const T &, const V &) -> std::string`
 
-These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcome of the match and will be given the actual values. These functions do not need to be specified if you do not need to customize the output and inherit from `atest::MatcherBase`.
+These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcome of the match and will be given the actual values. These functions do not need to be specified if you do not need to customize the output and inherit from `atest::MatcherBase`. If you are implementing them yourself however you may use the convenience `auto atest::stringify(const T &...values) -> std::string`.
 
 Example:
 
