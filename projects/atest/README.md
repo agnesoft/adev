@@ -81,7 +81,7 @@ template<typename V>
 auto toBe(const V &value) -> ExpectToMatch
 ```
 
-Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be easily supported by simply defining the `operator==` for them.
+Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be easily supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function rather than a standalone function for ADL (argument dependent lookup) to find it.
 
 Examples:
 
@@ -103,7 +103,7 @@ Completes the expectation using a custom matcher. The custom matcher can be any 
 -   `auto expected(const T &, const V &) -> std::string`
 -   `auto actual(const T &, const V &) -> std::string`
 
-These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcome of the match and will be given the actual values. These functions do not need to be specified if you do not need to customize the output and inherit from `atest::MatcherBase`.
+These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcome of the match and will be given the actual values. These functions do not need to be specified if you do not need to customize the output and inherit from `atest::MatcherBase`. If you are implementing them yourself however you may use the convenience `auto atest::stringify(const T &...values) -> std::string`.
 
 Example:
 
@@ -227,3 +227,4 @@ Everything must be compiled with the same flags that affect code generation. The
 -   [**All**] No STL vendor currently supports C++20 `source_location`. It is being emulated with `__builtin_FILE` that however is not `consteval` and does not really evaluate at the callsite. To force it to evaluate at the callsite the `source_location` and its callers `suite`. `test` and `expect` are all template functions so they are instantiated at the call site. Once actual `source_location` is available the custom version can be scrapped and `suite` and `test` may stop being template functions.
 -   [**MSVC 16.9.3**] Using `type_info` requires `using ::type_info;` and include of `<typeinfo>` in the global module fragment, otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
 -   [**libc++ 11.1.0**] C++20 `operator<<(std::chrono::duration)` is missing in `libc++` and requires a workaround in form of `duration.count() << "ms"` to emulate the operator. Should be removed once `libc++` implements this feature.
+-   [**libc++ 11.1.0**] C++20 ranges are missing in `libc++` and `ranges::range<T>` concept cannot be used. It was replaced by custom `iterable` that should be removed once `libc++` implements ranges.

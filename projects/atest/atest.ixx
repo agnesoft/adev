@@ -19,7 +19,39 @@ export import "astl.hpp";
 
 namespace atest
 {
-template<typename T, typename... Values>
+export template<typename T>
+concept stringifiable = requires(const T &type)
+{
+    {std::ostringstream{} << type};
+};
+
+export template<typename T>
+concept iterable = requires(const T &type)
+{
+    {type.begin()};
+    {type.end()};
+};
+
+export template<typename T>
+requires(!stringifiable<T> && iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
+{
+    stream << '{';
+
+    for (auto it = container.begin(); it != container.end();)
+    {
+        stream << (*it);
+
+        if (++it != container.end())
+        {
+            stream << ", ";
+        }
+    }
+
+    stream << '}';
+    return stream;
+}
+
+export template<typename T, typename... Values>
 auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...values) -> void
 {
     stream << value; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
@@ -30,7 +62,7 @@ auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...v
     }
 }
 
-template<typename... T>
+export template<typename... T>
 [[nodiscard]] auto stringify(const T &...values) -> std::string
 {
     std::stringstream stream;
