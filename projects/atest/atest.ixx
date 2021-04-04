@@ -19,57 +19,6 @@ export import "astl.hpp";
 
 namespace atest
 {
-export template<typename T>
-concept stringifiable = requires(const T &type)
-{
-    {std::ostringstream{} << type};
-};
-
-export template<typename T>
-concept iterable = requires(const T &type)
-{
-    {type.begin()};
-    {type.end()};
-};
-
-export template<typename T>
-requires(!stringifiable<T> && iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
-{
-    stream << '{';
-
-    for (auto it = container.begin(); it != container.end();)
-    {
-        stream << (*it);
-
-        if (++it != container.end())
-        {
-            stream << ", ";
-        }
-    }
-
-    stream << '}';
-    return stream;
-}
-
-export template<typename T, typename... Values>
-auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...values) -> void
-{
-    stream << value; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
-
-    if constexpr (sizeof...(Values) > 0)
-    {
-        stringifyImpl(stream, values...);
-    }
-}
-
-export template<typename... T>
-[[nodiscard]] auto stringify(const T &...values) -> std::string
-{
-    std::stringstream stream;
-    stringifyImpl(stream, values...);
-    return stream.str();
-}
-
 export template<typename T = int>
 class source_location
 {
@@ -123,6 +72,13 @@ struct TestSuite
     std::vector<Test> tests;
 };
 
+struct Tests
+{
+    std::vector<TestSuite> suites = {TestSuite{"Global", source_location<>::current()}};
+    TestSuite *currentTestSuite = &suites.front();
+    Test *currentTest = nullptr;
+};
+
 struct Report
 {
     size_t testSuites = 0;
@@ -133,14 +89,74 @@ struct Report
     std::chrono::microseconds duration = std::chrono::microseconds::zero();
 };
 
+[[nodiscard]] auto globalTests() -> Tests *
+{
+    static Tests tests;
+    return &tests;
+}
+
+export template<typename T>
+concept stringifiable = requires(const T &type)
+{
+    {std::ostringstream{} << type};
+};
+
+export template<typename T>
+concept iterable = requires(const T &type)
+{
+    {type.begin()};
+    {type.end()};
+};
+
+export template<typename T>
+concept hasWhat = requires(const T &type)
+{
+    // clang-format off
+    {type.what()} -> std::convertible_to<std::string>;
+    // clang-format on
+};
+
+export template<typename T>
+requires(!stringifiable<T> && iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
+{
+    stream << '{';
+
+    for (auto it = container.begin(); it != container.end();)
+    {
+        stream << (*it);
+
+        if (++it != container.end())
+        {
+            stream << ", ";
+        }
+    }
+
+    stream << '}';
+    return stream;
+}
+
+template<typename T, typename... Values>
+auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...values) -> void
+{
+    stream << value; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+
+    if constexpr (sizeof...(Values) > 0)
+    {
+        stringifyImpl(stream, values...);
+    }
+}
+
+export template<typename... T>
+[[nodiscard]] auto stringify(const T &...values) -> std::string
+{
+    std::stringstream stream;
+    stringifyImpl(stream, values...);
+    return stream.str();
+}
+
 class Printer
 {
 public:
-    Printer() :
-        mStream{&std::cout}
-    {
-    }
-
     explicit Printer(std::ostream *stream) noexcept :
         mStream{stream}
     {
@@ -344,62 +360,33 @@ private:
     }
 };
 
-class TestRunner
+export class TestRunner
 {
 public:
-    TestRunner() = default;
-    TestRunner(const TestRunner &testRunner) = delete;
-    TestRunner(TestRunner &&testRunner) noexcept = default;
-
-    ~TestRunner()
+    TestRunner(int argc, char *argv[]) :
+        TestRunner(argc, argv, &std::cout)
     {
-        try
-        {
-            mPrinter.beginRun(Reporter::generateStats(mTestSuites));
-            runTestSuites();
-        }
-        catch (...)
-        {
-            mFailed = true;
-            mPrinter.print("Unexpected exception thrown when running tests.");
-        }
-
-        mPrinter.endRun(Reporter::generateReport(mTestSuites));
-        std::exit(mFailed ? EXIT_FAILURE : EXIT_SUCCESS);
     }
 
-    auto addTest(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation) -> void
+    TestRunner(int argc, char *argv[], std::ostream *stream) :
+        mPrinter{stream},
+        mArgc{argc},
+        mArgv{static_cast<char **>(argv)}
     {
-        mCurrentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
     }
 
-    auto beginRecordTests(const char *testSuiteName, const source_location<> &sourceLocation) -> void
+    auto run() -> int
     {
-        mCurrentTestSuite = &mTestSuites.emplace_back(TestSuite{testSuiteName, sourceLocation});
+        mPrinter.beginRun(Reporter::generateStats(globalTests()->suites));
+        runTestSuites();
+        mPrinter.endRun(Reporter::generateReport(globalTests()->suites));
+        return mFailed ? 1 : 0;
     }
-
-    [[nodiscard]] auto currentTest() const noexcept -> Test *
-    {
-        return mCurrentTest;
-    }
-
-    auto setPrinterStream(std::ostream *stream) -> void
-    {
-        mPrinter = Printer{stream};
-    }
-
-    auto stopRecordTests() -> void
-    {
-        mCurrentTestSuite = &mTestSuites.front();
-    }
-
-    auto operator=(const TestRunner &testRunner) -> TestRunner & = delete;
-    auto operator=(TestRunner &&testRunner) noexcept -> TestRunner & = default;
 
 private:
     auto runTest(Test *test) -> void
     {
-        mCurrentTest = test;
+        globalTests()->currentTest = test;
         mPrinter.beginTest(test);
         runTestBodyMeasured(test);
         mFailed = mFailed || !test->failures.empty();
@@ -450,24 +437,17 @@ private:
 
     auto runTestSuites() -> void
     {
-        for (TestSuite &testSuite : mTestSuites)
+        for (TestSuite &testSuite : globalTests()->suites)
         {
             runTestSuite(&testSuite);
         }
     }
 
     Printer mPrinter;
-    std::vector<TestSuite> mTestSuites = std::vector<TestSuite>{{"Global", source_location<>::current()}};
-    TestSuite *mCurrentTestSuite = &mTestSuites.front();
-    Test *mCurrentTest = nullptr;
+    [[maybe_unused]] int mArgc = 0;
+    [[maybe_unused]] char **mArgv = nullptr;
     bool mFailed = false;
 };
-
-[[nodiscard]] auto globalTestRunner() -> TestRunner *
-{
-    static TestRunner runner;
-    return &runner;
-}
 
 export template<typename T>
 class ExpectBase
@@ -477,7 +457,7 @@ public:
         mExpression{expression},
         mSourceLocation{sourceLocation}
     {
-        globalTestRunner()->currentTest()->expectations++;
+        globalTests()->currentTest->expectations++;
     }
 
     auto toFail() noexcept -> void
@@ -507,14 +487,14 @@ protected:
         }
     }
 
-private:
     auto fail(Failure &&failure) -> void
     {
         failure.sourceLocation = mSourceLocation;
-        globalTestRunner()->currentTest()->failedExpectations++;
-        globalTestRunner()->currentTest()->failures.emplace_back(std::move(failure));
+        globalTests()->currentTest->failedExpectations++;
+        globalTests()->currentTest->failures.emplace_back(std::move(failure));
     }
 
+private:
     const T &mExpression;
     bool mExpectFailure = false;
     source_location<> mSourceLocation;
@@ -539,10 +519,11 @@ public:
         using ::type_info;
 #endif
 
+        Matcher matcher;
+
         try
         {
             const auto left = evaluateExpression();
-            Matcher matcher;
 
             if (matcher(left, mValue))
             {
@@ -555,11 +536,11 @@ public:
         }
         catch (std::exception &e)
         {
-            this->handleFailure(Failure{stringify("Unexpected exception thrown (", typeid(e).name(), "): '", e.what(), '\'')});
+            this->fail(Failure{stringify("Unexpected exception thrown (", typeid(e).name(), "): ", e.what())});
         }
         catch (...)
         {
-            this->handleFailure(Failure{"Unexpected exception thrown"});
+            this->fail(Failure{"Unexpected exception thrown"});
         }
     }
 
@@ -582,15 +563,15 @@ private:
     const V &mValue;
 };
 
-export template<typename T, typename E, bool ValidateText>
+export template<typename T, typename E, typename V, bool ValidateValue>
 requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
 {
 public:
     using ExpectBase<T>::ExpectBase;
 
-    ExpectToThrow(const T &expression, std::string exceptionText, const source_location<> &sourceLocation) :
+    ExpectToThrow(const T &expression, const V &value, const source_location<> &sourceLocation) :
         ExpectBase<T>{expression, sourceLocation},
-        mExceptionText{std::move(exceptionText)}
+        mValue{value}
     {
     }
 
@@ -606,7 +587,7 @@ public:
         try
         {
             this->expression()();
-            this->handleFailure(Failure{"No exception thrown", stringify(typeid(E).name(), " '", mExceptionText, '\''), ""});
+            this->handleFailure(Failure{"No exception thrown", stringify(typeid(E).name(), " '", mValue, '\''), ""});
         }
         catch (E &e)
         {
@@ -622,41 +603,59 @@ public:
     auto operator=(ExpectToThrow &&other) noexcept -> ExpectToThrow & = default;
 
 private:
-    [[nodiscard]] auto exceptionTextMatches(E &e) -> bool
+    auto doValidateExceptionValue(const E &e) -> void
     {
-        return mExceptionText == e.what();
+        if (matchExceptionValue(e))
+        {
+            this->handleSuccess();
+        }
+        else
+        {
+            this->handleFailure(Failure{"Exception value mismatch", stringify(mValue), exceptionToString(e)});
+        }
     }
 
-    auto exceptionTextMismatch(std::string what) -> void
+    [[nodiscard]] auto exceptionToString(const E &e) -> std::string
     {
-        this->handleFailure(Failure{"Exception text mismatch", mExceptionText, std::move(what)});
+        if constexpr (hasWhat<E>)
+        {
+            return e.what();
+        }
+        else
+        {
+            return stringify(e);
+        }
     }
 
-    auto exceptionTypeMismatch(std::string recievedExceptionName) -> void
+    auto handleUnknownException()
     {
 #ifdef _MSC_VER
         using ::type_info;
 #endif
 
-        this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), std::move(recievedExceptionName)});
-    }
-
-    auto handleUnknownException()
-    {
         try
         {
             throw;
         }
         catch (std::exception &e)
         {
-#ifdef _MSC_VER
-            using ::type_info;
-#endif
-            exceptionTypeMismatch(typeid(e).name());
+            this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), typeid(e).name()});
         }
         catch (...)
         {
-            exceptionTypeMismatch("unknown exception");
+            this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), "Unknown exception"});
+        }
+    }
+
+    [[nodiscard]] auto matchExceptionValue(const E &e) -> bool
+    {
+        if constexpr (hasWhat<E>)
+        {
+            return stringify(mValue) == e.what();
+        }
+        else
+        {
+            return mValue == e;
         }
     }
 
@@ -665,28 +664,22 @@ private:
 #ifdef _MSC_VER
         using ::type_info;
 #endif
+
         if (typeid(E) == typeid(e))
         {
-            validateExceptionText(e);
+            validateExceptionValue(e);
         }
         else
         {
-            exceptionTypeMismatch(typeid(e).name());
+            this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), typeid(e).name()});
         }
     }
 
-    auto validateExceptionText(E &e) -> void
+    auto validateExceptionValue(E &e) -> void
     {
-        if constexpr (ValidateText)
+        if constexpr (ValidateValue)
         {
-            if (exceptionTextMatches(e))
-            {
-                this->handleSuccess();
-            }
-            else
-            {
-                exceptionTextMismatch(e.what());
-            }
+            doValidateExceptionValue(e);
         }
         else
         {
@@ -694,7 +687,7 @@ private:
         }
     }
 
-    std::string mExceptionText;
+    const V &mValue;
 };
 
 export class MatcherBase
@@ -751,15 +744,21 @@ public:
     }
 
     template<typename E>
-    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, false>
+    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, int, false>
     {
-        return ExpectToThrow<T, E, false>{mExpression, mSourceLocation};
+        return ExpectToThrow<T, E, int, false>{mExpression, 0, mSourceLocation};
     }
 
     template<typename E>
-    requires std::invocable<T> auto toThrow(const std::string &exceptionText) -> ExpectToThrow<T, E, true>
+    requires std::invocable<T> auto toThrow(const E &exception) -> ExpectToThrow<T, E, E, true>
     {
-        return ExpectToThrow<T, E, true>{mExpression, exceptionText, mSourceLocation};
+        return ExpectToThrow<T, E, E, true>{mExpression, exception, mSourceLocation};
+    }
+
+    template<typename E, typename V>
+    requires std::invocable<T> auto toThrow(const V &value) -> ExpectToThrow<T, E, V, true>
+    {
+        return ExpectToThrow<T, E, V, true>{mExpression, value, mSourceLocation};
     }
 
 private:
@@ -772,32 +771,42 @@ auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> 
 {
     try
     {
-        globalTestRunner()->beginRecordTests(name, sourceLocation);
-        suiteBody();
-        globalTestRunner()->stopRecordTests();
+        try
+        {
+            Tests *tests = globalTests();
+            tests->currentTestSuite = &tests->suites.emplace_back(TestSuite{name, sourceLocation});
+            suiteBody();
+            tests->currentTestSuite = &tests->suites.front();
+            return 0;
+        }
+        catch (std::exception &e)
+        {
+            std::cout << "Exception thrown during registration of '" << name << "' test suite:\n  " << e.what();
+        }
+        catch (...)
+        {
+            std::cout << "Unknown exception thrown during registration of '" << name << "' test suite.";
+        }
     }
     catch (...)
     {
-        return 1;
+        //Supress any further exceptions as this function is
+        //usually run outside of main and no exception can
+        //be caught. See clang-tidy check: cert-err58-cpp.
     }
 
-    return 0;
+    return 1;
 }
 
 export template<typename T = int>
 auto test(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> void
 {
-    globalTestRunner()->addTest(name, testBody, sourceLocation);
+    globalTests()->currentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
 }
 
 export template<typename T>
 [[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T>
 {
     return Expect<T>{value, sourceLocation};
-}
-
-export auto setPrinterStream(std::ostream *stream) -> void
-{
-    globalTestRunner()->setPrinterStream(stream);
 }
 }

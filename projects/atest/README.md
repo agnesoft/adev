@@ -33,13 +33,14 @@ C++ testing framework.
 auto atest::test(const char *name, auto (*testBody)()->void) -> void
 ```
 
-Registers a test `testBody` under the name `name` within a test suite. It can be called either within a [test suite](#suite) or in the global context (e.g. `main()`). When called in the global context the tests will be registered in the implicit `Global` test suite. While it is possible to use any function as a test body the typical usage would be using a lambda.
+Registers a test `testBody` under the name `name`. It can be called either within a [test suite](#suite) or in the `main()`. When not called within a `suite()` call the test will be registered in the implicit `Global` test suite. The second argument is a nullary function that takes no arguments and return nothing. It would typically be a lambda.
 
 Example:
 
 ```
 import atest;
-int main() {
+int main()
+{
     test("My test", [] {
         //...
     });
@@ -52,13 +53,13 @@ int main() {
 auto atest::suite(const char *name, auto (*suiteBody)()->void) noexcept -> int
 ```
 
-Groups tests into test suites under the `name`. It can be called in `main()` or outside of main capturing the result in a global/static variable in order to let the suite and tests be registered. The function will return `0` if it succeeds or `1` if an exception has been thrown during registration. No exceptions are propagated as the function is typically called before `main()` and thus it is not possible to capture the exceptions.
+Groups tests into a test suite called `name`. It can be called in `main()` or outside of main capturing the result in a global/static variable in order to let the suite and tests be registered. The function will return `0` if it succeeds or `1` if an exception has been thrown during registration. No exceptions are propagated as the function is typically called before `main()` and thus it is not possible to capture the exceptions within such context.
 
 Example:
 
 ```
 import atest;
-static const auto s = suite("My test suite", [] {
+static auto s = suite("My test suite", [] {
     test("My test", [] {
         //...
     });
@@ -72,7 +73,7 @@ template<typename T>
 auto atest::expect(const T &value) noexcept -> Expect<T>
 ```
 
-Starts composition of the test's expectation (assertion). Any `T` is allowed as argument. If `T` is a callable it will be executed once the assertion is finalized (no exceptions will be propagated from the call). The return value is the internal class `Expect` that lets you select from the supported expecations:
+Starts composition of the test's expectation (assertion). Any `T` is allowed as argument. If `T` is a callable it will be executed once the assertion is finalized. No exceptions will be propagated from the call. The return value is the internal class `Expect` that lets you select from one of the supported expecations:
 
 #### toBe()
 
@@ -81,7 +82,7 @@ template<typename V>
 auto toBe(const V &value) -> ExpectToMatch
 ```
 
-Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be easily supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function rather than a standalone function for ADL (argument dependent lookup) to find it.
+Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function rather than a standalone function for ADL (Argument Dependent Lookup) to find it.
 
 Examples:
 
@@ -97,18 +98,29 @@ template<typename M, typename V>
 auto toMatch(const V &value) -> ExpectToMatch
 ```
 
-Completes the expectation using a custom matcher. The custom matcher can be any callable type that takes parameters of type `T` and `V` to perfrom the matching (i.e. `auto operator()(const T&, const V&) -> bool`). Additionally it needs to have following methods:
+Completes the expectation using a custom matcher. The custom matcher can be any callable type that takes parameters of type `T` and `V` to perfrom the matching (i.e. `auto operator()(const T&, const V&) -> bool`). Furthermore the matcher needs to have the following methods:
 
 -   `auto describe() -> std::string`
 -   `auto expected(const T &, const V &) -> std::string`
 -   `auto actual(const T &, const V &) -> std::string`
 
-These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcome of the match and will be given the actual values. These functions do not need to be specified if you do not need to customize the output and inherit from `atest::MatcherBase`. If you are implementing them yourself however you may use the convenience `auto atest::stringify(const T &...values) -> std::string`.
+These methods are used for reporting a failure in case it occurs. The first function gives description of the expectation or of the operation the custom matcher was performing. The other two lets you customize the output for the `expected` and `actual` outcomes of the match and will be given the actual values. You can inherit from `atest::MatcherBase` if any or all of these functions do not need to be specialised for your matcher. If you are implementing them yourself you may use the convenience `auto atest::stringify(const T &...values) -> std::string` to convert `T`, `V` or anything else to strings (requires `auto operator<<(std::ostream &, const X &value) -> std::ostream &` to be implemented for the type). The `stringify` knows how to print containers so you only need the operator for the inner type.
 
 Example:
 
+Minimal matcher:
+
 ```
 struct MyMatcher : atest::MatcherBase
+{
+    auto operator()(int left, int right) -> bool { return left < right; }
+};
+```
+
+Full matcher:
+
+```
+struct MyMatcher
 {
     auto describe() -> std::string { return "Left value to be less than right value."; }
     auto expected(int left, int right) -> std::string { return std::to_string(left) + " < " + std::to_string(right) }
@@ -126,19 +138,22 @@ template<typename E>
 auto toThrow() -> ExpectToThrow
 
 template<typename E>
-auto toThrow(const std::string &exceptionText) -> ExpectToThrow
+auto toThrow(const E &exception) -> ExpectToThrow
+
+template<typename E, typename V>
+auto toThrow(const V &value) -> ExpectToThrow
 ```
 
-Completes the matching by expecting an exception. The `T` passed to the `expect()` must be a callable for this expectation. The exception must be specified as a template argument to the call. Optionally an expected exception text can be passed. The type match of the exception thrown and expected is performed using `typeid` (RTTI) and the exact match is required (expecting base class but throwing derived is a failure).
-
-For the text matching to work the exception `E` must provide a method `what()` that returns a string. It is not possible to match an exception text against a throw of an `int` for example.
+Completes the matching by expecting an exception. The `T` passed to the `expect()` must be a callable for this expectation. The exception type may be specified as a template argument to the call or deduced from the value. In either case strong type matching is performed using `typeid` (RTTI) and the exact match is required (i.e. expecting a base class but throwing a derived class is a failure). If a value was passed the exception will be additionally validated against it as well. If the exception type implements `what()` method returing a type that is convertible to `std::string` the result of `what()` will be compared against the value. If there is no `what()` method (e.g. an `int` or `std::string` is thrown) the value is compared directly to the exception object. The value comparison requires `operator==(const E &e, const V &v)` to compile. Additionally the exception type that does not have `what()` must be printable (the operator `auto operator<<(std::ostream &, const E &exception) -> std::ostream &` must exist).
 
 Examples:
 
 ```
 expect([] { throw std::exception{}; }).toThrow<std::exception>();
 expect([] { throw std::logic_error{"Some text"}; }).toThrow<std::logic_error>("Some text");
+expect([] { throw std::logic_error{"Some text"}; }).toThrow(std::logic_error{"Some text"});
 expect([] { throw 1; }).toThrow<int>();
+expect([] { throw 1; }).toThrow(1);
 ```
 
 #### toFail()
@@ -147,7 +162,7 @@ expect([] { throw 1; }).toThrow<int>();
 auto toFail() -> void
 ```
 
-Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios.
+Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `toFail()` will still fail on unexpected exceptions (except when reversing `toThrow()`).
 
 Example:
 
@@ -157,15 +172,41 @@ expect(1).toBe(2).toFail(); //passes despite failing
 
 ### Test Runner
 
-The test runner is a global object first created upon first registration of a test suite or a test. All subsequent registrations of the test suites and tests wil be done with this single global test runner. The tests are actually run in its destructor and no exceptions are propagated from it. At the end of the run the test runner will call `std::exit` with either `0` in case all tests passed or `1` if there were any failures.
+The test runner is the main entry point of `atest`. The registrations of the test suites and tests are global and the user is responsible to actuall start the test run by instantiating and calling `atest::TestRunner::run()`. The reason for this is two-fold:
 
-The registration and running of the tests are automatic operations done typically outside of `main()` and for that reason cannot be controlled from within the program. Usually the `main()` function can remain completely empty but it is possible to register test suites and tests directly in `main()` as well.
+-   `TestRunner` optionally accepts main's argumnets (`int argc, char *argv[]`) that controls filtering, reporting etc. as well as the stream for the [Printer](#printer).
+-   The tests must be executed within the context of main (or before it) otherwise the code coverage (e.g. `llvm-cov`) and other instrumentation based tools (e.g. sanitizers) will not work properly. These are typically used with the test.
+
+The `run()` method of the `atest::TestRuner` will return `0` if all tests passed or `1` if there was a failure. No exceptions are propagated from running the tests themselves but it is still possible for `run()` to throw. If that happens something seriously wrong occured and the ultimate call to `std::termina()/std::abort()` performed by default is probably right thing to happen. If you want the run never to fail and handle such situation yourself wrap the call to `atest::TestRunner::run()` in a `try {} catch (...) {}` block.
+
+Examples:
+
+Minimal
+
+```
+import atest;
+int main()
+{
+    return atest::TestRunner{}.run();
+}
+```
+
+Full
+
+```
+import atest;
+int main(int argc, char *argv[])
+{
+    std::stringstream testOutputStream;
+    return atest::TestRunner{argc, argv, &testOutputStream}.run();
+}
+```
 
 ### Printer
 
-The `atest` outputs the progress and results to `std::cout` by default. It is possible to change the output stream with `auto atest::setPrinterStream(std::ostream *stream) -> void`. This can be safely done in `main()` before the test run begins (see [Test Runner](#test-runner)).
+By default, the `atest` outputs the progress and results to `std::cout`. It is possible to change the output stream by passing the `std::ostream *` as an additional argumen to the [Test Runner](#test-runner)).
 
-It is also a requirement for all values used in the expectations to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when building the test. The containers that have `begin()` and `end()` are automatically printed as arrays so usually only the internal type `T` must be made printable unless a custom printing is needed of the entire container.
+It is also a requirement for all values used in the expectations and matching to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when compiling the test. The containers that have `begin()` and `end()` are automatically printed as arrays and thus only the internal type `T` might need to be made printable. A custom printing of the whole containers can still be provided by the user.
 
 ## Build
 
