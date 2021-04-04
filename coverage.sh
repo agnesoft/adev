@@ -54,8 +54,8 @@ function coverage () {
 
     #Generate complete report
     $LLVM_PROFDATA merge $DATA -o coverage.profdata 
-    $LLVM_COV show $OBJECTS_ARGS -output-dir=../coverage -format=html -ignore-filename-regex=$EXCLUDE_REGEX -instr-profile=coverage.profdata
-    local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -ignore-filename-regex=$EXCLUDE_REGEX -instr-profile=coverage.profdata | grep "TOTAL.*")
+    $LLVM_COV show $OBJECTS_ARGS -output-dir=../coverage -format=html -instr-profile=coverage.profdata
+    local TOTAL=$($LLVM_COV report $OBJECTS_ARGS -instr-profile=coverage.profdata | grep "TOTAL.*")
     local MATCH=$(echo $TOTAL | perl -nle'print $& while m{[\d\.]+\%}g')
     local MATCH_ARR=(${MATCH})
     local REGION=${MATCH_ARR[0]}
@@ -66,20 +66,13 @@ function coverage () {
     rm -rf *.profraw
     rm -rf *.profdata
 
-    if ! test "${FUNCTION}" == "100.00%" || ! test "${LINE}" == "100.00%"; then
-        printError "ERROR: Test code coverage is not sufficient:"
-        printError "  * Function: $FUNCTION (must be 100.00 %)"
-        printError "  * Line: $LINE (must be 100.00 %)"
-        printError "  * Region: $REGION (can by any)"
-        printError "NOTE: See code coverage report in build artifacts for details."
-        exit 1
-    else
-        printOK "Test code coverage is OK:"
-        printOK "  * Function: $FUNCTION"
-        printOK "  * Line: $LINE"
-        printOK "  * Region: $REGION"
-        printOK "NOTE: See code coverage report in build artifacts for details."
-    fi
+    printOK ""
+    printOK "Summary:"
+    printOK "  * Function: $FUNCTION"
+    printOK "  * Line: $LINE"
+    printOK "  * Region: $REGION"
+    printOK "NOTE: See build/coverage for details."
+
     cd ../..
 }
 
