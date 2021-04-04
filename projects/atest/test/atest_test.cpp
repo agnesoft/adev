@@ -1,4 +1,6 @@
-auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
+import atest;
+
+auto main(int argc, char *argv[]) -> int
 {
-    return 0;
+    return atest::TestRunner{argc, argv}.run();
 }
