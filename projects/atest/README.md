@@ -30,7 +30,7 @@ C++ testing framework.
 ### test()
 
 ```
-auto atest::test(const char *name, auto (*testBody)()->void) -> int
+auto atest::test(const char *name, auto (*testBody)()->void) -> void
 ```
 
 Registers a test `testBody` under the name `name`. It can be called either within a [test suite](#suite) or in the `main()`. When not called within a `suite()` call the test will be registered in the implicit `Global` test suite. The second argument is a nullary function that takes no arguments and return nothing. It would typically be a lambda.
