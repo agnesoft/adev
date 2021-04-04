@@ -265,11 +265,6 @@ private:
         return *mStream;
     }
 
-    [[nodiscard]] auto testWidth() const noexcept -> size_t
-    {
-        return mTestWidth;
-    }
-
     [[nodiscard]] static auto testNamesWidth(const TestSuite *testSuite) -> int
     {
         size_t width = 0;
