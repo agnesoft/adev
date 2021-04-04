@@ -160,19 +160,14 @@ expect([] { throw 1; }).toThrow(1);
 
 ```
 auto toFail() -> void
-auto toFail(const T &actual) -> void
 ```
 
-Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios.
-
-The second overload can additionally validate the failure against an arbitrary value by stringifying it and comparing it to the `actual` field of the failure (see [toMatch()](#tomatch) for details regarding matchers).
+Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `toFail()` will still fail on unexpected exceptions (except when reversing `toThrow()`).
 
 Example:
 
 ```
 expect(1).toBe(2).toFail(); //passes despite failing
-expect(1).toBe(2).toFail(1); //validates the failure against value "1"
-expect(1).toBe(2).toFail(3); //still fails because failure was not successfully validated
 ```
 
 ### Test Runner
