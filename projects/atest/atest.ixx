@@ -436,8 +436,8 @@ private:
     }
 
     Printer mPrinter;
-    int mArgc = 0;
-    char **mArgv = nullptr;
+    [[maybe_unused]] int mArgc = 0;
+    [[maybe_unused]] char **mArgv = nullptr;
     bool mFailed = false;
 };
 
