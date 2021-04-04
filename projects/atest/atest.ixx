@@ -353,15 +353,15 @@ private:
 export class TestRunner
 {
 public:
-    TestRunner(int argc, char *argv[]) :
+    TestRunner(int argc, char **argv) :
         TestRunner(argc, argv, &std::cout)
     {
     }
 
-    TestRunner(int argc, char *argv[], std::ostream *stream) :
+    TestRunner(int argc, char **argv, std::ostream *stream) :
         mPrinter{stream},
         mArgc{argc},
-        mArgv{static_cast<char **>(argv)}
+        mArgv{argv}
     {
     }
 

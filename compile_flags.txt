@@ -5,9 +5,12 @@
 -Wno-missing-field-initializers
 -Werror
 -nostdinc++
+-D__GLIBC_USE(a)
 -fmodules
 -fprebuilt-module-path=build/
--Iprojects/astl/include
--I../llvm-project/BUILD/include/c++/v1
+-I
+projects/astl/include
+-Isystem
+../llvm-project/BUILD/include/c++/v1
 -c
 -xc++
