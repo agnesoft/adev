@@ -21,6 +21,6 @@ CPP_AND_LINK_FLAGS="$CPP_FLAGS -L$LIBCXX_PREFIX/lib -lc++ -Wl,-rpath,$LIBCXX_PRE
 "$CLANG" $CPP_FLAGS -c -x c++ "$PROJECTS_ROOT/atest/atest.ixx" -o atest.obj
 
 #atest_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/atest/test/atest_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tobe_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tothrow_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tomatch_test.cpp" "$PROJECTS_ROOT/atest/test/printer_test.cpp" atest.obj -o bin/atest_test
+"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/atest/test/atest_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tobe_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tothrow_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tomatch_test.cpp" "$PROJECTS_ROOT/atest/test/printer_test.cpp" "$PROJECTS_ROOT/atest/test/bad_test_suite.cpp" atest.obj -o bin/atest_test
 
 cd ..

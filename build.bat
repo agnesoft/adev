@@ -17,6 +17,6 @@ REM atest
 cl.exe %CPP_FLAGS% /c /Fo /interface "%PROJECTS_ROOT%\atest\atest.ixx"
 
 REM atest_test
-cl.exe %CPP_FLAGS% /Fe"bin\atest_test.exe" "%PROJECTS_ROOT%\atest\test\atest_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" atest.obj astl.obj
+cl.exe %CPP_FLAGS% /Fe"bin\atest_test.exe" "%PROJECTS_ROOT%\atest\test\atest_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" atest.obj astl.obj
 
 cd ..

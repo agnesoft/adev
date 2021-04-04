@@ -21,15 +21,23 @@ static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
         expect([] { return 1 + 1; }).toBe(2);
     });
 
-    test("value != value", [] {
-        expect(1).toBe(2).toFail();
+    test("value != value (fail)", [] {
+        expect(1).toBe(2);
     });
 
+    test("value != value (expect failure)", [] {
+        expect(1).toBe(2).toFail();
+    });
+    
     test("callable throws std::exception", [] {
         expect([]() -> int { throw std::runtime_error{"bad call"}; }).toBe(1).toFail();
     });
 
     test("callable throws int", [] {
         expect([]() -> int { throw 1; }).toBe(1).toFail();
+    });
+    
+    test("expect failure but pass", [] {
+        expect(1).toBe(1).toFail();
     });
 });

@@ -391,11 +391,11 @@ private:
         }
         catch (std::exception &e)
         {
-            test->failures.emplace_back(Failure{stringify("Unexpected exception thrown: ", e.what())});
+            test->failures.emplace_back(Failure{stringify("Unexpected exception thrown: ", e.what()), "", "", test->sourceLocation});
         }
         catch (...)
         {
-            test->failures.emplace_back(Failure{"Unexpected exception thrown"});
+            test->failures.emplace_back(Failure{"Unexpected exception thrown", "", "", test->sourceLocation});
         }
     }
 
@@ -759,6 +759,10 @@ private:
 export template<typename T = int>
 auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> int
 {
+#ifdef _MSC_VER
+    using ::type_info;
+#endif
+
     try
     {
         try
@@ -771,11 +775,11 @@ auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> 
         }
         catch (std::exception &e)
         {
-            std::cout << "Exception thrown during registration of '" << name << "' test suite:\n  " << e.what();
+            std::cout << "ERROR: Exception thrown during registration of '" << name << "' test suite (" << typeid(e).name() << "): " << e.what() << '\n';
         }
         catch (...)
         {
-            std::cout << "Unknown exception thrown during registration of '" << name << "' test suite.";
+            std::cout << "ERROR: Unknown exception thrown during registration of '" << name << "' test suite.\n";
         }
     }
     catch (...)
