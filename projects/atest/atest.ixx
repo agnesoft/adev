@@ -487,7 +487,6 @@ protected:
         }
     }
 
-private:
     auto fail(Failure &&failure) -> void
     {
         failure.sourceLocation = mSourceLocation;
@@ -495,6 +494,7 @@ private:
         globalTests()->currentTest->failures.emplace_back(std::move(failure));
     }
 
+private:
     const T &mExpression;
     bool mExpectFailure = false;
     source_location<> mSourceLocation;
@@ -519,10 +519,11 @@ public:
         using ::type_info;
 #endif
 
+        Matcher matcher;
+
         try
         {
             const auto left = evaluateExpression();
-            Matcher matcher;
 
             if (matcher(left, mValue))
             {
@@ -535,11 +536,11 @@ public:
         }
         catch (std::exception &e)
         {
-            this->handleFailure(Failure{stringify("Unexpected exception thrown (", typeid(e).name(), "): '", e.what(), '\'')});
+            this->fail(Failure{stringify("Unexpected exception thrown (", typeid(e).name(), "): ", e.what())});
         }
         catch (...)
         {
-            this->handleFailure(Failure{"Unexpected exception thrown"});
+            this->fail(Failure{"Unexpected exception thrown"});
         }
     }
 

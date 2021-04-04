@@ -9,10 +9,6 @@ static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
         expect(1).toBe(1);
     });
 
-    test("value != value", [] {
-        expect(1).toBe(2).toFail();
-    });
-
     test("call == value", [] {
         const auto sum = [](int x, int y) noexcept {
             return x + y;
@@ -25,7 +21,15 @@ static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
         expect([] { return 1 + 1; }).toBe(2);
     });
 
-    test("callable throws", [] {
+    test("value != value", [] {
+        expect(1).toBe(2).toFail();
+    });
+
+    test("callable throws std::exception", [] {
         expect([]() -> int { throw std::runtime_error{"bad call"}; }).toBe(1).toFail();
+    });
+
+    test("callable throws int", [] {
+        expect([]() -> int { throw 1; }).toBe(1).toFail();
     });
 });
