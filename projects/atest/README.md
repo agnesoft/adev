@@ -138,23 +138,20 @@ template<typename E>
 auto toThrow() -> ExpectToThrow
 
 template<typename E>
-auto toThrow(const std::string &exceptionText) -> ExpectToThrow
-
-template<typename E>
 auto toThrow(const E &exception) -> ExpectToThrow
+
+template<typename E, typename V>
+auto toThrow(const V &value) -> ExpectToThrow
 ```
 
-Completes the matching by expecting an exception. The `T` passed to the `expect()` must be a callable for this expectation. The exception must be specified as a template argument to the call. Optionally an expected exception text can be passed. The type matching of the exception thrown and expected exception is performed using `typeid` (RTTI) and the exact match is required (i.e. expecting a base class but throwing a derived class is a failure).
-
-For the text matching to work the exception `E` must provide a method `what()` that returns a string. This would typically be satisfied when deriving from `std::exception` but it is not required.
-
-The third overload lets you match the exception object directly which would require `operator==` for the type. Strict type equality of the types is still performed. Additionally the exception type must be printable (requires `auto operator<<(std::ostream &, const E &exception) -> std::ostream &` to be implemented).
+Completes the matching by expecting an exception. The `T` passed to the `expect()` must be a callable for this expectation. The exception type may be specified as a template argument to the call or deduced from the value. In either case strong type matching is performed using `typeid` (RTTI) and the exact match is required (i.e. expecting a base class but throwing a derived class is a failure). If a value was passed the exception will be additionally validated against it as well. If the exception type implements `what()` method returing a type that is convertible to `std::string` the result of `what()` will be compared against the value. If there is no `what()` method (e.g. an `int` or `std::string` is thrown) the value is compared directly to the exception object. The value comparison requires `operator==(const E &e, const V &v)` to compile. Additionally the exception type that does not have `what()` must be printable (the operator `auto operator<<(std::ostream &, const E &exception) -> std::ostream &` must exist).
 
 Examples:
 
 ```
 expect([] { throw std::exception{}; }).toThrow<std::exception>();
 expect([] { throw std::logic_error{"Some text"}; }).toThrow<std::logic_error>("Some text");
+expect([] { throw std::logic_error{"Some text"}; }).toThrow(std::logic_error{"Some text"});
 expect([] { throw 1; }).toThrow<int>();
 expect([] { throw 1; }).toThrow(1);
 ```
