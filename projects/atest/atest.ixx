@@ -109,6 +109,14 @@ concept iterable = requires(const T &type)
 };
 
 export template<typename T>
+concept hasWhat = requires(const T &type)
+{
+    // clang-format off
+    {type.what()} -> std::convertible_to<std::string>;
+    // clang-format on
+};
+
+export template<typename T>
 requires(!stringifiable<T> && iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
 {
     stream << '{';
@@ -554,15 +562,15 @@ private:
     const V &mValue;
 };
 
-export template<typename T, typename E, bool ValidateText>
+export template<typename T, typename E, typename V, bool ValidateValue>
 requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
 {
 public:
     using ExpectBase<T>::ExpectBase;
 
-    ExpectToThrow(const T &expression, std::string exceptionText, const source_location<> &sourceLocation) :
+    ExpectToThrow(const T &expression, const V &value, const source_location<> &sourceLocation) :
         ExpectBase<T>{expression, sourceLocation},
-        mExceptionText{std::move(exceptionText)}
+        mValue{value}
     {
     }
 
@@ -578,7 +586,7 @@ public:
         try
         {
             this->expression()();
-            this->handleFailure(Failure{"No exception thrown", stringify(typeid(E).name(), " '", mExceptionText, '\''), ""});
+            this->handleFailure(Failure{"No exception thrown", stringify(typeid(E).name(), " '", mValue, '\''), ""});
         }
         catch (E &e)
         {
@@ -594,41 +602,59 @@ public:
     auto operator=(ExpectToThrow &&other) noexcept -> ExpectToThrow & = default;
 
 private:
-    [[nodiscard]] auto exceptionTextMatches(E &e) -> bool
+    auto doValidateExceptionValue(const E &e) -> void
     {
-        return mExceptionText == e.what();
+        if (matchExceptionValue(e))
+        {
+            this->handleSuccess();
+        }
+        else
+        {
+            this->handleFailure(Failure{"Exception value mismatch", stringify(mValue), exceptionToString(e)});
+        }
     }
 
-    auto exceptionTextMismatch(std::string what) -> void
+    [[nodiscard]] auto exceptionToString(const E &e) -> std::string
     {
-        this->handleFailure(Failure{"Exception text mismatch", mExceptionText, std::move(what)});
+        if constexpr (hasWhat<E>)
+        {
+            return e.what();
+        }
+        else
+        {
+            return stringify(e);
+        }
     }
 
-    auto exceptionTypeMismatch(std::string recievedExceptionName) -> void
+    auto handleUnknownException()
     {
 #ifdef _MSC_VER
         using ::type_info;
 #endif
 
-        this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), std::move(recievedExceptionName)});
-    }
-
-    auto handleUnknownException()
-    {
         try
         {
             throw;
         }
         catch (std::exception &e)
         {
-#ifdef _MSC_VER
-            using ::type_info;
-#endif
-            exceptionTypeMismatch(typeid(e).name());
+            this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), typeid(e).name()});
         }
         catch (...)
         {
-            exceptionTypeMismatch("unknown exception");
+            this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), "Unknown exception"});
+        }
+    }
+
+    [[nodiscard]] auto matchExceptionValue(const E &e) -> bool
+    {
+        if constexpr (hasWhat<E>)
+        {
+            return stringify(mValue) == e.what();
+        }
+        else
+        {
+            return mValue == e;
         }
     }
 
@@ -637,28 +663,22 @@ private:
 #ifdef _MSC_VER
         using ::type_info;
 #endif
+
         if (typeid(E) == typeid(e))
         {
-            validateExceptionText(e);
+            validateExceptionValue(e);
         }
         else
         {
-            exceptionTypeMismatch(typeid(e).name());
+            this->handleFailure(Failure{"Exception type mismatch", typeid(E).name(), typeid(e).name()});
         }
     }
 
-    auto validateExceptionText(E &e) -> void
+    auto validateExceptionValue(E &e) -> void
     {
-        if constexpr (ValidateText)
+        if constexpr (ValidateValue)
         {
-            if (exceptionTextMatches(e))
-            {
-                this->handleSuccess();
-            }
-            else
-            {
-                exceptionTextMismatch(e.what());
-            }
+            doValidateExceptionValue(e);
         }
         else
         {
@@ -666,7 +686,7 @@ private:
         }
     }
 
-    std::string mExceptionText;
+    const V &mValue;
 };
 
 export class MatcherBase
@@ -723,15 +743,21 @@ public:
     }
 
     template<typename E>
-    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, false>
+    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, int, false>
     {
-        return ExpectToThrow<T, E, false>{mExpression, mSourceLocation};
+        return ExpectToThrow<T, E, int, false>{mExpression, 0, mSourceLocation};
     }
 
     template<typename E>
-    requires std::invocable<T> auto toThrow(const std::string &exceptionText) -> ExpectToThrow<T, E, true>
+    requires std::invocable<T> auto toThrow(const E &exception) -> ExpectToThrow<T, E, E, true>
     {
-        return ExpectToThrow<T, E, true>{mExpression, exceptionText, mSourceLocation};
+        return ExpectToThrow<T, E, E, true>{mExpression, exception, mSourceLocation};
+    }
+
+    template<typename E, typename V>
+    requires std::invocable<T> auto toThrow(const V &value) -> ExpectToThrow<T, E, V, true>
+    {
+        return ExpectToThrow<T, E, V, true>{mExpression, value, mSourceLocation};
     }
 
 private:
