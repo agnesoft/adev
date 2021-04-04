@@ -220,11 +220,6 @@ public:
         mIndentLevel--;
     }
 
-    auto print(const std::string &text) -> void
-    {
-        print("", text);
-    }
-
     auto print(const std::string &prefix, const std::string &text) -> void
     {
         if (!text.empty())
