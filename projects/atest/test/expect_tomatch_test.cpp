@@ -31,5 +31,6 @@ public:
 static const auto s = suite("Expect::toMatch()", [] { //NOLINT(cert-err58-cpp)
     test("Custom comparison", [] {
         expect(1).template toMatch<MyMatcher>(1).toFail();
+        expect(1).template toMatch<MyMatcher>(0).toFail();
     });
 });

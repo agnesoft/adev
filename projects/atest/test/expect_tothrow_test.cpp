@@ -16,6 +16,10 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     test("Expected type mismatch (derived)", [] {
         expect([] { throw std::runtime_error{""}; }).template toThrow<std::exception>().toFail();
     });
+    
+    test("Expected type mismatch (int)", [] {
+        expect([] { throw 1; }).template toThrow<std::exception>().toFail();
+    });
 
     test("Exception text", [] {
         expect([] { throw std::runtime_error{"Some exception text"}; }).template toThrow<std::runtime_error>("Some exception text");
@@ -47,5 +51,9 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
 
     test("Throw text, expect int", [] {
         expect([] { throw std::logic_error{"1"}; }).toThrow<std::logic_error>(1);
+    });
+    
+    test("Expect different exception and fail", [] {
+        expect([] { throw std::string{"error"}; }).toThrow<std::string>("different error");
     });
 });
