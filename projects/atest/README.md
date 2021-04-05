@@ -213,20 +213,33 @@ It is also a requirement for all values used in the expectations and matching to
 ### MSVC
 
 ```
-cl /std:c++latest /headerUnit "project/astl/include/astl.hpp=astl.hpp.ifc" /c /Fo /interface atest.ixx
-cl /std:c++latest /headerUnit "project/astl/include/astl.hpp=astl.hpp.ifc" test\atest_test.cpp atest.obj astl.obj
+set CPP_FLAGS=/std:c++latest /headerUnit "../astl/include/astl.hpp=astl.hpp.ifc"
+cl %CPP_FLAGS% /c /Fo /internalPartition source_location.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition data.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition stringify.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition printer.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition reporter.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition expect_base.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition expect_tomatch.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition expect_tothrow.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition matcher.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition expect.cpp
+cl %CPP_FLAGS% /c /Fo /internalPartition test_runner.cpp
+cl %CPP_FLAGS% /c /Fo /interface atest.cpp
+lib.exe /NOLOGO source_location.obj data.obj stringify.obj printer.obj reporter.obj expect_base.obj expect_tomatch.obj expect_tothrow.obj matcher.obj expect.obj test_runner.obj atest.obj /OUT:atest.lib
+cl %CPP_FLAGS% test\atest_test.cpp atest.lib astl.obj
 ```
 
 Everything must be compiled with the same flags that affect code generation including the `astl` dependency.
 
-The `/interface` flag will generate the `ifc` (compiled module interface) for `atest`. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively (like `astl.hpp=astl.hpp.ifc`). Note that both header units and the module interfaces must also produce regular object files (`/Fo`) so that the code can be linked together.
+The `/interface` flag will generate the `ifc` (compiled module interface) for `atest`. Individual partitions do not need to be specified but must be already compiled beforehand. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively (like `astl.hpp=astl.hpp.ifc`). Note that both header units and the module interfaces must also produce regular object files (`/Fo`) so that the code can be linked together.
 
+-   `/internalPartition` will compile a translation unit into an `ifc` (module private/interface partition depending if it exports anything or not).
 -   `/exportHeader` will compile a header into an `ifc` (a header unit).
 -   `/interface` will compile a module into the `ifc`.
 -   `/std:c++latest` enabled C++20 modules.
 -   `/Fo` to produce an object file.
 -   `/c` to perform compilation only.
--   `/TP` means that hte input files are all C++ source files.
 
 ### Clang
 
@@ -269,3 +282,4 @@ Everything must be compiled with the same flags that affect code generation. The
 -   [**MSVC 16.9.3**] Using `type_info` requires `using ::type_info;` and include of `<typeinfo>` in the global module fragment, otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
 -   [**libc++ 11.1.0**] C++20 `operator<<(std::chrono::duration)` is missing in `libc++` and requires a workaround in form of `duration.count() << "ms"` to emulate the operator. Should be removed once `libc++` implements this feature.
 -   [**libc++ 11.1.0**] C++20 ranges are missing in `libc++` and `ranges::range<T>` concept cannot be used. It was replaced by custom `iterable` that should be removed once `libc++` implements ranges.
+-   [**clang 11.1.0**] Clang does not yet implement modules partitions. As a workaround each partition is guarded with `ifdef` removing the module partition stuff from the top and on clang they are all textually included (with `#include`) into the module interface directly. Once clang does implement module partitions this mechanism can be removed.
