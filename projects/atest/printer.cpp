@@ -7,6 +7,15 @@ import : stringify;
 
 namespace atest
 {
+struct Color
+{
+    static constexpr char GRAY[] = "\033[1;30m";
+    static constexpr char GREEN[] = "\033[1;32m";
+    static constexpr char RED[] = "\033[1;31m";
+    static constexpr char RESET[] = "\033[0m";
+    static constexpr char YELLOW[] = "\033[1;33m";
+};
+
 class Printer
 {
 public:
@@ -18,20 +27,19 @@ public:
     auto beginRun(const Report &report) -> void
     {
         stream() << "Running " << report.tests << " tests from " << report.testSuites << " test suites...\n"
-                 << separator() << "\n\n";
+                 << separator() << "\n";
     }
 
-    auto beginTest(const Test *test) -> void
+    auto beginTest([[maybe_unused]] const Test *test) -> void
     {
-        constexpr int EXTRA_WIDTH = 6;
-        stream() << indent() << std::left << std::setw(mTestWidth + EXTRA_WIDTH) << stringify(sourceLocationToString(test->sourceLocation), " \"", test->name, "\"...");
         mIndentLevel++;
     }
 
     auto beginTestSuite(const TestSuite *testSuite) -> void
     {
-        stream() << sourceLocationToString(testSuite->sourceLocation) << " \"" << testSuite->name << "\":\n";
-        mTestWidth = testsWidth(testSuite);
+        stream() << "---\n"
+                 << gray(sourceLocationToString(testSuite->sourceLocation))
+                 << testSuite->name << "\n";
         mIndentLevel++;
     }
 
@@ -41,7 +49,7 @@ public:
         const int passedWidth = static_cast<int>(std::to_string(std::max(report.failedTests, report.failedExpectations)).size());
 
         stream() << separator() << "\n"
-                 << "Result      : " << (report.failedTests == 0 ? std::string_view{"PASSED"} : std::string_view{"FAILED"}) << '\n'
+                 << "Result      : " << (report.failedTests == 0 ? green("PASSED") : red("FAILED")) << '\n'
                  << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(report.duration).count() << "ms\n"
                  << "Tests       : " << std::left << std::setw(width) << report.tests << " | "
                  << std::left << std::setw(passedWidth) << (report.tests - report.failedTests) << " passed | "
@@ -53,16 +61,8 @@ public:
 
     auto endTest(const Test *test) -> void
     {
-        if (test->failures.empty())
-        {
-            stream() << " [PASSED] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms\n";
-        }
-        else
-        {
-            stream() << " [FAILED] " << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms\n";
-            printTestFailures(test);
-        }
-
+        printTestResult(test);
+        printTestFailures(test);
         mIndentLevel--;
     }
 
@@ -81,9 +81,14 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto sourceLocationToString(const source_location<> &location) -> std::string
+    [[nodiscard]] static auto gray(const std::string &text) -> std::string
     {
-        return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
+        return Color::GRAY + text + Color::RESET;
+    }
+
+    [[nodiscard]] static auto green(const std::string &text) -> std::string
+    {
+        return Color::GREEN + text + Color::RESET;
     }
 
     [[nodiscard]] auto indent() const -> std::string
@@ -93,7 +98,7 @@ private:
 
     auto printTestFailure(const Failure &failure) -> void
     {
-        print(stringify("at ", sourceLocationToString(failure.sourceLocation)), failure.what);
+        print(stringify("at ", yellow(sourceLocationToString(failure.sourceLocation))), failure.what);
         print("  Expected: ", failure.expected);
         print("  Actual  : ", failure.actual);
     }
@@ -106,10 +111,25 @@ private:
         }
     }
 
+    auto printTestResult(const Test *test) -> void
+    {
+        stream() << (test->failures.empty() ? green(" [ PASSED ] ") : red(" [ FAILED ] ")) << gray(sourceLocationToString(test->sourceLocation)) << test->name << " [" << std::chrono::duration_cast<std::chrono::milliseconds>(test->duration).count() << "ms]\n";
+    }
+
+    [[nodiscard]] static auto red(const std::string &text) -> std::string
+    {
+        return Color::RED + text + Color::RESET;
+    }
+
     [[nodiscard]] static auto separator() -> std::string
     {
         constexpr size_t SEPARATOR_WIDTH = 75;
         return std::string(SEPARATOR_WIDTH, '=');
+    }
+
+    [[nodiscard]] static auto sourceLocationToString(const source_location<> &location) -> std::string
+    {
+        return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
     }
 
     [[nodiscard]] auto stream() noexcept -> std::ostream &
@@ -117,28 +137,12 @@ private:
         return *mStream;
     }
 
-    [[nodiscard]] static auto testNamesWidth(const TestSuite *testSuite) -> int
+    [[nodiscard]] static auto yellow(const std::string &text) -> std::string
     {
-        size_t width = 0;
-
-        for (const Test &test : testSuite->tests)
-        {
-            if (width < test.name.size())
-            {
-                width = test.name.size();
-            }
-        }
-
-        return static_cast<int>(width);
-    }
-
-    [[nodiscard]] static auto testsWidth(const TestSuite *testSuite) -> int
-    {
-        return static_cast<int>(sourceLocationToString(testSuite->tests.back().sourceLocation).size()) + testNamesWidth(testSuite);
+        return Color::YELLOW + text + Color::RESET;
     }
 
     std::ostream *mStream = nullptr;
     int mIndentLevel = 0;
-    int mTestWidth = 0;
 };
 }

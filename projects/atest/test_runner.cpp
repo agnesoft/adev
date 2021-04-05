@@ -23,12 +23,13 @@ public:
     {
     }
 
-    auto run() -> int
+    [[nodiscard]] auto run() -> int
     {
         mPrinter.beginRun(Reporter::generateStats(globalTests()->suites));
         runTestSuites();
-        mPrinter.endRun(Reporter::generateReport(globalTests()->suites));
-        return mFailed ? 1 : 0;
+        const auto report = Reporter::generateReport(globalTests()->suites);
+        mPrinter.endRun(report);
+        return static_cast<int>(report.failedExpectations);
     }
 
 private:
@@ -37,7 +38,6 @@ private:
         globalTests()->currentTest = test;
         mPrinter.beginTest(test);
         runTestBodyMeasured(test);
-        mFailed = mFailed || !test->failures.empty();
         mPrinter.endTest(test);
     }
 
@@ -94,6 +94,5 @@ private:
     Printer mPrinter;
     [[maybe_unused]] int mArgc = 0;
     [[maybe_unused]] char **mArgv = nullptr;
-    bool mFailed = false;
 };
 }
