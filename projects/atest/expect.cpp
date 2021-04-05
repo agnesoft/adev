@@ -1,8 +1,10 @@
+#ifdef _MSC_VER
 export module atest : expect;
 
 export import : expect_tomatch;
 export import : expect_tothrow;
 export import : matcher;
+#endif
 
 namespace atest
 {

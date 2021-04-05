@@ -1,7 +1,9 @@
+#ifdef _MSC_VER
 module atest : printer;
 
 import : data;
 import : stringify;
+#endif
 
 namespace atest
 {

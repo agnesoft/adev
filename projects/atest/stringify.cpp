@@ -1,6 +1,8 @@
+#ifdef _MSC_VER
 export module atest : stringify;
 
 export import "astl.hpp";
+#endif
 
 namespace atest
 {

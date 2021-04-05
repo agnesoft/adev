@@ -1,7 +1,9 @@
+#ifdef _MSC_VER
 module atest : data;
 
 import : source_location;
 import "astl.hpp";
+#endif
 
 namespace atest
 {

@@ -17,8 +17,24 @@ export import "astl.hpp";
 #    pragma warning(pop)
 #endif
 
+#ifdef _MSC_VER
 export import : expect;
 export import : test_runner;
+#else
+// clang-format off
+#    include "source_location.cpp"
+#    include "data.cpp"
+#    include "stringify.cpp"
+#    include "printer.cpp"
+#    include "reporter.cpp"
+#    include "matcher.cpp"
+#    include "expect_base.cpp"
+#    include "expect_tomatch.cpp"
+#    include "expect_tothrow.cpp"
+#    include "expect.cpp"
+#    include "test_runner.cpp"
+// clang-format on
+#endif
 
 namespace atest
 {

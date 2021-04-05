@@ -1,12 +1,12 @@
+#ifdef _MSC_VER
 module;
 
-#ifdef _MSC_VER
 #    include <typeinfo>
-#endif
 
 export module atest : expect_tothrow;
 
 export import : expect_base;
+#endif
 
 namespace atest
 {

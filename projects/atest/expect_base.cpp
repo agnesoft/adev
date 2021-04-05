@@ -1,6 +1,8 @@
+#ifdef _MSC_VER
 export module atest : expect_base;
 
 import : data;
+#endif
 
 namespace atest
 {

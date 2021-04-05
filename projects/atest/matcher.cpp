@@ -1,6 +1,8 @@
+#ifdef _MSC_VER
 export module atest : matcher;
 
 export import : stringify;
+#endif
 
 namespace atest
 {

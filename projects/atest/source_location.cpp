@@ -1,4 +1,6 @@
+#ifdef _MSC_VER
 export module atest : source_location;
+#endif
 
 namespace atest
 {
