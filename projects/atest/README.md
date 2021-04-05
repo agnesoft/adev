@@ -13,6 +13,7 @@ C++ testing framework.
         -   [toFail()](#tofail)
     -   [Test Runner](#test-runner)
     -   [Printer](#printer)
+        -   [Colors](#colors)
 -   [Build](#build)
     -   [MSVC](#msvc)
     -   [clang](#clang)
@@ -207,6 +208,12 @@ int main(int argc, char *argv[])
 By default, the `atest` outputs the progress and results to `std::cout`. It is possible to change the output stream by passing the `std::ostream *` as an additional argumen to the [Test Runner](#test-runner)).
 
 It is also a requirement for all values used in the expectations and matching to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when compiling the test. The containers that have `begin()` and `end()` are automatically printed as arrays and thus only the internal type `T` might need to be made printable. A custom printing of the whole containers can still be provided by the user.
+
+#### Colors
+
+```
+REG ADD HKCU\CONSOLE /f /v VirtualTerminalLevel /t REG_DWORD /d 1
+```
 
 ## Build
 
