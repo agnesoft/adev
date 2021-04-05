@@ -177,7 +177,7 @@ The test runner is the main entry point of `atest`. The registrations of the tes
 -   `TestRunner` optionally accepts main's argumnets (`int argc, char *argv[]`) that controls filtering, reporting etc. as well as the stream for the [Printer](#printer).
 -   The tests must be executed within the context of main (or before it) otherwise the code coverage (e.g. `llvm-cov`) and other instrumentation based tools (e.g. sanitizers) will not work properly. These are typically used with the test.
 
-The `run()` method of the `atest::TestRuner` will return `0` if all tests passed or `1` if there was a failure. No exceptions are propagated from running the tests themselves but it is still possible for `run()` to throw. If that happens something seriously wrong occured and the ultimate call to `std::termina()/std::abort()` performed by default is probably right thing to happen. If you want the run never to fail and handle such situation yourself wrap the call to `atest::TestRunner::run()` in a `try {} catch (...) {}` block.
+The `run()` method of the `atest::TestRuner` will return number of failures which should be `0` if all tests passed or a number greater than `0` if there was a failure. No exceptions are propagated from running the tests themselves but it is still possible for `run()` to throw. If that happens something seriously wrong happened and the ultimate call to `std::termina()/std::abort()` performed by default is probably the right thing to happen. If you want the run never to fail and handle such situation yourself wrap the call to the `atest::TestRunner::run()` in a `try {} catch (...) {}` block.
 
 Examples:
 
