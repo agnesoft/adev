@@ -13,7 +13,6 @@ C++ testing framework.
         -   [toFail()](#tofail)
     -   [Test Runner](#test-runner)
     -   [Printer](#printer)
-        -   [Colors](#colors)
 -   [Build](#build)
     -   [MSVC](#msvc)
     -   [clang](#clang)
@@ -209,12 +208,6 @@ By default, the `atest` outputs the progress and results to `std::cout`. It is p
 
 It is also a requirement for all values used in the expectations and matching to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when compiling the test. The containers that have `begin()` and `end()` are automatically printed as arrays and thus only the internal type `T` might need to be made printable. A custom printing of the whole containers can still be provided by the user.
 
-#### Colors
-
-```
-REG ADD HKCU\CONSOLE /f /v VirtualTerminalLevel /t REG_DWORD /d 1
-```
-
 ## Build
 
 ### MSVC
@@ -239,7 +232,7 @@ cl %CPP_FLAGS% test\atest_test.cpp atest.lib astl.obj
 
 Everything must be compiled with the same flags that affect code generation including the `astl` dependency.
 
-The `/interface` flag will generate the `ifc` (compiled module interface) for `atest`. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively (like `astl.hpp=astl.hpp.ifc`). Note that both header units and the module interfaces must also produce regular object files (`/Fo`) so that the code can be linked together.
+The `/interface` flag will generate the `ifc` (compiled module interface) for `atest`. Individual partitions do not need to be specified but must be already compiled beforehand. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively (like `astl.hpp=astl.hpp.ifc`). Note that both header units and the module interfaces must also produce regular object files (`/Fo`) so that the code can be linked together.
 
 -   `/internalPartition` will compile a translation unit into an `ifc` (module private/interface partition depending if it exports anything or not).
 -   `/exportHeader` will compile a header into an `ifc` (a header unit).
