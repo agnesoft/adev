@@ -5,39 +5,31 @@ using atest::suite;
 using atest::test;
 
 static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
-    test("value == value", [] {
+    test("Value is equal to itself", [] {
         expect(1).toBe(1);
     });
 
-    test("call == value", [] {
-        const auto sum = [](int x, int y) noexcept {
-            return x + y;
-        };
-
-        expect(sum(1, 1)).toBe(2);
+    test("Expect failure but pass (INTENTIONAL FAILURE)", [] {
+        expect(1).toBe(1).toFail();
     });
 
-    test("callable == value", [] {
+    test("Callable is equal to value", [] {
         expect([] { return 1 + 1; }).toBe(2);
     });
 
-    test("value != value (fail)", [] {
+    test("Value is not equal a different value (INTENTIONAL FAILURE)", [] {
         expect(1).toBe(2);
     });
 
-    test("value != value (expect failure)", [] {
+    test("Value is not equal a different value", [] {
         expect(1).toBe(2).toFail();
     });
-    
-    test("callable throws std::exception", [] {
+
+    test("Callable is expected to fail but throws an exception (INTENTIONAL FAILURE)", [] {
         expect([]() -> int { throw std::runtime_error{"bad call"}; }).toBe(1).toFail();
     });
 
-    test("callable throws int", [] {
+    test("Callable is expected to fail but throws an int (INTENTIONAL FAILURE)", [] {
         expect([]() -> int { throw 1; }).toBe(1).toFail();
-    });
-    
-    test("expect failure but pass", [] {
-        expect(1).toBe(1).toFail();
     });
 });
