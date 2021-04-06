@@ -33,7 +33,7 @@ C++ testing framework.
 auto atest::test(const char *name, auto (*testBody)()->void) -> void
 ```
 
-Registers a test `testBody` under the name `name`. It can be called either within a [test suite](#suite) or in the `main()`. When not called within a `suite()` call the test will be registered in the implicit `Global` test suite. The second argument is a nullary function that takes no arguments and return nothing. It would typically be a lambda.
+Registers a test `testBody` under the name `name`. It can be called either within a [test suite](#suite) or in the `main()`. When not called within a `suite()` call the test will be registered in the implicit `global` (nameless) test suite. The second argument is a nullary function that takes no arguments and return nothing. It would typically be a lambda.
 
 Example:
 
@@ -172,12 +172,21 @@ expect(1).toBe(2).toFail(); //passes despite failing
 
 ### Test Runner
 
-The test runner is the main entry point of `atest`. The registrations of the test suites and tests are global and the user is responsible to actuall start the test run by instantiating and calling `atest::TestRunner::run()`. The reason for this is two-fold:
+The test runner is the main entry point of `atest`. The registrations of the test suites and tests are global and the user is responsible to actually start the test run by instantiating `atest::TestRunner` and calling `atest::TestRunner::run()`. The reason for this is two-fold:
 
 -   `TestRunner` optionally accepts main's argumnets (`int argc, char *argv[]`) that controls filtering, reporting etc. as well as the stream for the [Printer](#printer).
--   The tests must be executed within the context of main (or before it) otherwise the code coverage (e.g. `llvm-cov`) and other instrumentation based tools (e.g. sanitizers) will not work properly. These are typically used with the test.
+-   The tests must be executed within the context of main (or before it) otherwise the code coverage (e.g. `llvm-cov`) and other instrumentation based tools (e.g. sanitizers) will not work properly. These are typically used with the tests so this property is important.
 
-The `run()` method of the `atest::TestRuner` will return number of failures which should be `0` if all tests passed or a number greater than `0` if there was a failure. No exceptions are propagated from running the tests themselves but it is still possible for `run()` to throw. If that happens something seriously wrong happened and the ultimate call to `std::termina()/std::abort()` performed by default is probably the right thing to happen. If you want the run never to fail and handle such situation yourself wrap the call to the `atest::TestRunner::run()` in a `try {} catch (...) {}` block.
+There is no parallelization within a single run. At any one time there is only one test suite and one test from that test suite being executed. The global nameless test suite is always executed first. The user defined test suites are executed in order defined by the names of files they were declared in sorted alphabetically (e.g. `aaa.cpp`, `main.cpp`, `mytestsuite.cpp` etc.). If multiple test suites are declared within a file they are executed in the declaration order. All tests within a test suite are executed sequentially in order of declaration.
+
+---
+
+_NOTE_
+The `atest::TestRunner::run()` is **not thread-safe** but it **is re-entrant**. However the executed tests themselves might not be re-entrant.
+
+---
+
+The `atest::TestRuner::run()` will return number of failures which should be `0` if all tests passed or a number greater than `0` if there was a failure. No exceptions are propagated from running the tests themselves but it is still possible for `run()` to throw. If that happens something seriously wrong happened and the ultimate call to `std::termina()/std::abort()` performed by default is probably the right thing to happen. If you want the run never to fail and handle such situation yourself wrap the call to the `atest::TestRunner::run()` in a `try {} catch (...) {}` block.
 
 Examples:
 
