@@ -37,9 +37,14 @@ public:
 
     auto beginTestSuite(const TestSuite *testSuite) -> void
     {
-        stream() << "---\n"
-                 << gray(sourceLocationToString(testSuite->sourceLocation))
-                 << testSuite->name << "\n";
+        stream() << "---\n";
+
+        if (hasLocation(testSuite))
+        {
+            stream() << gray(sourceLocationToString(testSuite->sourceLocation))
+                     << testSuite->name << "\n";
+        }
+
         mIndentLevel++;
     }
 
@@ -89,6 +94,11 @@ private:
     [[nodiscard]] static auto green(const std::string &text) -> std::string
     {
         return Color::GREEN + text + Color::RESET;
+    }
+
+    [[nodiscard]] static auto hasLocation(const TestSuite *testSuite) -> bool
+    {
+        return testSuite->sourceLocation.line() != -1;
     }
 
     [[nodiscard]] auto indent() const -> std::string
