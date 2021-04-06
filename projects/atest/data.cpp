@@ -35,7 +35,7 @@ struct TestSuite
 
 struct Tests
 {
-    std::vector<TestSuite> suites = {TestSuite{"Global", source_location<>::current()}};
+    std::vector<TestSuite> suites = {TestSuite{"Global"}};
     TestSuite *currentTestSuite = &suites.front();
     Test *currentTest = nullptr;
 };

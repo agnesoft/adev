@@ -25,6 +25,7 @@ public:
 
     [[nodiscard]] auto run() -> int
     {
+        sortTestSuites();
         mPrinter.beginRun(Reporter::generateStats(globalTests()->suites));
         runTestSuites();
         const auto report = Reporter::generateReport(globalTests()->suites);
@@ -33,6 +34,13 @@ public:
     }
 
 private:
+    static auto sortTestSuites() -> void
+    {
+        std::sort(++globalTests()->suites.begin(), globalTests()->suites.end(), [](const TestSuite &left, const TestSuite &right) {
+            return std::string{left.sourceLocation.file_name()} < std::string{right.sourceLocation.file_name()};
+        });
+    }
+
     auto runTest(Test *test) -> void
     {
         globalTests()->currentTest = test;

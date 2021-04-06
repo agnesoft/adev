@@ -13,4 +13,4 @@ projects/astl/include
 -Isystem
 ../llvm-project/BUILD/include/c++/v1
 -c
--xc++
+
