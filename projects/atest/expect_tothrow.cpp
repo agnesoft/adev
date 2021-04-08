@@ -10,6 +10,9 @@ export import : expect_base;
 
 namespace atest
 {
+//! Concept that is `true` if `T` has method
+//! what() that returns a value such that it can
+//! be converted to `std::string`.
 export template<typename T>
 concept hasWhat = requires(const T &type)
 {

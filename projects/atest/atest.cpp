@@ -36,20 +36,36 @@ export import : test_runner;
 // clang-format on
 #endif
 
+//! ATest namespace
 namespace atest
 {
+//! Starts an expectation. This function accepts any `T` but later
+//! methods called may impose additional requirements on it (e.g. for `T`
+//! to be a callable). Beside the `value` this function also captures the
+//! call site's source_location. Returns an Expect object to complete
+//! the expectation.
 export template<typename T>
 [[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T>
 {
     return Expect<T>{value, sourceLocation};
 }
 
+//! Registers the test `testBody` under `name` in the current test suite().
+//! If the test is not within a test suite it will be registered to the
+//! implicit global test suite. The `testBody` is not executed immediately
+//! but rather during the exceution of atest::TestRunner::run().
 export template<typename T = int>
 auto test(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> void
 {
     globalTests()->currentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
 }
 
+//! Registers the test suite under `name`. The `suiteBody` will be run
+//! immediately presumably registering the tests inside it. Note that
+//! it is not possible to execute test code within the `suiteBody` itself.
+//! This function will never throw and will attempt to output the text of
+//! any exception it catches if it derives from `std::exception`. It returns
+//! 0 on success, 1 otherwise.
 export template<typename T = int>
 auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> int
 {

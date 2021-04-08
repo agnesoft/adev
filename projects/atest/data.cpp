@@ -50,6 +50,7 @@ struct Report
     std::chrono::microseconds duration = std::chrono::microseconds::zero();
 };
 
+//! \private
 [[nodiscard]] auto globalTests() -> Tests *
 {
     static Tests tests;
