@@ -30,7 +30,7 @@ concept iterable = requires(const T &type)
 //! Returns the reference to the passed in `stream`.
 //!
 //! Examples: `std::vector<int>{1, 2, 3}` will become "{1, 2, 3}"
-//! 
+//!
 export template<typename T>
 requires(!stringifiable<T> && iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
 {
@@ -70,7 +70,7 @@ auto stringifyImpl(std::stringstream &stream, const T &value, const Values &...v
 export template<typename... T>
 [[nodiscard]] auto stringify(const T &...values) -> std::string
 {
-    std::ostringstream stream;
+    std::stringstream stream;
     stringifyImpl(stream, values...);
     return stream.str();
 }

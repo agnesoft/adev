@@ -7,6 +7,7 @@ import : stringify;
 
 namespace atest
 {
+//! Color codes for ANSI console foreground colors.
 struct Color
 {
     static constexpr char GRAY[] = "\033[1;30m";
@@ -16,25 +17,33 @@ struct Color
     static constexpr char YELLOW[] = "\033[1;33m";
 };
 
+//! The `Printer` class formats output to a `std::ostream`.
+//!
+//! It converts raw test data into human readable formatted output.
 class Printer
 {
 public:
+    //! Constructs the object with `stream`.
     explicit Printer(std::ostream *stream) noexcept :
         mStream{stream}
     {
     }
 
+    //! Outputs the heading of the test run: the number of tests and test suites
+    //! that are being run.
     auto beginRun(const Report &report) -> void
     {
         stream() << "Running " << report.tests << " tests from " << report.testSuites << " test suites...\n"
                  << separator() << "\n";
     }
 
+    //! This method prints nothing but increases the indentation level.
     auto beginTest([[maybe_unused]] const Test *test) -> void
     {
         mIndentLevel++;
     }
 
+    //! Prints the name of the test suite prepended with its source location.
     auto beginTestSuite(const TestSuite *testSuite) -> void
     {
         stream() << "---\n";
@@ -48,6 +57,10 @@ public:
         mIndentLevel++;
     }
 
+    //! Prints the summary of the test run in semi tabular form. The summary
+    //! includes whether the run passed or failed, its total duration,
+    //! number of tests run/passed/failed and number of expectations (assertions)
+    //! run/passed/failed.
     auto endRun(const Report &report) -> void
     {
         const int width = static_cast<int>(std::to_string(std::max(report.tests, report.expectations)).size());
@@ -64,6 +77,9 @@ public:
                  << report.failedExpectations << " failed\n";
     }
 
+    //! Prints the information about just concluded test: whether
+    //! it passed, its source location, name and duration. It also
+    //! decreases the indent level.
     auto endTest(const Test *test) -> void
     {
         printTestResult(test);
@@ -71,18 +87,11 @@ public:
         mIndentLevel--;
     }
 
+    //! Prints and empty line and decreses the indent level.
     auto endTestSuite([[maybe_unused]] const TestSuite *testSuite) -> void
     {
         stream() << '\n';
         mIndentLevel--;
-    }
-
-    auto print(const std::string &prefix, const std::string &text) -> void
-    {
-        if (!text.empty())
-        {
-            stream() << indent() << prefix << ' ' << text << '\n';
-        }
     }
 
 private:
@@ -104,6 +113,14 @@ private:
     [[nodiscard]] auto indent() const -> std::string
     {
         return std::string(mIndentLevel * 2, ' ');
+    }
+
+    auto print(const std::string &prefix, const std::string &text) -> void
+    {
+        if (!text.empty())
+        {
+            stream() << indent() << prefix << ' ' << text << '\n';
+        }
     }
 
     auto printTestFailure(const Failure &failure) -> void

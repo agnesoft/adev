@@ -6,9 +6,16 @@ import : data;
 
 namespace atest
 {
+//! The `Reporter` aggregates test results.
+//!
+//! It will generate a Report with various statistics
+//! such as number of tests, expectations, failures and
+//! the tests' duration from the list of test suites.
 class Reporter
 {
 public:
+    //! Generates the Report from the `testSuites` by aggregating statistics
+    //! from each test.
     [[nodiscard]] static auto generateReport(const std::vector<TestSuite> &testSuites) -> Report
     {
         Report report;
@@ -22,6 +29,8 @@ public:
         return report;
     }
 
+    //! Generates the Report from the `testSuites` that only contain basic
+    //! information such as number of test suites and number of tests.
     [[nodiscard]] static auto generateStats(const std::vector<TestSuite> &testSuites) -> Report
     {
         Report report;

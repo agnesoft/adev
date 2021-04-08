@@ -21,21 +21,46 @@ concept hasWhat = requires(const T &type)
     // clang-format on
 };
 
+//! \brief The `ExpectToThrow<T, E, V, ValidateValue>` provides exception
+//! related assertions.
+//!
+//! The type `T` must be an std::invocable type. Type `E` is the type of the
+//! exception. Type `V` is the value against which the exception of type `E`
+//! will be matched if `ValidateValue` is set to `true`. If the `ValidateValue`
+//! argument is set to `false` no matching of the caught value beside `typeid`
+//! matching will be performed.
+//!
+//! The type `V` does not neccesarily have to be of the same type as `E` but
+//! there must be an `operator==` that takes both the exception and `V` value.
+//! Additionally if the exception `E` satisfies hasWhat concept the value
+//! `V` will be matched against the `E::what()` rather than the exception object
+//! itself. For that comparison the `V` must either be or be convertible to std::string.
 export template<typename T, typename E, typename V, bool ValidateValue>
 requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
 {
 public:
     using ExpectBase<T>::ExpectBase;
 
+    //! Constructs the object taking the reference to `expression`, `value` and
+    //! source_location.
     ExpectToThrow(const T &expression, const V &value, const source_location<> &sourceLocation) :
         ExpectBase<T>{expression, sourceLocation},
         mValue{value}
     {
     }
 
+    //! Defaulted copy constructor.
     ExpectToThrow(const ExpectToThrow &other) = default;
+
+    //! Defaulted move constructor.
     ExpectToThrow(ExpectToThrow &&other) noexcept = default;
 
+    //! Destructor that runs `T` expecting the exception of type
+    //! `E` and validating its type and optionally its value. No
+    //! exception is propagated outside. Not throwing any exception
+    //! or throwing unknown exception, exception of a different than
+    //! expected type or not matching the value `V` (if value matching
+    //! is requested) all result in an error and failure of the expectation.
     ~ExpectToThrow()
     {
 #ifdef _MSC_VER
