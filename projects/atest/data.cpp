@@ -7,6 +7,7 @@ import "astl.hpp";
 
 namespace atest
 {
+//! Failure and its details.
 struct Failure
 {
     std::string what;
@@ -15,6 +16,7 @@ struct Failure
     source_location<> sourceLocation;
 };
 
+//! Test and its results.
 struct Test
 {
     std::string name;
@@ -26,6 +28,7 @@ struct Test
     std::vector<Failure> failures;
 };
 
+//! Test suite with its registered tests.
 struct TestSuite
 {
     std::string name;
@@ -33,6 +36,7 @@ struct TestSuite
     std::vector<Test> tests;
 };
 
+//! Registered test suites as well as currently run/registered test suite and test.
 struct Tests
 {
     std::vector<TestSuite> suites = {TestSuite{"Global"}};
@@ -40,6 +44,7 @@ struct Tests
     Test *currentTest = nullptr;
 };
 
+//! Aggregate report of a test run.
 struct Report
 {
     size_t testSuites = 0;
@@ -50,6 +55,7 @@ struct Report
     std::chrono::microseconds duration = std::chrono::microseconds::zero();
 };
 
+//! Returns the global Tests object for registering test suites and tests and to run them.
 [[nodiscard]] auto globalTests() -> Tests *
 {
     static Tests tests;
