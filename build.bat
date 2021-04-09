@@ -16,8 +16,12 @@ cd astl
 cl.exe %CPP_FLAGS% /c /exportHeader /Fo /TP "%ASTL_INCLUDE_PATH%\astl.hpp"
 cd ..
 
-REM astl_test
-cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\astl_test.exe" "%PROJECTS_ROOT%\astl\test\main.cpp" "%BUILD_ROOT%\astl\astl.obj"
+REM acore
+mkdir acore
+cd acore
+cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\acore\acore.cpp"
+lib.exe /NOLOGO acore.obj /OUT:acore.lib
+cd ..
 
 REM atest
 mkdir atest
@@ -40,7 +44,16 @@ cd ..
 REM atest_test
 mkdir atest_test
 cd atest_test
-cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\atest_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" "%PROJECTS_ROOT%\atest\test\atest_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\astl\astl.obj"
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\atest_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" "%PROJECTS_ROOT%\atest\test\main.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\astl\astl.obj"
+cd ..
+
+REM astl_test
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\astl_test.exe" "%PROJECTS_ROOT%\astl\test\main.cpp" "%BUILD_ROOT%\astl\astl.obj"
+
+REM acore_test
+mkdir acore_test
+cd acore
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" "%PROJECTS_ROOT%\acore\test\main.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
 cd ..
 
 cd ..
