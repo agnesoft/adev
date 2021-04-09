@@ -14,6 +14,7 @@ Central development repository.
 
 | Name                                | Path                               | Description                                              | Design                                      |
 | ----------------------------------- | ---------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
+| [ACore](projects/acore/README.md)   | [projects/acore](projects/acore)   | C++ library that provides generic functionality.         | [HLD](projects/acore/high_level_design.md)  |
 | [ABuild](projects/abuild/README.md) | [projects/abuild](projects/abuild) | C++ build system.                                        | [HLD](projects/abuild/high_level_design.md) |
 | [ATest](projects/atest/README.md)   | [projects/atest](projects/atest)   | C++ testing framework.                                   | [HLD](projects/atest/high_level_design.md)  |
 | [ASTL](projects/astl/README.md)     | [projects/astl](projects/astl)     | C++ Standard Template Library (STL) header unit wrapper. | [HLD](projects/astl/high_level_design.md)   |
