@@ -41,9 +41,9 @@ public:
     //! Creates an expectation that expects a type `E` to be thrown from the
     //! callable expression `T`.
     template<typename E>
-    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, int, false>
+    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, const char *, false>
     {
-        return ExpectToThrow<T, E, int, false>{mExpression, 0, mSourceLocation};
+        return ExpectToThrow<T, E, const char *, false>{mExpression, "", mSourceLocation};
     }
 
     //! Creates an expectation that expects a type `E` to be thrown from the callable
