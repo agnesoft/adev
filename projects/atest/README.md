@@ -217,67 +217,6 @@ By default, the `atest` outputs the progress and results to `std::cout`. It is p
 
 It is also a requirement for all values used in the expectations and matching to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when compiling the test. The containers that have `begin()` and `end()` are automatically printed as arrays and thus only the internal type `T` might need to be made printable. A custom printing of the whole containers can still be provided by the user.
 
-## Build
-
-### MSVC
-
-```
-set CPP_FLAGS=/std:c++latest /headerUnit "../astl/include/astl.hpp=astl.hpp.ifc"
-cl %CPP_FLAGS% /c /Fo /internalPartition source_location.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition data.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition stringify.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition printer.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition reporter.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition expect_base.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition expect_tomatch.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition expect_tothrow.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition matcher.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition expect.cpp
-cl %CPP_FLAGS% /c /Fo /internalPartition test_runner.cpp
-cl %CPP_FLAGS% /c /Fo /interface atest.cpp
-lib.exe /NOLOGO source_location.obj data.obj stringify.obj printer.obj reporter.obj expect_base.obj expect_tomatch.obj expect_tothrow.obj matcher.obj expect.obj test_runner.obj atest.obj /OUT:atest.lib
-cl %CPP_FLAGS% test\atest_test.cpp atest.lib astl.obj
-```
-
-Everything must be compiled with the same flags that affect code generation including the `astl` dependency.
-
-The `/interface` flag will generate the `ifc` (compiled module interface) for `atest`. Individual partitions do not need to be specified but must be already compiled beforehand. Finally the `atest.ifc` does not need to be specified when compiling a translation unit that imports it if it can be found in the same directory. Header units mapping however still must be specified for each translation unit even transitively (like `astl.hpp=astl.hpp.ifc`). Note that both header units and the module interfaces must also produce regular object files (`/Fo`) so that the code can be linked together.
-
--   `/internalPartition` will compile a translation unit into an `ifc` (module private/interface partition depending if it exports anything or not).
--   `/exportHeader` will compile a header into an `ifc` (a header unit).
--   `/interface` will compile a module into the `ifc`.
--   `/std:c++latest` enabled C++20 modules.
--   `/Fo` to produce an object file.
--   `/c` to perform compilation only.
-
-### Clang
-
-Using `clang++`:
-
-```
-mkdir -p build
-cd build
-
-clang++-11 -std=c++2a -I../astl/include -fmodules -Xclang -emit-module-interface -c -x c++ atest.ixx -o atest.pcm
-clang++-11 -std=c++2a -I../astl/include -fmodules -fprebuilt-module-path=. -c -x c++ atest.ixx -o atest.o
-clang++-11 -std=c++2a -I../astl/include -L<libc++pprefix>/lib -lc++ -fmodules -fprebuilt-module-path=. `-Wl,-rpath,<libcxx-install-prefix>/lib` test/atest_test.cpp atest.o -o atest_test
-
-cd ..
-```
-
-Everything must be compiled with the same flags that affect code generation. The first command will compile a module interface into a precompiled module `pcm`. The second command will generate a regular object file from the module with the symbols used for linking purposes. The third command will compile the source file that imports the module and will also link to its object file.
-
--   `-std=c++2a` enables modules.
--   `-I../astl/include` adds `astl` dependency's include path that include its header and the `moduel.moduelmap` files.
--   `-fmodules` enables modules and implicit header unit creation and implicit module maps.
--   `-Xclang -emit-module-interface` compiles a module into `pmc`. Notice the flag needs to be forwarded to the compiler with `-Xclang`.
--   `-c` tells clang to only perform compilation and no linking.
--   `-x c++` tells clang to treat the following input file as C++ file. Required for non-standard extensions such as `*.ixx`.
--   `-fprebuilt-module-path=.` tells clang where to look for precompiled modules - int this case the current directory.
--   `-L<libc++pprefix>/lib` adds the `libc++` lib directory to the library search path for linking.
--   `-lc++` tells clang to link against `libc++`.
--   `-Wl,-rpath,<libcxx-install-prefix>/lib` embeds the `libc++` library path to the binary, so it can be found during runtime.
-
 ## Known Issues
 
 ### Affects Users
