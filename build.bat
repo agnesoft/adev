@@ -56,7 +56,7 @@ cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\astl_test.exe" "%PROJECTS_ROOT%\astl\tes
 REM acore_test
 mkdir acore_test
 cd acore
-cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
 cd ..
 
 cd ..

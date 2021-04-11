@@ -628,18 +628,18 @@ private:
 
             return true;
         }
-        catch (std::runtime_error &e)
+        catch ([[maybe_unused]] std::runtime_error &e)
         {
-            throw e;
+            throw;
         }
-        catch (std::exception &e)
+        catch ([[maybe_unused]] std::exception &e)
         {
             if (!isPositional())
             {
                 std::visit([&](auto &&boundValue) {
                     using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
-                    throw std::runtime_error{std::string{"Failed to set value of type '"} + typeid(BoundT).name() + "' for option '" + name() + "' from value '" + value + "\': " + e.what()};
+                    throw std::runtime_error{std::string{"Failed to set option '"} + name() + "' (" + typeid(BoundT).name() + ") from value '" + value + '\''};
                 },
                            boundValue());
             }

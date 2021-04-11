@@ -2,6 +2,5 @@ module;
 
 export module acore;
 
-export import "astl.hpp";
-
-export import : commandline_option;
+export import : acore_common;
+export import : commandline;

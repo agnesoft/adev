@@ -1,3 +1,3 @@
-module acore : acore_common;
+export module acore : acore_common;
 
-import "astl.hpp";
+export import "astl.hpp";

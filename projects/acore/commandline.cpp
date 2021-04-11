@@ -421,7 +421,7 @@ private:
 
     auto printParsingError(const std::exception &e) -> void
     {
-        printStream() << "ERROR parsing command line arguments: " << e.what() << '\n';
+        printStream() << "ERROR: parsing command line arguments: " << e.what() << '\n';
 
         if (mHelpEnabled)
         {
