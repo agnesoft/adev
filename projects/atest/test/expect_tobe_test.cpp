@@ -25,6 +25,10 @@ static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
         expect(1).toBe(2).toFail();
     });
 
+    test("match array", [] {
+        expect(std::string{}).toBe("");
+    });
+
     test("Callable is expected to fail but throws an exception (INTENTIONAL FAILURE)", [] {
         expect([]() -> int { throw std::runtime_error{"bad call"}; }).toBe(1).toFail();
     });
