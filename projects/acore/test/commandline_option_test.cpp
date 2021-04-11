@@ -5,7 +5,7 @@ using atest::expect;
 using atest::suite;
 using atest::test;
 
-namespace atest
+namespace std
 {
 auto operator<<(std::ostream &stream, const typename std::vector<std::string>::const_iterator &iterator) -> std::ostream &
 {
@@ -22,8 +22,6 @@ auto operator<<(std::ostream &stream, [[maybe_unused]] const std::monostate &mon
 auto operator<<(std::ostream &stream, [[maybe_unused]] const acore::CommandLineOption::DefaultValue &defaultValue) -> std::ostream &
 {
     std::visit([&](auto &&value) {
-        using DefaultT = std::remove_pointer_t<std::decay_t<decltype(value)>>;
-
         stream << value;
     },
                defaultValue);
@@ -34,8 +32,6 @@ auto operator<<(std::ostream &stream, [[maybe_unused]] const acore::CommandLineO
 auto operator<<(std::ostream &stream, [[maybe_unused]] const acore::CommandLineOption::BoundValue &boundValue) -> std::ostream &
 {
     std::visit([&](auto &&value) {
-        using BoundT = std::remove_pointer_t<std::decay_t<decltype(value)>>;
-
         stream << value;
     },
                boundValue);
