@@ -9,6 +9,26 @@ import : acore_common;
 
 namespace acore
 {
+//! \private
+template<typename T>
+auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std::ostringstream &
+{
+    stream << "[";
+
+    for (const T &value : vector)
+    {
+        stream << value;
+
+        if (&vector.back() != &value)
+        {
+            stream << ", ";
+        }
+    }
+
+    stream << "]";
+    return stream;
+}
+
 //! The CommandLineOption is a builder class that
 //! provides fluent interface for configuration of
 //! command line options and their matching.
@@ -665,23 +685,4 @@ private:
     bool mRequired = false;
     char mShortName = {};
 };
-
-template<typename T>
-auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std::ostringstream &
-{
-    stream << "[";
-
-    for (const T &value : vector)
-    {
-        stream << value;
-
-        if (&vector.back() != &value)
-        {
-            stream << ", ";
-        }
-    }
-
-    stream << "]";
-    return stream;
-}
 }
