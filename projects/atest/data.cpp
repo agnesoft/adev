@@ -52,6 +52,7 @@ struct Report
     size_t failedTests = 0;
     size_t expectations = 0;
     size_t failedExpectations = 0;
+    size_t failures = 0;
     std::chrono::microseconds duration = std::chrono::microseconds::zero();
 };
 

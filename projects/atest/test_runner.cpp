@@ -52,8 +52,8 @@ public:
         mPrinter.beginRun(Reporter::generateStats(globalTests()->suites));
         runTestSuites();
         const auto report = Reporter::generateReport(globalTests()->suites);
-        mPrinter.endRun(report);
-        return static_cast<int>(report.failedExpectations);
+        mPrinter.endRun(report, globalTests()->suites);
+        return static_cast<int>(report.failures);
     }
 
 private:

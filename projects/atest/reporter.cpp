@@ -49,6 +49,7 @@ private:
         {
             report->failedTests++;
             report->failedExpectations += test.failedExpectations;
+            report->failures += test.failures.size();
         }
     }
 
