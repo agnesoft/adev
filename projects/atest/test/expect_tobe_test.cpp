@@ -25,7 +25,7 @@ static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
         expect(1).toBe(2).toFail();
     });
 
-    test("match array", [] {
+    test("Match array", [] {
         expect(std::string{}).toBe("");
     });
 
