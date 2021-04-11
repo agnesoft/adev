@@ -45,6 +45,10 @@ auto operator<<(std::ostream &stream, [[maybe_unused]] const acore::CommandLineO
 }
 
 static const auto s = suite("acore::CommandLineOption", [] {
+#ifdef _MSC_VER
+    using ::type_info;
+#endif
+
     test("type traits", [] {
         expect(std::is_default_constructible_v<acore::CommandLineOption>).toBe(true);
         expect(std::is_copy_constructible_v<acore::CommandLineOption>).toBe(true);
@@ -106,10 +110,12 @@ static const auto s = suite("acore::CommandLineOption", [] {
         acore::CommandLineOption option;
         std::string value;
 
+        const std::string exceptionText = std::string{"The option longName1 default value is set with incompatible type ("} + typeid(std::int64_t).name() + ") to the one it is being bound to (" + typeid(std::string).name() + ").";
+
         expect([&] {
             acore::CommandLineOption::Option{&option}.longName("longName1").defaultValue(std::int64_t{10}).description("").bindTo(&value);
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>(exceptionText);
     });
 
     test("boundValue (positional)", [] {
@@ -262,7 +268,7 @@ static const auto s = suite("acore::CommandLineOption", [] {
         expect([&] {
             option.defaultBoundValue();
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>("The option [positional] is missing a bound value.");
     });
 
     test("defaultValue (defaulted)", [] {
@@ -477,24 +483,31 @@ static const auto s = suite("acore::CommandLineOption", [] {
         expect(option.longName()).toBe("longName1");
     });
 
-    test("longName (invalid)", [] {
-        expect([] {
-            acore::CommandLineOption option;
+    test("longName (invalid, start with number)", [] {
+        acore::CommandLineOption option;
+
+        expect([&] {
             acore::CommandLineOption::Option{&option}.longName("1longName");
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>("Long name '1longName' is not a valid name ([a-zA-Z][a-zA-Z\\d]+).");
+    });
 
-        expect([] {
-            acore::CommandLineOption option;
+    test("longName (invalid, single character)", [] {
+        acore::CommandLineOption option;
+
+        expect([&] {
             acore::CommandLineOption::Option{&option}.longName("l");
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>("Long name 'l' is not a valid name ([a-zA-Z][a-zA-Z\\d]+).");
+    });
 
-        expect([] {
-            acore::CommandLineOption option;
-            acore::CommandLineOption::Option{&option}.longName("1ongName#");
+    test("longName (invalid, end with special character)", [] {
+        acore::CommandLineOption option;
+
+        expect([&] {
+            acore::CommandLineOption::Option{&option}.longName("longName#");
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>("Long name 'longName#' is not a valid name ([a-zA-Z][a-zA-Z\\d]+).");
     });
 
     test("match (unmatched)", [] {
@@ -640,10 +653,12 @@ static const auto s = suite("acore::CommandLineOption", [] {
         std::vector<std::string> arguments{"--repeated=hello"};
         auto arg = arguments.cbegin();
 
+        const std::string exceptionText = std::string{"Failed to set option 'repeated' ("} + typeid(value).name() + ") from value 'hello'.";
+
         expect([&] {
             option.match(&arg, arguments.cend());
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>(exceptionText);
     });
 
     test("match (type mismatch, positional)", [] {
@@ -663,10 +678,12 @@ static const auto s = suite("acore::CommandLineOption", [] {
         std::vector<std::string> arguments{"value"};
         auto arg = arguments.cbegin();
 
+        const std::string exceptionText = "Bind value undefined for option '[positional]'.";
+
         expect([&] {
             option.match(&arg, arguments.cend());
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>(exceptionText);
     });
 
     test("name (positional)", [] {
@@ -699,18 +716,22 @@ static const auto s = suite("acore::CommandLineOption", [] {
         expect(option.shortName()).toBe('l');
     });
 
-    test("shortName (invalid)", [] {
+    test("shortName (invalid, number)", [] {
         acore::CommandLineOption option;
 
         expect([&] {
             acore::CommandLineOption::Option{&option}.longName("longName1").shortName('1');
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>("Short name '1' is not a valid name ([a-zA-Z]).");
+    });
+
+    test("shortName (invalid, special character)", [] {
+        acore::CommandLineOption option;
 
         expect([&] {
-            acore::CommandLineOption::Option{&option}.longName("longName1").shortName('\0');
+            acore::CommandLineOption::Option{&option}.longName("longName1").shortName('#');
         })
-            .toThrow<std::runtime_error>();
+            .toThrow<std::runtime_error>("Short name '#' is not a valid name ([a-zA-Z]).");
     });
 
     test("copy assignment", [] {

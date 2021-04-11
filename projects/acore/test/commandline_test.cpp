@@ -341,7 +341,7 @@ static const auto s = suite("acore::CommandLine", [] {
         expect([&] {
             commandLine.parse(0, std::vector<const char *>{"./app", "-v"}.data());
         })
-            .toThrow<std::logic_error>("Missing mandatory first command line argument");
+            .toThrow<std::logic_error>("Missing mandatory first command line argument.");
     });
 
     test("parse (unmatched argument)", [] {
@@ -352,7 +352,7 @@ static const auto s = suite("acore::CommandLine", [] {
         expect([&] {
             commandLine.parse(2, std::vector<const char *>{"./app", "-v"}.data());
         })
-            .toThrow<std::runtime_error>("Unknown option '-v'");
+            .toThrow<std::runtime_error>("Unknown option '-v'.");
     });
 
     test("parse (unmatched required option)", [] {
@@ -369,7 +369,7 @@ static const auto s = suite("acore::CommandLine", [] {
         expect([&] {
             commandLine.parse(2, std::vector<const char *>{"./app", "-v"}.data());
         })
-            .toThrow<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments");
+            .toThrow<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
     });
 
     test("parse (type mismatch)", [] {
@@ -380,7 +380,7 @@ static const auto s = suite("acore::CommandLine", [] {
         std::int64_t value = 0;
         commandLine.option().longName("value").shortName('v').description("").bindTo(&value);
 
-        const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'";
+        const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.";
 
         expect([&] {
             commandLine.parse(2, std::vector<const char *>{"./app", "-v=hello"}.data());
@@ -399,7 +399,7 @@ static const auto s = suite("acore::CommandLine", [] {
         expect([&] {
             commandLine.parse(2, std::vector<const char *>{"./app", "-v"}.data());
         })
-            .toThrow<std::runtime_error>("Missing value for option 'value'");
+            .toThrow<std::runtime_error>("Missing value for option 'value'.");
     });
 
     test("parse (required unmatched repeated value)", [] {
@@ -413,7 +413,7 @@ static const auto s = suite("acore::CommandLine", [] {
         expect([&] {
             commandLine.parse(1, std::vector<const char *>{"app"}.data());
         })
-            .toThrow<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments");
+            .toThrow<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
     });
 
     test("parse (parsing error)", [] {
@@ -422,7 +422,7 @@ static const auto s = suite("acore::CommandLine", [] {
         commandLine.setPrintStream(&stream);
 
         std::int64_t value = 0;
-        const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'";
+        const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.";
 
         commandLine.option().longName("value").shortName('v').description("").bindTo(&value);
 

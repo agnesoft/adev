@@ -419,7 +419,7 @@ private:
 
             if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
             {
-                throw std::runtime_error{std::string{"The option "} + name() + " default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ')'};
+                throw std::runtime_error{std::string{"The option "} + name() + " default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
             }
         },
                    defaultValue());
@@ -569,7 +569,7 @@ private:
         {
             if (++(*argument) == end)
             {
-                throw std::runtime_error{std::string{"Missing value for option '"} + longName() + '\''};
+                throw std::runtime_error{std::string{"Missing value for option '"} + longName() + "'."};
             }
 
             value = **argument;
@@ -593,7 +593,7 @@ private:
 
                 if constexpr (std::is_same_v<BoundT, std::monostate>)
                 {
-                    throw std::runtime_error{std::string{"Bind value undefined for option '"} + name() + '\''};
+                    throw std::runtime_error{std::string{"Bind value undefined for option '"} + name() + "'."};
                 }
                 else if constexpr (std::is_same_v<BoundT, bool>)
                 {
@@ -639,7 +639,7 @@ private:
                 std::visit([&](auto &&boundValue) {
                     using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
-                    throw std::runtime_error{std::string{"Failed to set option '"} + name() + "' (" + typeid(BoundT).name() + ") from value '" + value + '\''};
+                    throw std::runtime_error{std::string{"Failed to set option '"} + name() + "' (" + typeid(BoundT).name() + ") from value '" + value + "'."};
                 },
                            boundValue());
             }

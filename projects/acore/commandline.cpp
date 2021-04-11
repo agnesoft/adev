@@ -297,7 +297,7 @@ private:
         {
             if (!matchArg(&arg, &opts))
             {
-                throw std::runtime_error{std::string{"Unknown option '"} + *arg + '\''};
+                throw std::runtime_error{std::string{"Unknown option '"} + *arg + "'."};
             }
         }
 
@@ -354,7 +354,7 @@ private:
     {
         if (argc == 0)
         {
-            throw std::logic_error{"Missing mandatory first command line argument"};
+            throw std::logic_error{"Missing mandatory first command line argument."};
         }
 
         mCommand = *argv;
@@ -473,7 +473,7 @@ private:
             {
                 if (opt.option->isRequired())
                 {
-                    throw std::runtime_error{std::string{"Option '"} + opt.option->name() + "' was set as required but did not match any arguments"};
+                    throw std::runtime_error{std::string{"Option '"} + opt.option->name() + "' was set as required but did not match any arguments."};
                 }
 
                 opt.option->defaultBoundValue();
