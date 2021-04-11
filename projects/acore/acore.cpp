@@ -6,7 +6,7 @@ export import : commandline;
 #else
 // clang-format off
 #include    "acore_common.cpp"
+#include    "commandline.cpp"
 #include    "commandline_option.cpp"
-#include    "commandline_option_test.cpp"
 // clang-format on
 #endif
