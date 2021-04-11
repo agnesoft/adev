@@ -18,16 +18,16 @@ public:
 
     //! Returns the expected value. The default implementation returns stringified `left`.
     template<typename T, typename V>
-    [[nodiscard]] auto expected(const T &left, [[maybe_unused]] const V &right) const -> std::string
+    [[nodiscard]] auto expected([[maybe_unused]] const T &left, const V &right) const -> std::string
     {
-        return stringify(left);
+        return stringify(right);
     }
 
     //! Returnst the actual value recieved. The default implementation returns stringified `right`.
     template<typename T, typename V>
-    [[nodiscard]] auto actual([[maybe_unused]] const T &left, const V &right) const -> std::string
+    [[nodiscard]] auto actual(const T &left, [[maybe_unused]] const V &right) const -> std::string
     {
-        return stringify(right);
+        return stringify(left);
     }
 };
 
