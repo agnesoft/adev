@@ -61,10 +61,16 @@ public:
     //! includes whether the run passed or failed, its total duration,
     //! number of tests run/passed/failed and number of expectations (assertions)
     //! run/passed/failed.
-    auto endRun(const Report &report) -> void
+    auto endRun(const Report &report, const std::vector<TestSuite> &testSuites) -> void
     {
         const int width = static_cast<int>(std::to_string(std::max(report.tests, report.expectations)).size());
         const int passedWidth = static_cast<int>(std::to_string(std::max(report.failedTests, report.failedExpectations)).size());
+
+        if (report.failures != 0)
+        {
+            stream() << separator() << "\n";
+            printFailures(testSuites);
+        }
 
         stream() << separator() << "\n"
                  << "Result      : " << (report.failedTests == 0 ? green("PASSED") : red("FAILED")) << '\n'
@@ -120,6 +126,21 @@ private:
         if (!text.empty())
         {
             stream() << indent() << prefix << ' ' << text << '\n';
+        }
+    }
+
+    auto printFailures(const std::vector<TestSuite> &testSuites) -> void
+    {
+        for (const TestSuite &testSuite : testSuites)
+        {
+            for (const Test &test : testSuite.tests)
+            {
+                if (!test.failures.empty())
+                {
+                    printTestResult(&test);
+                    printTestFailures(&test);
+                }
+            }
         }
     }
 
