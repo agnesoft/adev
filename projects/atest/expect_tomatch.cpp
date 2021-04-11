@@ -80,7 +80,7 @@ public:
     auto operator=(ExpectToMatch &&other) noexcept -> ExpectToMatch & = default;
 
 private:
-    [[nodiscard]] auto evaluateExpression() const -> V
+    [[nodiscard]] auto evaluateExpression() const -> auto
     {
         if constexpr (std::is_invocable<T>::value)
         {
