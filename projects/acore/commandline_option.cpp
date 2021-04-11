@@ -419,7 +419,7 @@ private:
 
             if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
             {
-                throw std::runtime_error{std::string{"The option "} + name() + " default value is set with incompatible type (" + /*typeid(DefaultT).name() +*/ ") to the one it is being bound to (" + /*(BoundT).name() +*/ ')'};
+                throw std::runtime_error{std::string{"The option "} + name() + " default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ')'};
             }
         },
                    defaultValue());
@@ -628,14 +628,18 @@ private:
 
             return true;
         }
-        catch ([[maybe_unused]] std::exception &e)
+        catch (std::runtime_error &e)
+        {
+            throw e;
+        }
+        catch (std::exception &e)
         {
             if (!isPositional())
             {
                 std::visit([&](auto &&boundValue) {
                     using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
-                    throw std::runtime_error{std::string{"Failed to set value of type '"} + /*typeid(BoundT).name() +*/ "' for option '" + name() + "' from value '" + value + '\''};
+                    throw std::runtime_error{std::string{"Failed to set value of type '"} + typeid(BoundT).name() + "' for option '" + name() + "' from value '" + value + "\': " + e.what()};
                 },
                            boundValue());
             }

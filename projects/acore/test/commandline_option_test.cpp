@@ -5,6 +5,45 @@ using atest::expect;
 using atest::suite;
 using atest::test;
 
+namespace atest
+{
+auto operator<<(std::ostream &stream, const typename std::vector<std::string>::const_iterator &iterator) -> std::ostream &
+{
+    stream << *iterator;
+    return stream;
+}
+
+auto operator<<(std::ostream &stream, [[maybe_unused]] const std::monostate &monostate) -> std::ostream &
+{
+    stream << "std::monostate";
+    return stream;
+}
+
+auto operator<<(std::ostream &stream, [[maybe_unused]] const acore::CommandLineOption::DefaultValue &defaultValue) -> std::ostream &
+{
+    std::visit([&](auto &&value) {
+        using DefaultT = std::remove_pointer_t<std::decay_t<decltype(value)>>;
+
+        stream << value;
+    },
+               defaultValue);
+
+    return stream;
+}
+
+auto operator<<(std::ostream &stream, [[maybe_unused]] const acore::CommandLineOption::BoundValue &boundValue) -> std::ostream &
+{
+    std::visit([&](auto &&value) {
+        using BoundT = std::remove_pointer_t<std::decay_t<decltype(value)>>;
+
+        stream << value;
+    },
+               boundValue);
+
+    return stream;
+}
+}
+
 static const auto s = suite("acore::CommandLineOption", [] {
     test("type traits", [] {
         expect(std::is_default_constructible_v<acore::CommandLineOption>).toBe(true);
@@ -54,21 +93,13 @@ static const auto s = suite("acore::CommandLineOption", [] {
     test("bindTo (defaulted)", [] {
         acore::CommandLineOption option;
         std::string value;
-
-        expect([&] {
-            acore::CommandLineOption::Option{&option}.longName("longName1").defaultValue(std::string{"someValue"}).description("").bindTo(&value);
-        })
-            .toThrow<std::runtime_error>();
+        acore::CommandLineOption::Option{&option}.longName("longName1").defaultValue(std::string{"someValue"}).description("").bindTo(&value);
     });
 
     test("bindTo (repeated)", [] {
         acore::CommandLineOption option;
         std::vector<double> val;
-
-        expect([&] {
-            acore::CommandLineOption::Option{&option}.longName("longName1").description("").bindTo(&val);
-        })
-            .toThrow<std::runtime_error>();
+        acore::CommandLineOption::Option{&option}.longName("longName1").description("").bindTo(&val);
     });
 
     test("bindTo (defaulted, wrong type)", [] {
@@ -265,7 +296,7 @@ static const auto s = suite("acore::CommandLineOption", [] {
         expect(std::as_const(option).defaultValueAsString()).toBe("true");
     });
 
-    test("defaultValueAsString (true)", [] {
+    test("defaultValueAsString (false)", [] {
         acore::CommandLineOption option;
         bool value = false;
         acore::CommandLineOption::Option{&option}.positional().defaultValue(false).description("").bindTo(&value);
@@ -371,13 +402,13 @@ static const auto s = suite("acore::CommandLineOption", [] {
         expect(std::as_const(option).isPositional()).toBe(false);
     });
 
-    test("isRepeaated (repeated)", [] {
+    test("isRepeated (repeated)", [] {
         acore::CommandLineOption option;
         std::vector<std::int64_t> value;
         acore::CommandLineOption::Option{&option}.longName("longName1").shortName('l').description("").bindTo(&value);
 
         expect(noexcept(option.isRepeated())).toBe(true);
-        expect(option.isRepeated()).toBe(false);
+        expect(option.isRepeated()).toBe(true);
     });
 
     test("isRepeated (non repeated)", [] {
