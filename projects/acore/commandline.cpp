@@ -2,7 +2,7 @@
 export module acore : commandline;
 
 export import : commandline_option;
-import "astl.hpp";
+import : acore_common;
 #endif
 
 namespace acore
@@ -174,10 +174,12 @@ private:
         {
             return mOption;
         }
+
         [[nodiscard]] auto name() const -> const std::string &
         {
             return mName;
         }
+
         [[nodiscard]] auto attributes() const -> const std::string &
         {
             return mAttributes;
@@ -198,6 +200,7 @@ private:
 
             return std::string{"-"} + mOption->shortName() + ", --" + mOption->longName();
         }
+
         [[nodiscard]] auto getAttributes() const -> std::string
         {
             std::string attributes;
@@ -227,6 +230,7 @@ private:
         std::advance(arg, index);
         return *arg;
     }
+
     [[nodiscard]] static auto countNameWidth(const std::vector<OptionHelpLine> &options) -> std::size_t
     {
         constexpr std::size_t minimumWidth = 10;
@@ -242,6 +246,7 @@ private:
 
         return width;
     }
+
     [[nodiscard]] static auto countAttributesWidth(const std::vector<OptionHelpLine> &options) -> std::size_t
     {
         constexpr std::size_t minimumWidth = 10;
@@ -257,11 +262,13 @@ private:
 
         return width;
     }
+
     [[nodiscard]] auto helpRequested() const -> bool
     {
         const std::vector<std::string> helpNames = {"-?"};
         return std::find_first_of(mArgs.cbegin(), mArgs.cend(), helpNames.cbegin(), helpNames.cend()) != mArgs.cend();
     }
+
     [[nodiscard]] auto matchArg(std::vector<std::string>::const_iterator *arg, std::vector<Option> *options) const -> bool
     {
         for (auto opt = options->begin(); opt != options->end(); ++opt)
@@ -281,6 +288,7 @@ private:
 
         return false;
     }
+
     [[nodiscard]] auto matchArgs() const -> std::vector<Option>
     {
         std::vector<Option> opts = options();
@@ -295,6 +303,7 @@ private:
 
         return opts;
     }
+
     [[nodiscard]] auto optionHelpLines() -> std::vector<OptionHelpLine>
     {
         std::vector<OptionHelpLine> lines;
@@ -306,6 +315,7 @@ private:
 
         return lines;
     }
+
     [[nodiscard]] auto options() const -> std::vector<Option>
     {
         std::vector<Option> opts;
@@ -317,6 +327,7 @@ private:
 
         return opts;
     }
+
     auto parse() -> void
     {
         if (helpRequested())
@@ -328,6 +339,7 @@ private:
             verifyOptions(matchArgs());
         }
     }
+
     auto parseArgs(int argc, const char *const *argv) -> void
     {
         mArgs.clear();
@@ -337,6 +349,7 @@ private:
             mArgs.emplace_back(argument(argv, i));
         }
     }
+
     auto parseCommand(int argc, const char *const *argv) -> void
     {
         if (argc == 0)
@@ -347,13 +360,15 @@ private:
         mCommand = *argv;
         mAppName = std::filesystem::path{mCommand}.stem().string();
     }
+
     auto printHelp() -> void
     {
         printHelpHeader();
         printOptions(optionHelpLines());
         mHelpDisplayed = true;
     }
-    7 auto printHelpHeader() -> void
+
+    auto printHelpHeader() -> void
     {
         constexpr int width = 15;
 
@@ -367,17 +382,20 @@ private:
                       << "value\n";
         printStream() << "Options:" << '\n';
     }
+
     auto printHelpOption(std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         printStream() << "    " << std::left << std::setw(nameWidth) << "-?" << std::setw(attributesWidth) << "[switch]"
                       << "Prints this help.\n";
     }
+
     auto printOption(const OptionHelpLine &line, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         printStream() << "    ";
         printStream() << std::left << std::setw(nameWidth) << line.name();
         printStream() << std::setw(attributesWidth) << line.attributes() << line.option()->description() << '\n';
     }
+
     auto printOptions(const std::vector<OptionHelpLine> &options) -> void
     {
         const std::size_t nameWidth = countNameWidth(options) + 5;
@@ -387,6 +405,7 @@ private:
         printOptional(options, nameWidth, attributesWidth);
         printPositional(options, nameWidth, attributesWidth);
     }
+
     auto printOptional(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         printStream() << "  Optional:\n";
@@ -399,7 +418,8 @@ private:
             }
         }
     }
-    auto printParsingError(const Exception &e) -> void
+
+    auto printParsingError(const std::exception &e) -> void
     {
         printStream() << "ERROR parsing command line arguments: " << e.what() << '\n';
 
@@ -408,6 +428,7 @@ private:
             printStream() << "Use -? to list the command line options.\n";
         }
     }
+
     auto printPositional(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         printStream() << "  Positional:\n";
@@ -420,6 +441,7 @@ private:
             }
         }
     }
+
     auto printRequired(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         printStream() << "  Required:\n";
@@ -432,6 +454,7 @@ private:
             }
         }
     }
+
     [[nodiscard]] auto printStream() -> std::ostream &
     {
         if (mStream != nullptr)
@@ -441,6 +464,7 @@ private:
 
         return std::cout;
     }
+
     static auto verifyOptions(const std::vector<Option> &options) -> void
     {
         for (Option opt : options)
