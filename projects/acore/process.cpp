@@ -1,4 +1,12 @@
 #ifdef _MSC_VER
+module;
+
+#    pragma warning(push)
+#    pragma warning(disable : 5105)
+#    define WIN32_LEAN_AND_MEAN
+#    include <Windows.h>
+#    pragma warning(pop)
+
 export module acore : process;
 
 import : acore_common;
@@ -6,8 +14,8 @@ import : acore_common;
 
 namespace acore
 {
-//! The Process is a simple cross-platform class
-//! that provides ability to start processes.
+//! The Process is a cross-platform class
+//! that provides ability to start a processes.
 //!
 //! The process is run synchronosouly in the constructor.
 //! When the construcor finishes you can access the output
@@ -67,15 +75,47 @@ public:
 private:
     [[nodiscard]] auto executeProcess() -> int
     {
-        TinyProcessLib::Process process{command(),
-                                        workingDirectory(),
-                                        [&](const char *output, std::size_t len) {
-                                            mOutput = std::string(output, len);
-                                        },
-                                        [&](const char *error, std::size_t len) {
-                                            mError = std::string(error, len);
-                                        }};
-        return process.get_exit_status();
+#ifdef _MSC_VER
+        PROCESS_INFORMATION processInfo;
+        SecureZeroMemory(&processInfo, sizeof(processInfo));
+
+        STARTUPINFO startupInfo;
+        SecureZeroMemory(&startupInfo, sizeof(processInfo));
+        startupInfo.cb = sizeof(startupInfo);
+
+        std::cout << "starting...\n";
+        BOOL processCreated = CreateProcess(mCommand.data(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, mWorkingDirectory.data(), &startupInfo, &processInfo);
+        DWORD exitCode = {};
+        std::cout << "* started *\n";
+
+        if (processCreated == FALSE)
+        {
+            std::cout << "failed to start\n";
+            exitCode = GetLastError();
+        }
+        else
+        {
+            std::cout << "Wait for it to finish\n";
+            WaitForSingleObject(processInfo.hProcess, INFINITE);
+            std::cout << "It finished\n";
+
+            BOOL exitCodeRetrieved = GetExitCodeProcess(processInfo.hProcess, &exitCode);
+
+            if (exitCodeRetrieved == FALSE)
+            {
+                std::cout << "Failed to get exit code\n";
+                exitCode = GetLastError();
+            }
+
+            std::cout << "Close handles.\n";
+            CloseHandle(processInfo.hProcess);
+            CloseHandle(processInfo.hThread);
+        }
+
+        return static_cast<int>(exitCode);
+#else
+
+#endif
     }
 
     std::string mCommand;

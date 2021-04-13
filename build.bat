@@ -22,8 +22,9 @@ cd acore
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\acore_common.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\commandline_option.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\commandline.cpp"
+cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\acore\acore.cpp"
-lib.exe /NOLOGO acore.obj acore_common.obj commandline.obj commandline_option.obj /OUT:acore.lib
+lib.exe /NOLOGO acore.obj acore_common.obj commandline.obj commandline_option.obj process.obj /OUT:acore.lib
 cd ..
 
 REM atest
@@ -56,7 +57,7 @@ cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\astl_test.exe" "%PROJECTS_ROOT%\astl\tes
 REM acore_test
 mkdir acore_test
 cd acore
-cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" "%PROJECTS_ROOT%\acore\test\process_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
 cd ..
 
 cd ..
