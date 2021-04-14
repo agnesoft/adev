@@ -84,7 +84,7 @@ private:
         startupInfo.cb = sizeof(startupInfo);
 
         std::cout << "starting...\n";
-        BOOL processCreated = CreateProcess(mCommand.data(), nullptr, nullptr, nullptr, FALSE, 0, nullptr, mWorkingDirectory.data(), &startupInfo, &processInfo);
+        BOOL processCreated = CreateProcess(nullptr, mCommand.data(), nullptr, nullptr, FALSE, 0, nullptr, mWorkingDirectory.data(), &startupInfo, &processInfo);
         DWORD exitCode = {};
         std::cout << "* started *\n";
 
