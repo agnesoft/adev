@@ -39,7 +39,7 @@ public:
         mCommand{std::move(command)},
         mWorkingDirectory{std::move(workingDirectory)}
     {
-        mExitCode = executeProcess();
+        executeProcess();
     }
 
     //! Returns the command passed in during construction.
@@ -73,50 +73,99 @@ public:
     }
 
 private:
-    [[nodiscard]] auto executeProcess() -> int
-    {
 #ifdef _MSC_VER
-        PROCESS_INFORMATION processInfo;
-        SecureZeroMemory(&processInfo, sizeof(processInfo));
+    [[nodiscard]] auto executeProcess() -> void
+    {
+        HANDLE stdoutRead = nullptr;
+        HANDLE stdoutWrite = nullptr;
+        HANDLE stderrRead = nullptr;
+        HANDLE stderrWrite = nullptr;
+
+        SECURITY_ATTRIBUTES securityAttributes;
+        ZeroMemory(&securityAttributes, sizeof(securityAttributes));
+        securityAttributes.nLength = sizeof(securityAttributes);
+        securityAttributes.bInheritHandle = TRUE;
+
+        if (CreatePipe(&stdoutRead, &stdoutWrite, &securityAttributes, 0) != TRUE)
+        {
+            throw 1;
+        }
+
+        if (CreatePipe(&stderrRead, &stderrWrite, &securityAttributes, 0) != TRUE)
+        {
+            throw 1;
+        }
 
         STARTUPINFO startupInfo;
-        SecureZeroMemory(&startupInfo, sizeof(processInfo));
+        ZeroMemory(&startupInfo, sizeof(startupInfo));
         startupInfo.cb = sizeof(startupInfo);
+        startupInfo.hStdOutput = stdoutWrite;
+        startupInfo.hStdError = stderrWrite;
+        startupInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-        std::cout << "starting...\n";
-        BOOL processCreated = CreateProcess(nullptr, mCommand.data(), nullptr, nullptr, FALSE, 0, nullptr, mWorkingDirectory.data(), &startupInfo, &processInfo);
-        DWORD exitCode = {};
-        std::cout << "* started *\n";
+        PROCESS_INFORMATION processInfo;
+        ZeroMemory(&processInfo, sizeof(processInfo));
 
-        if (processCreated == FALSE)
+        if (CreateProcess(nullptr,
+                          &mCommand.front(),
+                          nullptr,
+                          nullptr,
+                          TRUE,
+                          0,
+                          nullptr,
+                          mWorkingDirectory.c_str(),
+                          &startupInfo,
+                          &processInfo)
+            == TRUE)
         {
-            std::cout << "failed to start\n";
-            exitCode = GetLastError();
-        }
-        else
-        {
-            std::cout << "Wait for it to finish\n";
             WaitForSingleObject(processInfo.hProcess, INFINITE);
-            std::cout << "It finished\n";
+            CloseHandle(stdoutWrite);
+            CloseHandle(stderrWrite);
 
-            BOOL exitCodeRetrieved = GetExitCodeProcess(processInfo.hProcess, &exitCode);
-
-            if (exitCodeRetrieved == FALSE)
+            if (GetExitCodeProcess(processInfo.hProcess, static_cast<LPDWORD>(static_cast<void *>(&mExitCode))) == FALSE)
             {
-                std::cout << "Failed to get exit code\n";
-                exitCode = GetLastError();
+                mExitCode = static_cast<int>(GetLastError());
             }
 
-            std::cout << "Close handles.\n";
+            std::cout << "Read stuff\n";
+            const size_t BUFFER_SIZE = 65536;
+            char buffer[BUFFER_SIZE] = {};
+            DWORD bytesRead = 0;
+
+            while (ReadFile(stdoutRead,
+                            static_cast<LPVOID>(buffer),
+                            static_cast<DWORD>(BUFFER_SIZE),
+                            &bytesRead,
+                            nullptr)
+                       == TRUE
+                   && bytesRead != 0)
+            {
+                mOutput.append(buffer, bytesRead);
+            }
+
+            while (ReadFile(stderrRead,
+                            static_cast<LPVOID>(buffer),
+                            static_cast<DWORD>(BUFFER_SIZE),
+                            &bytesRead,
+                            nullptr)
+                       == TRUE
+                   && bytesRead != 0)
+            {
+                mError.append(buffer, bytesRead);
+            }
+
             CloseHandle(processInfo.hProcess);
             CloseHandle(processInfo.hThread);
         }
+        else
+        {
+            mExitCode = static_cast<int>(GetLastError());
+        }
 
-        return static_cast<int>(exitCode);
-#else
-
-#endif
+        CloseHandle(stdoutRead);
+        CloseHandle(stderrRead);
     }
+#endif
 
     std::string mCommand;
     std::string mError;
