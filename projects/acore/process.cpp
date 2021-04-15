@@ -1,15 +1,8 @@
 #ifdef _MSC_VER
-module;
-
-#    pragma warning(push)
-#    pragma warning(disable : 5105)
-#    define WIN32_LEAN_AND_MEAN
-#    include <Windows.h>
-#    pragma warning(pop)
-
 export module acore : process;
 
 import : acore_common;
+import : process_windows;
 #endif
 
 namespace acore
@@ -39,7 +32,13 @@ public:
         mCommand{std::move(command)},
         mWorkingDirectory{std::move(workingDirectory)}
     {
-        executeProcess();
+        WindowsProcess process;
+        process.start(&mCommand, mWorkingDirectory);
+        mExitCode = process.wait();
+        mOutput = process.stdout();
+        mError = process.stderr();
+
+        //executeProcess();
     }
 
     //! Returns the command passed in during construction.
