@@ -12,8 +12,7 @@ namespace acore
 //!
 //! The process is run synchronosouly in the constructor.
 //! When the construcor finishes you can access the output
-//! with convenience functions such as exitCode(), standardOutput()
-//! and standardError().
+//! with exitCode() and output() that combines stdout and stderr.
 //!
 //! \note While the Process class is cross-platform the commands
 //! to run are still platform specific in most cases.
@@ -32,13 +31,12 @@ public:
         mCommand{std::move(command)},
         mWorkingDirectory{std::move(workingDirectory)}
     {
-        WindowsProcess process;
-        process.start(&mCommand, mWorkingDirectory);
-        mExitCode = process.wait();
-        mOutput = process.stdout();
-        mError = process.stderr();
+#ifdef _MSC_VER
+        WindowsProcess process{&mCommand.front(), mWorkingDirectory.c_str()};
+#endif
 
-        //executeProcess();
+        mExitCode = process.exitCode();
+        mOutput = process.output();
     }
 
     //! Returns the command passed in during construction.
@@ -54,13 +52,7 @@ public:
     }
 
     //! Returns the standard error contents of the run command.
-    [[nodiscard]] auto standardError() const noexcept -> const std::string &
-    {
-        return mError;
-    }
-
-    //! Returns the standard output contents of the run command.
-    [[nodiscard]] auto standardOutput() const noexcept -> const std::string &
+    [[nodiscard]] auto output() const noexcept -> const std::string &
     {
         return mOutput;
     }
@@ -72,102 +64,7 @@ public:
     }
 
 private:
-#ifdef _MSC_VER
-    [[nodiscard]] auto executeProcess() -> void
-    {
-        HANDLE stdoutRead = nullptr;
-        HANDLE stdoutWrite = nullptr;
-        HANDLE stderrRead = nullptr;
-        HANDLE stderrWrite = nullptr;
-
-        SECURITY_ATTRIBUTES securityAttributes;
-        ZeroMemory(&securityAttributes, sizeof(securityAttributes));
-        securityAttributes.nLength = sizeof(securityAttributes);
-        securityAttributes.bInheritHandle = TRUE;
-
-        if (CreatePipe(&stdoutRead, &stdoutWrite, &securityAttributes, 0) != TRUE)
-        {
-            throw 1;
-        }
-
-        if (CreatePipe(&stderrRead, &stderrWrite, &securityAttributes, 0) != TRUE)
-        {
-            throw 1;
-        }
-
-        STARTUPINFO startupInfo;
-        ZeroMemory(&startupInfo, sizeof(startupInfo));
-        startupInfo.cb = sizeof(startupInfo);
-        startupInfo.hStdOutput = stdoutWrite;
-        startupInfo.hStdError = stderrWrite;
-        startupInfo.dwFlags |= STARTF_USESTDHANDLES;
-
-        PROCESS_INFORMATION processInfo;
-        ZeroMemory(&processInfo, sizeof(processInfo));
-
-        if (CreateProcess(nullptr,
-                          &mCommand.front(),
-                          nullptr,
-                          nullptr,
-                          TRUE,
-                          0,
-                          nullptr,
-                          mWorkingDirectory.c_str(),
-                          &startupInfo,
-                          &processInfo)
-            == TRUE)
-        {
-            WaitForSingleObject(processInfo.hProcess, INFINITE);
-            CloseHandle(stdoutWrite);
-            CloseHandle(stderrWrite);
-
-            if (GetExitCodeProcess(processInfo.hProcess, static_cast<LPDWORD>(static_cast<void *>(&mExitCode))) == FALSE)
-            {
-                mExitCode = static_cast<int>(GetLastError());
-            }
-
-            std::cout << "Read stuff\n";
-            const size_t BUFFER_SIZE = 65536;
-            char buffer[BUFFER_SIZE] = {};
-            DWORD bytesRead = 0;
-
-            while (ReadFile(stdoutRead,
-                            static_cast<LPVOID>(buffer),
-                            static_cast<DWORD>(BUFFER_SIZE),
-                            &bytesRead,
-                            nullptr)
-                       == TRUE
-                   && bytesRead != 0)
-            {
-                mOutput.append(buffer, bytesRead);
-            }
-
-            while (ReadFile(stderrRead,
-                            static_cast<LPVOID>(buffer),
-                            static_cast<DWORD>(BUFFER_SIZE),
-                            &bytesRead,
-                            nullptr)
-                       == TRUE
-                   && bytesRead != 0)
-            {
-                mError.append(buffer, bytesRead);
-            }
-
-            CloseHandle(processInfo.hProcess);
-            CloseHandle(processInfo.hThread);
-        }
-        else
-        {
-            mExitCode = static_cast<int>(GetLastError());
-        }
-
-        CloseHandle(stdoutRead);
-        CloseHandle(stderrRead);
-    }
-#endif
-
     std::string mCommand;
-    std::string mError;
     std::string mOutput;
     std::string mWorkingDirectory;
     int mExitCode = 0;

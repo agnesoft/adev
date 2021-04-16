@@ -12,199 +12,218 @@ import : acore_common;
 
 namespace acore
 {
+class SecurityAttributes
+{
+public:
+    SecurityAttributes() :
+        mSecurityAttributes{.nLength = sizeof(mSecurityAttributes),
+                            .lpSecurityDescriptor = nullptr,
+                            .bInheritHandle = TRUE}
+    {
+    }
+
+    [[nodiscard]] constexpr auto get() noexcept -> SECURITY_ATTRIBUTES &
+    {
+        return mSecurityAttributes;
+    }
+
+private:
+    SECURITY_ATTRIBUTES mSecurityAttributes;
+};
+
+class Handle
+{
+public:
+    Handle() = default;
+
+    Handle(const Handle &other) = delete;
+    Handle(Handle &&other) noexcept = default;
+
+    ~Handle()
+    {
+        close();
+    }
+
+    auto close() -> void
+    {
+        if (mHandle)
+        {
+            CloseHandle(mHandle);
+            mHandle = nullptr;
+        }
+    }
+
+    [[nodiscard]] constexpr auto get() noexcept -> HANDLE &
+    {
+        return mHandle;
+    }
+
+    auto operator=(const Handle &other) -> Handle & = delete;
+    auto operator=(Handle &&other) noexcept -> Handle & = default;
+
+private:
+    HANDLE mHandle = nullptr;
+};
+
+class Pipe
+{
+public:
+    Pipe()
+    {
+        if (CreatePipe(&mReadHandle.get(),
+                       &mWriteHandle.get(),
+                       &mSecurityAttributes.get(),
+                       0)
+            == FALSE)
+        {
+            throw std::runtime_error{"Failed to create Windows pipe: " + std::to_string(GetLastError())};
+        }
+    }
+
+    auto close() -> void
+    {
+        mWriteHandle.close();
+    }
+
+    [[nodiscard]] auto content() -> std::string
+    {
+        constexpr size_t BUFFER_SIZE = 65536;
+        static char buffer[BUFFER_SIZE] = {};
+        DWORD bytesRead = 0;
+        std::string output;
+
+        while (ReadFile(mReadHandle.get(),
+                        static_cast<LPVOID>(buffer),
+                        static_cast<DWORD>(BUFFER_SIZE),
+                        &bytesRead,
+                        nullptr)
+                   == TRUE
+               && bytesRead != 0)
+        {
+            output.append(buffer, bytesRead);
+        }
+
+        return output;
+    }
+
+    [[nodiscard]] constexpr auto readHandle() noexcept -> Handle &
+    {
+        return mReadHandle;
+    }
+
+    [[nodiscard]] constexpr auto writeHandle() noexcept -> Handle &
+    {
+        return mWriteHandle;
+    }
+
+private:
+    SecurityAttributes mSecurityAttributes;
+    Handle mReadHandle;
+    Handle mWriteHandle;
+};
+
+class StartupInfo
+{
+public:
+    explicit StartupInfo(Pipe *pipe) :
+        mStartupInfo{
+            .cb = sizeof(mStartupInfo),
+            .hStdOutput = pipe->writeHandle().get(),
+            .hStdError = pipe->writeHandle().get()}
+    {
+    }
+
+    [[nodiscard]] constexpr auto get() noexcept -> STARTUPINFO &
+    {
+        return mStartupInfo;
+    }
+
+private:
+    STARTUPINFO mStartupInfo;
+};
+
+class ProcessInfo
+{
+public:
+    ProcessInfo() :
+        mProcessInfo{}
+    {
+    }
+
+    ProcessInfo(const ProcessInfo &other) = delete;
+    ProcessInfo(ProcessInfo &&other) noexcept = default;
+
+    [[nodiscard]] constexpr auto get() noexcept -> PROCESS_INFORMATION &
+    {
+        return mProcessInfo;
+    }
+
+    auto operator=(const ProcessInfo &other) -> ProcessInfo & = delete;
+    auto operator=(ProcessInfo &&other) noexcept -> ProcessInfo & = default;
+
+private:
+    PROCESS_INFORMATION mProcessInfo;
+};
+
 class WindowsProcess
 {
 public:
-    WindowsProcess() :
-        mSecurityAttributes{createSecurityAttributes()},
-        mOutputHandles{createOutputHandles()},
-        mStartupInfo{createStartupInfo()},
-        mProcessInfo{createProcessInfo()}
+    WindowsProcess(char *command, const char *workingDirectory) :
+        mStartupInfo{&mPipe}
     {
+        if (CreateProcess(nullptr,
+                          command,
+                          nullptr,
+                          nullptr,
+                          TRUE,
+                          0,
+                          nullptr,
+                          workingDirectory,
+                          &mStartupInfo.get(),
+                          &mProcessInfo.get())
+            == FALSE)
+        {
+            throw std::runtime_error{"Failed to create WindowsProcess: " + std::to_string(GetLastError())};
+        }
+
+        WaitForSingleObject(mProcessInfo.get().hProcess, INFINITE);
+        mPipe.close();
+    }
+
+    ~WindowsProcess()
+    {
+        CloseHandle(mProcessInfo.get().hProcess);
+        CloseHandle(mProcessInfo.get().hThread);
     }
 
     WindowsProcess(const WindowsProcess &other) = delete;
     WindowsProcess(WindowsProcess &&other) noexcept = default;
 
-    auto start(std::string *command, const std::string &workingDirectory) -> void
+    [[nodiscard]] auto exitCode() -> int
     {
-        if (::CreateProcess(nullptr,
-                            &command->front(),
-                            nullptr,
-                            nullptr,
-                            TRUE,
-                            0,
-                            nullptr,
-                            workingDirectory.c_str(),
-                            &mStartupInfo,
-                            &mProcessInfo)
+        int exitCode = 0;
+
+        if (GetExitCodeProcess(mProcessInfo.get().hProcess,
+                               static_cast<LPDWORD>(static_cast<void *>(&exitCode)))
             == FALSE)
         {
-            throw std::runtime_error{"Failed to start process '" + *command + "': " + lastError()};
+            throw std::runtime_error{"Failed to get exit code from WindowsProcess: " + std::to_string(GetLastError())};
         }
+
+        return exitCode;
     }
 
-    auto wait() -> int
+    [[nodiscard]] auto output() -> std::string
     {
-        waitForProcess();
-        closeHandle(&mOutputHandles.stdoutWrite);
-        closeHandle(&mOutputHandles.stderrWrite);
-        closeHandle(&mProcessInfo.hProcess);
-        closeHandle(&mProcessInfo.hThread);
-        return getExitCode();
+        return mPipe.content();
     }
 
-    [[nodiscard]] auto stdout() -> std::string
-    {
-        return readPipe(mOutputHandles.stdoutRead);
-    }
-
-    [[nodiscard]] auto stderr() -> std::string
-    {
-        return readPipe(mOutputHandles.stderrRead);
-    }
-
-    ~WindowsProcess()
-    {
-        closeHandleNothrow(mOutputHandles.stdoutRead);
-        closeHandleNothrow(mOutputHandles.stderrRead);
-        closeHandleNothrow(mOutputHandles.stdoutWrite);
-        closeHandleNothrow(mOutputHandles.stderrWrite);
-        closeHandleNothrow(mProcessInfo.hProcess);
-        closeHandleNothrow(mProcessInfo.hThread);
-    }
-
-    auto operator=(const WindowsProcess &other) -> WindowsProcess & = delete;
-    auto operator=(WindowsProcess &&other) noexcept -> WindowsProcess & = default;
+    auto operator=(const WindowsProcess &other) = delete;
+    auto operator=(WindowsProcess &&other) noexcept = delete;
 
 private:
-    struct OutputHandles
-    {
-        HANDLE stdoutRead = nullptr;
-        HANDLE stdoutWrite = nullptr;
-        HANDLE stderrRead = nullptr;
-        HANDLE stderrWrite nullptr;
-    };
-
-    [[nodiscard]] static auto readPipe(HANDLE handle) -> std::string
-    {
-        std::string content;
-        const DWORD BUFFER_SIZE = 65536;
-        char buffer[BUFFER_SIZE] = {};
-        DWORD bytesRead = 0;
-
-        while (::ReadFile(handle,
-                          static_cast<LPVOID>(buffer),
-                          BUFFER_SIZE,
-                          &bytesRead,
-                          nullptr)
-                   == TRUE
-               && bytesRead != 0)
-        {
-            content.append(buffer, bytesRead);
-        }
-
-        return content;
-    }
-
-    [[nodiscard]] static auto lastError() -> std::string
-    {
-        return std::to_string(::GetLastError());
-    }
-
-    auto closeHandle(HANDLE *handle) -> void
-    {
-        if (::CloseHandle(*handle) == FALSE)
-        {
-            throw std::runtime_error{"Failed to close handle: " + lastError()};
-        }
-
-        *handle = nullptr;
-    }
-
-    auto closeHandleNothrow(HANDLE handle) -> void
-    {
-        if (handle)
-        {
-            CloseHandle(handle);
-        }
-    }
-
-    auto waitForProcess() -> void
-    {
-        switch (WaitForSingleObject(mProcessInfo.hProcess, INFINITE))
-        {
-        case WAIT_OBJECT_0:
-            return;
-        case WAIT_TIMEOUT:
-            throw std::runtime_error{"Timed out waiting for process"};
-        case WAIT_ABANDONED:
-            [[fallthrough]];
-        case WAIT_FAILED:
-            [[fallthrough]];
-        default:
-            throw std::runtime_error{"Failed to wait for process: " + lastError()};
-        }
-    }
-
-    [[nodiscard]] auto getExitCode() -> int
-    {
-        DWORD exitCode = {};
-
-        if (::GetExitCodeProcess(mProcessInfo.hProcess, &exitCode) == FALSE)
-        {
-            throw std::runtime_error{"Failed to get exit code from process: " + lastError()};
-        }
-
-        return static_cast<int>(exitCode);
-    }
-
-    static auto createPipe(HANDLE *read, HANDLE *write) -> void
-    {
-        if (::CreatePipe(read, write, &mSecurityAttributes, 0) == FALSE)
-        {
-            throw std::runtime_error{std::string{"Failed to create pipe: " + lastError()}};
-        }
-    }
-
-    static auto createSecurityAttributes() -> SECURITY_ATTRIBUTES
-    {
-        SECURITY_ATTRIBUTES attributes;
-        ::ZeroMemory(&attributes, sizeof(attributes));
-        attributes.nLength = sizeof(attributes);
-        attributes.bInheritHandle = TRUE;
-        return attributes;
-    }
-
-    auto createOutputHandles() -> Handles
-    {
-        OutputHandles handles;
-        createPipe(&handles.stdoutRead, &handles.stdoutWrite);
-        createPipe(&handles.stderrRead, &handles.stderrWrite);
-        return handles;
-    }
-
-    auto creteStartupInfo() -> STARTUPINFO
-    {
-        STARTUPINFO info;
-        ::ZeroMemory(&info, sizeof(info));
-        info.cb = sizeof(info);
-        info.hStdOutput = mStdoutWrite;
-        info.hStdError = mStderrWrite;
-        info.dwFlags |= STARTF_USESTDHANDLES;
-        return info;
-    }
-
-    static auto createProcessInfo() -> PROCESS_INFORMATION
-    {
-        PROCESS_INFORMATION info;
-        ::ZeroMemory(&info, sizeof(info));
-        return info;
-    }
-
-    SECURITY_ATTRIBUTES mSecurityAttributes;
-    OutputHandles mOutputHandles;
-    STARTUPINFO mStartupInfo;
-    PROCESS_INFORMATION mProcessInfo;
+    Pipe mPipe;
+    StartupInfo mStartupInfo;
+    ProcessInfo mProcessInfo;
 };
 }

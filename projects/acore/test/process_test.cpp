@@ -7,10 +7,9 @@ using atest::test;
 
 static const auto s = suite("acore::Process", [] {
     test("cmd", [] {
-        acore::Process process{"cmd /c \"echo Hello, World! && echo error 1>&2\""};
-        std::cout << process.command() << '\n';
-        std::cout << process.exitCode() << '\n';
-        std::cout << process.standardOutput() << '\n';
-        std::cout << process.standardError() << '\n';
+        acore::Process process{"cmd /c \"echo Hello, World!\""};
+        std::cout << "Command  : " << process.command() << '\n';
+        std::cout << "Exit code: " << process.exitCode() << '\n';
+        std::cout << "Output   : " << process.output() << '\n';
     });
 });

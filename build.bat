@@ -22,9 +22,10 @@ cd acore
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\acore_common.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\commandline_option.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\commandline.cpp"
+cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process_windows.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\acore\acore.cpp"
-lib.exe /NOLOGO acore.obj acore_common.obj commandline.obj commandline_option.obj process.obj /OUT:acore.lib
+lib.exe /NOLOGO acore.obj acore_common.obj commandline.obj commandline_option.obj process.obj process_windows.obj /OUT:acore.lib
 cd ..
 
 REM atest
