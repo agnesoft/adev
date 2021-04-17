@@ -6,10 +6,43 @@ using atest::suite;
 using atest::test;
 
 static const auto s = suite("acore::Process", [] {
-    test("cmd", [] {
-        acore::Process process{"cmd /c \"echo Hello, World!\""};
-        std::cout << "Command  : " << process.command() << '\n';
-        std::cout << "Exit code: " << process.exitCode() << '\n';
-        std::cout << "Output   : " << process.output() << '\n';
+    test("type traits", [] {
+        expect(std::is_default_constructible_v<acore::Process>).toBe(false);
+        expect(std::is_copy_constructible_v<acore::Process>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<acore::Process>).toBe(true);
+        expect(std::is_copy_assignable_v<acore::Process>).toBe(true);
+        expect(std::is_nothrow_move_assignable_v<acore::Process>).toBe(true);
+        expect(std::is_nothrow_destructible_v<acore::Process>).toBe(true);
+    });
+
+    test("command", [] {
+        const std::string command = "cmd /c \"echo Hello, World!\"";
+        const acore::Process process{command};
+
+        expect(process.command()).toBe(command);
+    });
+
+    test("exit code 0", [] {
+        const acore::Process process{"cmd /c \"exit 0\""};
+
+        expect(process.exitCode()).toBe(0);
+    });
+
+    test("exit code 1", [] {
+        const acore::Process process{"cmd /c \"exit 1\""};
+
+        expect(process.exitCode()).toBe(1);
+    });
+
+    test("output", [] {
+        const acore::Process process{"cmd /c \"echo Hello, World!\""};
+
+        expect(process.output()).toBe("Hello, World!\r\n");
+    });
+
+    test("error", [] {
+        const acore::Process process{"cmd /c \"echo error 1>&2\""};
+
+        expect(process.output()).toBe("error \r\n");
     });
 });
