@@ -106,14 +106,14 @@ public:
         return output;
     }
 
-    [[nodiscard]] constexpr auto readHandle() noexcept -> Handle &
+    [[nodiscard]] constexpr auto readHandle() noexcept -> HANDLE &
     {
-        return mReadHandle;
+        return mReadHandle.get();
     }
 
-    [[nodiscard]] constexpr auto writeHandle() noexcept -> Handle &
+    [[nodiscard]] constexpr auto writeHandle() noexcept -> HANDLE &
     {
-        return mWriteHandle;
+        return mWriteHandle.get();
     }
 
 private:
@@ -128,8 +128,9 @@ public:
     explicit StartupInfo(Pipe *pipe) :
         mStartupInfo{
             .cb = sizeof(mStartupInfo),
-            .hStdOutput = pipe->writeHandle().get(),
-            .hStdError = pipe->writeHandle().get()}
+            .dwFlags = STARTF_USESTDHANDLES,
+            .hStdOutput = pipe->writeHandle(),
+            .hStdError = pipe->writeHandle()}
     {
     }
 
