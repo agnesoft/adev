@@ -35,7 +35,7 @@ public:
 #ifdef _MSC_VER
         WindowsProcess process{mCommand, mArguments, mWorkingDirectory};
 #else
-        ProcessUnix process{mCommand, mArguments, mWorkingDirectory};
+        ProcessUnix process{&mCommand, &mArguments, mWorkingDirectory};
 #endif
 
         mExitCode = process.exitCode();

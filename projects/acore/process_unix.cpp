@@ -1,6 +1,6 @@
 // clang-format off
 import <unistd.h>;
-import <sys/wait.h>;
+import <wait.h>;
 // clang-format on
 
 namespace acore
@@ -8,18 +8,32 @@ namespace acore
 class ProcessUnix
 {
 public:
-    ProcessUnix(const std::string &command, const std::vector<std::string> &arguments, const std::string &workingDirectory)
+    ProcessUnix(std::string *command, std::vector<std::string> *arguments, const std::string &workingDirectory)
     {
         auto pid = fork();
-        auto args = createArguments(arguments);
-        chdir(workingDirectory.c_str());
-        execv(command.c_str(), args.data());
-        waitpid(pid, &mStatus, 0);
+        
+        if (pid == 0)
+        {           
+            if (chdir(workingDirectory.c_str()) == -1)
+            {
+                exit(errno);            
+            }
+            
+            auto args = createArguments(command, arguments);
+            execv(command->c_str(), args.data());
+            std::exit(errno);
+        }
+        else
+        {
+            int status = 0;
+            waitpid(pid, &status, 0);
+            mExitCode = WEXITSTATUS(status);
+        }
     }
 
     [[nodiscard]] auto exitCode() const -> int
     {
-        return mStatus;
+        return mExitCode;
     }
 
     [[nodiscard]] auto output() const -> std::string
@@ -28,21 +42,21 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto createArguments(const std::string &command, const std::vector<std::string> &arguments) -> std::vector<const char *>
+    [[nodiscard]] static auto createArguments(std::string *command, std::vector<std::string> *arguments) -> std::vector<char *>
     {
-        std::vector<const char *> args{};
-        args.reserve(arguments.size() + 2);
-        args.push_back(command.c_str());
+        std::vector<char *> args{};
+        args.reserve(arguments->size() + 2);
+        args.push_back(command->data());
 
-        for (const auto &arg : arguments)
+        for (auto &arg : *arguments)
         {
-            args.push_back(arg.c_str());
+            args.push_back(arg.data());
         }
 
         args.push_back(nullptr);
         return args;
     }
 
-    int mStatus = 0;
+    int mExitCode = 0;
 };
 }

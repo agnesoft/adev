@@ -15,6 +15,7 @@ static const auto s = suite("acore::Process", [] {
         expect(std::is_nothrow_destructible_v<acore::Process>).toBe(true);
     });
 
+#ifdef _MSC_VER
     test("command", [] {
         const acore::Process process{"cmd", {"/c", "\"exit 0\""}};
 
@@ -51,4 +52,30 @@ static const auto s = suite("acore::Process", [] {
 
         expect(process.output()).toBe("error \r\n");
     });
+#else
+    test("command", [] {
+        const acore::Process process{"/bin/bash", {"-c", "exit 0"}};
+    
+        expect(process.command()).toBe("/bin/bash");
+    });
+    
+    test("arguments", [] {
+        std::vector<std::string> args{"-c", "echo Hello, World!"};
+        const acore::Process process{"/bin/bash", args};
+    
+        expect(process.arguments()).toBe(args);
+    });
+    
+    test("exit code 0", [] {
+        const acore::Process process{"/bin/bash", {"-c", "exit 0"}};
+    
+        expect(process.exitCode()).toBe(0);
+    });
+    
+    test("exit code 1", [] {
+        const acore::Process process{"/bin/bash", {"-c", "exit 1"}};
+
+        expect(process.exitCode()).toBe(1);
+    });
+#endif
 });
