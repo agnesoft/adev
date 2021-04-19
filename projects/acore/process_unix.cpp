@@ -11,6 +11,12 @@ public:
     ProcessUnix(std::string *command, std::vector<std::string> *arguments, const std::string &workingDirectory)
     {
         auto pid = fork();
+        int outputPipe[2] = {};
+        
+        if (pipe(outputPipe) != 0)
+        {
+            throw std::runtime_error{"Failed to create pipe for the child process."};
+        }
         
         if (pid == 0)
         {           
@@ -19,15 +25,35 @@ public:
                 exit(errno);            
             }
             
+            close(outputPipe[0]);
+            dup2(outputPipe[1], STDOUT_FILENO);
+            //dup2(STDOUT_FILENO, STDERR_FILENO);
+            
             auto args = createArguments(command, arguments);
             execv(command->c_str(), args.data());
             std::exit(errno);
         }
         else
         {
+            close(outputPipe[1]);
+            FILE *stream = fdopen(outputPipe[0], "r");
             int status = 0;
             waitpid(pid, &status, 0);
             mExitCode = WEXITSTATUS(status);
+
+            constexpr size_t BUFFER_SIZE = 65536;
+            static char buffer[BUFFER_SIZE] = {};
+//            ssize_t bytesRead = 0;
+            int fileDescriptor = fileno(stream);
+            const ssize_t bytesRead = read(fileDescriptor, buffer, BUFFER_SIZE);
+            
+            mOutput.append(buffer, bytesRead);
+            
+            std::cout << "READ: " << bytesRead << '\n';
+
+            fclose(stream);
+            close(outputPipe[0]);
+            close(outputPipe[1]);
         }
     }
 
@@ -38,7 +64,7 @@ public:
 
     [[nodiscard]] auto output() const -> std::string
     {
-        return {};
+        return mOutput;
     }
 
 private:
@@ -57,6 +83,7 @@ private:
         return args;
     }
 
+    std::string mOutput;
     int mExitCode = 0;
 };
 }

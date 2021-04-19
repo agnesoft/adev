@@ -60,7 +60,7 @@ static const auto s = suite("acore::Process", [] {
     });
     
     test("arguments", [] {
-        std::vector<std::string> args{"-c", "echo Hello, World!"};
+        std::vector<std::string> args{"-c", "exit 0"};
         const acore::Process process{"/bin/bash", args};
     
         expect(process.arguments()).toBe(args);
@@ -76,6 +76,18 @@ static const auto s = suite("acore::Process", [] {
         const acore::Process process{"/bin/bash", {"-c", "exit 1"}};
 
         expect(process.exitCode()).toBe(1);
+    });
+    
+    test("output", [] {
+        const acore::Process process{"/bin/bash", {"-c", "echo Hello, World!"}};
+
+        expect(process.output()).toBe("Hello, World!\n");
+    });
+
+    test("error", [] {
+        const acore::Process process{"/bin/bash", {"-c", "echo error 1>&2"}};
+
+        expect(process.output()).toBe("error\n");
     });
 #endif
 });
