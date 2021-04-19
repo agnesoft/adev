@@ -1,3 +1,9 @@
+#ifndef _MSC_VER
+module;
+
+#    include <unistd.h>
+#endif
+
 export module acore;
 
 #ifdef _MSC_VER
@@ -9,5 +15,7 @@ export import : process;
 #include    "acore_common.cpp"
 #include    "commandline_option.cpp"
 #include    "commandline.cpp"
+#include    "process_unix.cpp"
+#include    "process.cpp"
 // clang-format on
 #endif

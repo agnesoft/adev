@@ -16,32 +16,38 @@ static const auto s = suite("acore::Process", [] {
     });
 
     test("command", [] {
-        const std::string command = "cmd /c \"echo Hello, World!\"";
-        const acore::Process process{command};
+        const acore::Process process{"cmd", {"/c", "\"exit 0\""}};
 
-        expect(process.command()).toBe(command);
+        expect(process.command()).toBe("cmd");
+    });
+
+    test("arguments", [] {
+        std::vector<std::string> args{"/c", "\"echo Hello, World!\""};
+        const acore::Process process{"cmd", args};
+
+        expect(process.arguments()).toBe(args);
     });
 
     test("exit code 0", [] {
-        const acore::Process process{"cmd /c \"exit 0\""};
+        const acore::Process process{"cmd", {"/c", "\"exit 0\""}};
 
         expect(process.exitCode()).toBe(0);
     });
 
     test("exit code 1", [] {
-        const acore::Process process{"cmd /c \"exit 1\""};
+        const acore::Process process{"cmd", {"/c", "\"exit 1\""}};
 
         expect(process.exitCode()).toBe(1);
     });
 
     test("output", [] {
-        const acore::Process process{"cmd /c \"echo Hello, World!\""};
+        const acore::Process process{"cmd", {"/c", "\"echo Hello, World!\""}};
 
         expect(process.output()).toBe("Hello, World!\r\n");
     });
 
     test("error", [] {
-        const acore::Process process{"cmd /c \"echo error 1>&2\""};
+        const acore::Process process{"cmd", {"/c", "\"echo error 1>&2\""}};
 
         expect(process.output()).toBe("error \r\n");
     });

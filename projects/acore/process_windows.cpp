@@ -169,17 +169,19 @@ private:
 class WindowsProcess
 {
 public:
-    WindowsProcess(char *command, const char *workingDirectory) :
+    WindowsProcess(const std::string &command, const std::vector<std::string> &arguments, const std::string &workingDirectory) :
         mStartupInfo{&mPipe}
     {
+        std::string commandLine = createCommandLine(command, arguments);
+
         if (CreateProcess(nullptr,
-                          command,
+                          &commandLine.front(),
                           nullptr,
                           nullptr,
                           TRUE,
                           0,
                           nullptr,
-                          workingDirectory,
+                          workingDirectory.c_str(),
                           &mStartupInfo.get(),
                           &mProcessInfo.get())
             == FALSE)
@@ -223,6 +225,19 @@ public:
     auto operator=(WindowsProcess &&other) noexcept = delete;
 
 private:
+    [[nodiscard]] static auto createCommandLine(const std::string &executable, const std::vector<std::string> &arguments) -> std::string
+    {
+        std::string command{executable};
+
+        for (const auto &arg : arguments)
+        {
+            command += ' ';
+            command += arg;
+        }
+
+        return command;
+    }
+
     Pipe mPipe;
     StartupInfo mStartupInfo;
     ProcessInfo mProcessInfo;
