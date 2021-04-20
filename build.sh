@@ -11,8 +11,8 @@ mkdir -p bin
 
 BUILD_ROOT=$(pwd)
 ASTL_INCLUDE_PATH="$PROJECTS_ROOT/astl/include"
-CPP_FLAGS="-std=c++20 $1 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -nostdinc++ -fmodules -fprebuilt-module-path=$BUILD_ROOT/acore -fprebuilt-module-path=$BUILD_ROOT/atest -I$ASTL_INCLUDE_PATH -I$LIBCXX_PREFIX/include/c++/v1"
-CPP_AND_LINK_FLAGS="$CPP_FLAGS -L$LIBCXX_PREFIX/lib -lc++ -Wl,-rpath,$LIBCXX_PREFIX/lib"
+CPP_FLAGS="-std=c++20 $1 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -nostdinc++ -fmodules -fimplicit-module-maps -fprebuilt-module-path=$BUILD_ROOT/acore -fprebuilt-module-path=$BUILD_ROOT/atest -I$ASTL_INCLUDE_PATH -I$LIBCXX_PREFIX/include/c++/v1"
+CPP_AND_LINK_FLAGS="$CPP_FLAGS -L$LIBCXX_PREFIX/lib -lc++ -Wl,-rpath,$LIBCXX_PREFIX/lib -lpthread" 
 
 #acore
 mkdir -p acore
@@ -39,7 +39,7 @@ cd ..
 
 mkdir -p acore_test
 cd acore_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/acore/test/main.cpp" "$PROJECTS_ROOT/acore/test/commandline_test.cpp" "$PROJECTS_ROOT/acore/test/commandline_option_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/acore_test"
+"$CLANG" $CPP_AND_LINK_FLAGS  -fmodule-map-file="$PROJECTS_ROOT/acore/module.modulemap" "$PROJECTS_ROOT/acore/test/main.cpp" "$PROJECTS_ROOT/acore/test/commandline_test.cpp" "$PROJECTS_ROOT/acore/test/commandline_option_test.cpp" "$PROJECTS_ROOT/acore/test/process_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/acore_test"
 cd ..
 
 cd ..

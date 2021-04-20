@@ -5,6 +5,7 @@ C++ core library that provides generic functionality.
 -   [Dependencies](#dependencies)
 -   [Reference](#reference)
     -   [CommandLine](#commandline)
+    -   [Process](#process)
 -   [Known Issues](#known-issues)
     -   [Affects Users](#affects-users)
     -   [Does Not Affect Users](#does-not-affect-users)
@@ -70,6 +71,22 @@ The parsing fails and throws an exception if:
 -   Unknown/unmatched argument
 -   Syntax error (usually interpreted as missing value or value of incorrect type)
 -   Incomplete option definition (e.g. missing bound value)
+
+### Process
+
+Cross platform process abstraction. The process is run synchronosouly in the constructor. When the construcor finishes you can access the output with exitCode() and output() that combines `stdout` and `stderr`.
+
+Example:
+
+```
+//Linux
+const acore::Process process{"/bin/bash", {"-c", "echo Hello, World!"}};
+
+//Windows
+const acore::Process process{"cmd", {"/c", "echo Hello, World!"}};
+```
+
+The command to run is split into actual `command` (an application) and its arguments. Optional third argument can change the working directory of the process.
 
 ## Known Issues
 
