@@ -105,7 +105,7 @@ static const auto s = suite("acore::Process", [] {
             constexpr int SIZE = 10000;
             std::string output{"1"};
 
-            for (int i = 2; i < SIZE; ++i)
+            for (int i = 2; i < (SIZE + 1); ++i)
             {
                 output += ' ';
                 output += std::to_string(i);
