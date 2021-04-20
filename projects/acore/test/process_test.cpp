@@ -108,7 +108,7 @@ static const auto s = suite("acore::Process", [] {
             for (int i = 2; i < SIZE; ++i)
             {
                 output += ' ';
-                output + std::to_string(i);
+                output += std::to_string(i);
             }
 
             const acore::Process process{"/bin/bash", {"-c", "myarr=$(seq 10000) && echo $myarr"}};
