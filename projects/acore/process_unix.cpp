@@ -10,24 +10,25 @@ class ProcessUnix
 public:
     ProcessUnix(std::string *command, std::vector<std::string> *arguments, const std::string &workingDirectory)
     {
-        auto pid = fork();
         int outputPipe[2] = {};
-        
+       
         if (pipe(outputPipe) != 0)
         {
             throw std::runtime_error{"Failed to create pipe for the child process."};
         }
         
+        const pid_t pid = fork();
+        
         if (pid == 0)
-        {           
+        {                     
+            close(outputPipe[0]);
+            dup2(outputPipe[1], STDOUT_FILENO);
+            dup2(STDOUT_FILENO, STDERR_FILENO);
+            
             if (chdir(workingDirectory.c_str()) == -1)
             {
                 exit(errno);            
             }
-            
-            close(outputPipe[0]);
-            dup2(outputPipe[1], STDOUT_FILENO);
-            //dup2(STDOUT_FILENO, STDERR_FILENO);
             
             auto args = createArguments(command, arguments);
             execv(command->c_str(), args.data());
@@ -36,24 +37,21 @@ public:
         else
         {
             close(outputPipe[1]);
-            FILE *stream = fdopen(outputPipe[0], "r");
             int status = 0;
             waitpid(pid, &status, 0);
             mExitCode = WEXITSTATUS(status);
 
             constexpr size_t BUFFER_SIZE = 65536;
             static char buffer[BUFFER_SIZE] = {};
-//            ssize_t bytesRead = 0;
-            int fileDescriptor = fileno(stream);
-            const ssize_t bytesRead = read(fileDescriptor, buffer, BUFFER_SIZE);
+            ssize_t bytesRead = 0;
             
-            mOutput.append(buffer, bytesRead);
-            
-            std::cout << "READ: " << bytesRead << '\n';
+            do
+            {
+            	bytesRead = read(outputPipe[0], buffer, BUFFER_SIZE);
+            	mOutput.append(buffer, bytesRead);
+            } while (bytesRead > 0);          
 
-            fclose(stream);
             close(outputPipe[0]);
-            close(outputPipe[1]);
         }
     }
 
