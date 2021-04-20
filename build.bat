@@ -17,7 +17,7 @@ cd astl
 cl.exe %CPP_FLAGS% /c /exportHeader /Fo /TP "%ASTL_INCLUDE_PATH%\astl.hpp"
 cd ..
 
-REM astl
+REM rapidjson
 mkdir rapidjson
 cd rapidjson
 cl.exe %CPP_FLAGS% /c /exportHeader /Fo /TP "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp"
