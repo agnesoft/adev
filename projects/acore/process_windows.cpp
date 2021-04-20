@@ -169,6 +169,9 @@ public:
     {
     }
 
+    AsyncReader(const AsyncReader &other) = delete;
+    AsyncReader(AsyncReader &&other) noexcept = default;
+
     ~AsyncReader()
     {
         if (mThread.joinable())
@@ -176,6 +179,9 @@ public:
             mThread.join();
         }
     }
+
+    auto operator=(const AsyncReader &other) -> AsyncReader & = delete;
+    auto operator=(AsyncReader &&other) noexcept -> AsyncReader & = default;
 
 private:
     std::thread mThread;
