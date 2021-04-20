@@ -11,25 +11,25 @@ public:
     ProcessUnix(std::string *command, std::vector<std::string> *arguments, const std::string &workingDirectory)
     {
         int outputPipe[2] = {};
-       
+
         if (pipe(outputPipe) != 0)
         {
             throw std::runtime_error{"Failed to create pipe for the child process."};
         }
-        
+
         const pid_t pid = fork();
-        
+
         if (pid == 0)
-        {                     
+        {
             close(outputPipe[0]);
             dup2(outputPipe[1], STDOUT_FILENO);
             dup2(STDOUT_FILENO, STDERR_FILENO);
-            
+
             if (chdir(workingDirectory.c_str()) == -1)
             {
-                exit(errno);            
+                exit(errno);
             }
-            
+
             auto args = createArguments(command, arguments);
             execv(command->c_str(), args.data());
             std::exit(errno);
@@ -44,12 +44,13 @@ public:
             constexpr size_t BUFFER_SIZE = 65536;
             static char buffer[BUFFER_SIZE] = {};
             ssize_t bytesRead = 0;
-            
+
             do
             {
-            	bytesRead = read(outputPipe[0], buffer, BUFFER_SIZE);
-            	mOutput.append(buffer, bytesRead);
-            } while (bytesRead > 0);          
+                bytesRead = read(outputPipe[0], buffer, BUFFER_SIZE);
+                mOutput.append(buffer, bytesRead);
+            }
+            while (bytesRead > 0);
 
             close(outputPipe[0]);
         }
