@@ -17,38 +17,38 @@ static const auto s = suite("acore::Process", [] {
 
 #ifdef _MSC_VER
     test("command", [] {
-        const acore::Process process{"cmd", {"/c", "\"exit 0\""}};
+        const acore::Process process{"cmd", {"/c", "exit 0"}};
 
         expect(process.command()).toBe("cmd");
     });
 
     test("arguments", [] {
-        std::vector<std::string> args{"/c", "\"echo Hello, World!\""};
+        std::vector<std::string> args{"/c", "echo Hello, World!"};
         const acore::Process process{"cmd", args};
 
         expect(process.arguments()).toBe(args);
     });
 
     test("exit code 0", [] {
-        const acore::Process process{"cmd", {"/c", "\"exit 0\""}};
+        const acore::Process process{"cmd", {"/c", "exit 0"}};
 
         expect(process.exitCode()).toBe(0);
     });
 
     test("exit code 1", [] {
-        const acore::Process process{"cmd", {"/c", "\"exit 1\""}};
+        const acore::Process process{"cmd", {"/c", "exit 1"}};
 
         expect(process.exitCode()).toBe(1);
     });
 
     test("output", [] {
-        const acore::Process process{"cmd", {"/c", "\"echo Hello, World!\""}};
+        const acore::Process process{"cmd", {"/c", "echo Hello, World!"}};
 
         expect(process.output()).toBe("Hello, World!\r\n");
     });
 
     test("error", [] {
-        const acore::Process process{"cmd", {"/c", "\"echo error 1>&2\""}};
+        const acore::Process process{"cmd", {"/c", "echo error 1>&2"}};
 
         expect(process.output()).toBe("error \r\n");
     });
@@ -59,9 +59,18 @@ static const auto s = suite("acore::Process", [] {
         output[SIZE] = '\r';
         output[SIZE + 1] = '\n';
 
-        const acore::Process process{"powershell", {"-c", "\"$arr = New-Object int[] 10000; -join $arr\""}};
+        const acore::Process process{"powershell", {"-c", "$arr = New-Object int[] 10000; -join $arr"}};
 
         expect(process.output()).toBe(output);
+    });
+
+    test("working directory", [] {
+        const std::string workingDirectory = std::filesystem::current_path().parent_path().string();
+
+        const acore::Process process{"cmd", {"/c", "echo %cd%"}, workingDirectory};
+
+        expect(process.workingDirectory()).toBe(workingDirectory);
+        expect(process.output()).toBe(workingDirectory + "\r\n");
     });
 #else
         test("command", [] {
@@ -110,12 +119,21 @@ static const auto s = suite("acore::Process", [] {
                 output += ' ';
                 output += std::to_string(i);
             }
-            
+
             output += '\n';
 
             const acore::Process process{"/bin/bash", {"-c", "myarr=$(seq 100000) && echo $myarr"}};
 
             expect(process.output()).toBe(output);
+        });
+
+        test("working directory", [] {
+            const std::string workingDirectory = std::filesystem::current_path().parent_path().string();
+
+            const acore::Process process{"/bin/bash", {"/c", "echo $(pwd)"}, workingDirectory};
+
+            expect(process.workingDirectory()).toBe(workingDirectory);
+            expect(process.output()).toBe(workingDirectory + "\n");
         });
 #endif
 });

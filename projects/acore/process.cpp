@@ -8,7 +8,7 @@ import : process_windows;
 namespace acore
 {
 //! The Process is a cross-platform class
-//! that provides ability to start a processes.
+//! that provides ability to start a process.
 //!
 //! The process is run synchronosouly in the constructor.
 //! When the construcor finishes you can access the output
