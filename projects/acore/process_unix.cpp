@@ -5,54 +5,96 @@ import <wait.h>;
 
 namespace acore
 {
+class Pipe
+{
+public:
+    Pipe()
+    {
+        if (pipe(mPipe) != 0)
+        {
+            throw std::runtime_error{"Failed to create pipe for the child process."};
+        }
+    }
+
+    Pipe(const Pipe &other) = delete;
+
+    Pipe(Pipe &&other) noexcept = default
+    {
+        *this = std::move(other);
+    }
+
+    ~Pipe()
+    {
+        closeRead();
+        closeWrite();
+    }
+
+    auto closeRead() -> void
+    {
+        if (mPipe[READ] != INVALID_DESCRIPTOR)
+        {
+            close(mPipe[READ]);
+            mPipe[READ] = INVALID_DESCRIPTOR;
+        }
+    }
+
+    auto closeWrite() -> void
+    {
+        if (mPipe[WRITE] != INVALID_DESCRIPTOR)
+        {
+            close(mPipe[WRITE]);
+            mPipe[WRITE] = INVALID_DESCRIPTOR;
+        }
+    }
+
+    [[nodiscard]] auto readEnd() const -> int
+    {
+        return mPipe[READ];
+    }
+
+    [[nodiscard]] auto writeEnd() const -> int
+    {
+        return mPipe[WRITE];
+    }
+
+    auto operator=(const Pipe &other) -> Pipe & = delete;
+
+    auto operator=(Pipe &&other) noexcept -> Pipe & = default
+    {
+        if (this != &other)
+        {
+            closeRead();
+            closeWrite();
+            mPipe[READ] = other.mPipe[READ];
+            mPipe[WRITE] = other.mPipe[WRITE];
+            other.mPipe[READ] = INVALID_DESCRIPTOR;
+            other.mPipe[WRITE] = INVALID_DESCRIPTOR;
+        }
+
+        return *this;
+    }
+
+private:
+    static constexpr size_t READ = 0;
+    static constexpr size_t WRITE = 1;
+    static constexpr int INVALID_DESCRIPTOR;
+    int mPipe[2] = {INVALID_DESCRIPTOR, INVALID_DESCRIPTOR};
+};
+
 class ProcessUnix
 {
 public:
     ProcessUnix(std::string *command, std::vector<std::string> *arguments, const std::string &workingDirectory)
     {
-        int outputPipe[2] = {};
-
-        if (pipe(outputPipe) != 0)
-        {
-            throw std::runtime_error{"Failed to create pipe for the child process."};
-        }
-
         const pid_t pid = fork();
 
         if (pid == 0)
         {
-            close(outputPipe[0]);
-            dup2(outputPipe[1], STDOUT_FILENO);
-            dup2(STDOUT_FILENO, STDERR_FILENO);
-
-            if (chdir(workingDirectory.c_str()) == -1)
-            {
-                exit(errno);
-            }
-
-            auto args = createArguments(command, arguments);
-            execv(command->c_str(), args.data());
-            std::exit(errno);
+            childProcess(command, arguments, workingDirectory);
         }
         else
         {
-            close(outputPipe[1]);
-            int status = 0;
-            waitpid(pid, &status, 0);
-            mExitCode = WEXITSTATUS(status);
-
-            constexpr size_t BUFFER_SIZE = 65536;
-            static char buffer[BUFFER_SIZE] = {};
-            ssize_t bytesRead = 0;
-
-            do
-            {
-                bytesRead = read(outputPipe[0], buffer, BUFFER_SIZE);
-                mOutput.append(buffer, bytesRead);
-            }
-            while (bytesRead > 0);
-
-            close(outputPipe[0]);
+            parentProcess(pid);
         }
     }
 
@@ -63,15 +105,49 @@ public:
 
     [[nodiscard]] auto output() const -> std::string
     {
-        return mOutput;
+        constexpr size_t BUFFER_SIZE = 65536;
+        static char buffer[BUFFER_SIZE] = {};
+        ssize_t bytesRead = 0;
+        std::string out;
+
+        do
+        {
+            bytesRead = read(outputPipe[0], buffer, BUFFER_SIZE);
+            out.append(buffer, bytesRead);
+        }
+        while (bytesRead > 0);
+
+        return out;
     }
 
 private:
+    auto captureStdOutAndErr() -> void
+    {
+        mPipe.closeRead();
+        dup2(mPipe.writeEnd(), STDOUT_FILENO);
+        dup2(STDOUT_FILENO, STDERR_FILENO);
+    }
+
+    static auto changeDirectory(const char *directory) -> void
+    {
+        if (chdir(directory) == -1)
+        {
+            exit(errno);
+        }
+    }
+
+    auto childProcess(std::string *command, std::vector<std::string> *arguments, const std::string &workingDirectory) -> void
+    {
+        captureStdOutAndErr();
+        changeDirectory(workingDirectory.c_str());
+        execv(command->c_str(), createArguments(command, arguments).data());
+        std::exit(errno);
+    }
+
     [[nodiscard]] static auto createArguments(std::string *command, std::vector<std::string> *arguments) -> std::vector<char *>
     {
-        std::vector<char *> args{};
+        std::vector<char *> args{command->data()};
         args.reserve(arguments->size() + 2);
-        args.push_back(command->data());
 
         for (auto &arg : *arguments)
         {
@@ -82,7 +158,20 @@ private:
         return args;
     }
 
-    std::string mOutput;
+    auto parentProcess(pid_t pid) -> void
+    {
+        mPipe.closeWrite();
+        mExitCode = waitForFinished(pid);
+    }
+
+    [[nodiscard]] static auto waitForFinished(pid_t pid) -> int
+    {
+        int status = 0;
+        waitpid(pid, &status, 0);
+        return WEXITSTATUS(status);
+    }
+
+    Pipe mPipe;
     int mExitCode = 0;
 };
 }
