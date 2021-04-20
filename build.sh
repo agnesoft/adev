@@ -12,7 +12,7 @@ mkdir -p bin
 BUILD_ROOT=$(pwd)
 ASTL_INCLUDE_PATH="$PROJECTS_ROOT/astl/include"
 CPP_FLAGS="-std=c++20 $1 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -nostdinc++ -fmodules -fimplicit-module-maps -fprebuilt-module-path=$BUILD_ROOT/acore -fprebuilt-module-path=$BUILD_ROOT/atest -I$ASTL_INCLUDE_PATH -I$LIBCXX_PREFIX/include/c++/v1"
-CPP_AND_LINK_FLAGS="$CPP_FLAGS -L$LIBCXX_PREFIX/lib -lc++ -Wl,-rpath,$LIBCXX_PREFIX/lib"
+CPP_AND_LINK_FLAGS="$CPP_FLAGS -L$LIBCXX_PREFIX/lib -lc++ -Wl,-rpath,$LIBCXX_PREFIX/lib -lpthread" 
 
 #acore
 mkdir -p acore

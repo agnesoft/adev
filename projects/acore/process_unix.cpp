@@ -81,6 +81,41 @@ private:
     int mPipe[2] = {INVALID_DESCRIPTOR, INVALID_DESCRIPTOR};
 };
 
+class AsyncReader
+{
+public:
+    AsyncReader(std::string *output, int readFileDescriptor) :
+        mThread{[output, readFileDescriptor] {
+		constexpr size_t BUFFER_SIZE = 65536;
+		static char buffer[BUFFER_SIZE] = {};
+		ssize_t bytesRead = 0;
+
+		while ((bytesRead = read(readFileDescriptor, buffer, BUFFER_SIZE)) > 0)
+		{
+		    output->append(buffer, bytesRead);
+		}
+        }}
+    {
+    }
+    
+    AsyncReader(const AsyncReader&other) = delete;
+    AsyncReader(AsyncReader &&other) noexcept = default;
+
+    ~AsyncReader()
+    {
+        if (mThread.joinable())
+        {
+            mThread.join();
+        }
+    }
+    
+    auto operator=(const AsyncReader &other) -> AsyncReader & = delete;
+    auto operator=(AsyncReader &&other) noexcept -> AsyncReader & = default;
+
+private:
+    std::thread mThread;
+};
+
 class ProcessUnix
 {
 public:
@@ -105,19 +140,7 @@ public:
 
     [[nodiscard]] auto output() const -> std::string
     {
-        constexpr size_t BUFFER_SIZE = 65536;
-        static char buffer[BUFFER_SIZE] = {};
-        ssize_t bytesRead = 0;
-        std::string out;
-
-        do
-        {
-            bytesRead = read(mPipe.readEnd(), buffer, BUFFER_SIZE);
-            out.append(buffer, bytesRead);
-        }
-        while (bytesRead > 0);
-
-        return out;
+        return mOutput;
     }
 
 private:
@@ -161,6 +184,7 @@ private:
     auto parentProcess(pid_t pid) -> void
     {
         mPipe.closeWrite();
+        AsyncReader reader{&mOutput, mPipe.readEnd()};
         mExitCode = waitForFinished(pid);
     }
 
@@ -172,6 +196,7 @@ private:
     }
 
     Pipe mPipe;
+    std::string mOutput;
     int mExitCode = 0;
 };
 }

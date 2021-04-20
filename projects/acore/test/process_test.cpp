@@ -102,7 +102,7 @@ static const auto s = suite("acore::Process", [] {
         });
 
         test("output over buffer size", [] {
-            constexpr int SIZE = 10000;
+            constexpr int SIZE = 100000;
             std::string output{"1"};
 
             for (int i = 2; i < (SIZE + 1); ++i)
@@ -110,8 +110,10 @@ static const auto s = suite("acore::Process", [] {
                 output += ' ';
                 output += std::to_string(i);
             }
+            
+            output += '\n';
 
-            const acore::Process process{"/bin/bash", {"-c", "myarr=$(seq 10000) && echo $myarr"}};
+            const acore::Process process{"/bin/bash", {"-c", "myarr=$(seq 100000) && echo $myarr"}};
 
             expect(process.output()).toBe(output);
         });
