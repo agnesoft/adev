@@ -1,0 +1,4 @@
+module rapidjson_hpp {
+    header "rapidjson.hpp"
+    export *
+}
