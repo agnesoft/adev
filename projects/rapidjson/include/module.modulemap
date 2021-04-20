@@ -1,5 +1,3 @@
-//GENERATED FILE. DO NOT MODIFY.
-
 module rapidjson_hpp {
     header "rapidjson.hpp"
     export *
