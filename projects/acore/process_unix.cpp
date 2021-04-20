@@ -18,7 +18,7 @@ public:
 
     Pipe(const Pipe &other) = delete;
 
-    Pipe(Pipe &&other) noexcept = default
+    Pipe(Pipe &&other) noexcept
     {
         *this = std::move(other);
     }
@@ -59,7 +59,7 @@ public:
 
     auto operator=(const Pipe &other) -> Pipe & = delete;
 
-    auto operator=(Pipe &&other) noexcept -> Pipe & = default
+    auto operator=(Pipe &&other) noexcept -> Pipe &
     {
         if (this != &other)
         {
@@ -77,7 +77,7 @@ public:
 private:
     static constexpr size_t READ = 0;
     static constexpr size_t WRITE = 1;
-    static constexpr int INVALID_DESCRIPTOR;
+    static constexpr int INVALID_DESCRIPTOR = -1;
     int mPipe[2] = {INVALID_DESCRIPTOR, INVALID_DESCRIPTOR};
 };
 
@@ -112,7 +112,7 @@ public:
 
         do
         {
-            bytesRead = read(outputPipe[0], buffer, BUFFER_SIZE);
+            bytesRead = read(mPipe.readEnd(), buffer, BUFFER_SIZE);
             out.append(buffer, bytesRead);
         }
         while (bytesRead > 0);
