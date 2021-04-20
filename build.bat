@@ -8,12 +8,19 @@ mkdir bin
 
 set BUILD_ROOT=%cd%
 set ASTL_INCLUDE_PATH=%PROJECTS_ROOT%\astl\include
-set CPP_FLAGS=/nologo /W4 /WX /std:c++latest /EHsc /I"%ASTL_INCLUDE_PATH%" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc"
+set RAPIDJSON_INCLUDE_PATH=%PROJECTS_ROOT%\rapidjson\include
+set CPP_FLAGS=/nologo /W4 /WX /std:c++latest /EHsc /I"%ASTL_INCLUDE_PATH%" /I"%RAPIDJSON_INCLUDE_PATH%" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc"
 
 REM astl
 mkdir astl
 cd astl
 cl.exe %CPP_FLAGS% /c /exportHeader /Fo /TP "%ASTL_INCLUDE_PATH%\astl.hpp"
+cd ..
+
+REM astl
+mkdir rapidjson
+cd rapidjson
+cl.exe %CPP_FLAGS% /c /exportHeader /Fo /TP "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp"
 cd ..
 
 REM acore
