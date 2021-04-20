@@ -83,27 +83,7 @@ public:
     auto close() -> void
     {
         mWriteHandle.close();
-    }
-
-    [[nodiscard]] auto content() -> std::string
-    {
-        constexpr size_t BUFFER_SIZE = 65536;
-        static char buffer[BUFFER_SIZE] = {};
-        DWORD bytesRead = 0;
-        std::string output;
-
-        while (ReadFile(mReadHandle.get(),
-                        static_cast<LPVOID>(buffer),
-                        static_cast<DWORD>(BUFFER_SIZE),
-                        &bytesRead,
-                        nullptr)
-                   == TRUE
-               && bytesRead != 0)
-        {
-            output.append(buffer, bytesRead);
-        }
-
-        return output;
+        mReadHandle.close();
     }
 
     [[nodiscard]] constexpr auto readHandle() noexcept -> HANDLE &
@@ -166,12 +146,48 @@ private:
     PROCESS_INFORMATION mProcessInfo;
 };
 
+class AsyncReader
+{
+public:
+    AsyncReader(std::string *output, HANDLE readHandle) :
+        mThread{[output, readHandle] {
+            constexpr size_t BUFFER_SIZE = 65536;
+            static char buffer[BUFFER_SIZE] = {};
+            DWORD bytesRead = 0;
+
+            while (ReadFile(readHandle,
+                            static_cast<LPVOID>(buffer),
+                            static_cast<DWORD>(BUFFER_SIZE),
+                            &bytesRead,
+                            nullptr)
+                       == TRUE
+                   && bytesRead != 0)
+            {
+                output->append(buffer, bytesRead);
+            }
+        }}
+    {
+    }
+
+    ~AsyncReader()
+    {
+        if (mThread.joinable())
+        {
+            mThread.join();
+        }
+    }
+
+private:
+    std::thread mThread;
+};
+
 class WindowsProcess
 {
 public:
-    WindowsProcess(const std::string &command, const std::vector<std::string> &arguments, const std::string &workingDirectory) :
-        mStartupInfo{&mPipe}
+    WindowsProcess(const std::string &command, const std::vector<std::string> &arguments, const std::string &workingDirectory)
     {
+        Pipe pipe;
+        StartupInfo startupInfo{&pipe};
         std::string commandLine = createCommandLine(command, arguments);
 
         if (CreateProcess(nullptr,
@@ -182,15 +198,16 @@ public:
                           0,
                           nullptr,
                           workingDirectory.c_str(),
-                          &mStartupInfo.get(),
+                          &startupInfo.get(),
                           &mProcessInfo.get())
             == FALSE)
         {
             throw std::runtime_error{"Failed to create WindowsProcess: " + std::to_string(GetLastError())};
         }
 
+        AsyncReader reader{&mOutput, pipe.readHandle()};
         WaitForSingleObject(mProcessInfo.get().hProcess, INFINITE);
-        mPipe.close();
+        pipe.close();
     }
 
     ~WindowsProcess()
@@ -218,7 +235,7 @@ public:
 
     [[nodiscard]] auto output() -> std::string
     {
-        return mPipe.content();
+        return mOutput;
     }
 
     auto operator=(const WindowsProcess &other) = delete;
@@ -238,8 +255,7 @@ private:
         return command;
     }
 
-    Pipe mPipe;
-    StartupInfo mStartupInfo;
     ProcessInfo mProcessInfo;
+    std::string mOutput;
 };
 }
