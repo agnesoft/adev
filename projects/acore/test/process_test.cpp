@@ -130,7 +130,7 @@ static const auto s = suite("acore::Process", [] {
         test("working directory", [] {
             const std::string workingDirectory = std::filesystem::current_path().parent_path().string();
 
-            const acore::Process process{"/bin/bash", {"/c", "echo $(pwd)"}, workingDirectory};
+            const acore::Process process{"/bin/bash", {"-c", "echo $(pwd)"}, workingDirectory};
 
             expect(process.workingDirectory()).toBe(workingDirectory);
             expect(process.output()).toBe(workingDirectory + "\n");
