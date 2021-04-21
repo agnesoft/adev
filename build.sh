@@ -52,7 +52,7 @@ cd ..
 #acore_test
 mkdir -p acore_test
 cd acore_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/acore/test/main.cpp" "$PROJECTS_ROOT/acore/test/commandline_test.cpp" "$PROJECTS_ROOT/acore/test/commandline_option_test.cpp" "$PROJECTS_ROOT/acore/test/process_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/acore_test"
+"$CLANG" $CPP_AND_LINK_FLAGS -fmodule-map-file="$PROJECTS_ROOT/acore/module.modulemap" "$PROJECTS_ROOT/acore/test/main.cpp" "$PROJECTS_ROOT/acore/test/commandline_test.cpp" "$PROJECTS_ROOT/acore/test/commandline_option_test.cpp" "$PROJECTS_ROOT/acore/test/process_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/acore_test"
 cd ..
 
 #abuild_test
