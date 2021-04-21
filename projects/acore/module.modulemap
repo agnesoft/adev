@@ -1,5 +1,3 @@
-//GENERATED FILE. DO NOT MODIFY.
-
 module unistd_h {
     header "/usr/include/unistd.h"
     export *
