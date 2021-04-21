@@ -9,7 +9,7 @@ mkdir bin
 set BUILD_ROOT=%cd%
 set ASTL_INCLUDE_PATH=%PROJECTS_ROOT%\astl\include
 set RAPIDJSON_INCLUDE_PATH=%PROJECTS_ROOT%\rapidjson\include
-set CPP_FLAGS=/nologo /W4 /WX /std:c++latest /EHsc /I"%ASTL_INCLUDE_PATH%" /I"%RAPIDJSON_INCLUDE_PATH%" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc"
+set CPP_FLAGS=/nologo /W4 /WX /std:c++latest /EHsc /I"%ASTL_INCLUDE_PATH%" /I"%RAPIDJSON_INCLUDE_PATH%" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" /ifcSearchDir "%BUILD_ROOT%\abuild"
 
 REM astl
 mkdir astl
@@ -33,6 +33,14 @@ cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process_wind
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\acore\acore.cpp"
 lib.exe /NOLOGO acore.obj acore_common.obj commandline.obj commandline_option.obj process.obj process_windows.obj /OUT:acore.lib
+cd ..
+
+REM abuild
+mkdir abuild
+cd abuild
+cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
+lib.exe /NOLOGO abuild.obj /OUT:abuild.lib
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj"
 cd ..
 
 REM atest
@@ -60,12 +68,21 @@ cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\atest_test.exe" /ifcSearchDir "%BUILD_RO
 cd ..
 
 REM astl_test
+mkdir astl_test
+cd astl_test
 cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\astl_test.exe" "%PROJECTS_ROOT%\astl\test\main.cpp" "%BUILD_ROOT%\astl\astl.obj"
+cd ..
 
 REM acore_test
 mkdir acore_test
 cd acore
-cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" "%PROJECTS_ROOT%\acore\test\process_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\acore_test.exe" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" "%PROJECTS_ROOT%\acore\test\process_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
+cd ..
+
+REM abuild_test
+mkdir abuild_test
+cd abuild_test
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib"
 cd ..
 
 cd ..
