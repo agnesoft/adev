@@ -1,6 +1,6 @@
 import atest;
 
-auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
+auto main(int argc, char *argv[]) -> int
 {
     atest::test("Global test", [] {
     });
