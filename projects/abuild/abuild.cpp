@@ -1,3 +1,9 @@
+#ifndef _MSC_VER
+module;
+
+#    include "rapidjson.hpp"
+#endif
+
 export module abuild;
 
 export import acore;
