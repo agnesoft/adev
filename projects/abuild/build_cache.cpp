@@ -1,11 +1,8 @@
 #ifdef _MSC_VER
-module;
-
-#    include "rapidjson.hpp"
-
 export module abuild : build_cache;
 
 import acore;
+import "rapidjson.hpp";
 #endif
 
 namespace abuild
