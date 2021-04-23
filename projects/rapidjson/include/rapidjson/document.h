@@ -2044,29 +2044,26 @@ private:
 
     // By using proper binary layout, retrieval of different integer types do not need conversions.
 
+    union Number {
 #if RAPIDJSON_ENDIAN == RAPIDJSON_LITTLEENDIAN
-    struct NumberI {
+    struct {
         int i;
         char padding[4];
     }i;
-    struct NumberU {
+    struct {
         unsigned u;
         char padding2[4];
     }u;
 #else
-    struct NumberI {
+    struct {
         char padding[4];
         int i;
     }i;
-    struct NumberU {
+    struct {
         char padding2[4];
         unsigned u;
     }u;
 #endif
-
-    union Number {
-        NumberI i;
-        NumberU u;
         int64_t i64;
         uint64_t u64;
         double d;
