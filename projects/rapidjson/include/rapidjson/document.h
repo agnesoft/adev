@@ -2043,26 +2043,30 @@ private:
     };  // at most as many bytes as "String" above => 12 bytes in 32-bit mode, 16 bytes in 64-bit mode
 
     // By using proper binary layout, retrieval of different integer types do not need conversions.
-    union Number {
+
 #if RAPIDJSON_ENDIAN == RAPIDJSON_LITTLEENDIAN
-        struct I {
-            int i;
-            char padding[4];
-        }i;
-        struct U {
-            unsigned u;
-            char padding2[4];
-        }u;
+    struct NumberI {
+        int i;
+        char padding[4];
+    }i;
+    struct NumberU {
+        unsigned u;
+        char padding2[4];
+    }u;
 #else
-        struct I {
-            char padding[4];
-            int i;
-        }i;
-        struct U {
-            char padding2[4];
-            unsigned u;
-        }u;
+    struct NumberI {
+        char padding[4];
+        int i;
+    }i;
+    struct NumberU {
+        char padding2[4];
+        unsigned u;
+    }u;
 #endif
+
+    union Number {
+        NumberI i;
+        NumberU u;
         int64_t i64;
         uint64_t u64;
         double d;
