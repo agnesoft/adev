@@ -3,6 +3,7 @@ export module abuild : build_cache;
 
 import acore;
 import "rapidjson.hpp";
+
 #endif
 
 namespace abuild
@@ -15,6 +16,9 @@ public:
         load();
     }
 
+    BuildCache(const BuildCache &other) = delete;
+    BuildCache(BuildCache &&other) noexcept = default;
+
     ~BuildCache()
     {
         try
@@ -25,6 +29,9 @@ public:
         {
         }
     }
+
+    auto operator=(const BuildCache &other) -> BuildCache & = delete;
+    auto operator=(BuildCache &&other) noexcept -> BuildCache & = default;
 
 private:
     auto load() -> void
@@ -56,7 +63,7 @@ private:
     auto save() -> void
     {
         rapidjson::StringBuffer buffer;
-        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer;
+        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer{buffer};
         mData.Accept(writer);
         writeCache(buffer.GetString(), buffer.GetSize());
     }
