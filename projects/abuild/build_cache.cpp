@@ -30,6 +30,11 @@ public:
         }
     }
 
+    [[nodiscard]] auto data() noexcept -> rapidjson::Document &
+    {
+        return mData;
+    }
+
     auto operator=(const BuildCache &other) -> BuildCache & = delete;
     auto operator=(BuildCache &&other) noexcept -> BuildCache & = default;
 
