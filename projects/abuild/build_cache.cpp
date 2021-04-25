@@ -30,6 +30,31 @@ public:
         }
     }
 
+    [[nodiscard]] auto allocator() -> rapidjson::Document::AllocatorType &
+    {
+        return mData.GetAllocator();
+    }
+
+    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
+    {
+        if (!mData.HasMember(key))
+        {
+            mData.AddMember(rapidjson::Value{key, mData.GetAllocator()}, rapidjson::Value{rapidjson::kObjectType}, mData.GetAllocator());
+        }
+
+        return mData[key];
+    }
+
+    [[nodiscard]] auto operator[](const std::string &key) const -> const rapidjson::Value &
+    {
+        if (!mData.HasMember(key))
+        {
+            throw std::runtime_error{"Requested key '" + key + "' does not exist in the build cache."};
+        }
+
+        return mData[key];
+    }
+
     auto operator=(const BuildCache &other) -> BuildCache & = delete;
     auto operator=(BuildCache &&other) noexcept -> BuildCache & = default;
 
