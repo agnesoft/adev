@@ -67,7 +67,7 @@ private:
 
     auto detectLinuxClangVersion(const std::string &version) -> void
     {
-        if (std::filesystem::exists("/usr/bin/g++-" + version))
+        if (std::filesystem::exists("/usr/bin/clang++-" + version))
         {
             mBuildCache["toolchains"]["clang"].PushBack(linuxClangToolchain(version), mBuildCache.allocator());
         }
