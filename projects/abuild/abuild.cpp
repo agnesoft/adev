@@ -8,6 +8,7 @@ export import : environment_scanner;
 #else
 import "rapidjson.hpp";
 #    include "build_cache.cpp"
+#    include "environment_scanner.cpp"
 #endif
 
 namespace abuild
