@@ -2,8 +2,6 @@
 export module abuild : environment_scanner;
 
 import : build_cache;
-
-import acore;
 #endif
 
 namespace abuild

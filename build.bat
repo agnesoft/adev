@@ -40,8 +40,9 @@ mkdir abuild
 cd abuild
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\environment_scanner.cpp"
+cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO abuild.obj build_cache.obj environment_scanner.obj /OUT:abuild.lib
+lib.exe /NOLOGO abuild.obj build_cache.obj environment_scanner.obj project_scanner.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 
@@ -84,7 +85,7 @@ cd ..
 REM abuild_test
 mkdir abuild_test
 cd abuild_test
-cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%PROJECTS_ROOT%\abuild\test\environment_scanner_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
+cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%PROJECTS_ROOT%\abuild\test\environment_scanner_test.cpp" "%PROJECTS_ROOT%\abuild\test\project_scanner_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 
 cd ..
