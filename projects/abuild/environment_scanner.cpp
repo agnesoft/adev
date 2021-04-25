@@ -146,7 +146,7 @@ private:
         toolchain.AddMember("archiver", (binPath / "ar").lexically_normal().string(), mBuildCache.allocator());
         toolchain.AddMember("archiverFlags", arFlags(), mBuildCache.allocator());
         toolchain.AddMember("ifc", "", mBuildCache.allocator());
-        toolchain.AddMember("include", (std::filesystem::path{"/usr/include/c++/"} / version).lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("include", "/usr/include/c++/" + version, mBuildCache.allocator());
         toolchain.AddMember("lib", "", mBuildCache.allocator());
         return toolchain;
     }
