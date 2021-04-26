@@ -6,13 +6,44 @@ import : build_cache;
 
 namespace abuild
 {
-export class EnvironmentScanner
+class ToolchainsScanner
 {
 public:
-    EnvironmentScanner(BuildCache &cache) :
-        mBuildCache{cache}
+    explicit ToolchainsScanner(BuildCache &cache)
     {
         scan();
+    }
+
+private:
+#ifdef _WIN32
+    auto detectMSVC2019() -> void
+    {
+        const std::filesystem::path msvc2019root = "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/";
+
+        for (const std::filesystem::directory_entry &toolset : std::filesystem::directory_iterator(msvc2019root))
+        {
+            mBuildCache["toolchains"].AddMember("msvc19" toolset.path().filename().string(), ) PushBack(msvcToolchain(toolset.path()), mBuildCache.allocator());
+        }
+    }
+
+    auto scan() -> void
+    {
+        detectMSVC2019();
+        detectWindowsClang();
+    }
+#else
+    auto scanLinux() -> void
+    {
+    }
+#endif
+};
+
+export class Toolchains
+{
+public:
+    explicit Toolchains(BuildCache &cache) :
+        mBuildCache{cache}
+    {
     }
 
 private:

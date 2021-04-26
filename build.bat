@@ -39,10 +39,11 @@ REM abuild
 mkdir abuild
 cd abuild
 cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
-cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\environment_scanner.cpp"
-cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
+cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\settings.cpp"
+cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchains.cpp"
+cl.exe %CPP_FLAGS% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\projects.cpp"
 cl.exe %CPP_FLAGS% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO abuild.obj build_cache.obj environment_scanner.obj project_scanner.obj /OUT:abuild.lib
+lib.exe /NOLOGO abuild.obj build_cache.obj settings.obj toolchains.obj projects.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 

@@ -4,15 +4,16 @@ export import acore;
 
 #ifdef _MSC_VER
 export import : build_cache;
-export import : environment_scanner;
-export import : project_scanner;
+export import : settings;
+export import : toolchains;
+export import : projects;
+
 #else
+// clang-format off
 import "rapidjson.hpp";
 #    include "build_cache.cpp"
-#    include "environment_scanner.cpp"
-#    include "project_scanner.cpp"
+#    include "settings.cpp"
+#    include "toolchains.cpp"
+#    include "projects.cpp"
+// clang-format on
 #endif
-
-namespace abuild
-{
-}

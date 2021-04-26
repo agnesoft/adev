@@ -12,6 +12,7 @@ static const auto testSuite = suite("abuild::ProjectScanner", [] {
 
     test("scan", [] {
         abuild::BuildCache cache;
-        abuild::ProjectScanner scanner{cache};
+        abuild::Settings{cache};
+        abuild::ProjectScanner{cache};
     });
 });
