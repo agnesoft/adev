@@ -17,24 +17,10 @@ public:
     }
 
 private:
-    auto addSource(const std::filesystem::path &path) -> void
+    auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        mBuildCache["sources"].AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
-    }
-
-    auto addSourceToProject(const std::filesystem::path &path) -> void
-    {
-        currentProject(path)["sources"].PushBack(rapidjson::Value{path.string(), mBuildCache.allocator()}, mBuildCache.allocator());
-    }
-
-    [[nodiscard]] auto currentProject(const std::filesystem::path &path) -> rapidjson::Value &
-    {
-        if (!mCurrentProject)
-        {
-            setCurrentProject(projectName(path));
-        }
-
-        return *mCurrentProject;
+        mBuildCache["sources"].AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newSource(path, projectName), mBuildCache.allocator());
+        project(projectName)["sources"].PushBack(rapidjson::Value{path.string(), mBuildCache.allocator()}, mBuildCache.allocator());
     }
 
     [[nodiscard]] auto isCppSource(const std::filesystem::path &path) -> bool
@@ -78,10 +64,23 @@ private:
             != mSettings.testDirectories().End();
     }
 
+    [[nodiscard]] static auto lastModified(const std::filesystem::path &path) -> std::int64_t
+    {
+        return std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(path).time_since_epoch()).count();
+    }
+
     [[nodiscard]] auto newProject() -> rapidjson::Value
     {
         rapidjson::Value project{rapidjson::kObjectType};
         project.AddMember("sources", rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
+        return project;
+    }
+
+    [[nodiscard]] auto newSource(const std::filesystem::path &path, const std::string &projectName) -> rapidjson::Value
+    {
+        rapidjson::Value project{rapidjson::kObjectType};
+        project.AddMember("project", rapidjson::Value{projectName, mBuildCache.allocator()}, mBuildCache.allocator());
+        project.AddMember("modified", rapidjson::Value{lastModified(path)}, mBuildCache.allocator());
         return project;
     }
 
@@ -92,33 +91,27 @@ private:
             return;
         }
 
-        if (!isSquashDirectory(path))
-        {
-            mCurrentProject = nullptr;
-        }
-
         scanDir(path);
     }
 
-    auto processFile(const std::filesystem::path &path) -> void
+    auto processFile(const std::filesystem::path &path, const std::string &project) -> void
     {
         if (isCppSource(path))
         {
-            addSource(path);
-            addSourceToProject(path);
+            addSource(path, project);
         }
     }
 
-    [[nodiscard]] auto projectName(const std::filesystem::path &path) -> std::string
+    [[nodiscard]] auto projectNameFromPath(const std::filesystem::path &path) -> std::string
     {
         if (std::filesystem::is_regular_file(path) || isSquashDirectory(path) || isSkipDirectory(path))
         {
-            return projectName(path.parent_path());
+            return projectNameFromPath(path.parent_path());
         }
 
         if (isTestDirectory(path))
         {
-            return projectName(path.parent_path()) + projectNameSeparator(path) + path.filename().string();
+            return projectNameFromPath(path.parent_path()) + projectNameSeparator(path) + path.filename().string();
         }
 
         return path.filename().string();
@@ -140,35 +133,36 @@ private:
         scanDir(projectRoot);
     }
 
-    auto scanDir(const std::filesystem::path &projectRoot) -> void
+    auto scanDir(const std::filesystem::path &path) -> void
     {
-        for (const auto &entry : std::filesystem::directory_iterator(projectRoot))
-        {
-            const std::filesystem::path path = entry.path();
+        const std::string projectName = projectNameFromPath(path);
 
-            if (std::filesystem::is_regular_file(path))
+        for (const auto &entry : std::filesystem::directory_iterator(path))
+        {
+            const std::filesystem::path entryPath = entry.path();
+
+            if (std::filesystem::is_regular_file(entryPath))
             {
-                processFile(path);
+                processFile(entryPath, projectName);
             }
-            else if (std::filesystem::is_directory(path))
+            else if (std::filesystem::is_directory(entryPath))
             {
-                processDir(path);
+                processDir(entryPath);
             }
         }
     }
 
-    auto setCurrentProject(const std::string &name) -> void
+    auto project(const std::string &name) -> rapidjson::Value &
     {
         if (!mBuildCache["projects"].HasMember(name))
         {
             mBuildCache["projects"].AddMember(rapidjson::Value{name, mBuildCache.allocator()}, newProject(), mBuildCache.allocator());
         }
 
-        mCurrentProject = &mBuildCache["projects"][name];
+        return mBuildCache["projects"][name];
     }
 
     BuildCache &mBuildCache;
     const Settings &mSettings;
-    rapidjson::Value *mCurrentProject = nullptr;
 };
 }
