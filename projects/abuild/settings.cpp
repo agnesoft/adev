@@ -12,11 +12,14 @@ public:
     explicit DefaultSettings(BuildCache &buildCache) :
         mBuildCache{buildCache}
     {
-        mBuildCache["settings"].AddMember("cppSourceExtensions", cppSourceExtensions(), mBuildCache.allocator());
-        mBuildCache["settings"].AddMember("ignoreDirectories", ignoreDirectories(), mBuildCache.allocator());
-        mBuildCache["settings"].AddMember("skipDirectories", skipDirectories(), mBuildCache.allocator());
-        mBuildCache["settings"].AddMember("squashDirectories", squashDirectories(), mBuildCache.allocator());
-        mBuildCache["settings"].AddMember("testDirectories", testDirectories(), mBuildCache.allocator());
+        if (!mBuildCache.data().HasMember("settings"))
+        {
+            mBuildCache["settings"].AddMember("cppSourceExtensions", cppSourceExtensions(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("ignoreDirectories", ignoreDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("skipDirectories", skipDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("squashDirectories", squashDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("testDirectories", testDirectories(), mBuildCache.allocator());
+        }
     }
 
 private:

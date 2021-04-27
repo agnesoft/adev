@@ -35,7 +35,13 @@ public:
         return mData.GetAllocator();
     }
 
-    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
+    [[nodiscard]] auto data() const noexcept -> const rapidjson::Document &
+    {
+        return mData;
+    }
+
+    [[nodiscard]] auto
+        operator[](const std::string &key) -> rapidjson::Value &
     {
         if (!mData.HasMember(key))
         {
