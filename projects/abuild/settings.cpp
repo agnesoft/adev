@@ -15,6 +15,7 @@ public:
         if (!mBuildCache.data().HasMember("settings"))
         {
             mBuildCache["settings"].AddMember("cppSourceExtensions", cppSourceExtensions(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("cppHeaderExtensions", cppHeaderExtensions(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("ignoreDirectories", ignoreDirectories(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("skipDirectories", skipDirectories(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("squashDirectories", squashDirectories(), mBuildCache.allocator());
@@ -30,6 +31,15 @@ private:
         extensions.PushBack(".cxx", mBuildCache.allocator());
         extensions.PushBack(".cc", mBuildCache.allocator());
         extensions.PushBack(".ixx", mBuildCache.allocator());
+        return extensions;
+    }
+
+    [[nodiscard]] auto cppHeaderExtensions() -> rapidjson::Value
+    {
+        rapidjson::Value extensions{rapidjson::kArrayType};
+        extensions.PushBack(".hpp", mBuildCache.allocator());
+        extensions.PushBack(".hxx", mBuildCache.allocator());
+        extensions.PushBack(".h", mBuildCache.allocator());
         return extensions;
     }
 
@@ -93,6 +103,11 @@ public:
     [[nodiscard]] auto cppSourceExtensions() const -> const rapidjson::Value &
     {
         return mBuildCache["settings"]["cppSourceExtensions"];
+    }
+
+    [[nodiscard]] auto cppHeaderExtensions() const -> const rapidjson::Value &
+    {
+        return mBuildCache["settings"]["cppHeaderExtensions"];
     }
 
     [[nodiscard]] auto ignoreDirectories() const -> const rapidjson::Value &

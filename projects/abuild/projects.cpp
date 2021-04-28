@@ -17,6 +17,12 @@ public:
     }
 
 private:
+    auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
+    {
+        mBuildCache["headers"].AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newHeader(path, projectName), mBuildCache.allocator());
+        project(projectName)["headers"].PushBack(rapidjson::Value{path.string(), mBuildCache.allocator()}, mBuildCache.allocator());
+    }
+
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         mBuildCache["sources"].AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newSource(path, projectName), mBuildCache.allocator());
@@ -29,6 +35,14 @@ private:
                          mSettings.cppSourceExtensions().End(),
                          path.extension().string())
             != mSettings.cppSourceExtensions().End();
+    }
+
+    [[nodiscard]] auto isCppHader(const std::filesystem::path &path) -> bool
+    {
+        return std::find(mSettings.cppHeaderExtensions().Begin(),
+                         mSettings.cppHeaderExtensions().End(),
+                         path.extension().string())
+            != mSettings.cppHeaderExtensions().End();
     }
 
     [[nodiscard]] auto isIgnoreDirectory(const std::filesystem::path &path) -> bool
@@ -69,10 +83,19 @@ private:
         return std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(path).time_since_epoch()).count();
     }
 
+    [[nodiscard]] auto newHeader(const std::filesystem::path &path, const std::string &projectName) -> rapidjson::Value
+    {
+        rapidjson::Value project{rapidjson::kObjectType};
+        project.AddMember("project", rapidjson::Value{projectName, mBuildCache.allocator()}, mBuildCache.allocator());
+        project.AddMember("modified", rapidjson::Value{lastModified(path)}, mBuildCache.allocator());
+        return project;
+    }
+
     [[nodiscard]] auto newProject() -> rapidjson::Value
     {
         rapidjson::Value project{rapidjson::kObjectType};
         project.AddMember("sources", rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
+        project.AddMember("headers", rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
         return project;
     }
 
@@ -99,6 +122,10 @@ private:
         if (isCppSource(path))
         {
             addSource(path, project);
+        }
+        else if (isCppHader(path))
+        {
+            addHeader(path, project);
         }
     }
 
