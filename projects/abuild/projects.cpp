@@ -9,15 +9,9 @@ namespace abuild
 export class Projects
 {
 public:
-    explicit Projects(BuildCache &cache, const Settings &settings) :
-        mBuildCache{cache},
-        mSettings{settings}
+    explicit Projects(BuildCache &cache, const Settings &settings)
     {
         ProjectsScanner{cache, settings};
     }
-
-private:
-    BuildCache &mBuildCache;
-    const Settings &mSettings;
 };
 }

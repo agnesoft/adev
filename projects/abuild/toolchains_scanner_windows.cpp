@@ -12,7 +12,8 @@ public:
     explicit ToolchainsScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
-        scan();
+        detectMSVC();
+        detectClang();
     }
 
 private:
@@ -135,12 +136,6 @@ private:
         toolchain.AddMember("include", (path / "include").lexically_normal().string(), mBuildCache.allocator());
         toolchain.AddMember("lib", (path / "lib" / "x64").lexically_normal().string(), mBuildCache.allocator());
         return toolchain;
-    }
-
-    auto scan() -> void
-    {
-        detectMSVC();
-        detectClang();
     }
 
     BuildCache &mBuildCache;

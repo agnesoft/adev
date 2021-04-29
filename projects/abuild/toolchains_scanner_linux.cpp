@@ -3,9 +3,11 @@ namespace abuild
 class ToolchainsScanner
 {
 public:
-    explicit ToolchainsScanner(BuildCache &cache)
+    explicit ToolchainsScanner(BuildCache &cache) :
+    	mBuildCache{cache}
     {
-        scan();
+        detectGCC();
+        detectClang();
     }
 
 private:
@@ -32,12 +34,12 @@ private:
         const std::filesystem::path binPath = "/usr/bin";
 
         rapidjson::Value toolchain{rapidjson::kObjectType};
-        toolchain.AddMember("name", "clang" + version, mBuildCache.allocator());
-        toolchain.AddMember("compiler", (binPath / ("clang++-" + version)).lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("name", rapidjson::Value{"clang" + version, mBuildCache.allocator()}, mBuildCache.allocator());
+        toolchain.AddMember("compiler", rapidjson::Value{(binPath / ("clang++-" + version)).lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("compilerFlags", clangFlags(), mBuildCache.allocator());
-        toolchain.AddMember("linker", (binPath / "ld").lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("linker", rapidjson::Value{(binPath / "ld").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("linkerFlags", ldFlags(), mBuildCache.allocator());
-        toolchain.AddMember("archiver", (binPath / "ar").lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("archiver", rapidjson::Value{(binPath / "ar").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("archiverFlags", arFlags(), mBuildCache.allocator());
         toolchain.AddMember("ifc", "", mBuildCache.allocator());
         toolchain.AddMember("include", "", mBuildCache.allocator());
@@ -56,7 +58,7 @@ private:
     {
         if (std::filesystem::exists("/usr/bin/g++-" + version))
         {
-            mBuildCache["toolchains"].AddMember("gcc" + version, gccToolchain(version), mBuildCache.allocator());
+            mBuildCache["toolchains"].AddMember(rapidjson::Value{"gcc" + version, mBuildCache.allocator()}, gccToolchain(version), mBuildCache.allocator());
         }
     }
 
@@ -70,7 +72,7 @@ private:
     {
         if (std::filesystem::exists("/usr/bin/clang++-" + version))
         {
-            mBuildCache["toolchains"].AddMember("clang" + version, clangToolchain(version), mBuildCache.allocator());
+            mBuildCache["toolchains"].AddMember(rapidjson::Value{"clang" + version, mBuildCache.allocator()}, clangToolchain(version), mBuildCache.allocator());
         }
     }
 
@@ -91,11 +93,11 @@ private:
 
         rapidjson::Value toolchain{rapidjson::kObjectType};
         toolchain.AddMember("type", "gcc", mBuildCache.allocator());
-        toolchain.AddMember("compiler", (binPath / ("g++-" + version)).lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("compiler", rapidjson::Value{(binPath / ("g++-" + version)).lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("compilerFlags", gccFlags(), mBuildCache.allocator());
-        toolchain.AddMember("linker", (binPath / "ld").lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("linker", rapidjson::Value{(binPath / "ld").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("linkerFlags", ldFlags(), mBuildCache.allocator());
-        toolchain.AddMember("archiver", (binPath / "ar").lexically_normal().string(), mBuildCache.allocator());
+        toolchain.AddMember("archiver", rapidjson::Value{(binPath / "ar").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("archiverFlags", arFlags(), mBuildCache.allocator());
         toolchain.AddMember("ifc", "", mBuildCache.allocator());
         toolchain.AddMember("include", "/usr/include/c++/" + version, mBuildCache.allocator());
@@ -126,5 +128,7 @@ private:
         detectGCC();
         detectClang();
     }
+    
+    BuildCache &mBuildCache;
 };
 }
