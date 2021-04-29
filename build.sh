@@ -58,7 +58,7 @@ cd ..
 #abuild_test
 mkdir -p acore_test
 cd acore_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/abuild/test/main.cpp" "$PROJECTS_ROOT/abuild/test/build_cache_test.cpp" "$PROJECTS_ROOT/abuild/test/environment_scanner_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/abuild/abuild.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/abuild_test"
+"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/abuild/test/main.cpp" "$PROJECTS_ROOT/abuild/test/build_cache_test.cpp" "$PROJECTS_ROOT/abuild/test/settings_test.cpp" "$PROJECTS_ROOT/abuild/test/toolchains_test.cpp" "$PROJECTS_ROOT/abuild/test/projects_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/abuild/abuild.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/abuild_test"
 cd ..
 
 cd ..
