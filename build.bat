@@ -43,9 +43,10 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\b
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\settings.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchains.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchains_scanner_windows.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\projects_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\projects.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO abuild.obj build_cache.obj settings.obj toolchains.obj toolchains_scanner_windows.obj projects.obj /OUT:abuild.lib
+lib.exe /NOLOGO abuild.obj build_cache.obj settings.obj toolchains.obj toolchains_scanner_windows.obj projects_scanner.obj projects.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 

@@ -20,6 +20,7 @@ public:
             mBuildCache["settings"].AddMember("skipDirectories", skipDirectories(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("squashDirectories", squashDirectories(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("testDirectories", testDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("projectNameSeparator", ".", mBuildCache.allocator());
         }
     }
 
@@ -113,6 +114,11 @@ public:
     [[nodiscard]] auto ignoreDirectories() const -> const rapidjson::Value &
     {
         return mBuildCache["settings"]["ignoreDirectories"];
+    }
+
+    [[nodiscard]] auto projectNameSeparator() const -> const rapidjson::Value &
+    {
+        return mBuildCache["settings"]["projectNameSeparator"];
     }
 
     [[nodiscard]] auto skipDirectories() const -> const rapidjson::Value &
