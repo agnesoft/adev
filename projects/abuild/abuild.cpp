@@ -14,6 +14,7 @@ import "rapidjson.hpp";
 #    include "build_cache.cpp"
 #    include "settings.cpp"
 #    include "toolchains.cpp"
+#    include "projects_scanner.cpp"
 #    include "projects.cpp"
 // clang-format on
 #endif
