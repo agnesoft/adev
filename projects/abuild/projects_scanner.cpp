@@ -13,7 +13,7 @@ namespace abuild
 class ProjectsScanner
 {
 public:
-    explicit ProjectsScanner(BuildCache &cache, const Settings &settings) :
+    ProjectsScanner(BuildCache &cache, const Settings &settings) :
         mBuildCache{cache},
         mSettings{settings}
     {

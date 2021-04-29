@@ -4,7 +4,7 @@ class ToolchainsScanner
 {
 public:
     explicit ToolchainsScanner(BuildCache &cache) :
-    	mBuildCache{cache}
+        mBuildCache{cache}
     {
         detectGCC();
         detectClang();
@@ -128,7 +128,7 @@ private:
         detectGCC();
         detectClang();
     }
-    
+
     BuildCache &mBuildCache;
 };
 }

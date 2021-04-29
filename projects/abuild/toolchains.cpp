@@ -11,7 +11,7 @@ namespace abuild
 export class Toolchains
 {
 public:
-    explicit Toolchains(BuildCache &cache) 
+    explicit Toolchains(BuildCache &cache)
     {
         ToolchainsScanner{cache};
     }
