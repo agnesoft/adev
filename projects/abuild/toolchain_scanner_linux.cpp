@@ -1,9 +1,9 @@
 namespace abuild
 {
-class ToolchainsScanner
+class ToolchainScanner
 {
 public:
-    explicit ToolchainsScanner(BuildCache &cache) :
+    explicit ToolchainScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
         detectGCC();

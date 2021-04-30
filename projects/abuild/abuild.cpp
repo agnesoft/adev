@@ -7,14 +7,17 @@ export import : build_cache;
 export import : settings;
 export import : toolchains;
 export import : projects;
+export import : dependencies;
 
 #else
 // clang-format off
 import "rapidjson.hpp";
-#    include "build_cache.cpp"
-#    include "settings.cpp"
-#    include "toolchains.cpp"
-#    include "projects_scanner.cpp"
-#    include "projects.cpp"
+#include "build_cache.cpp"
+#include "settings.cpp"
+#include "toolchains.cpp"
+#include "projects_scanner.cpp"
+#include "projects.cpp"
+#include "dependencies_scanner.cpp"
+#include "dependencies.cpp"
 // clang-format on
 #endif

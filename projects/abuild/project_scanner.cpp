@@ -3,17 +3,17 @@ module;
 
 #    include <vector>
 
-export module abuild : projects_scanner;
+export module abuild : project_scanner;
 
 import : settings;
 #endif
 
 namespace abuild
 {
-class ProjectsScanner
+class ProjectScanner
 {
 public:
-    ProjectsScanner(BuildCache &cache, const Settings &settings) :
+    ProjectScanner(BuildCache &cache, const Settings &settings) :
         mBuildCache{cache},
         mSettings{settings}
     {
