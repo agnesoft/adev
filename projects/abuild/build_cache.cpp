@@ -40,8 +40,7 @@ public:
         return mData;
     }
 
-    [[nodiscard]] auto
-        operator[](const std::string &key) -> rapidjson::Value &
+    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
     {
         if (!mData.HasMember(key))
         {

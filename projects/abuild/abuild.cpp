@@ -17,7 +17,7 @@ import "rapidjson.hpp";
 #include "toolchains.cpp"
 #include "projects_scanner.cpp"
 #include "projects.cpp"
-#include "dependencies_scanner.cpp"
+#include "code_scanner.cpp"
 #include "dependencies.cpp"
 // clang-format on
 #endif

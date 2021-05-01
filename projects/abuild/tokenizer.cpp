@@ -189,17 +189,17 @@ private:
     [[nodiscard]] auto extractModule() -> Token
     {
         Token token;
-        token.type = Token::Type::Module;
-
         std::string tokenName = extractTokenName();
 
         if (mContent[pos++] == ':')
         {
+            token.type = Token::Type::ModulePartition;
             token.name = extractTokenName();
             token.moduleName = std::move(tokenName);
         }
         else
         {
+            token.type = Token::Type::Module;
             token.name = std::move(tokenName);
         }
 
@@ -249,6 +249,7 @@ private:
     [[nodiscard]] auto isInclude() -> bool
     {
         const std::string INCLUDE = "include";
+        skipWhiteSpace();
 
         if (mContent.substr(pos, INCLUDE.size()) == INCLUDE)
         {
@@ -308,7 +309,7 @@ private:
 
     auto skipMultiLineComment() -> void
     {
-        while (mContent[pos] != '*' && mContent[pos + 1] != '/' && !atEnd())
+        while (!(mContent[pos] == '*' && mContent[pos + 1] == '/') && !atEnd())
         {
             pos++;
         }
