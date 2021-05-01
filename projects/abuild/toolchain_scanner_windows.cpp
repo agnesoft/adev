@@ -1,15 +1,15 @@
 #ifdef _MSC_VER
-export module abuild : toolchains_scanner_windows;
+export module abuild : toolchain_scanner_windows;
 
 import : build_cache;
 #endif
 
 namespace abuild
 {
-class ToolchainsScanner
+class ToolchainScanner
 {
 public:
-    explicit ToolchainsScanner(BuildCache &cache) :
+    explicit ToolchainScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
         detectMSVC();

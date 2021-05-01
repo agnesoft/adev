@@ -1,9 +1,7 @@
 #ifdef _MSC_VER
 export module abuild : toolchains;
 
-import : toolchains_scanner_windows;
-#else
-#    include "toolchains_scanner_linux.cpp"
+import : toolchain_scanner_windows;
 #endif
 
 namespace abuild
@@ -11,9 +9,9 @@ namespace abuild
 export class Toolchains
 {
 public:
-    explicit Toolchains(BuildCache &cache) 
+    explicit Toolchains(BuildCache &cache)
     {
-        ToolchainsScanner{cache};
+        ToolchainScanner{cache};
     }
 };
 }

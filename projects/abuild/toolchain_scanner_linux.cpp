@@ -1,10 +1,10 @@
 namespace abuild
 {
-class ToolchainsScanner
+class ToolchainScanner
 {
 public:
-    explicit ToolchainsScanner(BuildCache &cache) :
-    	mBuildCache{cache}
+    explicit ToolchainScanner(BuildCache &cache) :
+        mBuildCache{cache}
     {
         detectGCC();
         detectClang();
@@ -128,7 +128,7 @@ private:
         detectGCC();
         detectClang();
     }
-    
+
     BuildCache &mBuildCache;
 };
 }
