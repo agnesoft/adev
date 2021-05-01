@@ -3,6 +3,7 @@ export module abuild : dependency_scanner;
 
 import : build_cache;
 import : tokenizer;
+
 #endif
 
 namespace abuild
@@ -20,9 +21,9 @@ public:
 
             Tokenizer tokenizer{content};
 
-            for (Token token = tokenizer.next(); !token.name.empty(); token = tokenizer.next())
+            while (const auto token = tokenizer.next())
             {
-                std::cout << "  " << token.moduleName << (token.moduleName.empty() ? "" : ":") << token.name << '\n';
+                std::cout << "  " << token->moduleName << (token->moduleName.empty() ? "" : ":") << token->name << '\n';
             }
         }
     }
