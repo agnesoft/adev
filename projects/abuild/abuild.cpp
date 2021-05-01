@@ -15,7 +15,7 @@ import "rapidjson.hpp";
 #include "build_cache.cpp"
 #include "settings.cpp"
 #include "toolchains.cpp"
-#include "projects_scanner.cpp"
+#include "project_scanner.cpp"
 #include "projects.cpp"
 #include "code_scanner.cpp"
 #include "dependencies.cpp"
