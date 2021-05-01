@@ -16,8 +16,8 @@ export struct Token
         Module,
         ModulePartition,
         ImportModule,
-        ImportHeaderLocal,
-        ImportHeaderExternal,
+        ImportIncludeLocal,
+        ImportIncludeExternal,
         ImportModulePartition
     };
 
@@ -150,42 +150,30 @@ private:
 
         if (mContent[pos] == ':')
         {
-            return extractImportPartition();
+            pos++;
+            return extractImportToken(Token::Type::ImportModulePartition);
         }
         else if (mContent[pos] == '"')
         {
-            return extractImportHeader(Token::Type::ImportHeaderLocal);
+            pos++;
+            return extractImportToken(Token::Type::ImportIncludeLocal);
         }
         else if (mContent[pos] == '<')
         {
-            return extractImportHeader(Token::Type::ImportHeaderExternal);
+            pos++;
+            return extractImportToken(Token::Type::ImportIncludeExternal);
         }
         else
         {
-            return extractImportModule(Token::Type::ImportModule);
+            return extractImportToken(Token::Type::ImportModule);
         }
     }
 
-    [[nodiscard]] auto extractImportPartition() -> Token
+    [[nodiscard]] auto extractImportToken(Token::Type type) -> Token
     {
-        pos++;
-        return extractImportModule(Token::Type::ImportModulePartition);
-    }
-
-    [[nodiscard]] auto extractImportHeader(Token::Type type) -> Token
-    {
-        pos++;
         Token token;
         token.type = type;
         token.name = extractTokenName();
-        return token;
-    }
-
-    [[nodiscard]] auto extractImportModule(Token::Type type) -> Token
-    {
-        Token token;
-        token.type = type;
-        token.name = trim(extractTokenName());
         return token;
     }
 
@@ -203,11 +191,11 @@ private:
         Token token;
         token.type = Token::Type::Module;
 
-        std::string tokenName = trim(extractTokenName());
+        std::string tokenName = extractTokenName();
 
         if (mContent[pos++] == ':')
         {
-            token.name = trim(extractTokenName());
+            token.name = extractTokenName();
             token.moduleName = std::move(tokenName);
         }
         else
@@ -227,7 +215,7 @@ private:
             name += mContent[pos++];
         }
 
-        return name;
+        return trim(name);
     }
 
     [[nodiscard]] auto isExport() -> bool
