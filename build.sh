@@ -12,7 +12,7 @@ mkdir -p bin
 BUILD_ROOT=$(pwd)
 ASTL_INCLUDE_PATH="$PROJECTS_ROOT/astl/include"
 RAPIDJSON_INCLUDE_PATH="$PROJECTS_ROOT/rapidjson/include"
-CPP_FLAGS="-std=c++20 $1 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -nostdinc++ -fmodules -fimplicit-module-maps -fmodule-map-file="$PROJECTS_ROOT/acore/module.modulemap" -fprebuilt-module-path=$BUILD_ROOT/acore -fprebuilt-module-path=$BUILD_ROOT/atest -fprebuilt-module-path=$BUILD_ROOT/abuild -I$ASTL_INCLUDE_PATH -I$RAPIDJSON_INCLUDE_PATH -I$LIBCXX_PREFIX/include/c++/v1"
+CPP_FLAGS="-std=c++20 $1 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -nostdinc++ -fmodules -fimplicit-module-maps -fmodule-map-file="$PROJECTS_ROOT/acore/module.modulemap" -fprebuilt-module-path=$BUILD_ROOT/acore -fprebuilt-module-path=$BUILD_ROOT/atest -fprebuilt-module-path=$BUILD_ROOT/abuild -fprebuilt-module-path=$BUILD_ROOT/abuild_test -I$ASTL_INCLUDE_PATH -I$RAPIDJSON_INCLUDE_PATH -I$LIBCXX_PREFIX/include/c++/v1"
 CPP_AND_LINK_FLAGS="$CPP_FLAGS -L$LIBCXX_PREFIX/lib -lc++ -Wl,-rpath,$LIBCXX_PREFIX/lib -lpthread" 
 
 #acore
@@ -58,7 +58,9 @@ cd ..
 #abuild_test
 mkdir -p acore_test
 cd acore_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/abuild/test/main.cpp" "$PROJECTS_ROOT/abuild/test/build_cache_test.cpp" "$PROJECTS_ROOT/abuild/test/settings_test.cpp" "$PROJECTS_ROOT/abuild/test/toolchains_test.cpp" "$PROJECTS_ROOT/abuild/test/projects_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/abuild/abuild.obj" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/abuild_test"
+"$CLANG" $CPP_FLAGS -Xclang -emit-module-interface -c "$PROJECTS_ROOT/abuild/test/test_cache.cpp" -o test_cache.pcm
+"$CLANG" $CPP_FLAGS -c "$PROJECTS_ROOT/abuild/test/test_cache.cpp" -o test_cache.obj
+"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/abuild/test/main.cpp" "$PROJECTS_ROOT/abuild/test/build_cache_test.cpp" "$PROJECTS_ROOT/abuild/test/settings_test.cpp" "$PROJECTS_ROOT/abuild/test/toolchain_scanner_test.cpp" "$PROJECTS_ROOT/abuild/test/projects_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/abuild/abuild.obj" "$BUILD_ROOT/atest/atest.obj" "$BUILD_ROOT/abuild_test/test_cache.obj" -o "$BUILD_ROOT/bin/abuild_test"
 cd ..
 
 cd ..

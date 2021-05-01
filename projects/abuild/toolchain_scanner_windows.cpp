@@ -6,7 +6,7 @@ import : build_cache;
 
 namespace abuild
 {
-class ToolchainScanner
+export class ToolchainScanner
 {
 public:
     explicit ToolchainScanner(BuildCache &cache) :
