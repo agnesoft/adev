@@ -2,8 +2,6 @@
 export module abuild : toolchains;
 
 import : toolchain_scanner_windows;
-#else
-#    include "toolchain_scanner_linux.cpp"
 #endif
 
 namespace abuild

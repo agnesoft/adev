@@ -14,9 +14,11 @@ export import : dependencies;
 import "rapidjson.hpp";
 #include "build_cache.cpp"
 #include "settings.cpp"
+#include "toolchain_scanner_linux.cpp"
 #include "toolchains.cpp"
 #include "project_scanner.cpp"
 #include "projects.cpp"
+#include "tokenizer.cpp"
 #include "code_scanner.cpp"
 #include "dependencies.cpp"
 // clang-format on
