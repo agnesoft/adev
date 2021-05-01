@@ -15,7 +15,7 @@ public:
         doc.Parse(left.c_str());
         std::vector<std::string> vec;
 
-        if (doc.HasMember("toolchains") && doc["toolchains"].MemberCount() > 1)
+        if (doc.HasMember("toolchains"))
         {
             rapidjson::Value::MemberIterator toolchain = doc["toolchains"].MemberBegin();
 
