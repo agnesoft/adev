@@ -1,6 +1,9 @@
 import atest;
 
+using atest::assert_;
+using atest::assert_fail;
 using atest::expect;
+using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
@@ -31,12 +34,12 @@ public:
 static const auto s = suite("Expect::toMatch()", [] { //NOLINT(cert-err58-cpp)
     test("Custom matcher", [] {
         expect(1).template toMatch<MyMatcher>(2);
-        expect(1).template toMatch<MyMatcher>(1).toFail();
-        expect(1).template toMatch<MyMatcher>(0).toFail();
+        expect_fail(1).template toMatch<MyMatcher>(1);
+        expect_fail(1).template toMatch<MyMatcher>(0);
     });
 
     test("Custom matcher (INTENTIONAL FAILURE)", [] {
-        expect(1).template toMatch<MyMatcher>(2).toFail();
+        expect_fail(1).template toMatch<MyMatcher>(2);
         expect(1).template toMatch<MyMatcher>(1);
         expect(1).template toMatch<MyMatcher>(0);
     });

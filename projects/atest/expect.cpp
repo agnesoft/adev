@@ -13,7 +13,7 @@ namespace atest
 //! The class will take any value as `const &T` which may be a value type or callable
 //! type. Individual expectations however may impose additional requirements and
 //! incompatible calls will result in a compiler error.
-export template<typename T>
+export template<typename T, bool Assert, bool ExpectFail>
 class Expect
 {
 public:
@@ -26,41 +26,44 @@ public:
 
     //! Creates the matcher expectation with a default Matcher that uses `operator==`.
     template<typename V>
-    auto toBe(const V &value) -> ExpectToMatch<T, V, Matcher>
+    auto toBe(const V &value) -> ExpectToMatch<T, V, Matcher, Assert, ExpectFail>
     {
-        return ExpectToMatch<T, V, Matcher>{mExpression, value, mSourceLocation};
+        return ExpectToMatch<T, V, Matcher, Assert, ExpectFail>{mExpression, value, mSourceLocation};
     }
 
     //! Creates a generic matcher expectation using a custom matcher `M`.
     template<typename M, typename V>
-    auto toMatch(const V &value) -> ExpectToMatch<T, V, M>
+    auto toMatch(const V &value) -> ExpectToMatch<T, V, M, Assert, ExpectFail>
     {
-        return ExpectToMatch<T, V, M>{mExpression, value, mSourceLocation};
+        return ExpectToMatch<T, V, M, Assert, ExpectFail>{mExpression, value, mSourceLocation};
     }
 
     //! Creates an expectation that expects a type `E` to be thrown from the
     //! callable expression `T`.
     template<typename E>
-    requires std::invocable<T> auto toThrow() -> ExpectToThrow<T, E, const char *, false>
+    requires std::invocable<T>
+    auto toThrow() -> ExpectToThrow<T, E, const char *, false, Assert, ExpectFail>
     {
-        return ExpectToThrow<T, E, const char *, false>{mExpression, "", mSourceLocation};
+        return ExpectToThrow<T, E, const char *, false, Assert, ExpectFail>{mExpression, "", mSourceLocation};
     }
 
     //! Creates an expectation that expects a type `E` to be thrown from the callable
     //! expression `T` that matches the object `exception`.
     template<typename E>
-    requires std::invocable<T> auto toThrow(const E &exception) -> ExpectToThrow<T, E, E, true>
+    requires std::invocable<T>
+    auto toThrow(const E &exception) -> ExpectToThrow<T, E, E, true, Assert, ExpectFail>
     {
-        return ExpectToThrow<T, E, E, true>{mExpression, exception, mSourceLocation};
+        return ExpectToThrow<T, E, E, true, Assert, ExpectFail>{mExpression, exception, mSourceLocation};
     }
 
     //! Creates an expectation that expects a type `E` to be thrown from the callable
     //! expression `T` that matches the `value`. This overload is typically used for matching
     //! an exception's text.
     template<typename E, typename V>
-    requires std::invocable<T> auto toThrow(const V &value) -> ExpectToThrow<T, E, V, true>
+    requires std::invocable<T>
+    auto toThrow(const V &value) -> ExpectToThrow<T, E, V, true, Assert, ExpectFail>
     {
-        return ExpectToThrow<T, E, V, true>{mExpression, value, mSourceLocation};
+        return ExpectToThrow<T, E, V, true, Assert, ExpectFail>{mExpression, value, mSourceLocation};
     }
 
 private:

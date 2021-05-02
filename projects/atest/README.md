@@ -6,11 +6,11 @@ C++ testing framework.
 -   [Reference](#reference)
     -   [test()](#test)
     -   [suite()](#suite)
-    -   [expect()](#expect)
+    -   [expect(), assert()](#expect-assert_)
         -   [toBe()](#tobe)
         -   [toMatch()](#tomatch)
         -   [toThrow()](#tothrow)
-        -   [toFail()](#tofail)
+        -   [expect_fail(), assert_fail()](#expect_fail-assert_fail)
     -   [Test Runner](#test-runner)
     -   [Printer](#printer)
 -   [Known Issues](#known-issues)
@@ -63,14 +63,17 @@ static auto s = suite("My test suite", [] {
 });
 ```
 
-### expect()
+### expect(), assert\_()
 
 ```
 template<typename T>
 auto atest::expect(const T &value) noexcept -> Expect<T>
+
+template<typename T>
+auto atest::assert_(const T &value) noexcept -> Expect<T>
 ```
 
-Starts composition of the test's expectation (assertion). Any `T` is allowed as argument. If `T` is a callable it will be executed once the assertion is finalized. No exceptions will be propagated from the call. The return value is the internal class `Expect` that lets you select from one of the supported expecations:
+Starts composition of the test's expectation or assertion. The difference is that `assert_` will stop the test when failed while `expect` will continue even if failed. Any `T` is allowed as argument. If `T` is a callable it will be executed once the assertion is finalized. No exceptions will be propagated from the call. The return value is the internal class `Expect` that lets you select from one of the supported expecations:
 
 #### toBe()
 
@@ -86,6 +89,7 @@ Examples:
 ```
 expect(1 + 1).toBe(2); //matching values
 expect([] { return 1 + 1; }).toBe(2); //matching result of a callable and a value
+assert_(1 + 1).toBe(2);
 ```
 
 #### toMatch()
@@ -153,18 +157,23 @@ expect([] { throw 1; }).toThrow<int>();
 expect([] { throw 1; }).toThrow(1);
 ```
 
-#### toFail()
+#### expect_fail(), assert_fail()
 
 ```
-auto toFail() -> void
+template<typename T>
+auto atest::expect_fail(const T &value) noexcept -> Expect<T>
+
+template<typename T>
+auto atest::assert_fail(const T &value) noexcept -> Expect<T>
 ```
 
-Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `toFail()` will still fail on unexpected exceptions (except when reversing `toThrow()`).
+Modifies the expectation or assertion to reverse the result. If the expectation/assertion passes it will be converted into an error (and stop the test in case of `assert_fail`). Conversely if the expectation/assertion fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `expect_fail` will still fail on unexpected exceptions (except when reversing `toThrow()`).
 
 Example:
 
 ```
-expect(1).toBe(2).toFail(); //passes despite failing
+expect_fail(1).toBe(2); //passes despite failing
+assert_fail([] {}).toThrow<int>(); //passes despite failing
 ```
 
 ### Test Runner

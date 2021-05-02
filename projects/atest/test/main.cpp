@@ -5,7 +5,7 @@ auto main(int argc, char *argv[]) -> int
     atest::test("Global test", [] {
     });
 
-    constexpr int EXPECTED_FAILURES = 13;
+    constexpr int EXPECTED_FAILURES = 15;
     const int failures = atest::TestRunner{argc, argv}.run();
 
     if (failures == EXPECTED_FAILURES)
