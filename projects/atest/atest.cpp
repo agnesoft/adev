@@ -22,17 +22,17 @@ export import : expect;
 export import : test_runner;
 #else
 // clang-format off
-#    include "source_location.cpp"
-#    include "data.cpp"
-#    include "stringify.cpp"
-#    include "printer.cpp"
-#    include "reporter.cpp"
-#    include "matcher.cpp"
-#    include "expect_base.cpp"
-#    include "expect_tomatch.cpp"
-#    include "expect_tothrow.cpp"
-#    include "expect.cpp"
-#    include "test_runner.cpp"
+#include "source_location.cpp"
+#include "data.cpp"
+#include "stringify.cpp"
+#include "printer.cpp"
+#include "reporter.cpp"
+#include "matcher.cpp"
+#include "expect_base.cpp"
+#include "expect_tomatch.cpp"
+#include "expect_tothrow.cpp"
+#include "expect.cpp"
+#include "test_runner.cpp"
 // clang-format on
 #endif
 
@@ -45,9 +45,32 @@ namespace atest
 //! call site's source_location. Returns an Expect object to complete
 //! the expectation.
 export template<typename T>
-[[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T>
+[[nodiscard]] auto assert_(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, true, false>
 {
-    return Expect<T>{value, sourceLocation};
+    return Expect<T, true, false>{value, sourceLocation};
+}
+
+export template<typename T>
+[[nodiscard]] auto assert_fail(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, true, true>
+{
+    return Expect<T, true, true>{value, sourceLocation};
+}
+
+//! Starts an expectation. This function accepts any `T` but later
+//! methods called may impose additional requirements on it (e.g. for `T`
+//! to be a callable). Beside the `value` this function also captures the
+//! call site's source_location. Returns an Expect object to complete
+//! the expectation.
+export template<typename T>
+[[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, false, false>
+{
+    return Expect<T, false, false>{value, sourceLocation};
+}
+
+export template<typename T>
+[[nodiscard]] auto expect_fail(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, false, true>
+{
+    return Expect<T, false, true>{value, sourceLocation};
 }
 
 //! Registers the test `testBody` under `name` in the current test suite().

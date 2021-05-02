@@ -78,6 +78,11 @@ private:
         {
             test->testBody();
         }
+        catch ([[maybe_unused]] FailedAssertion &e)
+        {
+            std::cout << "\nassertion\n";
+            return;
+        }
         catch (std::exception &e)
         {
             test->failures.emplace_back(Failure{stringify("Unexpected exception thrown: ", e.what()), "", "", test->sourceLocation});

@@ -7,6 +7,11 @@ import "astl.hpp";
 
 namespace atest
 {
+//! Exception type to indicate an assertion failed.
+struct FailedAssertion
+{
+};
+
 //! Failure and its details.
 struct Failure
 {

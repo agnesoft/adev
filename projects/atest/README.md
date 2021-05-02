@@ -153,18 +153,19 @@ expect([] { throw 1; }).toThrow<int>();
 expect([] { throw 1; }).toThrow(1);
 ```
 
-#### toFail()
+#### expect_fail()
 
 ```
-auto toFail() -> void
+template<typename T>
+auto atest::expect_fail(const T &value) noexcept -> Expect<T>
 ```
 
-Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `toFail()` will still fail on unexpected exceptions (except when reversing `toThrow()`).
+Optionally modifies the expectation to reverse the result. If the expectation passes it will be converted into an error. Conversely if the expectation fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `expect_fail` will still fail on unexpected exceptions (except when reversing `toThrow()`).
 
 Example:
 
 ```
-expect(1).toBe(2).toFail(); //passes despite failing
+expect_fail(1).toBe(2); //passes despite failing
 ```
 
 ### Test Runner

@@ -1,6 +1,9 @@
 import atest;
 
+using atest::assert_;
+using atest::assert_fail;
 using atest::expect;
+using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
@@ -10,15 +13,15 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception types mismatch", [] {
-        expect([] { throw std::runtime_error{""}; }).template toThrow<std::logic_error>().toFail();
+        expect_fail([] { throw std::runtime_error{""}; }).template toThrow<std::logic_error>();
     });
 
     test("Exception types mismatch: expect base, throw derived", [] {
-        expect([] { throw std::runtime_error{""}; }).template toThrow<std::exception>().toFail();
+        expect_fail([] { throw std::runtime_error{""}; }).template toThrow<std::exception>();
     });
 
     test("Exception types mismatch: throw int", [] {
-        expect([] { throw 1; }).template toThrow<std::exception>().toFail();
+        expect_fail([] { throw 1; }).template toThrow<std::exception>();
     });
 
     test("Exception text match", [] {
@@ -30,7 +33,7 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception text mismatch", [] {
-        expect([] { throw std::runtime_error{"Some exception text"}; }).template toThrow<std::runtime_error>("Some different exception text").toFail();
+        expect_fail([] { throw std::runtime_error{"Some exception text"}; }).template toThrow<std::runtime_error>("Some different exception text");
     });
 
     test("Exception text mismatch (INTENTIONAL FAILURE)", [] {
@@ -38,7 +41,7 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("No exception thrown", [] {
-        expect([] {}).template toThrow<std::exception>().toFail();
+        expect_fail([] {}).template toThrow<std::exception>();
     });
 
     test("No exception thrown (INTENTIONAL FAILURE)", [] {

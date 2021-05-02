@@ -13,7 +13,7 @@ namespace atest
 //! The class also provides success and error handling for expectations and
 //! implements one public interface function toFail() to request reversal of
 //! the expectation's result.
-export template<typename T>
+export template<typename T, bool Assert, bool ExpectFail>
 class ExpectBase
 {
 public:
@@ -23,14 +23,6 @@ public:
         mSourceLocation{sourceLocation}
     {
         globalTests()->currentTest->expectations++;
-    }
-
-    //! Reverses the result of the expectation. If the handleSuceed() is called
-    //! the expectation will actually fail. If conversely the handleFailed()
-    //! is called the expectation will pass.
-    auto toFail() noexcept -> void
-    {
-        mExpectFailure = true;
     }
 
 protected:
@@ -45,7 +37,7 @@ protected:
     //! reesult to take place if toFail() was called.
     auto handleFailure(Failure &&failure) -> void
     {
-        if (!mExpectFailure)
+        if constexpr (!ExpectFail)
         {
             fail(std::move(failure));
         }
@@ -56,7 +48,7 @@ protected:
     //! reesult to take place if toFail() was called.
     auto handleSuccess() -> void
     {
-        if (mExpectFailure)
+        if constexpr (ExpectFail)
         {
             fail(Failure{"Expected a failure but the test succeeded."});
         }
@@ -70,11 +62,15 @@ protected:
         failure.sourceLocation = mSourceLocation;
         globalTests()->currentTest->failedExpectations++;
         globalTests()->currentTest->failures.emplace_back(std::move(failure));
+
+        if constexpr (Assert)
+        {
+            throw FailedAssertion{};
+        }
     }
 
 private:
     const T &mExpression;
-    bool mExpectFailure = false;
     source_location<> mSourceLocation;
 };
 }
