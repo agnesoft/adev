@@ -86,4 +86,28 @@ static const auto testSuite = suite("abuild::Projects", [] {
             expect(projects.sources().HasMember(sourceFile)).toBe(true);
         }
     });
+
+    test("multiple sources", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "test.cpp",
+                                 "source.cpp"}};
+
+        {
+            abuild::BuildCache cache{testCache.file()};
+            abuild::Settings settings{cache};
+            abuild::Projects projects{testProject.projectRoot(), cache, settings};
+
+            expect(projects.projects().HasMember("build_test_project_scanner")).toBe(true);
+
+            const std::string mainSourceFile = std::filesystem::canonical(std::filesystem::path{"build_test_project_scanner"} / "main.cpp").string();
+            const std::string testSourceFile = std::filesystem::canonical(std::filesystem::path{"build_test_project_scanner"} / "test.cpp").string();
+            const std::string sourceSourceFile = std::filesystem::canonical(std::filesystem::path{"build_test_project_scanner"} / "source.cpp").string();
+
+            expect(projects.sources().HasMember(mainSourceFile)).toBe(true);
+            expect(projects.sources().HasMember(testSourceFile)).toBe(true);
+            expect(projects.sources().HasMember(sourceSourceFile)).toBe(true);
+        }
+    });
 });
