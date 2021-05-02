@@ -1,38 +1,9 @@
-export module abuild_test_cache;
+#ifdef _MSC_VER
+export module abuild_test_utilities : test_cache;
 
 export import "rapidjson.hpp";
-export import atest;
-
-export [[nodiscard]] auto asVector(const rapidjson::Value &data) -> std::vector<std::string>
-{
-    std::vector<std::string> values;
-
-    if (data.IsArray())
-    {
-        for (const rapidjson::Value &value : data.GetArray())
-        {
-            values.push_back(value.GetString());
-        }
-    }
-    else if (data.IsObject())
-    {
-        for (auto it = data.MemberBegin(); it != data.MemberEnd(); ++it)
-        {
-            values.push_back(it->name.GetString());
-        }
-    }
-
-    return values;
-}
-
-export class OneOfMatcher : public atest::MatcherBase
-{
-public:
-    [[nodiscard]] auto operator()(const std::vector<std::string> &left, const std::string &right) const -> bool
-    {
-        return std::find(left.begin(), left.end(), right) != left.end();
-    }
-};
+import acore;
+#endif
 
 export class TestCache
 {

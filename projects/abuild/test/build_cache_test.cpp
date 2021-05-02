@@ -1,6 +1,6 @@
 import atest;
 import abuild;
-import abuild_test_cache;
+import abuild_test_utilities;
 
 using atest::expect;
 using atest::suite;
