@@ -39,7 +39,8 @@ export import : test_runner;
 //! ATest namespace
 namespace atest
 {
-//! Starts an expectation. This function accepts any `T` but later
+//! Starts an assertion that will stop the test when failed.
+//! This function accepts any `T` but later
 //! methods called may impose additional requirements on it (e.g. for `T`
 //! to be a callable). Beside the `value` this function also captures the
 //! call site's source_location. Returns an Expect object to complete
@@ -50,6 +51,12 @@ export template<typename T>
     return Expect<T, true, false>{value, sourceLocation};
 }
 
+//! Starts an assertion with reversed result that will stop the test when failed.
+//! This function accepts any `T` but later
+//! methods called may impose additional requirements on it (e.g. for `T`
+//! to be a callable). Beside the `value` this function also captures the
+//! call site's source_location. Returns an Expect object to complete
+//! the expectation.
 export template<typename T>
 [[nodiscard]] auto assert_fail(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, true, true>
 {
@@ -67,6 +74,11 @@ export template<typename T>
     return Expect<T, false, false>{value, sourceLocation};
 }
 
+//! Starts an expectation with reversed result. This function accepts any `T` but later
+//! methods called may impose additional requirements on it (e.g. for `T`
+//! to be a callable). Beside the `value` this function also captures the
+//! call site's source_location. Returns an Expect object to complete
+//! the expectation.
 export template<typename T>
 [[nodiscard]] auto expect_fail(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, false, true>
 {
