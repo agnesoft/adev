@@ -1,7 +1,28 @@
 export module abuild_test_cache;
 
 export import "rapidjson.hpp";
-import acore;
+export import atest;
+
+export [[nodiscard]] auto asVector(const rapidjson::Value &ar) -> std::vector<std::string>
+{
+    std::vector<std::string> values;
+
+    for (const rapidjson::Value &value : ar.GetArray())
+    {
+        values.push_back(value.GetString());
+    }
+
+    return values;
+}
+
+export class OneOfMatcher : public atest::MatcherBase
+{
+public:
+    [[nodiscard]] auto operator()(const std::vector<std::string> &left, const std::string &right) const -> bool
+    {
+        return std::find(left.begin(), left.end(), right) != left.end();
+    }
+};
 
 export class TestCache
 {

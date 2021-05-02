@@ -1,56 +1,102 @@
-import atest;
 import abuild;
 import abuild_test_cache;
 
+using atest::assert_;
+using atest::assert_fail;
 using atest::expect;
+using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-class SettingsMatcher : public atest::MatcherBase
-{
-public:
-    [[nodiscard]] auto actual(const std::string &left, [[maybe_unused]] const std::string &right) const -> std::string
-    {
-        rapidjson::Document doc;
-        doc.Parse(left.c_str());
-        std::vector<std::string> vec;
-
-        if (doc.HasMember("settings"))
-        {
-            for (rapidjson::Value::MemberIterator setting = doc["settings"].MemberBegin(); setting != doc["settings"].MemberEnd(); ++setting)
-            {
-                vec.push_back(setting->name.GetString());
-            }
-        }
-
-        return atest::stringify(vec);
-    }
-
-    [[nodiscard]] auto operator()(const std::string &left, const std::string &right) const -> bool
-    {
-        rapidjson::Document doc;
-        doc.Parse(left.c_str());
-
-        return doc.HasMember("settings")
-            && doc["settings"].HasMember(right);
-    }
-};
-
 static const auto testSuite = suite("abuild::Settings", [] {
-    test("set", [] {
+    test("type traits", [] {
+        expect(std::is_default_constructible_v<abuild::ToolchainScanner>).toBe(false);
+        expect(std::is_copy_constructible_v<abuild::ToolchainScanner>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<abuild::ToolchainScanner>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::ToolchainScanner>).toBe(false);
+        expect(std::is_nothrow_move_assignable_v<abuild::ToolchainScanner>).toBe(false);
+        expect(std::is_nothrow_destructible_v<abuild::ToolchainScanner>).toBe(true);
+    });
+
+    test("cppSourceExtensions()", [] {
         TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
 
-        {
-            abuild::BuildCache cache;
-            abuild::Settings{cache};
-        }
+        expect(asVector(settings.cppSourceExtensions()))
+            .toBe(std::vector<std::string>{".cpp",
+                                           ".cxx",
+                                           ".cc",
+                                           ".ixx"});
+    });
 
-        expect(testCache.content()).toMatch<SettingsMatcher>("cppSourceExtensions");
-        expect(testCache.content()).toMatch<SettingsMatcher>("cppHeaderExtensions");
-        expect(testCache.content()).toMatch<SettingsMatcher>("ignoreDirectories");
-        expect(testCache.content()).toMatch<SettingsMatcher>("skipDirectories");
-        expect(testCache.content()).toMatch<SettingsMatcher>("squashDirectories");
-        expect(testCache.content()).toMatch<SettingsMatcher>("testDirectories");
-        expect(testCache.content()).toMatch<SettingsMatcher>("projectNameSeparator");
+    test("cppHeaderExtensions()", [] {
+        TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
+
+        expect(asVector(settings.cppHeaderExtensions()))
+            .toBe(std::vector<std::string>{".hpp",
+                                           ".hxx",
+                                           ".h"});
+    });
+
+    test("ignoreDirectories()", [] {
+        TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
+
+        expect(asVector(settings.ignoreDirectories()))
+            .toBe(std::vector<std::string>{"build"});
+    });
+
+    test("projectNameSeparator()", [] {
+        TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
+
+        expect(settings.projectNameSeparator().GetString()).toBe(".");
+    });
+
+    test("skipDirectories()", [] {
+        TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
+
+        expect(asVector(settings.skipDirectories()))
+            .toBe(std::vector<std::string>{"projects",
+                                           "Projects"});
+    });
+
+    test("squashDirectories()", [] {
+        TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
+
+        expect(asVector(settings.squashDirectories()))
+            .toBe(std::vector<std::string>{"src",
+                                           "srcs",
+                                           "SRC",
+                                           "Src",
+                                           "source",
+                                           "sources",
+                                           "Source",
+                                           "Sources",
+                                           "include",
+                                           "Include",
+                                           "includes",
+                                           "Includes"});
+    });
+
+    test("testDirectories()", [] {
+        TestCache testCache;
+        abuild::BuildCache cache;
+        abuild::Settings settings{cache};
+
+        expect(asVector(settings.testDirectories()))
+            .toBe(std::vector<std::string>{"test",
+                                           "Test",
+                                           "tests",
+                                           "Tests"});
     });
 });

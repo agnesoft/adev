@@ -14,13 +14,13 @@ public:
     {
         if (!mBuildCache.data().HasMember("settings"))
         {
-            mBuildCache["settings"].AddMember("cppSourceExtensions", cppSourceExtensions(), mBuildCache.allocator());
-            mBuildCache["settings"].AddMember("cppHeaderExtensions", cppHeaderExtensions(), mBuildCache.allocator());
-            mBuildCache["settings"].AddMember("ignoreDirectories", ignoreDirectories(), mBuildCache.allocator());
-            mBuildCache["settings"].AddMember("skipDirectories", skipDirectories(), mBuildCache.allocator());
-            mBuildCache["settings"].AddMember("squashDirectories", squashDirectories(), mBuildCache.allocator());
-            mBuildCache["settings"].AddMember("testDirectories", testDirectories(), mBuildCache.allocator());
-            mBuildCache["settings"].AddMember("projectNameSeparator", ".", mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("cpp_source_extensions", cppSourceExtensions(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("cpp_header_extensions", cppHeaderExtensions(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("ignore_directories", ignoreDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("skip_directories", skipDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("squash_directories", squashDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("test_directories", testDirectories(), mBuildCache.allocator());
+            mBuildCache["settings"].AddMember("project_name_separator", ".", mBuildCache.allocator());
         }
     }
 
@@ -103,37 +103,37 @@ public:
 
     [[nodiscard]] auto cppSourceExtensions() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["cppSourceExtensions"];
+        return mBuildCache["settings"]["cpp_source_extensions"];
     }
 
     [[nodiscard]] auto cppHeaderExtensions() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["cppHeaderExtensions"];
+        return mBuildCache["settings"]["cpp_header_extensions"];
     }
 
     [[nodiscard]] auto ignoreDirectories() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["ignoreDirectories"];
+        return mBuildCache["settings"]["ignore_directories"];
     }
 
     [[nodiscard]] auto projectNameSeparator() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["projectNameSeparator"];
+        return mBuildCache["settings"]["project_name_separator"];
     }
 
     [[nodiscard]] auto skipDirectories() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["skipDirectories"];
+        return mBuildCache["settings"]["skip_directories"];
     }
 
     [[nodiscard]] auto squashDirectories() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["squashDirectories"];
+        return mBuildCache["settings"]["squash_directories"];
     }
 
     [[nodiscard]] auto testDirectories() const -> const rapidjson::Value &
     {
-        return mBuildCache["settings"]["testDirectories"];
+        return mBuildCache["settings"]["test_directories"];
     }
 
 private:

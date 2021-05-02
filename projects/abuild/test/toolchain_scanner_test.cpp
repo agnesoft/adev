@@ -1,4 +1,3 @@
-import atest;
 import abuild;
 import abuild_test_cache;
 
@@ -9,23 +8,17 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-namespace
-{
-[[nodiscard]] auto asVector(const rapidjson::Value &ar) -> std::vector<std::string>
-{
-    std::vector<std::string> values;
-
-    for (const rapidjson::Value &value : ar.GetArray())
-    {
-        values.push_back(value.GetString());
-    }
-
-    return values;
-}
-}
-
 static const auto testSuite = suite("abuild::ToolchainScanner", [] {
-    test("scan", [] {
+    test("type traits", [] {
+        expect(std::is_default_constructible_v<abuild::ToolchainScanner>).toBe(false);
+        expect(std::is_copy_constructible_v<abuild::ToolchainScanner>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<abuild::ToolchainScanner>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::ToolchainScanner>).toBe(false);
+        expect(std::is_nothrow_move_assignable_v<abuild::ToolchainScanner>).toBe(false);
+        expect(std::is_nothrow_destructible_v<abuild::ToolchainScanner>).toBe(true);
+    });
+
+    test("type", [] {
         TestCache testCache;
 
         {
@@ -41,16 +34,29 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
 
         for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
         {
-            expect(toolchain->value.HasMember("type")).toBe(true);
-            expect(toolchain->value.HasMember("compiler")).toBe(true);
-            expect(toolchain->value.HasMember("compiler_flags")).toBe(true);
-            expect(toolchain->value.HasMember("linker")).toBe(true);
-            expect(toolchain->value.HasMember("linker_flags")).toBe(true);
-            expect(toolchain->value.HasMember("archiver")).toBe(true);
-            expect(toolchain->value.HasMember("archiver_flags")).toBe(true);
-            expect(toolchain->value.HasMember("ifc")).toBe(true);
-            expect(toolchain->value.HasMember("include")).toBe(true);
-            expect(toolchain->value.HasMember("lib")).toBe(true);
+            assert_(toolchain->value.HasMember("type")).toBe(true);
+            expect(std::vector<std::string>{"msvc", "clang", "gcc"}).toMatch<OneOfMatcher>(toolchain->value["type"].GetString());
+        }
+    });
+
+    test("compiler", [] {
+        TestCache testCache;
+
+        {
+            abuild::BuildCache cache;
+            abuild::ToolchainScanner{cache};
+        }
+
+        rapidjson::Document doc;
+        doc.Parse(testCache.content().c_str());
+
+        assert_(doc.HasMember("toolchains")).toBe(true);
+        assert_(doc["toolchains"].IsObject()).toBe(true);
+
+        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        {
+            assert_(toolchain->value.HasMember("compiler")).toBe(true);
+            expect(toolchain->value["compiler"].IsString()).toBe(true);
         }
     });
 
@@ -105,6 +111,27 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         }
     });
 
+    test("linker", [] {
+        TestCache testCache;
+
+        {
+            abuild::BuildCache cache;
+            abuild::ToolchainScanner{cache};
+        }
+
+        rapidjson::Document doc;
+        doc.Parse(testCache.content().c_str());
+
+        assert_(doc.HasMember("toolchains")).toBe(true);
+        assert_(doc["toolchains"].IsObject()).toBe(true);
+
+        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        {
+            assert_(toolchain->value.HasMember("linker")).toBe(true);
+            expect(toolchain->value["linker"].IsString()).toBe(true);
+        }
+    });
+
     test("linker_flags", [] {
         TestCache testCache;
 
@@ -143,6 +170,27 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         }
     });
 
+    test("archiver", [] {
+        TestCache testCache;
+
+        {
+            abuild::BuildCache cache;
+            abuild::ToolchainScanner{cache};
+        }
+
+        rapidjson::Document doc;
+        doc.Parse(testCache.content().c_str());
+
+        assert_(doc.HasMember("toolchains")).toBe(true);
+        assert_(doc["toolchains"].IsObject()).toBe(true);
+
+        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        {
+            assert_(toolchain->value.HasMember("archiver")).toBe(true);
+            expect(toolchain->value["archiver"].IsString()).toBe(true);
+        }
+    });
+
     test("archiver_flags", [] {
         TestCache testCache;
 
@@ -178,6 +226,69 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
             {
                 expect(flags).toBe(std::vector<std::string>{});
             }
+        }
+    });
+
+    test("ifc", [] {
+        TestCache testCache;
+
+        {
+            abuild::BuildCache cache;
+            abuild::ToolchainScanner{cache};
+        }
+
+        rapidjson::Document doc;
+        doc.Parse(testCache.content().c_str());
+
+        assert_(doc.HasMember("toolchains")).toBe(true);
+        assert_(doc["toolchains"].IsObject()).toBe(true);
+
+        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        {
+            assert_(toolchain->value.HasMember("ifc")).toBe(true);
+            expect(toolchain->value["ifc"].IsString()).toBe(true);
+        }
+    });
+
+    test("include", [] {
+        TestCache testCache;
+
+        {
+            abuild::BuildCache cache;
+            abuild::ToolchainScanner{cache};
+        }
+
+        rapidjson::Document doc;
+        doc.Parse(testCache.content().c_str());
+
+        assert_(doc.HasMember("toolchains")).toBe(true);
+        assert_(doc["toolchains"].IsObject()).toBe(true);
+
+        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        {
+            assert_(toolchain->value.HasMember("include")).toBe(true);
+            expect(toolchain->value["include"].IsString()).toBe(true);
+        }
+    });
+
+    test("lib", [] {
+        TestCache testCache;
+
+        {
+            abuild::BuildCache cache;
+            abuild::ToolchainScanner{cache};
+        }
+
+        rapidjson::Document doc;
+        doc.Parse(testCache.content().c_str());
+
+        assert_(doc.HasMember("toolchains")).toBe(true);
+        assert_(doc["toolchains"].IsObject()).toBe(true);
+
+        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        {
+            assert_(toolchain->value.HasMember("lib")).toBe(true);
+            expect(toolchain->value["lib"].IsString()).toBe(true);
         }
     });
 });
