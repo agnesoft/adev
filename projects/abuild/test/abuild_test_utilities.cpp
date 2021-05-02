@@ -41,5 +41,6 @@ export [[nodiscard]] auto asVector(const rapidjson::Value &data) -> std::vector<
         }
     }
 
+    std::sort(values.begin(), values.end());
     return values;
 }

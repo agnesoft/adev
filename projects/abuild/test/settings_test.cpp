@@ -25,9 +25,9 @@ static const auto testSuite = suite("abuild::Settings", [] {
         abuild::Settings settings{cache};
 
         expect(asVector(settings.cppSourceExtensions()))
-            .toBe(std::vector<std::string>{".cpp",
+            .toBe(std::vector<std::string>{".cc",
+                                           ".cpp",
                                            ".cxx",
-                                           ".cc",
                                            ".ixx"});
     });
 
@@ -38,9 +38,9 @@ static const auto testSuite = suite("abuild::Settings", [] {
         abuild::Settings settings{cache};
 
         expect(asVector(settings.cppHeaderExtensions()))
-            .toBe(std::vector<std::string>{".hpp",
-                                           ".hxx",
-                                           ".h"});
+            .toBe(std::vector<std::string>{".h",
+                                           ".hpp",
+                                           ".hxx"});
     });
 
     test("ignoreDirectories()", [] {
@@ -69,8 +69,8 @@ static const auto testSuite = suite("abuild::Settings", [] {
         abuild::Settings settings{cache};
 
         expect(asVector(settings.skipDirectories()))
-            .toBe(std::vector<std::string>{"projects",
-                                           "Projects"});
+            .toBe(std::vector<std::string>{"Projects",
+                                           "projects"});
     });
 
     test("squashDirectories()", [] {
@@ -80,18 +80,18 @@ static const auto testSuite = suite("abuild::Settings", [] {
         abuild::Settings settings{cache};
 
         expect(asVector(settings.squashDirectories()))
-            .toBe(std::vector<std::string>{"src",
-                                           "srcs",
+            .toBe(std::vector<std::string>{"Include",
+                                           "Includes",
                                            "SRC",
-                                           "Src",
-                                           "source",
-                                           "sources",
                                            "Source",
                                            "Sources",
+                                           "Src",
                                            "include",
-                                           "Include",
                                            "includes",
-                                           "Includes"});
+                                           "source",
+                                           "sources",
+                                           "src",
+                                           "srcs"});
     });
 
     test("testDirectories()", [] {
@@ -101,9 +101,9 @@ static const auto testSuite = suite("abuild::Settings", [] {
         abuild::Settings settings{cache};
 
         expect(asVector(settings.testDirectories()))
-            .toBe(std::vector<std::string>{"test",
-                                           "Test",
-                                           "tests",
-                                           "Tests"});
+            .toBe(std::vector<std::string>{"Test",
+                                           "Tests",
+                                           "test",
+                                           "tests"});
     });
 });

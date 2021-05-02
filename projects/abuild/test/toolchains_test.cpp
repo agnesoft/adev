@@ -64,28 +64,28 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
             if (type == "msvc")
             {
-                expect(flags).toBe(std::vector<std::string>{"/nologo",
-                                                            "/std:c++latest",
+                expect(flags).toBe(std::vector<std::string>{"/EHsc",
                                                             "/W4",
                                                             "/WX",
-                                                            "/EHsc"});
+                                                            "/nologo",
+                                                            "/std:c++latest"});
             }
             else if (type == "clang")
             {
-                expect(flags).toBe(std::vector<std::string>{"-std=c++20",
-                                                            "-Wall",
-                                                            "-Wextra",
-                                                            "-pedantic",
+                expect(flags).toBe(std::vector<std::string>{"-Wall",
                                                             "-Werror",
-                                                            "-fmodules"});
+                                                            "-Wextra",
+                                                            "-fmodules",
+                                                            "-pedantic",
+                                                            "-std=c++20"});
             }
             else if (type == "gcc")
             {
-                expect(flags).toBe(std::vector<std::string>{"-std=c++20",
-                                                            "-Wall",
+                expect(flags).toBe(std::vector<std::string>{"-Wall",
+                                                            "-Werror",
                                                             "-Wextra",
                                                             "-pedantic",
-                                                            "-Werror"});
+                                                            "-std=c++20"});
             }
         }
     });
