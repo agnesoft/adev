@@ -70,7 +70,7 @@ static const auto testSuite = suite("abuild::Projects", [] {
         expect(std::is_nothrow_destructible_v<abuild::Projects>).toBe(true);
     });
 
-    test("scan", [] {
+    test("single source", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp"}};
@@ -79,6 +79,11 @@ static const auto testSuite = suite("abuild::Projects", [] {
             abuild::BuildCache cache{testCache.file()};
             abuild::Settings settings{cache};
             abuild::Projects projects{testProject.projectRoot(), cache, settings};
+
+            expect(projects.projects().HasMember("build_test_project_scanner")).toBe(true);
+
+            const std::string sourceFile = std::filesystem::canonical(std::filesystem::path{"build_test_project_scanner"} / "main.cpp").string();
+            expect(projects.sources().HasMember(sourceFile)).toBe(true);
         }
     });
 });
