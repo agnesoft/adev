@@ -73,7 +73,7 @@ cd ..
 REM atest_test
 mkdir atest_test
 cd atest_test
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\atest_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" "%PROJECTS_ROOT%\atest\test\main.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\astl\astl.obj"
+cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\atest_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" "%PROJECTS_ROOT%\atest\test\main.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" "%PROJECTS_ROOT%\atest\test\assert_test.cpp" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\astl\astl.obj"
 cd ..
 
 REM astl_test

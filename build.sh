@@ -40,7 +40,7 @@ cd ..
 #atest_test
 mkdir -p atest_test
 cd atest_test
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/atest/test/main.cpp" "$PROJECTS_ROOT/atest/test/expect_tobe_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tothrow_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tomatch_test.cpp" "$PROJECTS_ROOT/atest/test/printer_test.cpp" "$PROJECTS_ROOT/atest/test/bad_test_suite.cpp" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/atest_test"
+"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/atest/test/main.cpp" "$PROJECTS_ROOT/atest/test/expect_tobe_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tothrow_test.cpp" "$PROJECTS_ROOT/atest/test/expect_tomatch_test.cpp" "$PROJECTS_ROOT/atest/test/printer_test.cpp" "$PROJECTS_ROOT/atest/test/bad_test_suite.cpp" "$PROJECTS_ROOT/atest/test/assert_test.cpp" "$BUILD_ROOT/atest/atest.obj" -o "$BUILD_ROOT/bin/atest_test"
 cd ..
 
 #astl_test

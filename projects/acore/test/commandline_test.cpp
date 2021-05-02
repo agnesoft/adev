@@ -1,7 +1,10 @@
 import atest;
 import acore;
 
+using atest::assert_;
+using atest::assert_fail;
 using atest::expect;
+using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
@@ -443,7 +446,7 @@ static const auto s = suite("acore::CommandLine", [] {
 
         commandLine.parse(2, std::vector<const char *>{"app", "-?"}.data());
 
-        expect(stream.str()).toBe(std::string{}).toFail();
+        expect_fail(stream.str()).toBe(std::string{});
     });
 
     test("copy assignment", [] {

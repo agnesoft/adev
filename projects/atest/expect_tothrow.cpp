@@ -35,42 +35,35 @@ concept hasWhat = requires(const T &type)
 //! Additionally if the exception `E` satisfies hasWhat concept the value
 //! `V` will be matched against the `E::what()` rather than the exception object
 //! itself. For that comparison the `V` must either be or be convertible to std::string.
-export template<typename T, typename E, typename V, bool ValidateValue>
-requires std::invocable<T> class ExpectToThrow : public ExpectBase<T>
+export template<typename T, typename E, typename V, bool ValidateValue, bool Assert, bool ExpectFail>
+requires std::invocable<T>
+class ExpectToThrow : public ExpectBase<T, Assert, ExpectFail>
 {
 public:
-    using ExpectBase<T>::ExpectBase;
+    using ExpectBase<T, Assert, ExpectFail>::ExpectBase;
 
     //! Constructs the object taking the reference to `expression`, `value` and
-    //! source_location.
-    ExpectToThrow(const T &expression, const V &value, const source_location<> &sourceLocation) :
-        ExpectBase<T>{expression, sourceLocation},
-        mValue{value}
-    {
-    }
-
-    //! Defaulted copy constructor.
-    ExpectToThrow(const ExpectToThrow &other) = default;
-
-    //! Defaulted move constructor.
-    ExpectToThrow(ExpectToThrow &&other) noexcept = default;
-
-    //! Destructor that runs `T` expecting the exception of type
+    //! source_location and runs `T` expecting the exception of type
     //! `E` and validating its type and optionally its value. No
     //! exception is propagated outside. Not throwing any exception
     //! or throwing unknown exception, exception of a different than
     //! expected type or not matching the value `V` (if value matching
     //! is requested) all result in an error and failure of the expectation.
-    ~ExpectToThrow()
+    ExpectToThrow(const T &expression, const V &value, const source_location<> &sourceLocation) :
+        ExpectBase<T, Assert, ExpectFail>{expression, sourceLocation},
+        mValue{value}
     {
 #ifdef _MSC_VER
         using ::type_info;
 #endif
-
         try
         {
             this->expression()();
             this->handleFailure(Failure{"No exception thrown", stringify(typeid(E).name(), " '", mValue, '\''), ""});
+        }
+        catch ([[maybe_unused]] FailedAssertion &e)
+        {
+            throw;
         }
         catch (E &e)
         {
@@ -81,9 +74,6 @@ public:
             handleUnknownException();
         }
     }
-
-    auto operator=(const ExpectToThrow &other) -> ExpectToThrow & = default;
-    auto operator=(ExpectToThrow &&other) noexcept -> ExpectToThrow & = default;
 
 private:
     auto doValidateExceptionValue(const E &e) -> void
