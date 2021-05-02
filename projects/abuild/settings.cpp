@@ -1,7 +1,6 @@
 #ifdef _MSC_VER
 export module abuild : settings;
-
-import : default_settings;
+import : build_cache;
 #endif
 
 namespace abuild
@@ -12,7 +11,6 @@ public:
     explicit Settings(BuildCache &cache) :
         mBuildCache{cache}
     {
-        DefaultSettings{cache};
     }
 
     [[nodiscard]] auto cppSourceExtensions() const -> const rapidjson::Value &

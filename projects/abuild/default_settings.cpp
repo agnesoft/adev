@@ -1,12 +1,11 @@
 #ifdef _MSC_VER
-module abuild : default_settings;
-
+export module abuild : default_settings;
 import : build_cache;
 #endif
 
 namespace abuild
 {
-class DefaultSettings
+export class DefaultSettings
 {
 public:
     explicit DefaultSettings(BuildCache &cache) :

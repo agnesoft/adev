@@ -1,7 +1,6 @@
 #ifdef _MSC_VER
 export module abuild : toolchains;
-
-import : toolchain_scanner;
+import : build_cache;
 #endif
 
 namespace abuild
@@ -12,7 +11,6 @@ public:
     explicit Toolchains(BuildCache &cache) :
         mBuildCache{cache}
     {
-        ToolchainScanner{cache};
     }
 
     [[nodiscard]] auto toolchains() -> rapidjson::Value &

@@ -21,6 +21,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("cppSourceExtensions()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(asVector(settings.cppSourceExtensions()))
@@ -33,6 +34,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("cppHeaderExtensions()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(asVector(settings.cppHeaderExtensions()))
@@ -44,6 +46,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("ignoreDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(asVector(settings.ignoreDirectories()))
@@ -53,6 +56,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("projectNameSeparator()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(settings.projectNameSeparator().GetString()).toBe(".");
@@ -61,6 +65,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("skipDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(asVector(settings.skipDirectories()))
@@ -71,6 +76,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("squashDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(asVector(settings.squashDirectories()))
@@ -91,6 +97,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("testDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
         abuild::Settings settings{cache};
 
         expect(asVector(settings.testDirectories()))

@@ -1,12 +1,11 @@
 #ifdef _MSC_VER
-module abuild : toolchain_scanner;
-
+export module abuild : toolchain_scanner;
 import : build_cache;
 #endif
 
 namespace abuild
 {
-class ToolchainScanner
+export class ToolchainScanner
 {
 public:
     explicit ToolchainScanner(BuildCache &cache) :

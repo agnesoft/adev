@@ -3,13 +3,23 @@ export module abuild_test_cache;
 export import "rapidjson.hpp";
 export import atest;
 
-export [[nodiscard]] auto asVector(const rapidjson::Value &ar) -> std::vector<std::string>
+export [[nodiscard]] auto asVector(const rapidjson::Value &data) -> std::vector<std::string>
 {
     std::vector<std::string> values;
 
-    for (const rapidjson::Value &value : ar.GetArray())
+    if (data.IsArray())
     {
-        values.push_back(value.GetString());
+        for (const rapidjson::Value &value : data.GetArray())
+        {
+            values.push_back(value.GetString());
+        }
+    }
+    else if (data.IsObject())
+    {
+        for (auto it = data.MemberBegin(); it != data.MemberEnd(); ++it)
+        {
+            values.push_back(it->name.GetString());
+        }
     }
 
     return values;

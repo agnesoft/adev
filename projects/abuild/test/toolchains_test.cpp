@@ -22,6 +22,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -35,6 +36,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -48,6 +50,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -91,6 +94,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -104,6 +108,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -134,6 +139,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -147,6 +153,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -177,6 +184,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -190,6 +198,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
@@ -203,6 +212,7 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
+        abuild::ToolchainScanner{cache};
         abuild::Toolchains toolchains{cache};
 
         for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)

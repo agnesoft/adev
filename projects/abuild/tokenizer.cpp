@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 export module abuild : tokenizer;
-
 import "astl.hpp";
 #endif
 

@@ -1,9 +1,7 @@
 #ifdef _MSC_VER
 export module abuild : build_cache;
-
 import acore;
 import "rapidjson.hpp";
-
 #endif
 
 namespace abuild

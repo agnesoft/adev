@@ -1,14 +1,12 @@
 #ifdef _MSC_VER
 export module abuild : code_scanner;
-
 import : build_cache;
 import : tokenizer;
-
 #endif
 
 namespace abuild
 {
-class CodeScanner
+export class CodeScanner
 {
 public:
     explicit CodeScanner(BuildCache &cache) :
