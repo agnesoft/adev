@@ -15,6 +15,10 @@ public:
         mBuildCache{cache},
         mSettings{settings}
     {
+        mBuildCache.ensureValue("projects");
+        mBuildCache.ensureValue("sources");
+        mBuildCache.ensureValue("headers");
+
         scanDir(std::filesystem::canonical(projectRoot));
     }
 

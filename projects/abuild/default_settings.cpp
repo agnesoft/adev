@@ -13,6 +13,7 @@ public:
     {
         if (!mBuildCache.data().HasMember("settings"))
         {
+            mBuildCache.ensureValue("settings");
             mBuildCache["settings"].AddMember("cpp_source_extensions", cppSourceExtensions(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("cpp_header_extensions", cppHeaderExtensions(), mBuildCache.allocator());
             mBuildCache["settings"].AddMember("ignore_directories", ignoreDirectories(), mBuildCache.allocator());

@@ -12,6 +12,8 @@ public:
     explicit CodeScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
+        mBuildCache.ensureValue("modules");
+
         processFiles(cache["sources"]);
         processFiles(cache["headers"]);
     }

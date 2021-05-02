@@ -39,23 +39,21 @@ public:
         return mData;
     }
 
-    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
+    auto ensureValue(const char *key) -> void
     {
         if (!mData.HasMember(key))
         {
-            mData.AddMember(rapidjson::Value{key, mData.GetAllocator()}, rapidjson::Value{rapidjson::kObjectType}, mData.GetAllocator());
+            mData.AddMember(rapidjson::Value{key, mData.GetAllocator()}, rapidjson::Value(rapidjson::kObjectType), mData.GetAllocator());
         }
+    }
 
+    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
+    {
         return mData[key];
     }
 
     [[nodiscard]] auto operator[](const std::string &key) const -> const rapidjson::Value &
     {
-        if (!mData.HasMember(key))
-        {
-            throw std::runtime_error{"Requested key '" + key + "' does not exist in the build cache."};
-        }
-
         return mData[key];
     }
 
