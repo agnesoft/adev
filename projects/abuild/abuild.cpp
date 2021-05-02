@@ -6,7 +6,7 @@ export import acore;
 export import : build_cache;
 export import : settings;
 export import : toolchain_scanner;
-export import : projects;
+export import : project_scanner;
 export import : dependencies;
 
 #else
@@ -16,9 +16,7 @@ import "rapidjson.hpp";
 #include "settings.cpp"
 #include "toolchain_scanner.cpp"
 #include "project_scanner.cpp"
-#include "projects.cpp"
 #include "tokenizer.cpp"
 #include "code_scanner.cpp"
-#include "dependencies.cpp"
 // clang-format on
 #endif

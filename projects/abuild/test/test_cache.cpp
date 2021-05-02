@@ -74,6 +74,11 @@ public:
         return data;
     }
 
+    [[nodiscard]] auto file() const noexcept -> const std::filesystem::path &
+    {
+        return mFilePath;
+    }
+
     [[nodiscard]] static auto jsonFormat(const std::string &data) -> std::string
     {
         rapidjson::StringBuffer buffer;
@@ -98,5 +103,5 @@ private:
         std::filesystem::remove(mFilePath);
     }
 
-    std::filesystem::path mFilePath = std::filesystem::current_path() / "build" / ".abuild";
+    std::filesystem::path mFilePath = std::filesystem::current_path() / "build_test" / ".abuild";
 };

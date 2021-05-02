@@ -10,14 +10,14 @@ import : settings;
 
 namespace abuild
 {
-class ProjectScanner
+export class ProjectScanner
 {
 public:
-    ProjectScanner(BuildCache &cache, const Settings &settings) :
+    ProjectScanner(const std::filesystem::path &projectRoot, BuildCache &cache, const Settings &settings) :
         mBuildCache{cache},
         mSettings{settings}
     {
-        scan();
+        scanDir(std::filesystem::canonical(projectRoot));
     }
 
 private:
@@ -190,12 +190,6 @@ private:
         {
             return std::filesystem::current_path().filename().string();
         }
-    }
-
-    auto scan() -> void
-    {
-        const std::filesystem::path projectRoot = std::filesystem::current_path();
-        scanDir(projectRoot);
     }
 
     auto scanDir(const std::filesystem::path &path) -> void

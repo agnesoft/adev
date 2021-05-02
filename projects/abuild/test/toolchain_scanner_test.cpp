@@ -22,7 +22,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -43,7 +43,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -64,7 +64,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -115,7 +115,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -136,7 +136,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -174,7 +174,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -195,7 +195,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -233,7 +233,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -254,7 +254,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 
@@ -275,7 +275,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         TestCache testCache;
 
         {
-            abuild::BuildCache cache;
+            abuild::BuildCache cache{testCache.file()};
             abuild::ToolchainScanner{cache};
         }
 

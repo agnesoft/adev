@@ -11,7 +11,8 @@ namespace abuild
 export class BuildCache
 {
 public:
-    BuildCache()
+    explicit BuildCache(const std::filesystem::path &cacheFile) :
+        mFilePath{cacheFile}
     {
         load();
     }
@@ -105,7 +106,7 @@ private:
         file.write(data, size);
     }
 
-    std::filesystem::path mFilePath = std::filesystem::current_path() / "build" / ".abuild";
+    std::filesystem::path mFilePath;
     rapidjson::Document mData;
 };
 }
