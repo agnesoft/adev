@@ -5,7 +5,7 @@ export import acore;
 #ifdef _MSC_VER
 export import : build_cache;
 export import : settings;
-export import : toolchain_scanner_windows;
+export import : toolchain_scanner;
 export import : projects;
 export import : dependencies;
 
@@ -14,7 +14,7 @@ export import : dependencies;
 import "rapidjson.hpp";
 #include "build_cache.cpp"
 #include "settings.cpp"
-#include "toolchain_scanner_linux.cpp"
+#include "toolchain_scanner.cpp"
 #include "project_scanner.cpp"
 #include "projects.cpp"
 #include "tokenizer.cpp"

@@ -36,11 +36,11 @@ private:
         rapidjson::Value toolchain{rapidjson::kObjectType};
         toolchain.AddMember("name", rapidjson::Value{"clang" + version, mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("compiler", rapidjson::Value{(binPath / ("clang++-" + version)).lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
-        toolchain.AddMember("compilerFlags", clangFlags(), mBuildCache.allocator());
+        toolchain.AddMember("compiler_flags", clangFlags(), mBuildCache.allocator());
         toolchain.AddMember("linker", rapidjson::Value{(binPath / "ld").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
-        toolchain.AddMember("linkerFlags", ldFlags(), mBuildCache.allocator());
+        toolchain.AddMember("linker_flags", ldFlags(), mBuildCache.allocator());
         toolchain.AddMember("archiver", rapidjson::Value{(binPath / "ar").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
-        toolchain.AddMember("archiverFlags", arFlags(), mBuildCache.allocator());
+        toolchain.AddMember("archiver_flags", arFlags(), mBuildCache.allocator());
         toolchain.AddMember("ifc", "", mBuildCache.allocator());
         toolchain.AddMember("include", "", mBuildCache.allocator());
         toolchain.AddMember("lib", "", mBuildCache.allocator());
@@ -94,11 +94,11 @@ private:
         rapidjson::Value toolchain{rapidjson::kObjectType};
         toolchain.AddMember("type", "gcc", mBuildCache.allocator());
         toolchain.AddMember("compiler", rapidjson::Value{(binPath / ("g++-" + version)).lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
-        toolchain.AddMember("compilerFlags", gccFlags(), mBuildCache.allocator());
+        toolchain.AddMember("compiler_flags", gccFlags(), mBuildCache.allocator());
         toolchain.AddMember("linker", rapidjson::Value{(binPath / "ld").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
-        toolchain.AddMember("linkerFlags", ldFlags(), mBuildCache.allocator());
+        toolchain.AddMember("linker_flags", ldFlags(), mBuildCache.allocator());
         toolchain.AddMember("archiver", rapidjson::Value{(binPath / "ar").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
-        toolchain.AddMember("archiverFlags", arFlags(), mBuildCache.allocator());
+        toolchain.AddMember("archiver_flags", arFlags(), mBuildCache.allocator());
         toolchain.AddMember("ifc", "", mBuildCache.allocator());
         toolchain.AddMember("include", "/usr/include/c++/" + version, mBuildCache.allocator());
         toolchain.AddMember("lib", "", mBuildCache.allocator());
@@ -121,12 +121,6 @@ private:
     {
         rapidjson::Value flags{rapidjson::kArrayType};
         return flags;
-    }
-
-    auto scanLinux() -> void
-    {
-        detectGCC();
-        detectClang();
     }
 
     BuildCache &mBuildCache;
