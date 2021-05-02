@@ -3,14 +3,14 @@ module;
 
 #    include <vector>
 
-export module abuild : project_scanner;
+module abuild : project_scanner;
 
 import : settings;
 #endif
 
 namespace abuild
 {
-export class ProjectScanner
+class ProjectScanner
 {
 public:
     ProjectScanner(const std::filesystem::path &projectRoot, BuildCache &cache, const Settings &settings) :

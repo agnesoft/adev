@@ -60,14 +60,14 @@ private:
 };
 }
 
-static const auto testSuite = suite("abuild::ProjectScanner", [] {
+static const auto testSuite = suite("abuild::Projects", [] {
     test("type traits", [] {
-        expect(std::is_default_constructible_v<abuild::ProjectScanner>).toBe(false);
-        expect(std::is_copy_constructible_v<abuild::ProjectScanner>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::ProjectScanner>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::ProjectScanner>).toBe(false);
-        expect(std::is_nothrow_move_assignable_v<abuild::ProjectScanner>).toBe(false);
-        expect(std::is_nothrow_destructible_v<abuild::ProjectScanner>).toBe(true);
+        expect(std::is_default_constructible_v<abuild::Projects>).toBe(false);
+        expect(std::is_copy_constructible_v<abuild::Projects>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<abuild::Projects>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::Projects>).toBe(false);
+        expect(std::is_nothrow_move_assignable_v<abuild::Projects>).toBe(false);
+        expect(std::is_nothrow_destructible_v<abuild::Projects>).toBe(true);
     });
 
     test("scan", [] {
@@ -78,7 +78,7 @@ static const auto testSuite = suite("abuild::ProjectScanner", [] {
         {
             abuild::BuildCache cache{testCache.file()};
             abuild::Settings settings{cache};
-            abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+            abuild::Projects projects{testProject.projectRoot(), cache, settings};
         }
     });
 });

@@ -8,31 +8,23 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::ToolchainScanner", [] {
+static const auto testSuite = suite("abuild::Toolchains", [] {
     test("type traits", [] {
-        expect(std::is_default_constructible_v<abuild::ToolchainScanner>).toBe(false);
-        expect(std::is_copy_constructible_v<abuild::ToolchainScanner>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::ToolchainScanner>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::ToolchainScanner>).toBe(false);
-        expect(std::is_nothrow_move_assignable_v<abuild::ToolchainScanner>).toBe(false);
-        expect(std::is_nothrow_destructible_v<abuild::ToolchainScanner>).toBe(true);
+        expect(std::is_default_constructible_v<abuild::Toolchains>).toBe(false);
+        expect(std::is_copy_constructible_v<abuild::Toolchains>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<abuild::Toolchains>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::Toolchains>).toBe(false);
+        expect(std::is_nothrow_move_assignable_v<abuild::Toolchains>).toBe(false);
+        expect(std::is_nothrow_destructible_v<abuild::Toolchains>).toBe(true);
     });
 
     test("type", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             expect(std::vector<std::string>{"msvc", "clang", "gcc"}).toMatch<OneOfMatcher>(toolchain->value["type"].GetString());
@@ -42,18 +34,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("compiler", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("compiler")).toBe(true);
             expect(toolchain->value["compiler"].IsString()).toBe(true);
@@ -63,18 +47,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("compiler_flags", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             assert_(toolchain->value.HasMember("compiler_flags")).toBe(true);
@@ -114,18 +90,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("linker", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("linker")).toBe(true);
             expect(toolchain->value["linker"].IsString()).toBe(true);
@@ -135,18 +103,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("linker_flags", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             assert_(toolchain->value.HasMember("linker_flags")).toBe(true);
@@ -173,18 +133,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("archiver", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("archiver")).toBe(true);
             expect(toolchain->value["archiver"].IsString()).toBe(true);
@@ -194,18 +146,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("archiver_flags", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             assert_(toolchain->value.HasMember("archiver_flags")).toBe(true);
@@ -232,18 +176,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("ifc", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("ifc")).toBe(true);
             expect(toolchain->value["ifc"].IsString()).toBe(true);
@@ -253,18 +189,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("include", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("include")).toBe(true);
             expect(toolchain->value["include"].IsString()).toBe(true);
@@ -274,18 +202,10 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("lib", [] {
         TestCache testCache;
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-            abuild::ToolchainScanner{cache};
-        }
+        abuild::BuildCache cache{testCache.file()};
+        abuild::Toolchains toolchains{cache};
 
-        rapidjson::Document doc;
-        doc.Parse(testCache.content().c_str());
-
-        assert_(doc.HasMember("toolchains")).toBe(true);
-        assert_(doc["toolchains"].IsObject()).toBe(true);
-
-        for (auto toolchain = doc["toolchains"].MemberBegin(); toolchain != doc["toolchains"].MemberEnd(); ++toolchain)
+        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("lib")).toBe(true);
             expect(toolchain->value["lib"].IsString()).toBe(true);

@@ -10,12 +10,12 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::Settings", [] {
     test("type traits", [] {
-        expect(std::is_default_constructible_v<abuild::ToolchainScanner>).toBe(false);
-        expect(std::is_copy_constructible_v<abuild::ToolchainScanner>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::ToolchainScanner>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::ToolchainScanner>).toBe(false);
-        expect(std::is_nothrow_move_assignable_v<abuild::ToolchainScanner>).toBe(false);
-        expect(std::is_nothrow_destructible_v<abuild::ToolchainScanner>).toBe(true);
+        expect(std::is_default_constructible_v<abuild::Settings>).toBe(false);
+        expect(std::is_copy_constructible_v<abuild::Settings>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<abuild::Settings>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::Settings>).toBe(false);
+        expect(std::is_nothrow_move_assignable_v<abuild::Settings>).toBe(false);
+        expect(std::is_nothrow_destructible_v<abuild::Settings>).toBe(true);
     });
 
     test("cppSourceExtensions()", [] {

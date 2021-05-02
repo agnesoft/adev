@@ -6,6 +6,6 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
     std::filesystem::remove(cacheFile);
     abuild::BuildCache cache{cacheFile};
     abuild::Settings settings{cache};
-    abuild::ToolchainScanner{cache};
-    abuild::ProjectScanner{std::filesystem::current_path(), cache, settings};
+    abuild::Toolchains toolchains{cache};
+    abuild::Projects projects{std::filesystem::current_path(), cache, settings};
 }
