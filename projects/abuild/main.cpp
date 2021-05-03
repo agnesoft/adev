@@ -14,4 +14,6 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
 
     abuild::ProjectScanner{std::filesystem::current_path(), cache, settings};
     abuild::Projects projects{cache};
+
+    abuild::CodeScanner{cache};
 }
