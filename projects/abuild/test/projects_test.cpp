@@ -145,4 +145,66 @@ static const auto testSuite = suite("abuild::Projects", [] {
         expect(asVector(projects.projects()["my_other_project.test"]["headers"]))
             .toBe(std::vector<std::string>{});
     });
+
+    test("project with random subdirs in squash dir", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "include/random/header.hpp"}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
+        abuild::Settings settings{cache};
+        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::Projects projects{cache};
+
+        assert_(asVector(projects.projects()))
+            .toBe(std::vector<std::string>{
+                "build_test_project_scanner"});
+
+        expect(asVector(projects.projects()["build_test_project_scanner"]["sources"]))
+            .toBe(std::vector<std::string>{
+                (testProject.projectRoot() / "main.cpp").string()});
+
+        expect(asVector(projects.projects()["build_test_project_scanner"]["headers"]))
+            .toBe(std::vector<std::string>{(testProject.projectRoot() / "include" / "random" / "header.hpp").string()});
+    });
+
+    test("subprojects", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"projects/my_project/main.cpp",
+                                 "projects/my_project/mysubproject/main.cpp",
+                                 "projects/my_project/mysubproject/myfurthersubproject/main.cpp"}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
+        abuild::Settings settings{cache};
+        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::Projects projects{cache};
+
+        assert_(asVector(projects.projects()))
+            .toBe(std::vector<std::string>{
+                "my_project",
+                "my_project.mysubproject",
+                "my_project.mysubproject.myfurthersubproject"});
+
+        expect(asVector(projects.projects()["my_project"]["sources"]))
+            .toBe(std::vector<std::string>{
+                (testProject.projectRoot() / "projects" / "my_project" / "main.cpp").string()});
+        expect(asVector(projects.projects()["my_project"]["headers"]))
+            .toBe(std::vector<std::string>{});
+
+        expect(asVector(projects.projects()["my_project.mysubproject"]["sources"]))
+            .toBe(std::vector<std::string>{
+                (testProject.projectRoot() / "projects" / "my_project" / "mysubproject" / "main.cpp").string()});
+        expect(asVector(projects.projects()["my_project.mysubproject"]["headers"]))
+            .toBe(std::vector<std::string>{});
+
+        expect(asVector(projects.projects()["my_project.mysubproject.myfurthersubproject"]["sources"]))
+            .toBe(std::vector<std::string>{
+                (testProject.projectRoot() / "projects" / "my_project" / "mysubproject" / "myfurthersubproject" / "main.cpp").string()});
+        expect(asVector(projects.projects()["my_project.mysubproject.myfurthersubproject"]["headers"]))
+            .toBe(std::vector<std::string>{});
+    });
 });
