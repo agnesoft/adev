@@ -207,4 +207,30 @@ static const auto testSuite = suite("abuild::Projects", [] {
         expect(asVector(projects.projects()["my_project.mysubproject.myfurthersubproject"]["headers"]))
             .toBe(std::vector<std::string>{});
     });
+
+    test("source files in skip dir", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "projects/source1.cpp",
+                                 "projects/source2.cpp"}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::DefaultSettings{cache};
+        abuild::Settings settings{cache};
+        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::Projects projects{cache};
+
+        assert_(asVector(projects.projects()))
+            .toBe(std::vector<std::string>{
+                "build_test_project_scanner"});
+
+        expect(asVector(projects.projects()["build_test_project_scanner"]["sources"]))
+            .toBe(std::vector<std::string>{(testProject.projectRoot() / "main.cpp").string(),
+                                           (testProject.projectRoot() / "projects" / "source1.cpp").string(),
+                                           (testProject.projectRoot() / "projects" / "source2.cpp").string()});
+
+        expect(asVector(projects.projects()["build_test_project_scanner"]["headers"]))
+            .toBe(std::vector<std::string>{});
+    });
 });
