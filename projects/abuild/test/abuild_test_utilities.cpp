@@ -44,3 +44,8 @@ export [[nodiscard]] auto asVector(const rapidjson::Value &data) -> std::vector<
     std::sort(values.begin(), values.end());
     return values;
 }
+
+export [[nodiscard]] auto lastModified(const std::string &path) -> std::int64_t
+{
+    return std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(path).time_since_epoch()).count();
+}

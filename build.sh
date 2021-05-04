@@ -60,7 +60,7 @@ mkdir -p acore_test
 cd acore_test
 "$CLANG" $CPP_FLAGS -Xclang -emit-module-interface -c "$PROJECTS_ROOT/abuild/test/abuild_test_utilities.cpp" -o abuild_test_utilities.pcm
 "$CLANG" $CPP_FLAGS -c "$PROJECTS_ROOT/abuild/test/abuild_test_utilities.cpp" -o abuild_test_utilities.obj
-"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/abuild/test/main.cpp" "$PROJECTS_ROOT/abuild/test/build_cache_test.cpp" "$PROJECTS_ROOT/abuild/test/settings_test.cpp" "$PROJECTS_ROOT/abuild/test/toolchains_test.cpp" "$PROJECTS_ROOT/abuild/test/projects_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/abuild/abuild.obj" "$BUILD_ROOT/atest/atest.obj" "$BUILD_ROOT/abuild_test/abuild_test_utilities.obj" -o "$BUILD_ROOT/bin/abuild_test"
+"$CLANG" $CPP_AND_LINK_FLAGS "$PROJECTS_ROOT/abuild/test/main.cpp" "$PROJECTS_ROOT/abuild/test/build_cache_test.cpp" "$PROJECTS_ROOT/abuild/test/settings_test.cpp" "$PROJECTS_ROOT/abuild/test/toolchains_test.cpp" "$PROJECTS_ROOT/abuild/test/projects_test.cpp" "$PROJECTS_ROOT/abuild/test/headers_test.cpp" "$BUILD_ROOT/acore/acore.obj" "$BUILD_ROOT/abuild/abuild.obj" "$BUILD_ROOT/atest/atest.obj" "$BUILD_ROOT/abuild_test/abuild_test_utilities.obj" -o "$BUILD_ROOT/bin/abuild_test"
 cd ..
 
 cd ..

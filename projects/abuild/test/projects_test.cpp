@@ -8,7 +8,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::Projects", [] {
+static const auto testSuite = suite("abuild::Projects::projects()", [] {
     test("type traits", [] {
         expect(std::is_default_constructible_v<abuild::Projects>).toBe(false);
         expect(std::is_copy_constructible_v<abuild::Projects>).toBe(true);
@@ -81,7 +81,7 @@ static const auto testSuite = suite("abuild::Projects", [] {
             .toBe(std::vector<std::string>{});
     });
 
-    test("root project with include", [] {
+    test("root project with include dir", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
