@@ -96,7 +96,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\t
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\test\test_project.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\test\abuild_test_utilities.cpp"
 lib.exe /NOLOGO abuild_test_utilities.obj test_cache.obj test_project.obj /OUT:abuild_test_utilities.lib
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\headers_test.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%PROJECTS_ROOT%\abuild\test\settings_test.cpp" "%PROJECTS_ROOT%\abuild\test\toolchains_test.cpp" "%PROJECTS_ROOT%\abuild\test\projects_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj" "%BUILD_ROOT%\abuild_test\abuild_test_utilities.lib"
+cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\headers_test.cpp" "%PROJECTS_ROOT%\abuild\test\sources_test.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%PROJECTS_ROOT%\abuild\test\settings_test.cpp" "%PROJECTS_ROOT%\abuild\test\toolchains_test.cpp" "%PROJECTS_ROOT%\abuild\test\projects_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj" "%BUILD_ROOT%\abuild_test\abuild_test_utilities.lib"
 cd ..
 
 cd ..
