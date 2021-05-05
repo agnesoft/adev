@@ -38,7 +38,7 @@ public:
     {
         while (!atEnd())
         {
-            skipWhiteSpace();
+            skipWhiteSpaceOrComment();
 
             const char c = mContent[pos++];
 
@@ -86,10 +86,6 @@ public:
                     skipToSemicolonOrLine();
                 }
             }
-            else if (c == '/')
-            {
-                skipComment();
-            }
             else
             {
                 skipToSemicolonOrLine();
@@ -107,7 +103,7 @@ private:
 
     [[nodiscard]] auto extractExport() -> Token
     {
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
         Token token = extractExportToken();
         token.exported = true;
         return token;
@@ -132,20 +128,20 @@ private:
     [[nodiscard]] auto extractExportImport() -> Token
     {
         pos += 6;
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
         return extractImport();
     }
 
     [[nodiscard]] auto extractExportModule() -> Token
     {
         pos += 6;
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
         return extractModule();
     }
 
     [[nodiscard]] auto extractImport() -> Token
     {
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
 
         if (mContent[pos] == ':')
         {
@@ -211,22 +207,36 @@ private:
 
         while (mContent[pos] != '"' && mContent[pos] != '>' && mContent[pos] != ':' && mContent[pos] != ';' && !atEnd())
         {
-            name += mContent[pos++];
+            if (isComment())
+            {
+                skipMultiLineComment();
+            }
+            else
+            {
+                name += mContent[pos++];
+            }
         }
 
         return trim(name);
+    }
+
+    [[nodiscard]] auto isComment() -> bool
+    {
+        return mContent[pos] == '/' && mContent[pos + 1] == '*';
     }
 
     [[nodiscard]] auto isExport() -> bool
     {
         const std::string EXPORT = "xport";
 
-        if (mContent.substr(pos, EXPORT.size()) == EXPORT && std::isspace(mContent[pos + EXPORT.size()]))
+        if (mContent.substr(pos, EXPORT.size()) == EXPORT)
         {
             pos += EXPORT.size();
-            skipWhiteSpace();
+
+            const bool result = std::isspace(mContent[pos]) || isComment();
+            skipWhiteSpaceOrComment();
             const std::string what = mContent.substr(pos, 6);
-            return what == "import" || what == "module";
+            return result && (what == "import" || what == "module");
         }
 
         return false;
@@ -239,7 +249,7 @@ private:
         if (mContent.substr(pos, IMPORT.size()) == IMPORT)
         {
             pos += IMPORT.size();
-            return std::isspace(mContent[pos]) || mContent[pos] == '"' || mContent[pos] == '<' || mContent[pos] == ':';
+            return std::isspace(mContent[pos]) || mContent[pos] == '"' || mContent[pos] == '<' || mContent[pos] == ':' || isComment();
         }
 
         return false;
@@ -248,12 +258,12 @@ private:
     [[nodiscard]] auto isInclude() -> bool
     {
         const std::string INCLUDE = "include";
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
 
         if (mContent.substr(pos, INCLUDE.size()) == INCLUDE)
         {
             pos += INCLUDE.size();
-            skipWhiteSpace();
+            skipWhiteSpaceOrComment();
             return mContent[pos] == '"' || mContent[pos] == '<';
         }
 
@@ -267,8 +277,9 @@ private:
         if (mContent.substr(pos, MODULE.size()) == MODULE)
         {
             pos += MODULE.size();
-            skipWhiteSpace();
-            return std::isspace(mContent[pos]);
+            const bool result = std::isspace(mContent[pos]) || isComment();
+            skipWhiteSpaceOrComment();
+            return result;
         }
 
         return false;
@@ -286,7 +297,7 @@ private:
         }
         else
         {
-            skipToSemicolonOrLine();
+            pos++;
         }
     }
 
@@ -296,29 +307,56 @@ private:
         {
             pos++;
         }
+
+        pos++;
     }
 
     auto skipToSemicolonOrLine() -> void
     {
         while (mContent[pos] != ';' && mContent[pos] != '\n' && !atEnd())
         {
-            pos++;
+            if (mContent[pos] == '/')
+            {
+                skipComment();
+            }
+            else
+            {
+                pos++;
+            }
         }
+
+        pos++;
     }
 
     auto skipMultiLineComment() -> void
     {
-        while (!(mContent[pos] == '*' && mContent[pos + 1] == '/') && !atEnd())
+        while (!(mContent[pos] == '/' && mContent[pos - 1] == '*') && !atEnd())
         {
             pos++;
         }
+
+        pos++;
     }
 
-    auto skipWhiteSpace() -> void
+    auto skipWhiteSpaceOrComment() -> void
     {
-        while (std::isspace(mContent[pos]))
+        while (!atEnd())
         {
-            pos++;
+            const char c = mContent[pos];
+
+            if (c == '/')
+            {
+                pos++;
+                skipComment();
+            }
+            else if (!std::isspace(c))
+            {
+                break;
+            }
+            else
+            {
+                pos++;
+            }
         }
     }
 
