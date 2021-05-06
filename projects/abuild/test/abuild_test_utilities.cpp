@@ -7,7 +7,7 @@ export import : test_cache;
 export import : test_project;
 #else
 // clang-format off
-import "rapidjson.hpp";
+export import "rapidjson.hpp";
 #include "test_cache.cpp"
 #include "test_project.cpp"
 // clang-format on

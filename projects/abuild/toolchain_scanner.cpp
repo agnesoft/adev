@@ -46,7 +46,7 @@ private:
         const std::filesystem::path binPath = "/usr/bin";
 
         rapidjson::Value toolchain{rapidjson::kObjectType};
-        toolchain.AddMember("type", rapidjson::Value{"clang" + version, mBuildCache.allocator()}, mBuildCache.allocator());
+        toolchain.AddMember("type", "clang", mBuildCache.allocator());
         toolchain.AddMember("compiler", rapidjson::Value{(binPath / ("clang++-" + version)).lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
         toolchain.AddMember("compiler_flags", clangFlags(), mBuildCache.allocator());
         toolchain.AddMember("linker", rapidjson::Value{(binPath / "ld").lexically_normal().string(), mBuildCache.allocator()}, mBuildCache.allocator());
@@ -110,6 +110,13 @@ private:
         {
             mBuildCache["toolchains"].AddMember("clang", clangToolchainWindows(clangRoot), mBuildCache.allocator());
         }
+    }
+    
+    auto detectGCC() -> void
+    {
+        detectGCCVersion("9");
+        detectGCCVersion("10");
+        detectGCCVersion("11");
     }
 
     auto detectGCCVersion(const std::string &version) -> void
