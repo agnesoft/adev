@@ -26,6 +26,10 @@ export struct Token
     bool exported = false;
 };
 
+struct BadToken
+{
+};
+
 export class Tokenizer
 {
 public:
@@ -38,57 +42,63 @@ public:
     {
         while (!atEnd())
         {
-            skipWhiteSpaceOrComment();
+            try
+            {
+                skipWhiteSpaceOrComment();
 
-            const char c = mContent[pos++];
+                const char c = mContent[pos++];
 
-            if (c == '#')
-            {
-                if (isInclude())
+                if (c == '#')
                 {
-                    return extractInclude();
+                    if (isInclude())
+                    {
+                        return extractInclude();
+                    }
+                    else
+                    {
+                        skipLine();
+                    }
                 }
-                else
+                else if (c == 'i')
                 {
-                    skipLine();
+                    if (isImport())
+                    {
+                        return extractImport();
+                    }
+                    else
+                    {
+                        skipToSemicolonOrLine();
+                    }
                 }
-            }
-            else if (c == 'i')
-            {
-                if (isImport())
+                else if (c == 'm')
                 {
-                    return extractImport();
+                    if (isModule())
+                    {
+                        return extractModule();
+                    }
+                    else
+                    {
+                        skipToSemicolonOrLine();
+                    }
+                }
+                else if (c == 'e')
+                {
+                    if (isExport())
+                    {
+                        return extractExport();
+                    }
+                    else
+                    {
+                        skipToSemicolonOrLine();
+                    }
                 }
                 else
                 {
                     skipToSemicolonOrLine();
                 }
             }
-            else if (c == 'm')
+            catch ([[maybe_unused]] BadToken &badToken)
             {
-                if (isModule())
-                {
-                    return extractModule();
-                }
-                else
-                {
-                    skipToSemicolonOrLine();
-                }
-            }
-            else if (c == 'e')
-            {
-                if (isExport())
-                {
-                    return extractExport();
-                }
-                else
-                {
-                    skipToSemicolonOrLine();
-                }
-            }
-            else
-            {
-                skipToSemicolonOrLine();
             }
         }
 
@@ -121,7 +131,7 @@ private:
         }
         else
         {
-            throw std::runtime_error{"Unknown export at '" + mContent.substr(pos, 10) + '\''};
+            throw BadToken{};
         }
     }
 
@@ -146,38 +156,40 @@ private:
         if (mContent[pos] == ':')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportModulePartition);
+            skipWhiteSpaceOrComment();
+            return extractImportToken(Token::Type::ImportModulePartition, ';');
         }
         else if (mContent[pos] == '"')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportIncludeLocal);
+            return extractImportToken(Token::Type::ImportIncludeLocal, '"');
         }
         else if (mContent[pos] == '<')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportIncludeExternal);
+            return extractImportToken(Token::Type::ImportIncludeExternal, '>');
         }
         else
         {
-            return extractImportToken(Token::Type::ImportModule);
+            return extractImportToken(Token::Type::ImportModule, ';');
         }
     }
 
-    [[nodiscard]] auto extractImportToken(Token::Type type) -> Token
+    [[nodiscard]] auto extractImportToken(Token::Type type, const char separator) -> Token
     {
         Token token;
         token.type = type;
-        token.name = extractTokenName();
+        token.name = separator == '"' || separator == '>' ? extractIncludeName(separator) : extractTokenName();
+        pos++;
         return token;
     }
 
     [[nodiscard]] auto extractInclude() -> Token
     {
         Token token;
-        token.type = mContent[pos] == '"' ? Token::Type::IncludeLocal : Token::Type::IncludeExternal;
-        pos++;
-        token.name = extractTokenName();
+        const char separator = mContent[pos++];
+        token.type = separator == '"' ? Token::Type::IncludeLocal : Token::Type::IncludeExternal;
+        token.name = extractIncludeName(separator == '"' ? '"' : '>');
         return token;
     }
 
@@ -189,6 +201,7 @@ private:
         if (mContent[pos++] == ':')
         {
             token.type = Token::Type::ModulePartition;
+            skipWhiteSpaceOrComment();
             token.name = extractTokenName();
             token.moduleName = std::move(tokenName);
         }
@@ -201,11 +214,28 @@ private:
         return token;
     }
 
+    [[nodiscard]] auto extractIncludeName(const char separator) -> std::string
+    {
+        std::string name;
+
+        while (mContent[pos] != separator && mContent[pos] != '\n' && !atEnd())
+        {
+            name += mContent[pos++];
+        }
+
+        if (mContent[pos] != separator)
+        {
+            throw BadToken{};
+        }
+
+        return name;
+    }
+
     [[nodiscard]] auto extractTokenName() -> std::string
     {
         std::string name;
 
-        while (mContent[pos] != '"' && mContent[pos] != '>' && mContent[pos] != ':' && mContent[pos] != ';' && !atEnd())
+        while (mContent[pos] != ':' && mContent[pos] != ';' && !std::isspace(mContent[pos]) && !atEnd())
         {
             if (isComment())
             {
@@ -215,6 +245,13 @@ private:
             {
                 name += mContent[pos++];
             }
+        }
+
+        skipWhiteSpaceOrComment();
+
+        if (mContent[pos] != ':' && mContent[pos] != ';')
+        {
+            throw BadToken{};
         }
 
         return trim(name);
