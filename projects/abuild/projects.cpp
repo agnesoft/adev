@@ -15,6 +15,11 @@ public:
     {
     }
 
+    [[nodiscard]] auto modules() -> rapidjson::Value &
+    {
+        return mBuildCache["modules"];
+    }
+
     [[nodiscard]] auto sources() -> rapidjson::Value &
     {
         return mBuildCache["sources"];
