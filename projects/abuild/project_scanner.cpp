@@ -1,23 +1,25 @@
 #ifdef _MSC_VER
 module;
-
 #    include <vector>
-
 export module abuild : project_scanner;
-
 import : settings;
 #endif
 
 namespace abuild
 {
-class ProjectScanner
+export class ProjectScanner
 {
 public:
-    ProjectScanner(BuildCache &cache, const Settings &settings) :
+    ProjectScanner(const std::filesystem::path &projectRoot, BuildCache &cache, const Settings &settings) :
+        mProjectRoot{std::filesystem::canonical(projectRoot)},
         mBuildCache{cache},
         mSettings{settings}
     {
-        scan();
+        mBuildCache.ensureValue("projects");
+        mBuildCache.ensureValue("sources");
+        mBuildCache.ensureValue("headers");
+
+        scanDir(std::filesystem::canonical(projectRoot));
     }
 
 private:
@@ -33,14 +35,14 @@ private:
         project(projectName)["sources"].PushBack(rapidjson::Value{path.string(), mBuildCache.allocator()}, mBuildCache.allocator());
     }
 
-    auto appendProjectName(std::string *projectName, const std::string &directoryName) -> void
+    [[nodiscard]] auto appendProjectName(std::string projectName, const std::string &directoryName) const -> std::string
     {
-        if (!projectName->empty())
+        if (!projectName.empty())
         {
-            projectName->append(mSettings.projectNameSeparator().GetString());
+            return projectName + mSettings.projectNameSeparator().GetString() + directoryName;
         }
 
-        projectName->append(directoryName);
+        return projectName + directoryName;
     }
 
     [[nodiscard]] auto isCppSource(const std::filesystem::path &path) -> bool
@@ -126,11 +128,11 @@ private:
         return project;
     }
 
-    [[nodiscard]] static auto pathDirectories(std::filesystem::path path) -> std::vector<std::filesystem::path>
+    [[nodiscard]] auto pathDirectories(std::filesystem::path path) -> std::vector<std::filesystem::path>
     {
         std::vector<std::filesystem::path> directories;
 
-        while (path != std::filesystem::current_path())
+        while (path != mProjectRoot)
         {
             directories.push_back(path);
             path = path.parent_path();
@@ -172,7 +174,12 @@ private:
                 continue;
             }
 
-            appendProjectName(&projectName, it->filename().string());
+            projectName = appendProjectName(projectName, it->filename().string());
+        }
+
+        if (isTestDirectory(projectName))
+        {
+            projectName = appendProjectName(mProjectRoot.filename().string(), projectName);
         }
 
         return projectName;
@@ -188,14 +195,8 @@ private:
         }
         else
         {
-            return std::filesystem::current_path().filename().string();
+            return mProjectRoot.filename().string();
         }
-    }
-
-    auto scan() -> void
-    {
-        const std::filesystem::path projectRoot = std::filesystem::current_path();
-        scanDir(projectRoot);
     }
 
     auto scanDir(const std::filesystem::path &path) -> void
@@ -227,6 +228,7 @@ private:
         return mBuildCache["projects"][name];
     }
 
+    std::filesystem::path mProjectRoot;
     BuildCache &mBuildCache;
     const Settings &mSettings;
 };

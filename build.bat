@@ -9,7 +9,7 @@ mkdir bin
 set BUILD_ROOT=%cd%
 set ASTL_INCLUDE_PATH=%PROJECTS_ROOT%\astl\include
 set RAPIDJSON_INCLUDE_PATH=%PROJECTS_ROOT%\rapidjson\include
-set CPP_FLAGS=/nologo /W4 /WX /std:c++latest /EHsc /I"%ASTL_INCLUDE_PATH%" /I"%RAPIDJSON_INCLUDE_PATH%" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" /ifcSearchDir "%BUILD_ROOT%\abuild"
+set CPP_FLAGS=/nologo /W4 /WX /std:c++latest /EHsc /I"%ASTL_INCLUDE_PATH%" /I"%RAPIDJSON_INCLUDE_PATH%" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" /ifcSearchDir "%BUILD_ROOT%\abuild" /ifcSearchDir "%BUILD_ROOT%\abuild_test"
 set CPP_FLAGS_OPTIMIZED=/O2 %CPP_FLAGS%
 
 REM astl
@@ -40,16 +40,16 @@ REM abuild
 mkdir abuild
 cd abuild
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\default_settings.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\settings.cpp"
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchain_scanner_windows.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchain_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchains.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\projects.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\tokenizer.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\code_scanner.cpp"
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\dependencies.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO abuild.obj build_cache.obj settings.obj toolchains.obj toolchain_scanner_windows.obj project_scanner.obj projects.obj tokenizer.obj code_scanner.obj dependencies.obj /OUT:abuild.lib
+lib.exe /NOLOGO abuild.obj build_cache.obj default_settings.obj settings.obj toolchain_scanner.obj toolchains.obj project_scanner.obj projects.obj tokenizer.obj code_scanner.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 
@@ -92,7 +92,11 @@ cd ..
 REM abuild_test
 mkdir abuild_test
 cd abuild_test
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%PROJECTS_ROOT%\abuild\test\settings_test.cpp" "%PROJECTS_ROOT%\abuild\test\toolchains_test.cpp" "%PROJECTS_ROOT%\abuild\test\projects_test.cpp" "%PROJECTS_ROOT%\abuild\test\dependencies_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\test\test_cache.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\test\test_project.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\test\abuild_test_utilities.cpp"
+lib.exe /NOLOGO abuild_test_utilities.obj test_cache.obj test_project.obj /OUT:abuild_test_utilities.lib
+cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\modules_test.cpp" "%PROJECTS_ROOT%\abuild\test\tokenizer_test.cpp" "%PROJECTS_ROOT%\abuild\test\headers_test.cpp" "%PROJECTS_ROOT%\abuild\test\sources_test.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%PROJECTS_ROOT%\abuild\test\settings_test.cpp" "%PROJECTS_ROOT%\abuild\test\toolchains_test.cpp" "%PROJECTS_ROOT%\abuild\test\projects_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj" "%BUILD_ROOT%\abuild_test\abuild_test_utilities.lib"
 cd ..
 
 cd ..

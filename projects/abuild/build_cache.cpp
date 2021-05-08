@@ -1,9 +1,7 @@
 #ifdef _MSC_VER
 export module abuild : build_cache;
-
 import acore;
 import "rapidjson.hpp";
-
 #endif
 
 namespace abuild
@@ -11,7 +9,8 @@ namespace abuild
 export class BuildCache
 {
 public:
-    BuildCache()
+    explicit BuildCache(const std::filesystem::path &cacheFile) :
+        mFilePath{cacheFile}
     {
         load();
     }
@@ -40,23 +39,21 @@ public:
         return mData;
     }
 
-    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
+    auto ensureValue(const char *key) -> void
     {
         if (!mData.HasMember(key))
         {
-            mData.AddMember(rapidjson::Value{key, mData.GetAllocator()}, rapidjson::Value{rapidjson::kObjectType}, mData.GetAllocator());
+            mData.AddMember(rapidjson::Value{key, mData.GetAllocator()}, rapidjson::Value(rapidjson::kObjectType), mData.GetAllocator());
         }
+    }
 
+    [[nodiscard]] auto operator[](const std::string &key) -> rapidjson::Value &
+    {
         return mData[key];
     }
 
     [[nodiscard]] auto operator[](const std::string &key) const -> const rapidjson::Value &
     {
-        if (!mData.HasMember(key))
-        {
-            throw std::runtime_error{"Requested key '" + key + "' does not exist in the build cache."};
-        }
-
         return mData[key];
     }
 
@@ -105,7 +102,7 @@ private:
         file.write(data, size);
     }
 
-    std::filesystem::path mFilePath = std::filesystem::current_path() / "build" / ".abuild";
+    std::filesystem::path mFilePath;
     rapidjson::Document mData;
 };
 }

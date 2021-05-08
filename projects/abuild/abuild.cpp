@@ -4,22 +4,25 @@ export import acore;
 
 #ifdef _MSC_VER
 export import : build_cache;
+export import : default_settings;
 export import : settings;
+export import : toolchain_scanner;
 export import : toolchains;
+export import : project_scanner;
 export import : projects;
-export import : dependencies;
-
+export import : tokenizer;
+export import : code_scanner;
 #else
 // clang-format off
 import "rapidjson.hpp";
 #include "build_cache.cpp"
+#include "default_settings.cpp"
 #include "settings.cpp"
-#include "toolchain_scanner_linux.cpp"
+#include "toolchain_scanner.cpp"
 #include "toolchains.cpp"
 #include "project_scanner.cpp"
 #include "projects.cpp"
 #include "tokenizer.cpp"
 #include "code_scanner.cpp"
-#include "dependencies.cpp"
 // clang-format on
 #endif

@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 export module abuild : tokenizer;
-
 import "astl.hpp";
 #endif
 
@@ -27,6 +26,10 @@ export struct Token
     bool exported = false;
 };
 
+struct BadToken
+{
+};
+
 export class Tokenizer
 {
 public:
@@ -39,61 +42,63 @@ public:
     {
         while (!atEnd())
         {
-            skipWhiteSpace();
+            try
+            {
+                skipWhiteSpaceOrComment();
 
-            const char c = mContent[pos++];
+                const char c = mContent[pos++];
 
-            if (c == '#')
-            {
-                if (isInclude())
+                if (c == '#')
                 {
-                    return extractInclude();
+                    if (isInclude())
+                    {
+                        return extractInclude();
+                    }
+                    else
+                    {
+                        skipLine();
+                    }
                 }
-                else
+                else if (c == 'i')
                 {
-                    skipLine();
+                    if (isImport())
+                    {
+                        return extractImport();
+                    }
+                    else
+                    {
+                        skipToSemicolonOrLine();
+                    }
                 }
-            }
-            else if (c == 'i')
-            {
-                if (isImport())
+                else if (c == 'm')
                 {
-                    return extractImport();
+                    if (isModule())
+                    {
+                        return extractModule();
+                    }
+                    else
+                    {
+                        skipToSemicolonOrLine();
+                    }
+                }
+                else if (c == 'e')
+                {
+                    if (isExport())
+                    {
+                        return extractExport();
+                    }
+                    else
+                    {
+                        skipToSemicolonOrLine();
+                    }
                 }
                 else
                 {
                     skipToSemicolonOrLine();
                 }
             }
-            else if (c == 'm')
+            catch ([[maybe_unused]] BadToken &badToken)
             {
-                if (isModule())
-                {
-                    return extractModule();
-                }
-                else
-                {
-                    skipToSemicolonOrLine();
-                }
-            }
-            else if (c == 'e')
-            {
-                if (isExport())
-                {
-                    return extractExport();
-                }
-                else
-                {
-                    skipToSemicolonOrLine();
-                }
-            }
-            else if (c == '/')
-            {
-                skipComment();
-            }
-            else
-            {
-                skipToSemicolonOrLine();
             }
         }
 
@@ -108,7 +113,7 @@ private:
 
     [[nodiscard]] auto extractExport() -> Token
     {
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
         Token token = extractExportToken();
         token.exported = true;
         return token;
@@ -126,63 +131,65 @@ private:
         }
         else
         {
-            throw std::runtime_error{"Unknown export at '" + mContent.substr(pos, 10) + '\''};
+            throw BadToken{};
         }
     }
 
     [[nodiscard]] auto extractExportImport() -> Token
     {
         pos += 6;
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
         return extractImport();
     }
 
     [[nodiscard]] auto extractExportModule() -> Token
     {
         pos += 6;
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
         return extractModule();
     }
 
     [[nodiscard]] auto extractImport() -> Token
     {
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
 
         if (mContent[pos] == ':')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportModulePartition);
+            skipWhiteSpaceOrComment();
+            return extractImportToken(Token::Type::ImportModulePartition, ';');
         }
         else if (mContent[pos] == '"')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportIncludeLocal);
+            return extractImportToken(Token::Type::ImportIncludeLocal, '"');
         }
         else if (mContent[pos] == '<')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportIncludeExternal);
+            return extractImportToken(Token::Type::ImportIncludeExternal, '>');
         }
         else
         {
-            return extractImportToken(Token::Type::ImportModule);
+            return extractImportToken(Token::Type::ImportModule, ';');
         }
     }
 
-    [[nodiscard]] auto extractImportToken(Token::Type type) -> Token
+    [[nodiscard]] auto extractImportToken(Token::Type type, const char separator) -> Token
     {
         Token token;
         token.type = type;
-        token.name = extractTokenName();
+        token.name = separator == '"' || separator == '>' ? extractIncludeName(separator) : extractTokenName();
+        pos++;
         return token;
     }
 
     [[nodiscard]] auto extractInclude() -> Token
     {
         Token token;
-        token.type = mContent[pos] == '"' ? Token::Type::IncludeLocal : Token::Type::IncludeExternal;
-        pos++;
-        token.name = extractTokenName();
+        const char separator = mContent[pos++];
+        token.type = separator == '"' ? Token::Type::IncludeLocal : Token::Type::IncludeExternal;
+        token.name = extractIncludeName(separator == '"' ? '"' : '>');
         return token;
     }
 
@@ -194,6 +201,7 @@ private:
         if (mContent[pos++] == ':')
         {
             token.type = Token::Type::ModulePartition;
+            skipWhiteSpaceOrComment();
             token.name = extractTokenName();
             token.moduleName = std::move(tokenName);
         }
@@ -206,28 +214,66 @@ private:
         return token;
     }
 
-    [[nodiscard]] auto extractTokenName() -> std::string
+    [[nodiscard]] auto extractIncludeName(const char separator) -> std::string
     {
         std::string name;
 
-        while (mContent[pos] != '"' && mContent[pos] != '>' && mContent[pos] != ':' && mContent[pos] != ';' && !atEnd())
+        while (mContent[pos] != separator && mContent[pos] != '\n' && !atEnd())
         {
             name += mContent[pos++];
         }
 
+        if (mContent[pos] != separator)
+        {
+            throw BadToken{};
+        }
+
+        return name;
+    }
+
+    [[nodiscard]] auto extractTokenName() -> std::string
+    {
+        std::string name;
+
+        while (mContent[pos] != ':' && mContent[pos] != ';' && !std::isspace(mContent[pos]) && !atEnd())
+        {
+            if (isComment())
+            {
+                skipMultiLineComment();
+            }
+            else
+            {
+                name += mContent[pos++];
+            }
+        }
+
+        skipWhiteSpaceOrComment();
+
+        if (mContent[pos] != ':' && mContent[pos] != ';')
+        {
+            throw BadToken{};
+        }
+
         return trim(name);
+    }
+
+    [[nodiscard]] auto isComment() -> bool
+    {
+        return mContent[pos] == '/' && mContent[pos + 1] == '*';
     }
 
     [[nodiscard]] auto isExport() -> bool
     {
         const std::string EXPORT = "xport";
 
-        if (mContent.substr(pos, EXPORT.size()) == EXPORT && std::isspace(mContent[pos + EXPORT.size()]))
+        if (mContent.substr(pos, EXPORT.size()) == EXPORT)
         {
             pos += EXPORT.size();
-            skipWhiteSpace();
+
+            const bool result = std::isspace(mContent[pos]) || isComment();
+            skipWhiteSpaceOrComment();
             const std::string what = mContent.substr(pos, 6);
-            return what == "import" || what == "module";
+            return result && (what == "import" || what == "module");
         }
 
         return false;
@@ -240,7 +286,7 @@ private:
         if (mContent.substr(pos, IMPORT.size()) == IMPORT)
         {
             pos += IMPORT.size();
-            return std::isspace(mContent[pos]) || mContent[pos] == '"' || mContent[pos] == '<' || mContent[pos] == ':';
+            return std::isspace(mContent[pos]) || mContent[pos] == '"' || mContent[pos] == '<' || mContent[pos] == ':' || isComment();
         }
 
         return false;
@@ -249,12 +295,12 @@ private:
     [[nodiscard]] auto isInclude() -> bool
     {
         const std::string INCLUDE = "include";
-        skipWhiteSpace();
+        skipWhiteSpaceOrComment();
 
         if (mContent.substr(pos, INCLUDE.size()) == INCLUDE)
         {
             pos += INCLUDE.size();
-            skipWhiteSpace();
+            skipWhiteSpaceOrComment();
             return mContent[pos] == '"' || mContent[pos] == '<';
         }
 
@@ -268,8 +314,9 @@ private:
         if (mContent.substr(pos, MODULE.size()) == MODULE)
         {
             pos += MODULE.size();
-            skipWhiteSpace();
-            return std::isspace(mContent[pos]);
+            const bool result = std::isspace(mContent[pos]) || isComment();
+            skipWhiteSpaceOrComment();
+            return result;
         }
 
         return false;
@@ -287,7 +334,7 @@ private:
         }
         else
         {
-            skipToSemicolonOrLine();
+            pos++;
         }
     }
 
@@ -297,29 +344,56 @@ private:
         {
             pos++;
         }
+
+        pos++;
     }
 
     auto skipToSemicolonOrLine() -> void
     {
         while (mContent[pos] != ';' && mContent[pos] != '\n' && !atEnd())
         {
-            pos++;
+            if (mContent[pos] == '/')
+            {
+                skipComment();
+            }
+            else
+            {
+                pos++;
+            }
         }
+
+        pos++;
     }
 
     auto skipMultiLineComment() -> void
     {
-        while (!(mContent[pos] == '*' && mContent[pos + 1] == '/') && !atEnd())
+        while (!(mContent[pos] == '/' && mContent[pos - 1] == '*') && !atEnd())
         {
             pos++;
         }
+
+        pos++;
     }
 
-    auto skipWhiteSpace() -> void
+    auto skipWhiteSpaceOrComment() -> void
     {
-        while (std::isspace(mContent[pos]))
+        while (!atEnd())
         {
-            pos++;
+            const char c = mContent[pos];
+
+            if (c == '/')
+            {
+                pos++;
+                skipComment();
+            }
+            else if (!std::isspace(c))
+            {
+                break;
+            }
+            else
+            {
+                pos++;
+            }
         }
     }
 

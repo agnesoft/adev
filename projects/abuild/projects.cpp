@@ -1,7 +1,8 @@
 #ifdef _MSC_VER
+module;
+#    include <vector>
 export module abuild : projects;
-
-import : project_scanner;
+import : build_cache;
 #endif
 
 namespace abuild
@@ -9,9 +10,32 @@ namespace abuild
 export class Projects
 {
 public:
-    explicit Projects(BuildCache &cache, const Settings &settings)
+    Projects(BuildCache &cache) :
+        mBuildCache{cache}
     {
-        ProjectScanner{cache, settings};
     }
+
+    [[nodiscard]] auto modules() -> rapidjson::Value &
+    {
+        return mBuildCache["modules"];
+    }
+
+    [[nodiscard]] auto sources() -> rapidjson::Value &
+    {
+        return mBuildCache["sources"];
+    }
+
+    [[nodiscard]] auto headers() -> rapidjson::Value &
+    {
+        return mBuildCache["headers"];
+    }
+
+    [[nodiscard]] auto projects() -> rapidjson::Value &
+    {
+        return mBuildCache["projects"];
+    }
+
+private:
+    BuildCache &mBuildCache;
 };
 }
