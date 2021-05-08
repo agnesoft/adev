@@ -50,20 +50,23 @@ private:
         }
     }
 
-    auto processIncludeImport(rapidjson::Value &val, const Token &token) -> void
+    auto addDependency(rapidjson::Value &val, const std::string &name) -> void
     {
-        val.PushBack(rapidjson::Value(token.name, mBuildCache.allocator()), mBuildCache.allocator());
+        val.PushBack(rapidjson::Value(name, mBuildCache.allocator()), mBuildCache.allocator());
     }
 
-    auto processModule(const rapidjson::Value::MemberIterator &file, const Token &token) -> void
+    auto addModule(rapidjson::Value::MemberIterator &file, const Token &token) -> void
     {
+        addDependency(value(file, "modules"), token.name);
         rapidjson::Value &mod = moduleValue(token.name);
         mod.AddMember("file", rapidjson::Value{file->name, mBuildCache.allocator()}, mBuildCache.allocator());
         mod.AddMember("exported", token.exported, mBuildCache.allocator());
     }
 
-    auto processModulePartition(const rapidjson::Value::MemberIterator &file, const Token &token) -> void
+    auto addModulePartition(rapidjson::Value::MemberIterator &file, const Token &token) -> void
     {
+        addDependency(value(file, "modules_partitions"), token.name);
+        addDependency(value(file, "modules"), token.moduleName);
         rapidjson::Value &partitions = moduleValue(token.moduleName)["partitions"];
         partitions.AddMember(rapidjson::Value{token.name, mBuildCache.allocator()}, rapidjson::Value{file->name, mBuildCache.allocator()}, mBuildCache.allocator());
     }
@@ -73,28 +76,28 @@ private:
         switch (token.type)
         {
         case Token::Type::IncludeLocal:
-            processIncludeImport(value(file, "includes_local"), token);
+            addDependency(value(file, "includes_local"), token.name);
             break;
         case Token::Type::IncludeExternal:
-            processIncludeImport(value(file, "includes_external"), token);
+            addDependency(value(file, "includes_external"), token.name);
             break;
         case Token::Type::Module:
-            processModule(file, token);
+            addModule(file, token);
             break;
         case Token::Type::ModulePartition:
-            processModulePartition(file, token);
+            addModulePartition(file, token);
             break;
         case Token::Type::ImportModule:
-            processIncludeImport(value(file, "import_modules"), token);
+            addDependency(value(file, "import_modules"), token.name);
             break;
         case Token::Type::ImportIncludeLocal:
-            processIncludeImport(value(file, "import_includes_local"), token);
+            addDependency(value(file, "import_includes_local"), token.name);
             break;
         case Token::Type::ImportIncludeExternal:
-            processIncludeImport(value(file, "import_includes_external"), token);
+            addDependency(value(file, "import_includes_external"), token.name);
             break;
         case Token::Type::ImportModulePartition:
-            processIncludeImport(value(file, "import_module_partitions"), token);
+            addDependency(value(file, "import_module_partitions"), token.name);
             break;
         case Token::Type::None:
             throw std::runtime_error{"Unknown token type for token '" + token.name + '\''};
