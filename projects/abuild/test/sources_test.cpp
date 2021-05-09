@@ -16,19 +16,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                  "header.hpp"}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
-        abuild::Projects projects{cache};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(projects.sources()[source]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
-        expect(projects.sources()[source]["modified"].GetInt64()).toBe(lastModified(source));
+        expect(cache.sources()[source]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
+        expect(cache.sources()[source]["modified"].GetInt64()).toBe(lastModified(source));
     });
 
     test("root project with src dir", [] {
@@ -39,24 +36,21 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                  "src/build_test_project_scanner/othersource.cpp"}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
-        abuild::Projects projects{cache};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         const std::string source1 = (testProject.projectRoot() / "main.cpp").string();
         const std::string source2 = (testProject.projectRoot() / "src" / "build_test_project_scanner" / "othersource.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source1,
                 source2});
 
-        expect(projects.sources()[source1]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
-        expect(projects.sources()[source1]["modified"].GetInt64()).toBe(lastModified(source1));
+        expect(cache.sources()[source1]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
+        expect(cache.sources()[source1]["modified"].GetInt64()).toBe(lastModified(source1));
 
-        expect(projects.sources()[source2]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
-        expect(projects.sources()[source2]["modified"].GetInt64()).toBe(lastModified(source2));
+        expect(cache.sources()[source2]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
+        expect(cache.sources()[source2]["modified"].GetInt64()).toBe(lastModified(source2));
     });
 
     test("subprojects with sources", [] {
@@ -67,29 +61,26 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                  "projects/mylib/mysublib/projects/mysublib.cxx"}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
-        abuild::Projects projects{cache};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         const std::string source1 = (testProject.projectRoot() / "projects" / "myapp" / "src" / "myheader.cpp").string();
         const std::string source2 = (testProject.projectRoot() / "projects" / "mylib" / "mylib.cc").string();
         const std::string source3 = (testProject.projectRoot() / "projects" / "mylib" / "mysublib" / "projects" / "mysublib.cxx").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source1,
                 source2,
                 source3});
 
-        expect(projects.sources()[source1]["project"].GetString()).toBe(std::string{"myapp"});
-        expect(projects.sources()[source1]["modified"].GetInt64()).toBe(lastModified(source1));
+        expect(cache.sources()[source1]["project"].GetString()).toBe(std::string{"myapp"});
+        expect(cache.sources()[source1]["modified"].GetInt64()).toBe(lastModified(source1));
 
-        expect(projects.sources()[source2]["project"].GetString()).toBe(std::string{"mylib"});
-        expect(projects.sources()[source2]["modified"].GetInt64()).toBe(lastModified(source2));
+        expect(cache.sources()[source2]["project"].GetString()).toBe(std::string{"mylib"});
+        expect(cache.sources()[source2]["modified"].GetInt64()).toBe(lastModified(source2));
 
-        expect(projects.sources()[source3]["project"].GetString()).toBe(std::string{"mylib.mysublib"});
-        expect(projects.sources()[source3]["modified"].GetInt64()).toBe(lastModified(source3));
+        expect(cache.sources()[source3]["project"].GetString()).toBe(std::string{"mylib.mysublib"});
+        expect(cache.sources()[source3]["modified"].GetInt64()).toBe(lastModified(source3));
     });
 
     test("include external headers", [] {
@@ -98,19 +89,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                            {{"main.cpp", "#include <vector>\n#include <string>"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["includes_external"]))
+        expect(asVector(cache.sources()[source]["includes_external"]))
             .toBe(std::vector<std::string>{
                 "string",
                 "vector"});
@@ -122,19 +110,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                            {{"main.cpp", "#include \"header.hpp\"\n#include \"other_header.hpp\""}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["includes_local"]))
+        expect(asVector(cache.sources()[source]["includes_local"]))
             .toBe(std::vector<std::string>{
                 "header.hpp",
                 "other_header.hpp"});
@@ -146,19 +131,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                            {{"main.cpp", "import \"header.hpp\";\nexport import \"other_header.hpp\";"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["import_includes_local"]))
+        expect(asVector(cache.sources()[source]["import_includes_local"]))
             .toBe(std::vector<std::string>{
                 "header.hpp",
                 "other_header.hpp"});
@@ -170,19 +152,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                            {{"main.cpp", "import <vector>;\nexport import <string>;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["import_includes_external"]))
+        expect(asVector(cache.sources()[source]["import_includes_external"]))
             .toBe(std::vector<std::string>{
                 "string",
                 "vector"});
@@ -194,19 +173,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                            {{"main.cpp", "import mymodule;\nexport import othermodule;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["import_modules"]))
+        expect(asVector(cache.sources()[source]["import_modules"]))
             .toBe(std::vector<std::string>{
                 "mymodule",
                 "othermodule"});
@@ -218,19 +194,16 @@ static const auto testSuite = suite("abuild::Projects::sources()", [] {
                                            {{"main.cpp", "import : mymodule;\nexport import : othermodule;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "main.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["import_module_partitions"]))
+        expect(asVector(cache.sources()[source]["import_module_partitions"]))
             .toBe(std::vector<std::string>{
                 "mymodule",
                 "othermodule"});

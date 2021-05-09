@@ -11,8 +11,6 @@ public:
     explicit ToolchainScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
-        mBuildCache.ensureValue("toolchains");
-
 #ifdef _MSC_VER
         detectMSVC();
         detectClangWindows();
@@ -98,7 +96,7 @@ private:
     {
         if (std::filesystem::exists("/usr/bin/clang++-" + version))
         {
-            mBuildCache["toolchains"].AddMember(rapidjson::Value{"clang" + version, mBuildCache.allocator()}, clangToolchainLinux(version), mBuildCache.allocator());
+            mBuildCache.toolchains().AddMember(rapidjson::Value{"clang" + version, mBuildCache.allocator()}, clangToolchainLinux(version), mBuildCache.allocator());
         }
     }
 
@@ -108,10 +106,10 @@ private:
 
         if (std::filesystem::exists(clangRoot))
         {
-            mBuildCache["toolchains"].AddMember("clang", clangToolchainWindows(clangRoot), mBuildCache.allocator());
+            mBuildCache.toolchains().AddMember("clang", clangToolchainWindows(clangRoot), mBuildCache.allocator());
         }
     }
-    
+
     auto detectGCC() -> void
     {
         detectGCCVersion("9");
@@ -123,7 +121,7 @@ private:
     {
         if (std::filesystem::exists("/usr/bin/g++-" + version))
         {
-            mBuildCache["toolchains"].AddMember(rapidjson::Value{"gcc" + version, mBuildCache.allocator()}, gccToolchain(version), mBuildCache.allocator());
+            mBuildCache.toolchains().AddMember(rapidjson::Value{"gcc" + version, mBuildCache.allocator()}, gccToolchain(version), mBuildCache.allocator());
         }
     }
 
@@ -147,7 +145,7 @@ private:
         {
             for (const std::filesystem::directory_entry &toolset : std::filesystem::directory_iterator(msvcRoot))
             {
-                mBuildCache["toolchains"].AddMember(rapidjson::Value{"msvc19-" + edition + '-' + toolset.path().filename().string(), mBuildCache.allocator()}, msvcToolchain(toolset.path()), mBuildCache.allocator());
+                mBuildCache.toolchains().AddMember(rapidjson::Value{"msvc19-" + edition + '-' + toolset.path().filename().string(), mBuildCache.allocator()}, msvcToolchain(toolset.path()), mBuildCache.allocator());
             }
         }
     }

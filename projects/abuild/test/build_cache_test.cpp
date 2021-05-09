@@ -21,12 +21,9 @@ static const auto testSuite = suite("abuild::BuildCache", [] {
 
         expect(testCache.exists()).toBe(false);
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-        }
+        abuild::BuildCache{testCache.file()};
 
         expect(testCache.exists()).toBe(true);
-        expect(testCache.content()).toBe(TestCache::jsonFormat("{}"));
     });
 
     test("existing cache", [] {
@@ -34,9 +31,7 @@ static const auto testSuite = suite("abuild::BuildCache", [] {
 
         expect(testCache.exists()).toBe(true);
 
-        {
-            abuild::BuildCache cache{testCache.file()};
-        }
+        abuild::BuildCache{testCache.file()};
 
         expect(testCache.content()).toBe(TestCache::jsonFormat("{ \"Value\": 1 }"));
     });

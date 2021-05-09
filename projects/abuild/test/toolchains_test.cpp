@@ -9,23 +9,13 @@ using atest::suite;
 using atest::test;
 
 static const auto testSuite = suite("abuild::Toolchains", [] {
-    test("type traits", [] {
-        expect(std::is_default_constructible_v<abuild::Toolchains>).toBe(false);
-        expect(std::is_copy_constructible_v<abuild::Toolchains>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::Toolchains>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::Toolchains>).toBe(false);
-        expect(std::is_nothrow_move_assignable_v<abuild::Toolchains>).toBe(false);
-        expect(std::is_nothrow_destructible_v<abuild::Toolchains>).toBe(true);
-    });
-
     test("type", [] {
         TestCache testCache;
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             expect(std::vector<std::string>{"msvc", "clang", "gcc"}).toMatch<OneOfMatcher>(toolchain->value["type"].GetString());
@@ -37,9 +27,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("compiler")).toBe(true);
             expect(toolchain->value["compiler"].IsString()).toBe(true);
@@ -51,9 +40,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             assert_(toolchain->value.HasMember("compiler_flags")).toBe(true);
@@ -95,9 +83,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("linker")).toBe(true);
             expect(toolchain->value["linker"].IsString()).toBe(true);
@@ -109,9 +96,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             assert_(toolchain->value.HasMember("linker_flags")).toBe(true);
@@ -140,9 +126,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("archiver")).toBe(true);
             expect(toolchain->value["archiver"].IsString()).toBe(true);
@@ -154,9 +139,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("type")).toBe(true);
             assert_(toolchain->value.HasMember("archiver_flags")).toBe(true);
@@ -185,9 +169,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("ifc")).toBe(true);
             expect(toolchain->value["ifc"].IsString()).toBe(true);
@@ -199,9 +182,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("include")).toBe(true);
             expect(toolchain->value["include"].IsString()).toBe(true);
@@ -213,9 +195,8 @@ static const auto testSuite = suite("abuild::Toolchains", [] {
 
         abuild::BuildCache cache{testCache.file()};
         abuild::ToolchainScanner{cache};
-        abuild::Toolchains toolchains{cache};
 
-        for (auto toolchain = toolchains.toolchains().MemberBegin(); toolchain != toolchains.toolchains().MemberEnd(); ++toolchain)
+        for (auto toolchain = cache.toolchains().MemberBegin(); toolchain != cache.toolchains().MemberEnd(); ++toolchain)
         {
             assert_(toolchain->value.HasMember("lib")).toBe(true);
             expect(toolchain->value["lib"].IsString()).toBe(true);

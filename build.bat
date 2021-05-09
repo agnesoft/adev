@@ -40,16 +40,12 @@ REM abuild
 mkdir abuild
 cd abuild
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\default_settings.cpp"
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\settings.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchain_scanner.cpp"
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchains.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\projects.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\tokenizer.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\code_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO abuild.obj build_cache.obj default_settings.obj settings.obj toolchain_scanner.obj toolchains.obj project_scanner.obj projects.obj tokenizer.obj code_scanner.obj /OUT:abuild.lib
+lib.exe /NOLOGO abuild.obj build_cache.obj toolchain_scanner.obj project_scanner.obj tokenizer.obj code_scanner.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 

@@ -2,7 +2,7 @@
 module;
 #    include <vector>
 export module abuild : project_scanner;
-import : settings;
+import : build_cache;
 #endif
 
 namespace abuild
@@ -10,28 +10,23 @@ namespace abuild
 export class ProjectScanner
 {
 public:
-    ProjectScanner(const std::filesystem::path &projectRoot, BuildCache &cache, const Settings &settings) :
+    ProjectScanner(BuildCache &cache, const std::filesystem::path &projectRoot) :
         mProjectRoot{std::filesystem::canonical(projectRoot)},
-        mBuildCache{cache},
-        mSettings{settings}
+        mBuildCache{cache}
     {
-        mBuildCache.ensureValue("projects");
-        mBuildCache.ensureValue("sources");
-        mBuildCache.ensureValue("headers");
-
         scanDir(std::filesystem::canonical(projectRoot));
     }
 
 private:
     auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        mBuildCache["headers"].AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newHeader(path, projectName), mBuildCache.allocator());
+        mBuildCache.headers().AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newHeader(path, projectName), mBuildCache.allocator());
         project(projectName)["headers"].PushBack(rapidjson::Value{path.string(), mBuildCache.allocator()}, mBuildCache.allocator());
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        mBuildCache["sources"].AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newSource(path, projectName), mBuildCache.allocator());
+        mBuildCache.sources().AddMember(rapidjson::Value{path.string(), mBuildCache.allocator()}, newSource(path, projectName), mBuildCache.allocator());
         project(projectName)["sources"].PushBack(rapidjson::Value{path.string(), mBuildCache.allocator()}, mBuildCache.allocator());
     }
 
@@ -39,7 +34,7 @@ private:
     {
         if (!projectName.empty())
         {
-            return projectName + mSettings.projectNameSeparator().GetString() + directoryName;
+            return projectName + mBuildCache.projectNameSeparator().GetString() + directoryName;
         }
 
         return projectName + directoryName;
@@ -47,43 +42,43 @@ private:
 
     [[nodiscard]] auto isCppSource(const std::filesystem::path &path) -> bool
     {
-        return std::find(mSettings.cppSourceExtensions().Begin(),
-                         mSettings.cppSourceExtensions().End(),
+        return std::find(mBuildCache.cppSourceExtensions().Begin(),
+                         mBuildCache.cppSourceExtensions().End(),
                          path.extension().string())
-            != mSettings.cppSourceExtensions().End();
+            != mBuildCache.cppSourceExtensions().End();
     }
 
     [[nodiscard]] auto isCppHader(const std::filesystem::path &path) -> bool
     {
-        return std::find(mSettings.cppHeaderExtensions().Begin(),
-                         mSettings.cppHeaderExtensions().End(),
+        return std::find(mBuildCache.cppHeaderExtensions().Begin(),
+                         mBuildCache.cppHeaderExtensions().End(),
                          path.extension().string())
-            != mSettings.cppHeaderExtensions().End();
+            != mBuildCache.cppHeaderExtensions().End();
     }
 
     [[nodiscard]] auto isIgnoreDirectory(const std::filesystem::path &path) -> bool
     {
         return path.filename().string().front() == '.'
-            || std::find(mSettings.ignoreDirectories().Begin(),
-                         mSettings.ignoreDirectories().End(),
+            || std::find(mBuildCache.ignoreDirectories().Begin(),
+                         mBuildCache.ignoreDirectories().End(),
                          path.filename().string())
-            != mSettings.ignoreDirectories().End();
+            != mBuildCache.ignoreDirectories().End();
     }
 
     [[nodiscard]] auto isSquashDirectory(const std::filesystem::path &path) -> bool
     {
-        return std::find(mSettings.squashDirectories().Begin(),
-                         mSettings.squashDirectories().End(),
+        return std::find(mBuildCache.squashDirectories().Begin(),
+                         mBuildCache.squashDirectories().End(),
                          path.filename().string())
-            != mSettings.squashDirectories().End();
+            != mBuildCache.squashDirectories().End();
     }
 
     [[nodiscard]] auto isSkipDirectory(const std::filesystem::path &path) -> bool
     {
-        return std::find(mSettings.skipDirectories().Begin(),
-                         mSettings.skipDirectories().End(),
+        return std::find(mBuildCache.skipDirectories().Begin(),
+                         mBuildCache.skipDirectories().End(),
                          path.filename().string())
-            != mSettings.skipDirectories().End();
+            != mBuildCache.skipDirectories().End();
     }
 
     [[nodiscard]] auto isStopDirectory(const std::filesystem::path &path) -> bool
@@ -93,10 +88,10 @@ private:
 
     [[nodiscard]] auto isTestDirectory(const std::filesystem::path &path) -> bool
     {
-        return std::find(mSettings.testDirectories().Begin(),
-                         mSettings.testDirectories().End(),
+        return std::find(mBuildCache.testDirectories().Begin(),
+                         mBuildCache.testDirectories().End(),
                          path.filename().string())
-            != mSettings.testDirectories().End();
+            != mBuildCache.testDirectories().End();
     }
 
     [[nodiscard]] static auto lastModified(const std::filesystem::path &path) -> std::int64_t
@@ -220,16 +215,15 @@ private:
 
     auto project(const std::string &name) -> rapidjson::Value &
     {
-        if (!mBuildCache["projects"].HasMember(name))
+        if (!mBuildCache.projects().HasMember(name))
         {
-            mBuildCache["projects"].AddMember(rapidjson::Value{name, mBuildCache.allocator()}, newProject(), mBuildCache.allocator());
+            mBuildCache.projects().AddMember(rapidjson::Value{name, mBuildCache.allocator()}, newProject(), mBuildCache.allocator());
         }
 
-        return mBuildCache["projects"][name];
+        return mBuildCache.projects()[name];
     }
 
     std::filesystem::path mProjectRoot;
     BuildCache &mBuildCache;
-    const Settings &mSettings;
 };
 }

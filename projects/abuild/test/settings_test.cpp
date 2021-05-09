@@ -9,22 +9,11 @@ using atest::suite;
 using atest::test;
 
 static const auto testSuite = suite("abuild::Settings", [] {
-    test("type traits", [] {
-        expect(std::is_default_constructible_v<abuild::Settings>).toBe(false);
-        expect(std::is_copy_constructible_v<abuild::Settings>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::Settings>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::Settings>).toBe(false);
-        expect(std::is_nothrow_move_assignable_v<abuild::Settings>).toBe(false);
-        expect(std::is_nothrow_destructible_v<abuild::Settings>).toBe(true);
-    });
-
     test("cppSourceExtensions()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(asVector(settings.cppSourceExtensions()))
+        expect(asVector(cache.cppSourceExtensions()))
             .toBe(std::vector<std::string>{".cc",
                                            ".cpp",
                                            ".cxx",
@@ -34,10 +23,8 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("cppHeaderExtensions()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(asVector(settings.cppHeaderExtensions()))
+        expect(asVector(cache.cppHeaderExtensions()))
             .toBe(std::vector<std::string>{".h",
                                            ".hpp",
                                            ".hxx"});
@@ -46,29 +33,23 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("ignoreDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(asVector(settings.ignoreDirectories()))
+        expect(asVector(cache.ignoreDirectories()))
             .toBe(std::vector<std::string>{"build"});
     });
 
     test("projectNameSeparator()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(settings.projectNameSeparator().GetString()).toBe(".");
+        expect(cache.projectNameSeparator().GetString()).toBe(".");
     });
 
     test("skipDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(asVector(settings.skipDirectories()))
+        expect(asVector(cache.skipDirectories()))
             .toBe(std::vector<std::string>{"Projects",
                                            "projects"});
     });
@@ -76,10 +57,8 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("squashDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(asVector(settings.squashDirectories()))
+        expect(asVector(cache.squashDirectories()))
             .toBe(std::vector<std::string>{"Include",
                                            "Includes",
                                            "SRC",
@@ -97,10 +76,8 @@ static const auto testSuite = suite("abuild::Settings", [] {
     test("testDirectories()", [] {
         TestCache testCache;
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
 
-        expect(asVector(settings.testDirectories()))
+        expect(asVector(cache.testDirectories()))
             .toBe(std::vector<std::string>{"Test",
                                            "Tests",
                                            "test",

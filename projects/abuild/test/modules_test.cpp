@@ -15,29 +15,26 @@ static const auto testSuite = suite("abuild::Projects::modules()", [] {
                                            {{"mymodule.cpp", "module mymodule;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "mymodule.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["modules"]))
+        expect(asVector(cache.sources()[source]["modules"]))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        assert_(asVector(projects.modules()))
+        assert_(asVector(cache.modules()))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        expect(projects.modules()["mymodule"]["file"].GetString()).toBe(source);
-        expect(asVector(projects.modules()["mymodule"]["partitions"])).toBe(std::vector<std::string>{});
-        expect(projects.modules()["mymodule"]["exported"].GetBool()).toBe(false);
+        expect(cache.modules()["mymodule"]["file"].GetString()).toBe(source);
+        expect(asVector(cache.modules()["mymodule"]["partitions"])).toBe(std::vector<std::string>{});
+        expect(cache.modules()["mymodule"]["exported"].GetBool()).toBe(false);
     });
 
     test("exported module interface", [] {
@@ -46,29 +43,26 @@ static const auto testSuite = suite("abuild::Projects::modules()", [] {
                                            {{"mymodule.cpp", "export module mymodule;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "mymodule.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["modules"]))
+        expect(asVector(cache.sources()[source]["modules"]))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        assert_(asVector(projects.modules()))
+        assert_(asVector(cache.modules()))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        expect(projects.modules()["mymodule"]["file"].GetString()).toBe(source);
-        expect(asVector(projects.modules()["mymodule"]["partitions"])).toBe(std::vector<std::string>{});
-        expect(projects.modules()["mymodule"]["exported"].GetBool()).toBe(true);
+        expect(cache.modules()["mymodule"]["file"].GetString()).toBe(source);
+        expect(asVector(cache.modules()["mymodule"]["partitions"])).toBe(std::vector<std::string>{});
+        expect(cache.modules()["mymodule"]["exported"].GetBool()).toBe(true);
     });
 
     test("module partition", [] {
@@ -77,31 +71,28 @@ static const auto testSuite = suite("abuild::Projects::modules()", [] {
                                            {{"mymodule_partition.cpp", "module mymodule : mypartition;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source = (testProject.projectRoot() / "mymodule_partition.cpp").string();
 
-        assert_(asVector(projects.sources()))
+        assert_(asVector(cache.sources()))
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(projects.sources()[source]["modules"]))
+        expect(asVector(cache.sources()[source]["modules"]))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        expect(asVector(projects.sources()[source]["modules_partitions"]))
+        expect(asVector(cache.sources()[source]["modules_partitions"]))
             .toBe(std::vector<std::string>{
                 "mypartition"});
 
-        assert_(asVector(projects.modules()))
+        assert_(asVector(cache.modules()))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        expect(projects.modules()["mymodule"]["partitions"]["mypartition"].GetString()).toBe(source);
+        expect(cache.modules()["mymodule"]["partitions"]["mypartition"].GetString()).toBe(source);
     });
 
     test("module partitions", [] {
@@ -111,20 +102,17 @@ static const auto testSuite = suite("abuild::Projects::modules()", [] {
                                             {"mymodule_otherpartition.cpp", "export module mymodule : myotherpartition;"}}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
-        abuild::Projects projects{cache};
 
         const std::string source1 = (testProject.projectRoot() / "mymodule_partition.cpp").string();
         const std::string source2 = (testProject.projectRoot() / "mymodule_otherpartition.cpp").string();
 
-        assert_(asVector(projects.modules()))
+        assert_(asVector(cache.modules()))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        expect(projects.modules()["mymodule"]["partitions"]["mypartition"].GetString()).toBe(source1);
-        expect(projects.modules()["mymodule"]["partitions"]["myotherpartition"].GetString()).toBe(source2);
+        expect(cache.modules()["mymodule"]["partitions"]["mypartition"].GetString()).toBe(source1);
+        expect(cache.modules()["mymodule"]["partitions"]["myotherpartition"].GetString()).toBe(source2);
     });
 });

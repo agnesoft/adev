@@ -12,22 +12,20 @@ public:
     explicit CodeScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
-        mBuildCache.ensureValue("modules");
-
-        processFiles(cache["sources"]);
-        processFiles(cache["headers"]);
+        processFiles(mBuildCache.sources());
+        processFiles(mBuildCache.headers());
     }
 
 private:
     [[nodiscard]] auto moduleValue(const std::string &name) -> rapidjson::Value &
     {
-        if (!mBuildCache["modules"].HasMember(name))
+        if (!mBuildCache.modules().HasMember(name))
         {
-            mBuildCache["modules"].AddMember(rapidjson::Value{name, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
-            mBuildCache["modules"][name].AddMember("partitions", rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
+            mBuildCache.modules().AddMember(rapidjson::Value{name, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
+            mBuildCache.modules()[name].AddMember("partitions", rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
         }
 
-        return mBuildCache["modules"][name];
+        return mBuildCache.modules()[name];
     }
 
     auto processFile(rapidjson::Value::MemberIterator &file) -> void
