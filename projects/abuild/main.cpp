@@ -10,4 +10,5 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
     abuild::ToolchainScanner{cache};
     abuild::ProjectScanner{cache, std::filesystem::current_path()};
     abuild::CodeScanner{cache};
+    abuild::DependencyScanner{cache};
 }

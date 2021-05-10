@@ -302,7 +302,10 @@ private:
         {
             for (rapidjson::Value::MemberIterator partition = file->value["import_module_partitions"].MemberBegin(); partition != file->value["import_module_partitions"].MemberEnd(); ++partition)
             {
-                processModulePartition(partition, file->value["modules"].MemberBegin()->name.GetString());
+                if (file->value.HasMember("modules"))
+                {
+                    processModulePartition(partition, file->value["modules"].MemberBegin()->name.GetString());
+                }
             }
         }
     }

@@ -188,4 +188,25 @@ static const auto testSuite = suite("abuild::DependencyScanner (sources)", [] {
         expect(cache.sources()[mod]["import_module_partitions"]["mypartition"].GetString()).toBe(partition);
         expect(cache.sources()[mod]["import_module_partitions"]["missing_partition"].GetString()).toBe(std::string{});
     });
+
+    test("import module partition without module", [] {
+        TestCache testCache;
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"mymodule.cpp", "import : mypartition;import : missing_partition;"},
+                                            {"mypartition.cpp", "module mymodule : mypartition;"}}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+
+        const std::string mod = (testProject.projectRoot() / "mymodule.cpp").string();
+        const std::string partition = (testProject.projectRoot() / "mypartition.cpp").string();
+
+        assert_(asVector(cache.sources()[mod]["import_module_partitions"]))
+            .toBe(std::vector<std::string>{"missing_partition", "mypartition"});
+
+        expect(cache.sources()[mod]["import_module_partitions"]["mypartition"].GetString()).toBe(std::string{});
+        expect(cache.sources()[mod]["import_module_partitions"]["missing_partition"].GetString()).toBe(std::string{});
+    });
 });
