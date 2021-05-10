@@ -5,7 +5,7 @@ import : build_cache;
 
 namespace abuild
 {
-std::unordered_set<std::string> CPP_STL = {
+static const std::unordered_set<std::string> CPP_STL = {
     "algorithm",
     "any",
     "array",
