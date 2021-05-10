@@ -55,7 +55,7 @@ private:
 
     auto addModule(rapidjson::Value::MemberIterator &file, const Token &token) -> void
     {
-        addDependency(value(file, "modules"), token.name);
+        addDependency(value(file, "module"), token.name);
         rapidjson::Value &mod = moduleValue(token.name);
         mod.AddMember("file", rapidjson::Value{file->name, mBuildCache.allocator()}, mBuildCache.allocator());
         mod.AddMember("exported", token.exported, mBuildCache.allocator());
@@ -63,8 +63,8 @@ private:
 
     auto addModulePartition(rapidjson::Value::MemberIterator &file, const Token &token) -> void
     {
-        addDependency(value(file, "modules_partitions"), token.name);
-        addDependency(value(file, "modules"), token.moduleName);
+        addDependency(value(file, "module_partitions"), token.name);
+        addDependency(value(file, "module"), token.moduleName);
         rapidjson::Value &partitions = moduleValue(token.moduleName)["partitions"];
         partitions.AddMember(rapidjson::Value{token.name, mBuildCache.allocator()}, rapidjson::Value{file->name, mBuildCache.allocator()}, mBuildCache.allocator());
     }

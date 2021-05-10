@@ -24,7 +24,7 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(cache.sources()[source]["modules"]))
+        expect(asVector(cache.sources()[source]["module"]))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
@@ -52,7 +52,7 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(cache.sources()[source]["modules"]))
+        expect(asVector(cache.sources()[source]["module"]))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
@@ -80,11 +80,11 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
             .toBe(std::vector<std::string>{
                 source});
 
-        expect(asVector(cache.sources()[source]["modules"]))
+        expect(asVector(cache.sources()[source]["module"]))
             .toBe(std::vector<std::string>{
                 "mymodule"});
 
-        expect(asVector(cache.sources()[source]["modules_partitions"]))
+        expect(asVector(cache.sources()[source]["module_partitions"]))
             .toBe(std::vector<std::string>{
                 "mypartition"});
 
