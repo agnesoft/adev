@@ -8,7 +8,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::Toolchains", [] {
+static const auto testSuite = suite("abuild::ToolchainScanner", [] {
     test("type", [] {
         TestCache testCache;
 
