@@ -8,6 +8,7 @@ export import : toolchain_scanner;
 export import : project_scanner;
 export import : tokenizer;
 export import : code_scanner;
+export import : dependency_scanner;
 #else
 // clang-format off
 import "rapidjson.hpp";
@@ -16,5 +17,6 @@ import "rapidjson.hpp";
 #include "project_scanner.cpp"
 #include "tokenizer.cpp"
 #include "code_scanner.cpp"
+#include "dependency_scanner.cpp"
 // clang-format on
 #endif

@@ -8,7 +8,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::ProjectCanner [sources]", [] {
+static const auto testSuite = suite("abuild::ProjectCanner (sources)", [] {
     test("root project", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",

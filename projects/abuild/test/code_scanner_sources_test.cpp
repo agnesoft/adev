@@ -8,7 +8,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::CodeScanner [sources]", [] {
+static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     test("include external headers", [] {
         TestCache testCache;
         TestProjectWithContent testProject{"build_test_project_scanner",

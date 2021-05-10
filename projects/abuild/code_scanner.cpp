@@ -50,7 +50,7 @@ private:
 
     auto addDependency(rapidjson::Value &val, const std::string &name) -> void
     {
-        val.PushBack(rapidjson::Value(name, mBuildCache.allocator()), mBuildCache.allocator());
+        val.AddMember(rapidjson::Value(name, mBuildCache.allocator()), rapidjson::Value{rapidjson::kStringType}, mBuildCache.allocator());
     }
 
     auto addModule(rapidjson::Value::MemberIterator &file, const Token &token) -> void
@@ -119,7 +119,7 @@ private:
     {
         if (!file->value.HasMember(valueName))
         {
-            file->value.AddMember(rapidjson::Value{valueName, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
+            file->value.AddMember(rapidjson::Value{valueName, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
         }
 
         return file->value[valueName];

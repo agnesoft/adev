@@ -8,7 +8,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::ProjectScanner [headers]", [] {
+static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     test("root project", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
