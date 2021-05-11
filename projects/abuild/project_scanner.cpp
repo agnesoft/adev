@@ -56,6 +56,11 @@ private:
             != mBuildCache.cppHeaderExtensions().End();
     }
 
+    [[nodiscard]] static auto isMain(const std::filesystem::path &path) -> bool
+    {
+        return path.stem() == "main";
+    }
+
     [[nodiscard]] auto isIgnoreDirectory(const std::filesystem::path &path) -> bool
     {
         return path.filename().string().front() == '.'
@@ -86,6 +91,12 @@ private:
         return isSquashDirectory(path) || isTestDirectory(path.parent_path());
     }
 
+    [[nodiscard]] auto isTest(const std::string &name) -> bool
+    {
+        size_t pos = name.find_last_of(mBuildCache.projectNameSeparator().GetString());
+        return pos != std::string::npos && isTestDirectory(name.substr(pos + 1));
+    }
+
     [[nodiscard]] auto isTestDirectory(const std::filesystem::path &path) -> bool
     {
         return std::find(mBuildCache.testDirectories().Begin(),
@@ -110,6 +121,7 @@ private:
     [[nodiscard]] auto newProject() -> rapidjson::Value
     {
         rapidjson::Value project{rapidjson::kObjectType};
+        project.AddMember("type", "library", mBuildCache.allocator());
         project.AddMember("sources", rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
         project.AddMember("headers", rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
         return project;
@@ -146,15 +158,20 @@ private:
         scanDir(path);
     }
 
-    auto processFile(const std::filesystem::path &path, const std::string &project) -> void
+    auto processFile(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         if (isCppSource(path))
         {
-            addSource(path, project);
+            addSource(path, projectName);
+
+            if (isMain(path))
+            {
+                project(projectName)["type"] = "executable";
+            }
         }
         else if (isCppHader(path))
         {
-            addHeader(path, project);
+            addHeader(path, projectName);
         }
     }
 
@@ -218,6 +235,11 @@ private:
         if (!mBuildCache.projects().HasMember(name))
         {
             mBuildCache.projects().AddMember(rapidjson::Value{name, mBuildCache.allocator()}, newProject(), mBuildCache.allocator());
+
+            if (isTest(name))
+            {
+                mBuildCache.projects()[name]["type"] = "executable";
+            }
         }
 
         return mBuildCache.projects()[name];

@@ -203,4 +203,49 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         expect(asVector(cache.projects()["build_test_project_scanner"]["headers"]))
             .toBe(std::vector<std::string>{});
     });
+
+    test("executable type", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp"}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        assert_(asVector(cache.projects()))
+            .toBe(std::vector<std::string>{
+                "build_test_project_scanner"});
+
+        expect(cache.projects()["build_test_project_scanner"]["type"].GetString()).toBe("executable");
+    });
+
+    test("test executable type", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"test/source.cpp"}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        assert_(asVector(cache.projects()))
+            .toBe(std::vector<std::string>{
+                "build_test_project_scanner.test"});
+
+        expect(cache.projects()["build_test_project_scanner.test"]["type"].GetString()).toBe("executable");
+    });
+
+    test("library type", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"source.cpp"}};
+
+        abuild::BuildCache cache{testCache.file()};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        assert_(asVector(cache.projects()))
+            .toBe(std::vector<std::string>{
+                "build_test_project_scanner"});
+
+        expect(cache.projects()["build_test_project_scanner"]["type"].GetString()).toBe("library");
+    });
 });
