@@ -322,6 +322,19 @@ private:
         return false;
     }
 
+    [[nodiscard]] auto matchSequence(const std::string &sequence) -> bool
+    {
+        for (const char c : sequence)
+        {
+            if (mContent[pos++] != c || atEnd())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     auto skipComment() -> void
     {
         if (mContent[pos] == '/')
@@ -348,6 +361,51 @@ private:
         pos++;
     }
 
+    auto skipRawString() -> void
+    {
+        const std::string sequence = skipSequence();
+
+        while (!matchSequence(sequence) && !atEnd())
+        {
+        }
+    }
+
+    [[nodiscard]] auto skipSequence() -> std::string
+    {
+        std::string sequence{')'};
+
+        while (mContent[pos] != '(' && !atEnd())
+        {
+            sequence += mContent[pos++];
+        }
+
+        pos++;
+        sequence += '"';
+
+        return sequence;
+    }
+
+    auto skipStringLiteral() -> void
+    {
+        pos++;
+
+        if (mContent[pos - 2] == 'R')
+        {
+            skipRawString();
+        }
+        else
+        {
+            skipString();
+        }
+    }
+
+    auto skipString() -> void
+    {
+        while (mContent[pos++] != '"' && mContent[pos - 2] != '\\' && !atEnd())
+        {
+        }
+    }
+
     auto skipToSemicolonOrLine() -> void
     {
         while (mContent[pos] != ';' && mContent[pos] != '\n' && !atEnd())
@@ -355,6 +413,10 @@ private:
             if (mContent[pos] == '/')
             {
                 skipComment();
+            }
+            else if (mContent[pos] == '"')
+            {
+                skipStringLiteral();
             }
             else
             {

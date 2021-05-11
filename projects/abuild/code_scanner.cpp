@@ -12,22 +12,20 @@ public:
     explicit CodeScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
-        mBuildCache.ensureValue("modules");
-
-        processFiles(cache["sources"]);
-        processFiles(cache["headers"]);
+        processFiles(mBuildCache.sources());
+        processFiles(mBuildCache.headers());
     }
 
 private:
     [[nodiscard]] auto moduleValue(const std::string &name) -> rapidjson::Value &
     {
-        if (!mBuildCache["modules"].HasMember(name))
+        if (!mBuildCache.modules().HasMember(name))
         {
-            mBuildCache["modules"].AddMember(rapidjson::Value{name, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
-            mBuildCache["modules"][name].AddMember("partitions", rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
+            mBuildCache.modules().AddMember(rapidjson::Value{name, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
+            mBuildCache.modules()[name].AddMember("partitions", rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
         }
 
-        return mBuildCache["modules"][name];
+        return mBuildCache.modules()[name];
     }
 
     auto processFile(rapidjson::Value::MemberIterator &file) -> void
@@ -52,12 +50,12 @@ private:
 
     auto addDependency(rapidjson::Value &val, const std::string &name) -> void
     {
-        val.PushBack(rapidjson::Value(name, mBuildCache.allocator()), mBuildCache.allocator());
+        val.AddMember(rapidjson::Value(name, mBuildCache.allocator()), rapidjson::Value{rapidjson::kStringType}, mBuildCache.allocator());
     }
 
     auto addModule(rapidjson::Value::MemberIterator &file, const Token &token) -> void
     {
-        addDependency(value(file, "modules"), token.name);
+        addDependency(value(file, "module"), token.name);
         rapidjson::Value &mod = moduleValue(token.name);
         mod.AddMember("file", rapidjson::Value{file->name, mBuildCache.allocator()}, mBuildCache.allocator());
         mod.AddMember("exported", token.exported, mBuildCache.allocator());
@@ -65,8 +63,8 @@ private:
 
     auto addModulePartition(rapidjson::Value::MemberIterator &file, const Token &token) -> void
     {
-        addDependency(value(file, "modules_partitions"), token.name);
-        addDependency(value(file, "modules"), token.moduleName);
+        addDependency(value(file, "module_partitions"), token.name);
+        addDependency(value(file, "module"), token.moduleName);
         rapidjson::Value &partitions = moduleValue(token.moduleName)["partitions"];
         partitions.AddMember(rapidjson::Value{token.name, mBuildCache.allocator()}, rapidjson::Value{file->name, mBuildCache.allocator()}, mBuildCache.allocator());
     }
@@ -121,7 +119,7 @@ private:
     {
         if (!file->value.HasMember(valueName))
         {
-            file->value.AddMember(rapidjson::Value{valueName, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kArrayType}, mBuildCache.allocator());
+            file->value.AddMember(rapidjson::Value{valueName, mBuildCache.allocator()}, rapidjson::Value{rapidjson::kObjectType}, mBuildCache.allocator());
         }
 
         return file->value[valueName];

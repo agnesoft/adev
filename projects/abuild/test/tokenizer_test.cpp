@@ -225,4 +225,24 @@ static const auto testSuite = suite("abuild::Tokenizer", [] {
             abuild::Token{"my/header.hpp", "", abuild::Token::Type::IncludeLocal, false},
             abuild::Token{"mypartition", "", abuild::Token::Type::ImportModulePartition, false}});
     });
+
+    test("string literals", [] {
+        expect(abuild::Tokenizer{"const char *c = \"import : myotherpartition;import : quoted;\";"}.next().has_value()).toBe(false);
+        expect(abuild::Tokenizer{"const char *c = R\"(import : myotherpartition;import : quoted;)\";"}.next().has_value()).toBe(false);
+        expect(abuild::Tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted;)asd\";"}.next().has_value()).toBe(false);
+    });
+
+    test("string literals with real tokens", [] {
+        abuild::Tokenizer tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted;)asd\";import mymodule;c = \"import othermodule;\";import yetanothermodule;"};
+        std::vector<abuild::Token> tokens;
+
+        while (const auto token = tokenizer.next())
+        {
+            tokens.push_back(*token);
+        }
+
+        expect(tokens).toBe(std::vector<abuild::Token>{
+            abuild::Token{"mymodule", "", abuild::Token::Type::ImportModule, false},
+            abuild::Token{"yetanothermodule", "", abuild::Token::Type::ImportModule, false}});
+    });
 });

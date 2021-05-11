@@ -8,7 +8,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::Projects::headers()", [] {
+static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     test("root project", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
@@ -16,19 +16,16 @@ static const auto testSuite = suite("abuild::Projects::headers()", [] {
                                  "header.hpp"}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
-        abuild::Projects projects{cache};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         const std::string header = (testProject.projectRoot() / "header.hpp").string();
 
-        assert_(asVector(projects.headers()))
+        assert_(asVector(cache.headers()))
             .toBe(std::vector<std::string>{
                 header});
 
-        expect(projects.headers()[header]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
-        expect(projects.headers()[header]["modified"].GetInt64()).toBe(lastModified(header));
+        expect(cache.headers()[header]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
+        expect(cache.headers()[header]["modified"].GetInt64()).toBe(lastModified(header));
     });
 
     test("root project with include dir", [] {
@@ -39,24 +36,21 @@ static const auto testSuite = suite("abuild::Projects::headers()", [] {
                                  "include/build_test_project_scanner/header.hpp"}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
-        abuild::Projects projects{cache};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         const std::string header1 = (testProject.projectRoot() / "include" / "build_test_project_scanner" / "header.hpp").string();
         const std::string header2 = (testProject.projectRoot() / "include" / "someheader.hpp").string();
 
-        assert_(asVector(projects.headers()))
+        assert_(asVector(cache.headers()))
             .toBe(std::vector<std::string>{
                 header1,
                 header2});
 
-        expect(projects.headers()[header1]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
-        expect(projects.headers()[header1]["modified"].GetInt64()).toBe(lastModified(header1));
+        expect(cache.headers()[header1]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
+        expect(cache.headers()[header1]["modified"].GetInt64()).toBe(lastModified(header1));
 
-        expect(projects.headers()[header2]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
-        expect(projects.headers()[header2]["modified"].GetInt64()).toBe(lastModified(header2));
+        expect(cache.headers()[header2]["project"].GetString()).toBe(std::string{"build_test_project_scanner"});
+        expect(cache.headers()[header2]["modified"].GetInt64()).toBe(lastModified(header2));
     });
 
     test("subprojects with includes", [] {
@@ -67,28 +61,25 @@ static const auto testSuite = suite("abuild::Projects::headers()", [] {
                                  "projects/mylib/mysublib/include/impl/mysublib.hxx"}};
 
         abuild::BuildCache cache{testCache.file()};
-        abuild::DefaultSettings{cache};
-        abuild::Settings settings{cache};
-        abuild::ProjectScanner{testProject.projectRoot(), cache, settings};
-        abuild::Projects projects{cache};
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         const std::string header1 = (testProject.projectRoot() / "projects" / "myapp" / "include" / "myheader.hpp").string();
         const std::string header2 = (testProject.projectRoot() / "projects" / "mylib" / "include" / "mylib" / "mylib.h").string();
         const std::string header3 = (testProject.projectRoot() / "projects" / "mylib" / "mysublib" / "include" / "impl" / "mysublib.hxx").string();
 
-        assert_(asVector(projects.headers()))
+        assert_(asVector(cache.headers()))
             .toBe(std::vector<std::string>{
                 header1,
                 header2,
                 header3});
 
-        expect(projects.headers()[header1]["project"].GetString()).toBe(std::string{"myapp"});
-        expect(projects.headers()[header1]["modified"].GetInt64()).toBe(lastModified(header1));
+        expect(cache.headers()[header1]["project"].GetString()).toBe(std::string{"myapp"});
+        expect(cache.headers()[header1]["modified"].GetInt64()).toBe(lastModified(header1));
 
-        expect(projects.headers()[header2]["project"].GetString()).toBe(std::string{"mylib"});
-        expect(projects.headers()[header2]["modified"].GetInt64()).toBe(lastModified(header2));
+        expect(cache.headers()[header2]["project"].GetString()).toBe(std::string{"mylib"});
+        expect(cache.headers()[header2]["modified"].GetInt64()).toBe(lastModified(header2));
 
-        expect(projects.headers()[header3]["project"].GetString()).toBe(std::string{"mylib.mysublib"});
-        expect(projects.headers()[header3]["modified"].GetInt64()).toBe(lastModified(header3));
+        expect(cache.headers()[header3]["project"].GetString()).toBe(std::string{"mylib.mysublib"});
+        expect(cache.headers()[header3]["modified"].GetInt64()).toBe(lastModified(header3));
     });
 });
