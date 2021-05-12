@@ -83,6 +83,19 @@ static const auto testSuite = suite("abuild::File", [] {
         expect(file.timestamp()).toBe(lastModified);
     });
 
+    test("custom timestamp", [] {
+        using namespace std::chrono_literals;
+
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp"}};
+
+        const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
+        const std::int64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>((std::filesystem::last_write_time(path) - 1h).time_since_epoch()).count();
+        const abuild::File file{testProject.projectRoot() / "main.cpp", timestamp};
+
+        expect(file.timestamp()).toBe(timestamp);
+    });
+
     test("isModified", [] {
         using namespace std::chrono_literals;
 

@@ -16,6 +16,12 @@ public:
     {
     }
 
+    explicit File(const std::filesystem::path &path, std::int64_t timestamp) :
+        mPath{std::filesystem::canonical(path)},
+        mTimestamp{timestamp}
+    {
+    }
+
     [[nodiscard]] auto content() const noexcept -> std::string
     {
         std::ifstream file{mPath};
