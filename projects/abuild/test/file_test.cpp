@@ -90,7 +90,6 @@ static const auto testSuite = suite("abuild::File", [] {
                                 {"main.cpp"}};
 
         const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
-        auto getTimestamp = [&]() { return std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(path).time_since_epoch()).count(); };
 
         const abuild::File file{testProject.projectRoot() / "main.cpp"};
 
@@ -108,7 +107,6 @@ static const auto testSuite = suite("abuild::File", [] {
                                 {"main.cpp"}};
 
         const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
-        auto getTimestamp = [&]() { return std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(path).time_since_epoch()).count(); };
 
         abuild::File file{testProject.projectRoot() / "main.cpp"};
 
