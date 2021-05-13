@@ -114,12 +114,22 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(6u);
-        expect(cache.projects()[0].name()).toBe("abuild");
-        expect(cache.projects()[1].name()).toBe("abuild.test");
-        expect(cache.projects()[2].name()).toBe("acore");
-        expect(cache.projects()[3].name()).toBe("acore.test");
-        expect(cache.projects()[4].name()).toBe("atest");
-        expect(cache.projects()[5].name()).toBe("atest.test");
+        std::vector<std::string> actualProjects;
+
+        for (const abuild::Project &project : cache.projects())
+        {
+            actualProjects.push_back(project.name());
+        }
+
+        std::sort(actualProjects.begin(), actualProjects.end());
+
+        expect(actualProjects)
+            .toBe(std::vector<std::string>{
+                "abuild",
+                "abuild.test",
+                "acore",
+                "acore.test",
+                "atest",
+                "atest.test"});
     });
 });
