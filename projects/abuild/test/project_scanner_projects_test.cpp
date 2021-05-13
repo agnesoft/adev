@@ -17,7 +17,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(noexcept(cache.projects())).toBe(true);
-        expect(cache.projects().size()).toBe(0);
+        expect(cache.projects().size()).toBe(0u);
     });
 
     test("single project", [] {
@@ -27,7 +27,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test");
     });
 
@@ -38,7 +38,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test.test");
     });
 
@@ -49,7 +49,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild");
     });
 
@@ -60,7 +60,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild.test");
     });
 
@@ -73,7 +73,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test.test");
     });
 
@@ -85,7 +85,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test");
     });
 
@@ -98,7 +98,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(1);
+        assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0].name()).toBe("abuild");
     });
 
@@ -114,7 +114,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
-        assert_(cache.projects().size()).toBe(6);
+        assert_(cache.projects().size()).toBe(6u);
         expect(cache.projects()[0].name()).toBe("abuild");
         expect(cache.projects()[1].name()).toBe("abuild.test");
         expect(cache.projects()[2].name()).toBe("acore");
