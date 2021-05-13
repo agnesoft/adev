@@ -39,10 +39,11 @@ cd ..
 REM abuild
 mkdir abuild
 cd abuild
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\settings.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO abuild.obj build_cache.obj project.obj /OUT:abuild.lib
+lib.exe /NOLOGO abuild.obj settings.obj build_cache.obj project.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 
@@ -89,7 +90,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\t
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\test\test_project.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\test\abuild_test_utilities.cpp"
 lib.exe /NOLOGO abuild_test_utilities.obj test_cache.obj test_project.obj /OUT:abuild_test_utilities.lib
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\project_test.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj" "%BUILD_ROOT%\abuild_test\abuild_test_utilities.lib"
+cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild_test.exe" "%PROJECTS_ROOT%\abuild\test\main.cpp" "%PROJECTS_ROOT%\abuild\test\settings_test.cpp" "%PROJECTS_ROOT%\abuild\test\project_test.cpp" "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\rapidjson\rapidjson.obj" "%BUILD_ROOT%\abuild_test\abuild_test_utilities.lib"
 cd ..
 
 cd ..
