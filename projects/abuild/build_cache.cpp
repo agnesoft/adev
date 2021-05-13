@@ -8,9 +8,17 @@ namespace abuild
 export class BuildCache
 {
 public:
-    [[nodiscard]] auto addProject(std::string name) -> Project *
+    [[nodiscard]] auto project(const std::string &name) -> Project *
     {
-        return &mProjects.emplace_back(Project{std::move(name)});
+        std::unordered_map<std::string, Project *>::iterator it = mProjectIndex.find(name);
+
+        if (it == mProjectIndex.end())
+        {
+            Project *p = &mProjects.emplace_back(Project{name});
+            it = mProjectIndex.insert({name, p}).first;
+        }
+
+        return it->second;
     }
 
     [[nodiscard]] auto projects() const noexcept -> const std::vector<Project> &
@@ -20,5 +28,6 @@ public:
 
 private:
     std::vector<Project> mProjects;
+    std::unordered_map<std::string, Project *> mProjectIndex;
 };
 }

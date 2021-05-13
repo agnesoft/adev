@@ -21,7 +21,7 @@ static const auto testSuite = suite("abuild::Project", [] {
     test("name", [] {
         const abuild::Project project{"myproject"};
 
-        _assert(noexcept(project.name())).toBe(true);
+        assert_(noexcept(project.name())).toBe(true);
         expect(project.name()).toBe("myproject");
     });
 });
