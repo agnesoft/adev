@@ -4,6 +4,7 @@ export module abuild;
 export import : build_cache;
 #else
 // clang-format off
+#include "project.cpp";
 #include "build_cache.cpp"
 // clang-format on
 #endif
