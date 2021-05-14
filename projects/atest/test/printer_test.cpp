@@ -43,4 +43,8 @@ static const auto s = suite("Printer", [] { //NOLINT(cert-err58-cpp)
     test("Print container of custom type (INTENTIONAL FAILURE)", [] {
         expect(std::vector<S>{{1}, {2}, {3}}).toBe(std::vector<S>{{3}, {2}, {1}});
     });
+
+    test("Print std::pair (INTENTIONAL FAILURE)", [] {
+        expect(std::pair<int, int>{1, 2}).toBe(std::pair<int, int>{2, 1});
+    });
 });
