@@ -44,10 +44,11 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\p
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\file.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\header.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\source.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\module.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO settings.obj project.obj file.obj header.obj source.obj build_cache.obj project_scanner.obj abuild.obj /OUT:abuild.lib
+lib.exe /NOLOGO settings.obj project.obj file.obj header.obj source.obj module.obj build_cache.obj project_scanner.obj abuild.obj /OUT:abuild.lib
 cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 
@@ -100,6 +101,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\file_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\header_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\source_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\module_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\project_scanner_headers_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\project_scanner_projects_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\project_scanner_sources_test.cpp" ^

@@ -3,6 +3,7 @@ export module abuild : build_cache;
 export import : project;
 export import : header;
 export import : source;
+export import : cpp_module;
 #endif
 
 namespace abuild
@@ -10,21 +11,36 @@ namespace abuild
 export class BuildCache
 {
 public:
-    auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
-    {
-        Source *source = mSources.emplace_back(std::make_unique<Source>(path, project(projectName))).get();
-        mSourceIndex.insert({path.filename().string(), source});
-    }
-
     auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         Header *header = mHeaders.emplace_back(std::make_unique<Header>(path, project(projectName))).get();
         mHeaderIndex.insert({path.filename().string(), header});
     }
 
+    auto addModuleInterface(const std::string &moduleName, Source *source) -> void
+    {
+        cppmodule(moduleName)->source = source;
+    }
+
+    auto addModulePartition(const std::string &moduleName, std::string partitionName, Source *source) -> void
+    {
+        cppmodule(moduleName)->partitions.push_back(Module::Partition{.name = std::move(partitionName), .source = source});
+    }
+
+    auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
+    {
+        Source *source = mSources.emplace_back(std::make_unique<Source>(path, project(projectName))).get();
+        mSourceIndex.insert({path.filename().string(), source});
+    }
+
     [[nodiscard]] auto headers() const noexcept -> const std::vector<std::unique_ptr<Header>> &
     {
         return mHeaders;
+    }
+
+    [[nodiscard]] auto modules() const noexcept -> const std::vector<std::unique_ptr<Module>> &
+    {
+        return mModules;
     }
 
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
@@ -51,10 +67,26 @@ private:
         return it->second;
     }
 
+    [[nodiscard]] auto cppmodule(const std::string &name) -> Module *
+    {
+        std::unordered_map<std::string, Module *>::iterator it = mModuleIndex.find(name);
+
+        if (it == mModuleIndex.end())
+        {
+            Module *m = mModules.emplace_back(std::make_unique<Module>()).get();
+            m->name = name;
+            it = mModuleIndex.insert({name, m}).first;
+        }
+
+        return it->second;
+    }
+
     std::vector<std::unique_ptr<Project>> mProjects;
     std::vector<std::unique_ptr<Source>> mSources;
     std::vector<std::unique_ptr<Header>> mHeaders;
+    std::vector<std::unique_ptr<Module>> mModules;
     std::unordered_map<std::string, Project *> mProjectIndex;
+    std::unordered_map<std::string, Module *> mModuleIndex;
     std::unordered_multimap<std::string, Source *> mSourceIndex;
     std::unordered_multimap<std::string, Header *> mHeaderIndex;
 };
