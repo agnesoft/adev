@@ -23,6 +23,13 @@ concept iterable = requires(const T &type)
     {type.end()};
 };
 
+//! Streaming operator for `std::pair`
+export template<typename T1, typename T2>
+auto operator<<(std::ostream &stream, const std::pair<T1, T2> &value) -> std::ostream &
+{
+    return stream << '{' << value.first << ", " << value.second << '}';
+}
+
 //! Streaming operator for `std::ostream` that
 //! requires container `T` to satisfy the iterable
 //! concept. It streams the values of the container
