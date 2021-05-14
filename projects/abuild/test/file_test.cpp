@@ -19,14 +19,14 @@ static const auto testSuite = suite("abuild::File", [] {
     });
 
     test("missing file", [] {
-        expect([] { abuild::File{"missing_file"}; }).toThrow<std::filesystem::filesystem_error>();
+        expect([] { abuild::File{"missing_file", nullptr}; }).toThrow<std::filesystem::filesystem_error>();
     });
 
     test("extension", [] {
         TestProject testProject{"build_test_file",
                                 {"main.cpp"}};
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.extension()).toBe(".cpp");
@@ -36,7 +36,7 @@ static const auto testSuite = suite("abuild::File", [] {
         TestProject testProject{"build_test_file",
                                 {"main.cpp"}};
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.name()).toBe("main.cpp");
@@ -46,7 +46,7 @@ static const auto testSuite = suite("abuild::File", [] {
         TestProject testProject{"build_test_file",
                                 {"main.cpp"}};
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.project()).toBe(&project);
@@ -57,7 +57,7 @@ static const auto testSuite = suite("abuild::File", [] {
                                 {"main.cpp"}};
 
         const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{path, &project};
 
         expect(file.path()).toBe(path);
@@ -73,7 +73,7 @@ static const auto testSuite = suite("abuild::File", [] {
         auto getTimestamp = [&]() { return std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(path).time_since_epoch()).count(); };
         const std::int64_t lastModified = getTimestamp();
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.timestamp()).toBe(lastModified);
@@ -91,7 +91,7 @@ static const auto testSuite = suite("abuild::File", [] {
 
         const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
         const std::int64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>((std::filesystem::last_write_time(path) - 1h).time_since_epoch()).count();
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project, timestamp};
 
         expect(file.timestamp()).toBe(timestamp);
@@ -105,7 +105,7 @@ static const auto testSuite = suite("abuild::File", [] {
 
         const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.isModified()).toBe(false);
@@ -123,7 +123,7 @@ static const auto testSuite = suite("abuild::File", [] {
 
         const std::filesystem::path path = testProject.projectRoot() / "main.cpp";
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.isModified()).toBe(false);
@@ -138,7 +138,7 @@ static const auto testSuite = suite("abuild::File", [] {
         TestProjectWithContent testProject{"build_test_file",
                                            {{"main.cpp", "auto main(int argc, char *argv[])\n{\n    return 0;\n}\n"}}};
 
-        Project project{"myproject"};
+        abuild::Project project{"myproject"};
         const abuild::File file{testProject.projectRoot() / "main.cpp", &project};
 
         expect(file.content()).toBe("auto main(int argc, char *argv[])\n{\n    return 0;\n}\n");

@@ -1,6 +1,7 @@
 #ifdef _MSC_VER
 export module abuild : build_cache;
 export import : project;
+export import : file;
 #endif
 
 namespace abuild
