@@ -9,6 +9,7 @@ export import : project_scanner;
 import <astl.hpp>;
 #include "settings.cpp"
 #include "project.cpp"
+#include "file.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 // clang-format on
