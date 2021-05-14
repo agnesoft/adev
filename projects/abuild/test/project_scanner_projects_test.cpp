@@ -28,7 +28,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test");
+        expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test");
     });
 
     test("test project", [] {
@@ -39,7 +39,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test.test");
+        expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test.test");
     });
 
     test("skip directory", [] {
@@ -50,7 +50,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild");
+        expect(cache.projects()[0]->name()).toBe("abuild");
     });
 
     test("skip directory with test", [] {
@@ -61,7 +61,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild.test");
+        expect(cache.projects()[0]->name()).toBe("abuild.test");
     });
 
     test("sub directories under test", [] {
@@ -74,7 +74,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test.test");
+        expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test.test");
     });
 
     test("squash directories", [] {
@@ -86,7 +86,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild_project_scanner_test");
+        expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test");
     });
 
     test("squash and skip directories", [] {
@@ -99,7 +99,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
 
         assert_(cache.projects().size()).toBe(1u);
-        expect(cache.projects()[0].name()).toBe("abuild");
+        expect(cache.projects()[0]->name()).toBe("abuild");
     });
 
     test("multiple projects", [] {
@@ -116,9 +116,9 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
 
         std::vector<std::string> actualProjects;
 
-        for (const abuild::Project &project : cache.projects())
+        for (const std::unique_ptr<abuild::Project> &project : cache.projects())
         {
-            actualProjects.push_back(project.name());
+            actualProjects.push_back(project->name());
         }
 
         std::sort(actualProjects.begin(), actualProjects.end());

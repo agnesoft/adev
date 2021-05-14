@@ -20,16 +20,6 @@ public:
     }
 
 private:
-    auto addHeader([[maybe_unused]] const std::filesystem::path &path, const std::string &projectName) -> void
-    {
-        static_cast<void>(mBuildCache.project(projectName));
-    }
-
-    auto addSource([[maybe_unused]] const std::filesystem::path &path, const std::string &projectName) -> void
-    {
-        static_cast<void>(mBuildCache.project(projectName));
-    }
-
     static auto appendProjectName(std::string *projectName, const std::string &directoryName) -> void
     {
         if (projectName->empty())
@@ -91,11 +81,11 @@ private:
     {
         if (Settings::cppSourceExtensions().contains(path.extension().string()))
         {
-            addSource(path, projectName);
+            mBuildCache.addSource(path, projectName);
         }
         else if (Settings::cppHeaderExtensions().contains(path.extension().string()))
         {
-            addHeader(path, projectName);
+            mBuildCache.addHeader(path, projectName);
         }
     }
 
