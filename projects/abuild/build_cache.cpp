@@ -33,6 +33,40 @@ public:
         mSourceIndex.insert({path.filename().string(), source});
     }
 
+    [[nodiscard]] auto header(const std::filesystem::path &file) const -> Header *
+    {
+        return header(file, {});
+    }
+
+    [[nodiscard]] auto header(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Header *
+    {
+        using It = std::unordered_multimap<std::string, Header *>::const_iterator;
+        std::pair<It, It> range = mHeaderIndex.equal_range(file.filename().string());
+
+        if (!hint.empty())
+        {
+            const std::filesystem::path hintedPath = hint / file;
+
+            for (It it = range.first; it != range.second; ++it)
+            {
+                if (it->second->path() == hintedPath)
+                {
+                    return it->second;
+                }
+            }
+        }
+
+        for (It it = range.first; it != range.second; ++it)
+        {
+            if (isSame(it->second->path(), file))
+            {
+                return it->second;
+            }
+        }
+
+        return nullptr;
+    }
+
     [[nodiscard]] auto headers() const noexcept -> const std::vector<std::unique_ptr<Header>> &
     {
         return mHeaders;
@@ -48,25 +82,46 @@ public:
         return mProjects;
     }
 
+    [[nodiscard]] auto source(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Source *
+    {
+        using It = std::unordered_multimap<std::string, Source *>::const_iterator;
+        std::pair<It, It> range = mSourceIndex.equal_range(file.filename().string());
+
+        if (!hint.empty())
+        {
+            const std::filesystem::path hintedPath = hint / file;
+
+            for (It it = range.first; it != range.second; ++it)
+            {
+                if (it->second->path() == hintedPath)
+                {
+                    return it->second;
+                }
+            }
+        }
+
+        for (It it = range.first; it != range.second; ++it)
+        {
+            if (isSame(it->second->path(), file))
+            {
+                return it->second;
+            }
+        }
+
+        return nullptr;
+    }
+
+    [[nodiscard]] auto source(const std::filesystem::path &file) const -> Source *
+    {
+        return source(file, {});
+    }
+
     [[nodiscard]] auto sources() const noexcept -> const std::vector<std::unique_ptr<Source>> &
     {
         return mSources;
     }
 
 private:
-    [[nodiscard]] auto project(const std::string &name) -> Project *
-    {
-        std::unordered_map<std::string, Project *>::iterator it = mProjectIndex.find(name);
-
-        if (it == mProjectIndex.end())
-        {
-            Project *p = mProjects.emplace_back(std::make_unique<Project>(name)).get();
-            it = mProjectIndex.insert({name, p}).first;
-        }
-
-        return it->second;
-    }
-
     [[nodiscard]] auto cppmodule(const std::string &name) -> Module *
     {
         std::unordered_map<std::string, Module *>::iterator it = mModuleIndex.find(name);
@@ -76,6 +131,35 @@ private:
             Module *m = mModules.emplace_back(std::make_unique<Module>()).get();
             m->name = name;
             it = mModuleIndex.insert({name, m}).first;
+        }
+
+        return it->second;
+    }
+
+    [[nodiscard]] static auto isSame(std::filesystem::path left, std::filesystem::path right) -> bool
+    {
+        while (right.has_parent_path())
+        {
+            left = left.parent_path();
+            right = right.parent_path();
+
+            if (left.filename() != right.filename())
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [[nodiscard]] auto project(const std::string &name) -> Project *
+    {
+        std::unordered_map<std::string, Project *>::iterator it = mProjectIndex.find(name);
+
+        if (it == mProjectIndex.end())
+        {
+            Project *p = mProjects.emplace_back(std::make_unique<Project>(name)).get();
+            it = mProjectIndex.insert({name, p}).first;
         }
 
         return it->second;
