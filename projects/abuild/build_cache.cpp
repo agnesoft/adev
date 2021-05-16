@@ -35,8 +35,26 @@ public:
 
     [[nodiscard]] auto header(const std::filesystem::path &file) const -> Header *
     {
+        return header(file, {});
+    }
+
+    [[nodiscard]] auto header(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Header *
+    {
         using It = std::unordered_multimap<std::string, Header *>::const_iterator;
         std::pair<It, It> range = mHeaderIndex.equal_range(file.filename().string());
+
+        if (!hint.empty())
+        {
+            const std::filesystem::path hintedPath = hint / file;
+
+            for (It it = range.first; it != range.second; ++it)
+            {
+                if (it->second->path() == hintedPath)
+                {
+                    return it->second;
+                }
+            }
+        }
 
         for (It it = range.first; it != range.second; ++it)
         {
@@ -64,10 +82,23 @@ public:
         return mProjects;
     }
 
-    [[nodiscard]] auto source(const std::filesystem::path &file) const -> Source *
+    [[nodiscard]] auto source(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Source *
     {
         using It = std::unordered_multimap<std::string, Source *>::const_iterator;
         std::pair<It, It> range = mSourceIndex.equal_range(file.filename().string());
+
+        if (!hint.empty())
+        {
+            const std::filesystem::path hintedPath = hint / file;
+
+            for (It it = range.first; it != range.second; ++it)
+            {
+                if (it->second->path() == hintedPath)
+                {
+                    return it->second;
+                }
+            }
+        }
 
         for (It it = range.first; it != range.second; ++it)
         {
@@ -78,6 +109,11 @@ public:
         }
 
         return nullptr;
+    }
+
+    [[nodiscard]] auto source(const std::filesystem::path &file) const -> Source *
+    {
+        return source(file, {});
     }
 
     [[nodiscard]] auto sources() const noexcept -> const std::vector<std::unique_ptr<Source>> &

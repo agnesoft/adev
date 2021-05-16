@@ -73,7 +73,7 @@ static const auto testSuite = suite("abuild::Source", [] {
         expect(source->project()->name()).toBe("abuild");
     });
 
-    test("lookup source with the same name", [] {
+    test("lookup source with the same name by name", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
@@ -90,15 +90,77 @@ static const auto testSuite = suite("abuild::Source", [] {
         assert_(source != nullptr).toBe(true);
         expect(source->path()).toBe(testProject.projectRoot() / "main.cpp");
         expect(source->project()->name()).toBe("build_test_project_scanner");
+    });
 
-        source = cache.source("abuild/main.cpp");
+    test("lookup source with the same name by path", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "projects/abuild/main.cpp",
+                                 "projects/atest/atest.cpp"}};
+
+        abuild::BuildCache cache;
+        cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
+        cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
+        cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
+
+        abuild::Source *source = cache.source("abuild/main.cpp");
 
         assert_(source != nullptr).toBe(true);
         expect(source->path()).toBe(testProject.projectRoot() / "projects" / "abuild" / "main.cpp");
         expect(source->project()->name()).toBe("abuild");
+    });
 
-        source = cache.source("build/main.cpp");
+    test("lookup source with the same name by incomplete path", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "projects/abuild/main.cpp",
+                                 "projects/atest/atest.cpp"}};
 
-        expect(source).toBe(nullptr);
+        abuild::BuildCache cache;
+        cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
+        cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
+        cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
+
+        expect(cache.source("build/main.cpp")).toBe(nullptr);
+    });
+
+    test("lookup source with hint", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "projects/abuild/main.cpp",
+                                 "projects/atest/atest.cpp"}};
+
+        abuild::BuildCache cache;
+        cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
+        cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
+        cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
+
+        abuild::Source *source = cache.source("main.cpp", testProject.projectRoot() / "projects" / "abuild");
+
+        assert_(source != nullptr).toBe(true);
+        expect(source->path()).toBe(testProject.projectRoot() / "projects" / "abuild" / "main.cpp");
+        expect(source->project()->name()).toBe("abuild");
+    });
+
+    test("lookup source with incorrect hint", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "projects/abuild/main.cpp",
+                                 "projects/atest/atest.cpp"}};
+
+        abuild::BuildCache cache;
+        cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
+        cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
+        cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
+
+        abuild::Source *source = cache.source("main.cpp", testProject.projectRoot() / "projects" / "atest");
+
+        assert_(source != nullptr).toBe(true);
+        expect(source->path()).toBe(testProject.projectRoot() / "main.cpp");
+        expect(source->project()->name()).toBe("build_test_project_scanner");
     });
 });

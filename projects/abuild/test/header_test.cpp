@@ -73,7 +73,7 @@ static const auto testSuite = suite("abuild::Header", [] {
         expect(header->project()->name()).toBe("atest");
     });
 
-    test("lookup header with the same name", [] {
+    test("lookup header with the same name by name", [] {
         TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp",
@@ -85,20 +85,82 @@ static const auto testSuite = suite("abuild::Header", [] {
         cache.addHeader(testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header.hpp", "abuild");
         cache.addHeader(testProject.projectRoot() / "projects" / "atest" / "include" / "atest.hpp", "atest");
 
-        abuild::Header *header = cache.header("header.hpp");
+        const abuild::Header *header = cache.header("header.hpp");
 
         assert_(header != nullptr).toBe(true);
         expect(header->path()).toBe(testProject.projectRoot() / "header.hpp");
         expect(header->project()->name()).toBe("build_test_project_scanner");
+    });
 
-        header = cache.header("abuild/header.hpp");
+    test("lookup header with the same name by path", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"header.hpp",
+                                 "projects/abuild/include/abuild/header.hpp",
+                                 "projects/atest/include/atest.hpp"}};
+
+        abuild::BuildCache cache;
+        cache.addHeader(testProject.projectRoot() / "header.hpp", "build_test_project_scanner");
+        cache.addHeader(testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header.hpp", "abuild");
+        cache.addHeader(testProject.projectRoot() / "projects" / "atest" / "include" / "atest.hpp", "atest");
+
+        const abuild::Header *header = cache.header("abuild/header.hpp");
 
         assert_(header != nullptr).toBe(true);
         expect(header->path()).toBe(testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header.hpp");
         expect(header->project()->name()).toBe("abuild");
+    });
 
-        header = cache.header("build/header.hpp");
+    test("lookup header with the same name by incomplete path", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"header.hpp",
+                                 "projects/abuild/include/abuild/header.hpp",
+                                 "projects/atest/include/atest.hpp"}};
 
-        expect(header).toBe(nullptr);
+        abuild::BuildCache cache;
+        cache.addHeader(testProject.projectRoot() / "header.hpp", "build_test_project_scanner");
+        cache.addHeader(testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header.hpp", "abuild");
+        cache.addHeader(testProject.projectRoot() / "projects" / "atest" / "include" / "atest.hpp", "atest");
+
+        expect(cache.header("build/header.hpp")).toBe(nullptr);
+    });
+
+    test("lookup header with hint", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"include/header.hpp",
+                                 "projects/abuild/include/header.hpp",
+                                 "projects/atest/include/atest.hpp"}};
+
+        abuild::BuildCache cache;
+        cache.addHeader(testProject.projectRoot() / "include" / "header.hpp", "build_test_project_scanner");
+        cache.addHeader(testProject.projectRoot() / "projects" / "abuild" / "include" / "header.hpp", "abuild");
+        cache.addHeader(testProject.projectRoot() / "projects" / "atest" / "include" / "atest.hpp", "atest");
+
+        const abuild::Header *header = cache.header("include/header.hpp", testProject.projectRoot() / "projects" / "abuild");
+
+        assert_(header != nullptr).toBe(true);
+        expect(header->path()).toBe(testProject.projectRoot() / "projects" / "abuild" / "include" / "header.hpp");
+        expect(header->project()->name()).toBe("abuild");
+    });
+
+    test("lookup header with incorrect hint", [] {
+        TestCache testCache;
+        TestProject testProject{"build_test_project_scanner",
+                                {"include/header.hpp",
+                                 "projects/abuild/include/header.hpp",
+                                 "projects/atest/include/atest.hpp"}};
+
+        abuild::BuildCache cache;
+        cache.addHeader(testProject.projectRoot() / "include" / "header.hpp", "build_test_project_scanner");
+        cache.addHeader(testProject.projectRoot() / "projects" / "abuild" / "include" / "header.hpp", "abuild");
+        cache.addHeader(testProject.projectRoot() / "projects" / "atest" / "include" / "atest.hpp", "atest");
+
+        const abuild::Header *header = cache.header("include/header.hpp", testProject.projectRoot() / "projects" / "atest");
+
+        assert_(header != nullptr).toBe(true);
+        expect(header->path()).toBe(testProject.projectRoot() / "include" / "header.hpp");
+        expect(header->project()->name()).toBe("build_test_project_scanner");
     });
 });
