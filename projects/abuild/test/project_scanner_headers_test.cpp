@@ -10,7 +10,6 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     test("no header", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp"}};
 
@@ -22,7 +21,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     });
 
     test("single header", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp"}};
 
@@ -37,7 +35,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     });
 
     test("multiple headers", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header1.hpp",
                                  "header2.hpp",
@@ -63,7 +60,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     });
 
     test("using include dirs", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"projects/abuild/header1.hpp",
                                  "projects/acore/include/subdir/header2.hpp",
@@ -89,7 +85,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     });
 
     test("multiple headers per project", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"projects/abuild/header1.hpp",
                                  "projects/abuild/header2.hpp",

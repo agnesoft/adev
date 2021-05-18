@@ -24,7 +24,7 @@ public:
 
     auto addModulePartition(const std::string &moduleName, std::string partitionName, Source *source) -> void
     {
-        cppmodule(moduleName)->partitions.push_back(Module::Partition{.name = std::move(partitionName), .source = source});
+        cppmodule(moduleName)->partitions.push_back(ModulePartition{.name = std::move(partitionName), .source = source});
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void

@@ -13,6 +13,7 @@ import <astl.hpp>;
 #include "header.cpp"
 #include "source.cpp"
 #include "module.cpp"
+#include "dependency.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 // clang-format on

@@ -5,11 +5,13 @@ export import atest;
 #ifdef _MSC_VER
 export import : test_cache;
 export import : test_project;
+export import : test_project_with_content;
 #else
 // clang-format off
 export import "rapidjson.hpp";
 #include "test_cache.cpp"
 #include "test_project.cpp"
+#include "test_project_with_content.cpp"
 // clang-format on
 #endif
 

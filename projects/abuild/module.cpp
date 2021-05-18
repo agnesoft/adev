@@ -7,16 +7,16 @@ namespace abuild
 {
 export class Source;
 
-export struct Module
+export struct ModulePartition
 {
-    struct Partition
-    {
-        std::string name;
-        Source *source = nullptr;
-    };
-
     std::string name;
     Source *source = nullptr;
-    std::vector<Partition> partitions;
+};
+
+export struct Module
+{
+    std::string name;
+    Source *source = nullptr;
+    std::vector<ModulePartition> partitions;
 };
 }

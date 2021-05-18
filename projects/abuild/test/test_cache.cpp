@@ -2,7 +2,7 @@
 export module abuild_test_utilities : test_cache;
 
 export import "rapidjson.hpp";
-import acore;
+export import<astl.hpp>;
 #endif
 
 export class TestCache

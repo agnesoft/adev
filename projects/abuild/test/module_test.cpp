@@ -19,16 +19,15 @@ static const auto testSuite = suite("abuild::Module", [] {
     });
 
     test("type traits (Partition)", [] {
-        expect(std::is_default_constructible_v<abuild::Module::Partition>).toBe(true);
-        expect(std::is_copy_constructible_v<abuild::Module::Partition>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::Module::Partition>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::Module::Partition>).toBe(true);
-        expect(std::is_nothrow_move_assignable_v<abuild::Module::Partition>).toBe(true);
-        expect(std::is_nothrow_destructible_v<abuild::Module::Partition>).toBe(true);
+        expect(std::is_default_constructible_v<abuild::ModulePartition>).toBe(true);
+        expect(std::is_copy_constructible_v<abuild::ModulePartition>).toBe(true);
+        expect(std::is_nothrow_move_constructible_v<abuild::ModulePartition>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::ModulePartition>).toBe(true);
+        expect(std::is_nothrow_move_assignable_v<abuild::ModulePartition>).toBe(true);
+        expect(std::is_nothrow_destructible_v<abuild::ModulePartition>).toBe(true);
     });
 
     test("add module interface", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"mymodule.cpp"}};
 
@@ -44,7 +43,6 @@ static const auto testSuite = suite("abuild::Module", [] {
     });
 
     test("add module partition", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"mymodule.cpp",
                                  "mypartition.cpp"}};
@@ -65,7 +63,6 @@ static const auto testSuite = suite("abuild::Module", [] {
     });
 
     test("add module partitions", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"mymodule.cpp",
                                  "mypartition.cpp",
@@ -92,7 +89,6 @@ static const auto testSuite = suite("abuild::Module", [] {
     });
 
     test("add module partition before interface", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"mymodule.cpp",
                                  "mypartition.cpp"}};

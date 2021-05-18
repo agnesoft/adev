@@ -19,7 +19,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("add source", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp"}};
 
@@ -32,7 +31,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("add sources", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/main.cpp",
@@ -55,7 +53,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("lookup source", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/abuild.cpp",
@@ -74,7 +71,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("lookup source with the same name by name", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/main.cpp",
@@ -93,7 +89,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("lookup source with the same name by path", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/main.cpp",
@@ -112,7 +107,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("lookup source with the same name by incomplete path", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/main.cpp",
@@ -127,7 +121,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("lookup source with hint", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/main.cpp",
@@ -146,7 +139,6 @@ static const auto testSuite = suite("abuild::Source", [] {
     });
 
     test("lookup source with incorrect hint", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "projects/abuild/main.cpp",

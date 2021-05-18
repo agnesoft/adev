@@ -19,7 +19,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("add header", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp"}};
 
@@ -32,7 +31,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("add headers", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp",
                                  "projects/abuild/include/abuild/header.hpp",
@@ -55,7 +53,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("lookup header", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp",
                                  "projects/abuild/include/abuild/header.hpp",
@@ -74,7 +71,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("lookup header with the same name by name", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp",
                                  "projects/abuild/include/abuild/header.hpp",
@@ -93,7 +89,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("lookup header with the same name by path", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp",
                                  "projects/abuild/include/abuild/header.hpp",
@@ -112,7 +107,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("lookup header with the same name by incomplete path", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp",
                                  "projects/abuild/include/abuild/header.hpp",
@@ -127,7 +121,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("lookup header with hint", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"include/header.hpp",
                                  "projects/abuild/include/header.hpp",
@@ -146,7 +139,6 @@ static const auto testSuite = suite("abuild::Header", [] {
     });
 
     test("lookup header with incorrect hint", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"include/header.hpp",
                                  "projects/abuild/include/header.hpp",
