@@ -5,7 +5,7 @@ const STLHeaders = {
         concepts: "20",
     },
     Coroutines: {
-        coroutines: "20",
+        coroutine: "20",
     },
     Utilities: {
         cstdlib: "",
