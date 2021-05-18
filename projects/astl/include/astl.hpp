@@ -16,10 +16,10 @@
 #endif
 
 //Coroutines
-#if __has_include(<coroutines>)
-#    include <coroutines> //C++20
+#if __has_include(<coroutine>)
+#    include <coroutine> //C++20
 #else
-#    pragma message("<coroutines> not available (C++20)")
+#    pragma message("<coroutine> not available (C++20)")
 #endif
 
 //Utilities

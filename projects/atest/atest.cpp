@@ -46,7 +46,7 @@ namespace atest
 //! call site's source_location. Returns an Expect object to complete
 //! the expectation.
 export template<typename T>
-[[nodiscard]] auto assert_(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, true, false>
+[[nodiscard]] auto assert_(const T &value, const std::source_location &sourceLocation = std::source_location::current()) noexcept -> Expect<T, true, false>
 {
     return Expect<T, true, false>{value, sourceLocation};
 }
@@ -58,7 +58,7 @@ export template<typename T>
 //! call site's source_location. Returns an Expect object to complete
 //! the expectation.
 export template<typename T>
-[[nodiscard]] auto assert_fail(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, true, true>
+[[nodiscard]] auto assert_fail(const T &value, const std::source_location &sourceLocation = std::source_location::current()) noexcept -> Expect<T, true, true>
 {
     return Expect<T, true, true>{value, sourceLocation};
 }
@@ -69,7 +69,7 @@ export template<typename T>
 //! call site's source_location. Returns an Expect object to complete
 //! the expectation.
 export template<typename T>
-[[nodiscard]] auto expect(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, false, false>
+[[nodiscard]] auto expect(const T &value, const std::source_location &sourceLocation = std::source_location::current()) noexcept -> Expect<T, false, false>
 {
     return Expect<T, false, false>{value, sourceLocation};
 }
@@ -80,7 +80,7 @@ export template<typename T>
 //! call site's source_location. Returns an Expect object to complete
 //! the expectation.
 export template<typename T>
-[[nodiscard]] auto expect_fail(const T &value, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> Expect<T, false, true>
+[[nodiscard]] auto expect_fail(const T &value, const std::source_location &sourceLocation = std::source_location::current()) noexcept -> Expect<T, false, true>
 {
     return Expect<T, false, true>{value, sourceLocation};
 }
@@ -90,7 +90,7 @@ export template<typename T>
 //! implicit global test suite. The `testBody` is not executed immediately
 //! but rather during the exceution of atest::TestRunner::run().
 export template<typename T = int>
-auto test(const char *name, auto (*testBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) -> void
+auto test(const char *name, auto (*testBody)()->void, const std::source_location &sourceLocation = std::source_location::current()) -> void
 {
     globalTests()->currentTestSuite->tests.emplace_back(Test{name, testBody, sourceLocation});
 }
@@ -102,7 +102,7 @@ auto test(const char *name, auto (*testBody)()->void, const source_location<> &s
 //! any exception it catches if it derives from `std::exception`. It returns
 //! 0 on success, 1 otherwise.
 export template<typename T = int>
-auto suite(const char *name, auto (*suiteBody)()->void, const source_location<> &sourceLocation = source_location<>::current()) noexcept -> int
+auto suite(const char *name, auto (*suiteBody)()->void, const std::source_location &sourceLocation = std::source_location::current()) noexcept -> int
 {
 #ifdef _MSC_VER
     using ::type_info;

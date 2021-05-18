@@ -56,7 +56,6 @@ cd ..
 REM atest
 mkdir atest
 cd atest
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\source_location.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\data.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\stringify.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\printer.cpp"
@@ -68,7 +67,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\ma
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\expect.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\test_runner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\atest\atest.cpp"
-lib.exe /NOLOGO source_location.obj data.obj stringify.obj printer.obj reporter.obj expect_base.obj expect_tomatch.obj expect_tothrow.obj matcher.obj expect.obj test_runner.obj atest.obj /OUT:atest.lib
+lib.exe /NOLOGO data.obj stringify.obj printer.obj reporter.obj expect_base.obj expect_tomatch.obj expect_tothrow.obj matcher.obj expect.obj test_runner.obj atest.obj /OUT:atest.lib
 cd ..
 
 REM atest_test

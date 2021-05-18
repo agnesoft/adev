@@ -1,9 +1,6 @@
 #ifdef _MSC_VER
-module;
-
-#    include <typeinfo>
-
 export module acore : commandline_option;
+
 import : acore_common;
 #endif
 

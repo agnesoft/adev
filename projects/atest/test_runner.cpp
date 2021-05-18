@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 export module atest : test_runner;
-
 import : data;
 import : reporter;
 import : printer;

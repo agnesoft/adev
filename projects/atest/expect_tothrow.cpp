@@ -1,10 +1,5 @@
 #ifdef _MSC_VER
-module;
-
-#    include <typeinfo>
-
 export module atest : expect_tothrow;
-
 export import : expect_base;
 #endif
 
@@ -49,13 +44,10 @@ public:
     //! or throwing unknown exception, exception of a different than
     //! expected type or not matching the value `V` (if value matching
     //! is requested) all result in an error and failure of the expectation.
-    ExpectToThrow(const T &expression, const V &value, const source_location<> &sourceLocation) :
+    ExpectToThrow(const T &expression, const V &value, const std::source_location &sourceLocation) :
         ExpectBase<T, Assert, ExpectFail>{expression, sourceLocation},
         mValue{value}
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
         try
         {
             this->expression()();
@@ -102,10 +94,6 @@ private:
 
     auto handleUnknownException()
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
-
         try
         {
             throw;
@@ -134,10 +122,6 @@ private:
 
     auto validateException(E &e) -> void
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
-
         if (typeid(E) == typeid(e))
         {
             validateExceptionValue(e);
