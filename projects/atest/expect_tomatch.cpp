@@ -1,8 +1,4 @@
 #ifdef _MSC_VER
-module;
-
-#    include <typeinfo>
-
 export module atest : expect_tomatch;
 
 export import : expect_base;
@@ -36,10 +32,6 @@ public:
         ExpectBase<T, Assert, ExpectFail>{expression, sourceLocation},
         mValue{value}
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
-
         Matcher matcher;
 
         try

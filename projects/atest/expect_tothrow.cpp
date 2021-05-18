@@ -1,8 +1,4 @@
 #ifdef _MSC_VER
-module;
-
-#    include <typeinfo>
-
 export module atest : expect_tothrow;
 
 export import : expect_base;
@@ -53,9 +49,6 @@ public:
         ExpectBase<T, Assert, ExpectFail>{expression, sourceLocation},
         mValue{value}
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
         try
         {
             this->expression()();
@@ -102,10 +95,6 @@ private:
 
     auto handleUnknownException()
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
-
         try
         {
             throw;
@@ -134,10 +123,6 @@ private:
 
     auto validateException(E &e) -> void
     {
-#ifdef _MSC_VER
-        using ::type_info;
-#endif
-
         if (typeid(E) == typeid(e))
         {
             validateExceptionValue(e);

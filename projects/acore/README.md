@@ -96,5 +96,4 @@ The command to run is split into actual `command` (an application) and its argum
 
 ### Does Not Affect Users
 
--   [**MSVC 16.9.3**] Using `type_info` requires `using ::type_info;` and include of `<typeinfo>` in the global module fragment, otherwise the `type_info` struct is unknown at compile time. Reported bug: https://developercommunity.visualstudio.com/t/Undefined-reference-to-type_info-when-us/1384072
 -   [**clang 11.1.0**] Clang does not yet implement modules partitions. As a workaround each partition is guarded with `ifdef` removing the module partition stuff from the top and on clang they are all textually included (with `#include`) into the module interface directly. Once clang does implement module partitions this mechanism can be removed.

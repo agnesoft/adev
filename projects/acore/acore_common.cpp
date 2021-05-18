@@ -2,4 +2,4 @@
 export module acore : acore_common;
 #endif
 
-export import "astl.hpp";
+export import<astl.hpp>;
