@@ -1,6 +1,4 @@
 #ifdef _MSC_VER
-module;
-#    include <vector>
 export module abuild : project_scanner;
 import : settings;
 import : build_cache;
