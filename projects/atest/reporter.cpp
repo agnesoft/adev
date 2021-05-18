@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 module atest : reporter;
-
 import : data;
 #endif
 

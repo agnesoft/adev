@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 export module atest : expect_base;
-
 import : data;
 #endif
 
@@ -18,7 +17,7 @@ class ExpectBase
 {
 public:
     //! Constructs the object taking the `expression` and `sourceLocation`.
-    explicit ExpectBase(const T &expression, const source_location<> &sourceLocation) noexcept :
+    explicit ExpectBase(const T &expression, const std::source_location &sourceLocation) noexcept :
         mExpression{expression},
         mSourceLocation{sourceLocation}
     {
@@ -71,6 +70,6 @@ protected:
 
 private:
     const T &mExpression;
-    source_location<> mSourceLocation;
+    std::source_location mSourceLocation;
 };
 }

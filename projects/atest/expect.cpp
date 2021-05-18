@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 export module atest : expect;
-
 export import : expect_tomatch;
 export import : expect_tothrow;
 export import : matcher;
@@ -18,7 +17,7 @@ class Expect
 {
 public:
     //! Constructs the object with `expression` and `sourceLocation`.
-    Expect(const T &expression, const source_location<> &sourceLocation) noexcept :
+    Expect(const T &expression, const std::source_location &sourceLocation) noexcept :
         mExpression{expression},
         mSourceLocation{sourceLocation}
     {
@@ -68,6 +67,6 @@ public:
 
 private:
     const T &mExpression;
-    source_location<> mSourceLocation;
+    std::source_location mSourceLocation;
 };
 }

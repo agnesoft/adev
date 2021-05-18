@@ -1,12 +1,8 @@
-#ifdef _MSC_VER
-export module atest : source_location;
-#endif
-
 namespace atest
 {
 //! The `source_location<T>` is a placeholder class for C++20 std::source_location.
-export template<typename T = int>
-class source_location
+export template<typename T>
+class source_location_base
 {
 public:
     //! Returns the source_location object containing the `file`
@@ -14,9 +10,9 @@ public:
     //! there is no support for `consteval` yet the template trick
     //! is used to force the compiler to evaluate it at the place
     //! of instantiation.
-    [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> source_location
+    [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> T
     {
-        source_location sourceLocation;
+        T sourceLocation;
         sourceLocation.mFile = file;
         sourceLocation.mLine = line;
         return sourceLocation;
@@ -37,5 +33,12 @@ public:
 private:
     const char *mFile = "unknown";
     int mLine = -1;
+};
+}
+
+namespace std
+{
+export class source_location : public atest::source_location_base<source_location>
+{
 };
 }
