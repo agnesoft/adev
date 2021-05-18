@@ -227,7 +227,6 @@ It is also a requirement for all values used in the expectations and matching to
 
 ### Affects Users
 
--   Using templated function such as `toThrow` (e.g. `expect([] { throw 1; }).toThrow<int>();` does not work and requires `template` keyword (e.g. `expect([] { throw 1; }).template toThrow<int>();`) otherwise parser fails: Reported bug: https://developercommunity.visualstudio.com/t/Cannot-instantiate-template-exported-fro/1387974
 -   Using `clang-tidy` with global calls to `suite()` will result in incorrect `cert-err58-cpp` warning being emitted stating that the function may throw and there is no possibility to catch the exception. The function is however declared `noexcept` and its body is wrapped in `try {} catch (...) {}` therefore it cannot actually throw any exceptions. It indicates succes by returning `0` and failure (an exception) byt returing `1`. To avoid this you need either to add `//NOLINT(cert-err58-cpp)` to the line where you call `suite()` or call `suite()` directly or indirectly from `main()` only (but the second option loses the self-registering property of the suites).
 
 ### Does Not Affect Users
