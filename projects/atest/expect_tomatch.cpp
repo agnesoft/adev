@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 export module atest : expect_tomatch;
-
 export import : expect_base;
 #endif
 
@@ -28,7 +27,7 @@ public:
     //! from such call. The matching is done by calling the `operator()` of the `Matcher`.
     //! If the match fails `Matcher` will be queried for the details regarding the match
     //! and provided with the values to possibly stringify for the error output.
-    ExpectToMatch(const T &expression, const V &value, const source_location<> &sourceLocation) :
+    ExpectToMatch(const T &expression, const V &value, const std::source_location &sourceLocation) :
         ExpectBase<T, Assert, ExpectFail>{expression, sourceLocation},
         mValue{value}
     {

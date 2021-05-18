@@ -1,12 +1,8 @@
-#ifdef _MSC_VER
-export module atest : source_location;
-#endif
-
 namespace atest
 {
 //! The `source_location<T>` is a placeholder class for C++20 std::source_location.
 export template<typename T = int>
-class source_location
+class source_location_base
 {
 public:
     //! Returns the source_location object containing the `file`
@@ -37,5 +33,12 @@ public:
 private:
     const char *mFile = "unknown";
     int mLine = -1;
+};
+}
+
+namespace std
+{
+export class source_location : public source_location<int>
+{
 };
 }

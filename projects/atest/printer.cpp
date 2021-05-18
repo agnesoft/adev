@@ -1,6 +1,5 @@
 #ifdef _MSC_VER
 module atest : printer;
-
 import : data;
 import : stringify;
 #endif
@@ -113,7 +112,7 @@ private:
 
     [[nodiscard]] static auto hasLocation(const TestSuite *testSuite) -> bool
     {
-        return testSuite->sourceLocation.line() != -1;
+        return strlen(testSuite->sourceLocation.file_name()) != strlen(std::source_location{}.file_name());
     }
 
     [[nodiscard]] auto indent() const -> std::string
@@ -175,7 +174,7 @@ private:
         return std::string(SEPARATOR_WIDTH, '=');
     }
 
-    [[nodiscard]] static auto sourceLocationToString(const source_location<> &location) -> std::string
+    [[nodiscard]] static auto sourceLocationToString(const std::source_location &location) -> std::string
     {
         return stringify(std::filesystem::path{location.file_name()}.filename().string(), ':', location.line(), ':');
     }
