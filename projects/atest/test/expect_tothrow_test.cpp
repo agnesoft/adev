@@ -9,23 +9,23 @@ using atest::test;
 
 static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     test("Exception types match", [] {
-        expect([] { throw std::logic_error{""}; }).template toThrow<std::logic_error>();
+        expect([] { throw std::logic_error{""}; }).toThrow<std::logic_error>();
     });
 
     test("Exception types mismatch", [] {
-        expect_fail([] { throw std::runtime_error{""}; }).template toThrow<std::logic_error>();
+        expect_fail([] { throw std::runtime_error{""}; }).toThrow<std::logic_error>();
     });
 
     test("Exception types mismatch: expect base, throw derived", [] {
-        expect_fail([] { throw std::runtime_error{""}; }).template toThrow<std::exception>();
+        expect_fail([] { throw std::runtime_error{""}; }).toThrow<std::exception>();
     });
 
     test("Exception types mismatch: throw int", [] {
-        expect_fail([] { throw 1; }).template toThrow<std::exception>();
+        expect_fail([] { throw 1; }).toThrow<std::exception>();
     });
 
     test("Exception text match", [] {
-        expect([] { throw std::runtime_error{"Some exception text"}; }).template toThrow<std::runtime_error>("Some exception text");
+        expect([] { throw std::runtime_error{"Some exception text"}; }).toThrow<std::runtime_error>("Some exception text");
     });
 
     test("Exception text match: int", [] {
@@ -33,7 +33,7 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception text mismatch", [] {
-        expect_fail([] { throw std::runtime_error{"Some exception text"}; }).template toThrow<std::runtime_error>("Some different exception text");
+        expect_fail([] { throw std::runtime_error{"Some exception text"}; }).toThrow<std::runtime_error>("Some different exception text");
     });
 
     test("Exception text mismatch (INTENTIONAL FAILURE)", [] {
@@ -41,15 +41,15 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("No exception thrown", [] {
-        expect_fail([] {}).template toThrow<std::exception>();
+        expect_fail([] {}).toThrow<std::exception>();
     });
 
     test("No exception thrown (INTENTIONAL FAILURE)", [] {
-        expect([] {}).template toThrow<std::exception>();
+        expect([] {}).toThrow<std::exception>();
     });
 
     test("Exception types match: int", [] {
-        expect([] { throw 1; }).template toThrow<int>();
+        expect([] { throw 1; }).toThrow<int>();
     });
 
     test("Exception value match: int", [] {
