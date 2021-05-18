@@ -38,7 +38,7 @@ private:
 
 namespace std
 {
-export class source_location : public atest::source_location<source_location>
+export class source_location : public atest::source_location_base<source_location>
 {
 };
 }
