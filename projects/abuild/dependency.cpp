@@ -10,59 +10,59 @@ export struct Module;
 export struct ModulePartition;
 export class Source;
 
-struct IncludeExternalHeader
+export struct IncludeExternalHeader
 {
     std::string name;
     Header *header = nullptr;
 };
 
-struct IncludeLocalHeader
+export struct IncludeLocalHeader
 {
     std::string name;
     Header *header = nullptr;
 };
 
-struct IncludeLocalSource
+export struct IncludeLocalSource
 {
     std::string name;
     Source *source = nullptr;
 };
 
-struct IncludeSTLHeader
+export struct IncludeSTLHeader
 {
     std::string name;
 };
 
-struct ImportExternalHeader
-{
-    std::string name;
-    Header *header = nullptr;
-};
-
-struct ImportLocalHeader
+export struct ImportExternalHeader
 {
     std::string name;
     Header *header = nullptr;
 };
 
-struct ImportModule
+export struct ImportLocalHeader
+{
+    std::string name;
+    Header *header = nullptr;
+};
+
+export struct ImportModule
 {
     std::string name;
     Module *mod = nullptr;
 };
 
-struct ImportModulePartition
+export struct ImportModulePartition
 {
     std::string name;
     ModulePartition *partition = nullptr;
 };
 
-struct ImportSTLHeader
+export struct ImportSTLHeader
 {
     std::string name;
 };
 
-using Dependency = std::variant<
+export using Dependency = std::variant<
     IncludeExternalHeader,
     IncludeLocalHeader,
     IncludeLocalSource,
