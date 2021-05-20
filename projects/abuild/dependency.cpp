@@ -10,66 +10,66 @@ export struct Module;
 export struct ModulePartition;
 export class Source;
 
-export struct IncludeExternalHeader
+export struct IncludeExternalHeaderDependency
 {
     std::string name;
     Header *header = nullptr;
 };
 
-export struct IncludeLocalHeader
+export struct IncludeLocalHeaderDependency
 {
     std::string name;
     Header *header = nullptr;
 };
 
-export struct IncludeLocalSource
+export struct IncludeLocalSourceDependency
 {
     std::string name;
     Source *source = nullptr;
 };
 
-export struct IncludeSTLHeader
+export struct IncludeSTLHeaderDependency
 {
     std::string name;
 };
 
-export struct ImportExternalHeader
-{
-    std::string name;
-    Header *header = nullptr;
-};
-
-export struct ImportLocalHeader
+export struct ImportExternalHeaderDependency
 {
     std::string name;
     Header *header = nullptr;
 };
 
-export struct ImportModule
+export struct ImportLocalHeaderDependency
+{
+    std::string name;
+    Header *header = nullptr;
+};
+
+export struct ImportModuleDependency
 {
     std::string name;
     Module *mod = nullptr;
 };
 
-export struct ImportModulePartition
+export struct ImportModulePartitionDependency
 {
     std::string name;
     ModulePartition *partition = nullptr;
 };
 
-export struct ImportSTLHeader
+export struct ImportSTLHeaderDependency
 {
     std::string name;
 };
 
 export using Dependency = std::variant<
-    IncludeExternalHeader,
-    IncludeLocalHeader,
-    IncludeLocalSource,
-    IncludeSTLHeader,
-    ImportExternalHeader,
-    ImportLocalHeader,
-    ImportModule,
-    ImportModulePartition,
-    ImportSTLHeader>;
+    IncludeExternalHeaderDependency,
+    IncludeLocalHeaderDependency,
+    IncludeLocalSourceDependency,
+    IncludeSTLHeaderDependency,
+    ImportExternalHeaderDependency,
+    ImportLocalHeaderDependency,
+    ImportModuleDependency,
+    ImportModulePartitionDependency,
+    ImportSTLHeaderDependency>;
 }
