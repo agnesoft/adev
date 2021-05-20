@@ -1,32 +1,11 @@
 #ifdef _MSC_VER
 export module abuild : tokenizer;
-import<astl.hpp>;
+export import : token;
 #endif
 
 namespace abuild
 {
-export struct Token
-{
-    enum class Type
-    {
-        None = 0,
-        IncludeLocal,
-        IncludeExternal,
-        Module,
-        ModulePartition,
-        ImportModule,
-        ImportIncludeLocal,
-        ImportIncludeExternal,
-        ImportModulePartition
-    };
-
-    std::string name;
-    std::string moduleName;
-    Type type = Type::None;
-    bool exported = false;
-};
-
-struct BadToken
+struct BadTokenError
 {
 };
 
@@ -38,7 +17,7 @@ public:
     {
     }
 
-    [[nodiscard]] auto next() -> std::optional<Token>
+    [[nodiscard]] auto next() -> Token
     {
         while (!atEnd())
         {
@@ -63,7 +42,7 @@ public:
                 {
                     if (isImport())
                     {
-                        return extractImport();
+                        return extractImport(TokenVisibility::Private);
                     }
                     else
                     {
@@ -74,7 +53,7 @@ public:
                 {
                     if (isModule())
                     {
-                        return extractModule();
+                        return extractModule(TokenVisibility::Private);
                     }
                     else
                     {
@@ -97,12 +76,12 @@ public:
                     skipToSemicolonOrLine();
                 }
             }
-            catch ([[maybe_unused]] BadToken &badToken)
+            catch ([[maybe_unused]] BadTokenError &badToken)
             {
             }
         }
 
-        return std::nullopt;
+        return std::monostate;
     }
 
 private:
@@ -131,7 +110,7 @@ private:
         }
         else
         {
-            throw BadToken{};
+            throw BadTokenError{};
         }
     }
 
@@ -139,17 +118,17 @@ private:
     {
         pos += 6;
         skipWhiteSpaceOrComment();
-        return extractImport();
+        return extractImport(TokenVisibility::Exported);
     }
 
     [[nodiscard]] auto extractExportModule() -> Token
     {
         pos += 6;
         skipWhiteSpaceOrComment();
-        return extractModule();
+        return extractModule(TokenVisibility::Exported);
     }
 
-    [[nodiscard]] auto extractImport() -> Token
+    [[nodiscard]] auto extractImport(TokenVisibility visibility) -> Token
     {
         skipWhiteSpaceOrComment();
 
@@ -157,61 +136,66 @@ private:
         {
             pos++;
             skipWhiteSpaceOrComment();
-            return extractImportToken(Token::Type::ImportModulePartition, ';');
+            return ImportModulePartitionToken{.name = extractImportNameTill(';'), .visibility = visibility};
         }
         else if (mContent[pos] == '"')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportIncludeLocal, '"');
+            return ImportIncludeLocalToken{.name = extractImportTill('"'), .visibility = visibility};
         }
         else if (mContent[pos] == '<')
         {
             pos++;
-            return extractImportToken(Token::Type::ImportIncludeExternal, '>');
+            return ImportIncludeExternalToken{.name = extractImportTill('>'), .visibility = visibility};
         }
         else
         {
-            return extractImportToken(Token::Type::ImportModule, ';');
+            return ImportModuleToken{.name = extractImportTill(';'), .visibility = visibility};
         }
     }
 
-    [[nodiscard]] auto extractImportToken(Token::Type type, const char separator) -> Token
+    [[nodiscard]] auto extractImportTill(const char separator) -> std::string
     {
-        Token token;
-        token.type = type;
-        token.name = separator == '"' || separator == '>' ? extractIncludeName(separator) : extractTokenName();
+        std::string name;
+
+        if (separator == '"' || separator == '>')
+        {
+            name = extractIncludeName(separator);
+        }
+        else
+        {
+            name = extractTokenName();
+        }
+
         pos++;
-        return token;
+        return name;
     }
 
     [[nodiscard]] auto extractInclude() -> Token
     {
-        Token token;
-        const char separator = mContent[pos++];
-        token.type = separator == '"' ? Token::Type::IncludeLocal : Token::Type::IncludeExternal;
-        token.name = extractIncludeName(separator == '"' ? '"' : '>');
-        return token;
+        if (mContent[pos++] == '"')
+        {
+            return IncludeLocalToken{.name = extractIncludeName('"')};
+        }
+        else
+        {
+            return IncludeExternalToken{.name = extractIncludeName('>')};
+        }
     }
 
-    [[nodiscard]] auto extractModule() -> Token
+    [[nodiscard]] auto extractModule(TokenVisibility visibility) -> Token
     {
-        Token token;
         std::string tokenName = extractTokenName();
 
         if (mContent[pos++] == ':')
         {
-            token.type = Token::Type::ModulePartition;
             skipWhiteSpaceOrComment();
-            token.name = extractTokenName();
-            token.moduleName = std::move(tokenName);
+            return ModulePartitionToken{.name = extractTokenName(), .mod = std::move(tokenName), .visibility = visibility};
         }
         else
         {
-            token.type = Token::Type::Module;
-            token.name = std::move(tokenName);
+            return ModuleToken{.name = std::move(tokenName), .visibility = visibility};
         }
-
-        return token;
     }
 
     [[nodiscard]] auto extractIncludeName(const char separator) -> std::string
@@ -225,7 +209,7 @@ private:
 
         if (mContent[pos] != separator)
         {
-            throw BadToken{};
+            throw BadTokenError{};
         }
 
         return name;
@@ -251,7 +235,7 @@ private:
 
         if (mContent[pos] != ':' && mContent[pos] != ';')
         {
-            throw BadToken{};
+            throw BadTokenError{};
         }
 
         return trim(name);

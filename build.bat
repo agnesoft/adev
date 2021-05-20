@@ -68,10 +68,12 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\s
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\module.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\token.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\tokenizer.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
 lib.exe /NOLOGO ^
         /OUT:abuild.lib ^
+        token.obj ^
         tokenizer.obj ^
         dependency.obj ^
         settings.obj ^
