@@ -28,7 +28,7 @@ set CPP_FLAGS_OPTIMIZED=/O2 %CPP_FLAGS%
 REM astl
 mkdir astl
 cd astl
-cl.exe %CPP_FLAGS% /c /exportHeader /Fo /TP "%ASTL_INCLUDE_PATH%\astl.hpp"
+cl.exe /O1 %CPP_FLAGS% /c /exportHeader /Fo /TP "%ASTL_INCLUDE_PATH%\astl.hpp"
 cd ..
 
 REM rapidjson
