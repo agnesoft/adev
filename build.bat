@@ -9,7 +9,20 @@ mkdir bin
 set BUILD_ROOT=%cd%
 set ASTL_INCLUDE_PATH=%PROJECTS_ROOT%\astl\include
 set RAPIDJSON_INCLUDE_PATH=%PROJECTS_ROOT%\rapidjson\include
-set CPP_FLAGS=/nologo /W4 /WX /std:c++20 /EHsc /I"%ASTL_INCLUDE_PATH%" /I"%RAPIDJSON_INCLUDE_PATH%" /headerUnit "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\Windows.h=%BUILD_ROOT%\Windows.h.ifc" /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc" /ifcSearchDir "%BUILD_ROOT%\atest" /ifcSearchDir "%BUILD_ROOT%\acore" /ifcSearchDir "%BUILD_ROOT%\abuild" /ifcSearchDir "%BUILD_ROOT%\abuild_test"
+set CPP_FLAGS=/nologo ^
+              /W4 ^
+              /WX ^
+              /std:c++20 ^
+              /EHsc ^
+              /I"%ASTL_INCLUDE_PATH%" ^
+              /I"%RAPIDJSON_INCLUDE_PATH%" ^
+              /headerUnit "C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um\Windows.h=%BUILD_ROOT%\Windows.h.ifc" ^
+              /headerUnit "%ASTL_INCLUDE_PATH%\astl.hpp=%BUILD_ROOT%\astl\astl.hpp.ifc" ^
+              /headerUnit "%RAPIDJSON_INCLUDE_PATH%\rapidjson.hpp=%BUILD_ROOT%\rapidjson\rapidjson.hpp.ifc" ^
+              /ifcSearchDir "%BUILD_ROOT%\atest" ^
+              /ifcSearchDir "%BUILD_ROOT%\acore" ^
+              /ifcSearchDir "%BUILD_ROOT%\abuild" ^
+              /ifcSearchDir "%BUILD_ROOT%\abuild_test"
 set CPP_FLAGS_OPTIMIZED=/O2 %CPP_FLAGS%
 
 REM astl
