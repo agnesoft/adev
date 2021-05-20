@@ -19,6 +19,6 @@ import <astl.hpp>;
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 #include "token.cpp"
-#include "tokenize.cpp"
+#include "tokenizer.cpp"
 // clang-format on
 #endif
