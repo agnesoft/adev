@@ -81,7 +81,7 @@ public:
             }
         }
 
-        return std::monostate;
+        return {};
     }
 
 private:
@@ -93,9 +93,7 @@ private:
     [[nodiscard]] auto extractExport() -> Token
     {
         skipWhiteSpaceOrComment();
-        Token token = extractExportToken();
-        token.exported = true;
-        return token;
+        return extractExportToken();
     }
 
     [[nodiscard]] auto extractExportToken() -> Token
@@ -141,20 +139,20 @@ private:
         else if (mContent[pos] == '"')
         {
             pos++;
-            return ImportIncludeLocalToken{.name = extractImportTill('"'), .visibility = visibility};
+            return ImportIncludeLocalToken{.name = extractImportNameTill('"'), .visibility = visibility};
         }
         else if (mContent[pos] == '<')
         {
             pos++;
-            return ImportIncludeExternalToken{.name = extractImportTill('>'), .visibility = visibility};
+            return ImportIncludeExternalToken{.name = extractImportNameTill('>'), .visibility = visibility};
         }
         else
         {
-            return ImportModuleToken{.name = extractImportTill(';'), .visibility = visibility};
+            return ImportModuleToken{.name = extractImportNameTill(';'), .visibility = visibility};
         }
     }
 
-    [[nodiscard]] auto extractImportTill(const char separator) -> std::string
+    [[nodiscard]] auto extractImportNameTill(const char separator) -> std::string
     {
         std::string name;
 

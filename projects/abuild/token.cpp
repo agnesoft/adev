@@ -1,58 +1,57 @@
 #ifdef _MSC_VER
-export module abuild : tokenizer;
+export module abuild : token;
 import<astl.hpp>;
 #endif
 
 namespace abuild
 {
-enum class TokenVisibility
-{
+export enum class TokenVisibility {
     Exported,
     Private
 };
 
-struct IncludeLocalToken
+export struct IncludeLocalToken
 {
     std::string name;
 };
 
-struct IncludeExternalToken
+export struct IncludeExternalToken
 {
     std::string name;
 };
 
-struct ModuleToken
+export struct ModuleToken
 {
     std::string name;
     TokenVisibility visibility = TokenVisibility::Private;
 };
 
-struct ModulePartitionToken
+export struct ModulePartitionToken
 {
+    std::string name;
     std::string mod;
-    std::string name;
     TokenVisibility visibility = TokenVisibility::Private;
 };
 
-struct ImportModuleToken
+export struct ImportModuleToken
 {
     std::string name;
     TokenVisibility visibility = TokenVisibility::Private;
 };
 
-struct ImportIncludeLocalToken
+export struct ImportIncludeLocalToken
 {
     std::string name;
     TokenVisibility visibility = TokenVisibility::Private;
 };
 
-struct ImportIncludeExternalToken
+export struct ImportIncludeExternalToken
 {
     std::string name;
     TokenVisibility visibility = TokenVisibility::Private;
 };
 
-struct ImportModulePartitionToken
+export struct ImportModulePartitionToken
 {
     std::string name;
     TokenVisibility visibility = TokenVisibility::Private;
