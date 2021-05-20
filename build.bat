@@ -33,7 +33,14 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\co
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process_windows.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\acore\acore.cpp"
-lib.exe /NOLOGO acore.obj acore_common.obj commandline.obj commandline_option.obj process.obj process_windows.obj /OUT:acore.lib
+lib.exe /NOLOGO ^
+        /OUT:acore.lib ^
+        acore.obj ^
+        acore_common.obj ^
+        commandline.obj ^
+        commandline_option.obj ^
+        process.obj ^
+        process_windows.obj
 cd ..
 
 REM abuild
@@ -48,9 +55,28 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\s
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\module.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\tokenizer.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
-lib.exe /NOLOGO dependency.obj settings.obj project.obj file.obj header.obj source.obj module.obj build_cache.obj project_scanner.obj abuild.obj /OUT:abuild.lib
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\abuild.exe" "%PROJECTS_ROOT%\abuild\main.cpp" "%BUILD_ROOT%\acore\acore.lib" "%BUILD_ROOT%\abuild\abuild.lib" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\rapidjson\rapidjson.obj"
+lib.exe /NOLOGO ^
+        /OUT:abuild.lib ^
+        tokenizer.obj ^
+        dependency.obj ^
+        settings.obj ^
+        project.obj ^
+        file.obj ^
+        header.obj ^
+        source.obj ^
+        module.obj ^
+        build_cache.obj ^
+        project_scanner.obj ^
+        abuild.obj
+cl.exe %CPP_FLAGS_OPTIMIZED% ^
+       /Fe"%BUILD_ROOT%\bin\abuild.exe" ^
+       "%PROJECTS_ROOT%\abuild\main.cpp" ^
+       "%BUILD_ROOT%\acore\acore.lib" ^
+       "%BUILD_ROOT%\abuild\abuild.lib" ^
+       "%BUILD_ROOT%\astl\astl.obj" ^
+       "%BUILD_ROOT%\rapidjson\rapidjson.obj"
 cd ..
 
 REM atest
@@ -67,25 +93,59 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\ma
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\expect.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\atest\test_runner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\atest\atest.cpp"
-lib.exe /NOLOGO data.obj stringify.obj printer.obj reporter.obj expect_base.obj expect_tomatch.obj expect_tothrow.obj matcher.obj expect.obj test_runner.obj atest.obj /OUT:atest.lib
+lib.exe /NOLOGO ^
+        /OUT:atest.lib ^
+        data.obj ^
+        stringify.obj ^
+        printer.obj ^
+        reporter.obj ^
+        expect_base.obj ^
+        expect_tomatch.obj ^
+        expect_tothrow.obj ^
+        matcher.obj ^
+        expect.obj ^
+        test_runner.obj ^
+        atest.obj
 cd ..
 
 REM atest_test
 mkdir atest_test
 cd atest_test
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\atest_test.exe" /ifcSearchDir "%BUILD_ROOT%\atest" "%PROJECTS_ROOT%\atest\test\main.cpp" "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" "%PROJECTS_ROOT%\atest\test\printer_test.cpp" "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" "%PROJECTS_ROOT%\atest\test\assert_test.cpp" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\astl\astl.obj"
+cl.exe %CPP_FLAGS_OPTIMIZED% ^
+       /Fe"%BUILD_ROOT%\bin\atest_test.exe" ^
+       /ifcSearchDir "%BUILD_ROOT%\atest" ^
+       "%PROJECTS_ROOT%\atest\test\main.cpp" ^
+       "%PROJECTS_ROOT%\atest\test\expect_tobe_test.cpp" ^
+       "%PROJECTS_ROOT%\atest\test\expect_tothrow_test.cpp" ^
+       "%PROJECTS_ROOT%\atest\test\expect_tomatch_test.cpp" ^
+       "%PROJECTS_ROOT%\atest\test\printer_test.cpp" ^
+       "%PROJECTS_ROOT%\atest\test\bad_test_suite.cpp" ^
+       "%PROJECTS_ROOT%\atest\test\assert_test.cpp" ^
+       "%BUILD_ROOT%\atest\atest.lib" ^
+       "%BUILD_ROOT%\astl\astl.obj"
 cd ..
 
 REM astl_test
 mkdir astl_test
 cd astl_test
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\astl_test.exe" "%PROJECTS_ROOT%\astl\test\main.cpp" "%BUILD_ROOT%\astl\astl.obj"
+cl.exe %CPP_FLAGS_OPTIMIZED% ^
+       /Fe"%BUILD_ROOT%\bin\astl_test.exe" ^
+       "%PROJECTS_ROOT%\astl\test\main.cpp" ^
+       "%BUILD_ROOT%\astl\astl.obj"
 cd ..
 
 REM acore_test
 mkdir acore_test
 cd acore
-cl.exe %CPP_FLAGS_OPTIMIZED% /Fe"%BUILD_ROOT%\bin\acore_test.exe" "%PROJECTS_ROOT%\acore\test\main.cpp" "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" "%PROJECTS_ROOT%\acore\test\process_test.cpp" "%BUILD_ROOT%\astl\astl.obj" "%BUILD_ROOT%\atest\atest.lib" "%BUILD_ROOT%\acore\acore.lib"
+cl.exe %CPP_FLAGS_OPTIMIZED% ^
+       /Fe"%BUILD_ROOT%\bin\acore_test.exe" ^
+       "%PROJECTS_ROOT%\acore\test\main.cpp" ^
+       "%PROJECTS_ROOT%\acore\test\commandline_option_test.cpp" ^
+       "%PROJECTS_ROOT%\acore\test\commandline_test.cpp" ^
+       "%PROJECTS_ROOT%\acore\test\process_test.cpp" ^
+       "%BUILD_ROOT%\astl\astl.obj" ^
+       "%BUILD_ROOT%\atest\atest.lib" ^
+       "%BUILD_ROOT%\acore\acore.lib"
 cd ..
 
 REM abuild_test
@@ -95,7 +155,12 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\t
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\test\test_project.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\test\test_project_with_content.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\test\abuild_test_utilities.cpp"
-lib.exe /NOLOGO abuild_test_utilities.obj test_cache.obj test_project.obj test_project_with_content.obj /OUT:abuild_test_utilities.lib
+lib.exe /NOLOGO ^
+        /OUT:abuild_test_utilities.lib ^
+        abuild_test_utilities.obj ^
+        test_cache.obj ^
+        test_project.obj ^
+        test_project_with_content.obj
 cl.exe %CPP_FLAGS_OPTIMIZED% ^
        /Fe"%BUILD_ROOT%\bin\abuild_test.exe" ^
        "%PROJECTS_ROOT%\abuild\test\main.cpp" ^
@@ -109,6 +174,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\project_scanner_sources_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\settings_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\project_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\tokenizer_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" ^
        "%BUILD_ROOT%\astl\astl.obj" ^
        "%BUILD_ROOT%\atest\atest.lib" ^
