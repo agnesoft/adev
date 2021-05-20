@@ -9,6 +9,7 @@ export import : project_scanner;
 import <astl.hpp>;
 #include "settings.cpp"
 #include "project.cpp"
+#include "dependency.cpp"
 #include "file.cpp"
 #include "header.cpp"
 #include "source.cpp"

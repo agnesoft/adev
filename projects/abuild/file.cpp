@@ -1,6 +1,6 @@
 #ifdef _MSC_VER
 export module abuild : file;
-import<astl.hpp>;
+export import : dependency;
 #endif
 
 namespace abuild
@@ -22,6 +22,11 @@ public:
     {
     }
 
+    auto addDependency(Dependency dependency) -> void
+    {
+        mDependencies.push_back(std::move(dependency));
+    }
+
     [[nodiscard]] auto content() const noexcept -> std::string
     {
         std::ifstream file{mPath};
@@ -33,6 +38,11 @@ public:
         data.assign(std::istreambuf_iterator<char>{file}, std::istreambuf_iterator<char>{});
 
         return data;
+    }
+
+    [[nodiscard]] auto dependencies() noexcept -> std::vector<Dependency> &
+    {
+        return mDependencies;
     }
 
     [[nodiscard]] auto extension() const noexcept -> std::string
@@ -79,5 +89,6 @@ private:
     std::filesystem::path mPath;
     Project *mProject = nullptr;
     std::int64_t mTimestamp = 0;
+    std::vector<Dependency> mDependencies;
 };
 }

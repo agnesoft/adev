@@ -10,7 +10,6 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     test("no source", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"header.hpp"}};
 
@@ -22,7 +21,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     });
 
     test("single source", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp"}};
 
@@ -37,7 +35,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     });
 
     test("multiple sources", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp",
                                  "source1.cpp",
@@ -63,7 +60,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     });
 
     test("using skip & squash dirs", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"projects/abuild/main.cpp",
                                  "projects/acore/src/source1.cpp",
@@ -89,7 +85,6 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     });
 
     test("multiple sources per project", [] {
-        TestCache testCache;
         TestProject testProject{"build_test_project_scanner",
                                 {"projects/abuild/main.cpp",
                                  "projects/abuild/source1.cpp",

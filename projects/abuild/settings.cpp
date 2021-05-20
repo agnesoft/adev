@@ -1,6 +1,6 @@
 #ifdef _MSC_VER
 export module abuild : settings;
-import<astl.hpp>;
+export import<astl.hpp>;
 #endif
 
 namespace abuild

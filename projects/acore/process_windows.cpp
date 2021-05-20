@@ -2,13 +2,15 @@ module;
 
 #pragma warning(push)
 #pragma warning(disable : 5105)
+#pragma warning(disable : 5106)
+#pragma warning(disable : 4005)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#pragma warning(pop)
 
 module acore : process_windows;
 
 import : acore_common;
+#pragma warning(pop)
 
 namespace acore
 {
