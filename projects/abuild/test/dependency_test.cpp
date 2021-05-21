@@ -8,6 +8,22 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
+namespace std
+{
+auto operator<<(std::ostream &stream, const abuild::DependencyVisibility &visibility) -> std::ostream &
+{
+    switch (visibility)
+    {
+    case abuild::DependencyVisibility::Public:
+        return stream << "Public";
+    case abuild::DependencyVisibility::Private:
+        return stream << "Private";
+    }
+
+    return stream;
+}
+}
+
 static const auto testSuite = suite("abuild::Dependency", [] {
     test("IncludeExternalHeaderDependency", [] {
         TestProject testProject{"build_test_file",
@@ -17,11 +33,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Header header{testProject.projectRoot() / "rapidjson" / "include" / "rapidjson.h", nullptr};
 
-        source.addDependency(abuild::IncludeExternalHeaderDependency{.name = "rapidjson.h", .header = &header});
+        source.addDependency(abuild::IncludeExternalHeaderDependency{.name = "rapidjson.h", .header = &header, .visibility = abuild::DependencyVisibility::Public});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::IncludeExternalHeaderDependency>(source.dependencies()[0]).name).toBe("rapidjson.h");
         expect(std::get<abuild::IncludeExternalHeaderDependency>(source.dependencies()[0]).header).toBe(&header);
+        expect(std::get<abuild::IncludeExternalHeaderDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Public);
     });
 
     test("IncludeLocalHeaderDependency", [] {
@@ -32,11 +49,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Header header{testProject.projectRoot() / "myheader.h", nullptr};
 
-        source.addDependency(abuild::IncludeLocalHeaderDependency{.name = "myheader.h", .header = &header});
+        source.addDependency(abuild::IncludeLocalHeaderDependency{.name = "myheader.h", .header = &header, .visibility = abuild::DependencyVisibility::Public});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::IncludeLocalHeaderDependency>(source.dependencies()[0]).name).toBe("myheader.h");
         expect(std::get<abuild::IncludeLocalHeaderDependency>(source.dependencies()[0]).header).toBe(&header);
+        expect(std::get<abuild::IncludeLocalHeaderDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Public);
     });
 
     test("IncludeLocalSourceDependency", [] {
@@ -47,11 +65,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Source otherSource{testProject.projectRoot() / "source1.cpp", nullptr};
 
-        source.addDependency(abuild::IncludeLocalSourceDependency{.name = "source1.cpp", .source = &otherSource});
+        source.addDependency(abuild::IncludeLocalSourceDependency{.name = "source1.cpp", .source = &otherSource, .visibility = abuild::DependencyVisibility::Private});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::IncludeLocalSourceDependency>(source.dependencies()[0]).name).toBe("source1.cpp");
         expect(std::get<abuild::IncludeLocalSourceDependency>(source.dependencies()[0]).source).toBe(&otherSource);
+        expect(std::get<abuild::IncludeLocalSourceDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Private);
     });
 
     test("IncludeSTLHeaderDependency", [] {
@@ -60,10 +79,11 @@ static const auto testSuite = suite("abuild::Dependency", [] {
 
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
 
-        source.addDependency(abuild::IncludeSTLHeaderDependency{.name = "vector"});
+        source.addDependency(abuild::IncludeSTLHeaderDependency{.name = "vector", .visibility = abuild::DependencyVisibility::Public});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::IncludeSTLHeaderDependency>(source.dependencies()[0]).name).toBe("vector");
+        expect(std::get<abuild::IncludeSTLHeaderDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Public);
     });
 
     test("ImportExternalHeaderDependency", [] {
@@ -74,11 +94,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Header header{testProject.projectRoot() / "rapidjson" / "include" / "rapidjson.h", nullptr};
 
-        source.addDependency(abuild::ImportExternalHeaderDependency{"rapidjson.h", &header});
+        source.addDependency(abuild::ImportExternalHeaderDependency{.name = "rapidjson.h", .header = &header, .visibility = abuild::DependencyVisibility::Private});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::ImportExternalHeaderDependency>(source.dependencies()[0]).name).toBe("rapidjson.h");
         expect(std::get<abuild::ImportExternalHeaderDependency>(source.dependencies()[0]).header).toBe(&header);
+        expect(std::get<abuild::ImportExternalHeaderDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Private);
     });
 
     test("ImportLocalHeaderDependency", [] {
@@ -89,11 +110,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Header header{testProject.projectRoot() / "myheader.h", nullptr};
 
-        source.addDependency(abuild::ImportLocalHeaderDependency{.name = "myheader.h", .header = &header});
+        source.addDependency(abuild::ImportLocalHeaderDependency{.name = "myheader.h", .header = &header, .visibility = abuild::DependencyVisibility::Private});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::ImportLocalHeaderDependency>(source.dependencies()[0]).name).toBe("myheader.h");
         expect(std::get<abuild::ImportLocalHeaderDependency>(source.dependencies()[0]).header).toBe(&header);
+        expect(std::get<abuild::ImportLocalHeaderDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Private);
     });
 
     test("ImportModuleDependency", [] {
@@ -105,11 +127,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source modSource{testProject.projectRoot() / "mymodule.cpp", nullptr};
         abuild::Module mod{"mymodule", &modSource};
 
-        source.addDependency(abuild::ImportModuleDependency{.name = "mymodule", .mod = &mod});
+        source.addDependency(abuild::ImportModuleDependency{.name = "mymodule", .mod = &mod, .visibility = abuild::DependencyVisibility::Public});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).name).toBe("mymodule");
         expect(std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).mod).toBe(&mod);
+        expect(std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Public);
     });
 
     test("ImportModulePartitionDependency", [] {
@@ -121,11 +144,12 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source partitionSource{testProject.projectRoot() / "partition.cpp", nullptr};
         abuild::ModulePartition partition{"partition", &partitionSource};
 
-        moduleSource.addDependency(abuild::ImportModulePartitionDependency{.name = "partition", .partition = &partition});
+        moduleSource.addDependency(abuild::ImportModulePartitionDependency{.name = "partition", .partition = &partition, .visibility = abuild::DependencyVisibility::Private});
 
         assert_(moduleSource.dependencies().size()).toBe(1u);
         expect(std::get<abuild::ImportModulePartitionDependency>(moduleSource.dependencies()[0]).name).toBe("partition");
         expect(std::get<abuild::ImportModulePartitionDependency>(moduleSource.dependencies()[0]).partition).toBe(&partition);
+        expect(std::get<abuild::ImportModulePartitionDependency>(moduleSource.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Private);
     });
 
     test("ImportSTLHeaderDependency", [] {
@@ -134,10 +158,11 @@ static const auto testSuite = suite("abuild::Dependency", [] {
 
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
 
-        source.addDependency(abuild::ImportSTLHeaderDependency{.name = "vector"});
+        source.addDependency(abuild::ImportSTLHeaderDependency{.name = "vector", .visibility = abuild::DependencyVisibility::Public});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::ImportSTLHeaderDependency>(source.dependencies()[0]).name).toBe("vector");
+        expect(std::get<abuild::ImportSTLHeaderDependency>(source.dependencies()[0]).visibility).toBe(abuild::DependencyVisibility::Public);
     });
 
     test("updating dependency", [] {
