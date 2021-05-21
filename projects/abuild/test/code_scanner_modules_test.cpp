@@ -1,4 +1,3 @@
-import abuild;
 import abuild_test_utilities;
 
 using atest::assert_;
@@ -10,7 +9,6 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
     test("module interface", [] {
-        TestCache testCache;
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"mymodule.cpp", "module mymodule;"}}};
 
@@ -20,85 +18,69 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
 
         assert_(cache.modules().size()).toBe(1u);
         expect(cache.modules()[0]->name).toBe("mymodule");
+        expect(cache.modules()[0]->visibility).toBe(abuild::ModuleVisibility::Private);
         expect(cache.modules()[0]->source->path()).toBe(testProject.projectRoot() / "mymodule.cpp");
     });
 
-    // test("exported module interface", [] {
-    //     TestCache testCache;
-    //     TestProjectWithContent testProject{"build_test_project_scanner",
-    //                                        {{"mymodule.cpp", "export module mymodule;"}}};
+    test("exported module interface", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"mymodule.cpp", "export module mymodule;"}}};
 
-    //     abuild::BuildCache cache{testCache.file()};
-    //     abuild::ProjectScanner{cache, testProject.projectRoot()};
-    //     abuild::CodeScanner{cache};
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
 
-    //     const std::string source = (testProject.projectRoot() / "mymodule.cpp").string();
+        assert_(cache.modules().size()).toBe(1u);
+        expect(cache.modules()[0]->name).toBe("mymodule");
+        expect(cache.modules()[0]->visibility).toBe(abuild::ModuleVisibility::Public);
+        expect(cache.modules()[0]->source->path()).toBe(testProject.projectRoot() / "mymodule.cpp");
+    });
 
-    //     assert_(asVector(cache.sources()))
-    //         .toBe(std::vector<std::string>{
-    //             source});
+    test("module partition", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"mymodule_partition.cpp", "module mymodule : mypartition;"}}};
 
-    //     expect(asVector(cache.sources()[source]["module"]))
-    //         .toBe(std::vector<std::string>{
-    //             "mymodule"});
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
 
-    //     assert_(asVector(cache.modules()))
-    //         .toBe(std::vector<std::string>{
-    //             "mymodule"});
+        assert_(cache.modules().size()).toBe(1u);
+        assert_(cache.modules()[0]->partitions.size()).toBe(1u);
+        expect(cache.modules()[0]->name).toBe("mymodule");
+        expect(cache.modules()[0]->partitions[0].name).toBe("mypartition");
+        expect(cache.modules()[0]->partitions[0].visibility).toBe(abuild::ModuleVisibility::Private);
+        expect(cache.modules()[0]->partitions[0].source->path()).toBe(testProject.projectRoot() / "mymodule_partition.cpp");
+    });
 
-    //     expect(cache.modules()["mymodule"]["file"].GetString()).toBe(source);
-    //     expect(asVector(cache.modules()["mymodule"]["partitions"])).toBe(std::vector<std::string>{});
-    //     expect(cache.modules()["mymodule"]["exported"].GetBool()).toBe(true);
-    // });
+    test("module partitions", [] {
+        TestCache testCache;
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"mymodule_partition.cpp", "module mymodule : mypartition;"},
+                                            {"mymodule_otherpartition.cpp", "export module mymodule : myotherpartition;"}}};
 
-    // test("module partition", [] {
-    //     TestCache testCache;
-    //     TestProjectWithContent testProject{"build_test_project_scanner",
-    //                                        {{"mymodule_partition.cpp", "module mymodule : mypartition;"}}};
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
 
-    //     abuild::BuildCache cache{testCache.file()};
-    //     abuild::ProjectScanner{cache, testProject.projectRoot()};
-    //     abuild::CodeScanner{cache};
+        const std::string source1 = (testProject.projectRoot() / "mymodule_partition.cpp").string();
+        const std::string source2 = (testProject.projectRoot() / "mymodule_otherpartition.cpp").string();
 
-    //     const std::string source = (testProject.projectRoot() / "mymodule_partition.cpp").string();
+        assert_(cache.modules().size()).toBe(1u);
+        assert_(cache.modules()[0]->partitions.size()).toBe(2u);
+        expect(cache.modules()[0]->name).toBe("mymodule");
 
-    //     assert_(asVector(cache.sources()))
-    //         .toBe(std::vector<std::string>{
-    //             source});
+        std::vector<abuild::ModulePartition> partitions = cache.modules()[0]->partitions;
 
-    //     expect(asVector(cache.sources()[source]["module"]))
-    //         .toBe(std::vector<std::string>{
-    //             "mymodule"});
+        std::sort(partitions.begin(), partitions.end(), [](const abuild::ModulePartition &left, const abuild::ModulePartition &right) {
+            return left.name < right.name;
+        });
 
-    //     expect(asVector(cache.sources()[source]["module_partitions"]))
-    //         .toBe(std::vector<std::string>{
-    //             "mypartition"});
+        expect(partitions[1].name).toBe("mypartition");
+        expect(partitions[1].visibility).toBe(abuild::ModuleVisibility::Private);
+        expect(partitions[1].source->path()).toBe(testProject.projectRoot() / "mymodule_partition.cpp");
 
-    //     assert_(asVector(cache.modules()))
-    //         .toBe(std::vector<std::string>{
-    //             "mymodule"});
-
-    //     expect(cache.modules()["mymodule"]["partitions"]["mypartition"].GetString()).toBe(source);
-    // });
-
-    // test("module partitions", [] {
-    //     TestCache testCache;
-    //     TestProjectWithContent testProject{"build_test_project_scanner",
-    //                                        {{"mymodule_partition.cpp", "module mymodule : mypartition;"},
-    //                                         {"mymodule_otherpartition.cpp", "export module mymodule : myotherpartition;"}}};
-
-    //     abuild::BuildCache cache{testCache.file()};
-    //     abuild::ProjectScanner{cache, testProject.projectRoot()};
-    //     abuild::CodeScanner{cache};
-
-    //     const std::string source1 = (testProject.projectRoot() / "mymodule_partition.cpp").string();
-    //     const std::string source2 = (testProject.projectRoot() / "mymodule_otherpartition.cpp").string();
-
-    //     assert_(asVector(cache.modules()))
-    //         .toBe(std::vector<std::string>{
-    //             "mymodule"});
-
-    //     expect(cache.modules()["mymodule"]["partitions"]["mypartition"].GetString()).toBe(source1);
-    //     expect(cache.modules()["mymodule"]["partitions"]["myotherpartition"].GetString()).toBe(source2);
-    // });
+        expect(partitions[0].name).toBe("myotherpartition");
+        expect(partitions[0].visibility).toBe(abuild::ModuleVisibility::Public);
+        expect(partitions[0].source->path()).toBe(testProject.projectRoot() / "mymodule_otherpartition.cpp");
+    });
 });

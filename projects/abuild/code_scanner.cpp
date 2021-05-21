@@ -28,6 +28,32 @@ private:
         return CPP_STL.contains(token);
     }
 
+    [[nodiscard]] auto dependencyVisibility(TokenVisibility visibility) -> DependencyVisibility
+    {
+        switch (visibility)
+        {
+        case TokenVisibility::Exported:
+            return DependencyVisibility::Public;
+        case TokenVisibility::Private:
+            return DependencyVisibility::Private;
+        }
+
+        throw std::runtime_error{"Unknown TokenVisibility value: " + std::to_string(static_cast<std::underlying_type_t<TokenVisibility>>(visibility))};
+    }
+
+    [[nodiscard]] auto moduleVisibility(TokenVisibility visibility) -> ModuleVisibility
+    {
+        switch (visibility)
+        {
+        case TokenVisibility::Exported:
+            return ModuleVisibility::Public;
+        case TokenVisibility::Private:
+            return ModuleVisibility::Private;
+        }
+
+        throw std::runtime_error{"Unknown TokenVisibility value: " + std::to_string(static_cast<std::underlying_type_t<TokenVisibility>>(visibility))};
+    }
+
     auto processImportIncludeExternalToken(const ImportIncludeExternalToken *value, File *file) -> void
     {
         if (isSource(value->name))
@@ -36,11 +62,11 @@ private:
         }
         else if (isSTLHeader(value->name))
         {
-            file->addDependency(ImportSTLHeaderDependency{.name = value->name});
+            file->addDependency(ImportSTLHeaderDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
         }
         else
         {
-            file->addDependency(ImportExternalHeaderDependency{.name = value->name});
+            file->addDependency(ImportExternalHeaderDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
         }
     }
 
@@ -52,11 +78,11 @@ private:
         }
         else if (isSTLHeader(value->name))
         {
-            file->addDependency(ImportSTLHeaderDependency{.name = value->name});
+            file->addDependency(ImportSTLHeaderDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
         }
         else
         {
-            file->addDependency(ImportLocalHeaderDependency{.name = value->name});
+            file->addDependency(ImportLocalHeaderDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
         }
     }
 
@@ -68,11 +94,11 @@ private:
         }
         else if (isSTLHeader(value->name))
         {
-            file->addDependency(IncludeSTLHeaderDependency{.name = value->name});
+            file->addDependency(IncludeSTLHeaderDependency{.name = value->name, .visibility = DependencyVisibility::Public});
         }
         else
         {
-            file->addDependency(IncludeExternalHeaderDependency{.name = value->name});
+            file->addDependency(IncludeExternalHeaderDependency{.name = value->name, .visibility = DependencyVisibility::Public});
         }
     }
 
@@ -80,15 +106,15 @@ private:
     {
         if (isSource(value->name))
         {
-            file->addDependency(IncludeLocalSourceDependency{.name = value->name});
+            file->addDependency(IncludeLocalSourceDependency{.name = value->name, .visibility = DependencyVisibility::Public});
         }
         else if (isSTLHeader(value->name))
         {
-            file->addDependency(IncludeSTLHeaderDependency{.name = value->name});
+            file->addDependency(IncludeSTLHeaderDependency{.name = value->name, .visibility = DependencyVisibility::Public});
         }
         else
         {
-            file->addDependency(IncludeLocalHeaderDependency{.name = value->name});
+            file->addDependency(IncludeLocalHeaderDependency{.name = value->name, .visibility = DependencyVisibility::Public});
         }
     }
 
@@ -108,7 +134,7 @@ private:
 
         if (auto *value = std::get_if<ImportModuleToken>(&token))
         {
-            file->addDependency(ImportModuleDependency{.name = value->name});
+            file->addDependency(ImportModuleDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
             return;
         }
 
@@ -145,19 +171,19 @@ private:
     {
         if (auto *value = std::get_if<ModuleToken>(&token))
         {
-            mBuildCache.addModuleInterface(value->name, file);
+            mBuildCache.addModuleInterface(value->name, moduleVisibility(value->visibility), file);
             return;
         }
 
         if (auto *value = std::get_if<ModulePartitionToken>(&token))
         {
-            mBuildCache.addModulePartition(value->mod, value->name, file);
+            mBuildCache.addModulePartition(value->mod, value->name, moduleVisibility(value->visibility), file);
             return;
         }
 
         if (auto *value = std::get_if<ImportModulePartitionToken>(&token))
         {
-            file->addDependency(ImportModulePartitionDependency{.name = value->name});
+            file->addDependency(ImportModulePartitionDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
             return;
         }
 

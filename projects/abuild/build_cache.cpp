@@ -24,14 +24,16 @@ public:
         mHeaderIndex.insert({path.filename().string(), header});
     }
 
-    auto addModuleInterface(const std::string &moduleName, Source *source) -> void
+    auto addModuleInterface(const std::string &moduleName, ModuleVisibility visibility, Source *source) -> void
     {
-        cppmodule(moduleName)->source = source;
+        Module *mod = cppmodule(moduleName);
+        mod->source = source;
+        mod->visibility = visibility;
     }
 
-    auto addModulePartition(const std::string &moduleName, std::string partitionName, Source *source) -> void
+    auto addModulePartition(const std::string &moduleName, std::string partitionName, ModuleVisibility visibility, Source *source) -> void
     {
-        cppmodule(moduleName)->partitions.push_back(ModulePartition{.name = std::move(partitionName), .source = source});
+        cppmodule(moduleName)->partitions.push_back(ModulePartition{.name = std::move(partitionName), .visibility = visibility, .source = source});
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
