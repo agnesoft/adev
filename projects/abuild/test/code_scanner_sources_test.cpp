@@ -8,129 +8,197 @@ using atest::suite;
 using atest::test;
 
 static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
-    test("include external headers", [] {
-        TestCache testCache;
+    test("include STL headers", [] {
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "#include <vector>\n#include <string>"}}};
 
-        abuild::BuildCache cache{testCache.file()};
+        abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
 
-        const std::string source = (testProject.projectRoot() / "main.cpp").string();
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(2u);
 
-        assert_(asVector(cache.sources()))
-            .toBe(std::vector<std::string>{
-                source});
+        auto dep1 = std::get<abuild::IncludeSTLHeaderDependency>(cache.sources()[0]->dependencies()[0]);
 
-        expect(asVector(cache.sources()[source]["includes_external"]))
-            .toBe(std::vector<std::string>{
-                "string",
-                "vector"});
+        expect(dep1.name).toBe("vector");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
+
+        auto dep2 = std::get<abuild::IncludeSTLHeaderDependency>(cache.sources()[0]->dependencies()[1]);
+
+        expect(dep2.name).toBe("string");
+        expect(dep2.visibility).toBe(abuild::DependencyVisibility::Public);
     });
 
-    test("include local headers", [] {
-        TestCache testCache;
-        TestProjectWithContent testProject{"build_test_project_scanner",
-                                           {{"main.cpp", "#include \"header.hpp\"\n#include \"other_header.hpp\""}}};
-
-        abuild::BuildCache cache{testCache.file()};
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
-        abuild::CodeScanner{cache};
-
-        const std::string source = (testProject.projectRoot() / "main.cpp").string();
-
-        assert_(asVector(cache.sources()))
-            .toBe(std::vector<std::string>{
-                source});
-
-        expect(asVector(cache.sources()[source]["includes_local"]))
-            .toBe(std::vector<std::string>{
-                "header.hpp",
-                "other_header.hpp"});
-    });
-
-    test("import local headers", [] {
-        TestCache testCache;
-        TestProjectWithContent testProject{"build_test_project_scanner",
-                                           {{"main.cpp", "import \"header.hpp\";\nexport import \"other_header.hpp\";"}}};
-
-        abuild::BuildCache cache{testCache.file()};
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
-        abuild::CodeScanner{cache};
-
-        const std::string source = (testProject.projectRoot() / "main.cpp").string();
-
-        assert_(asVector(cache.sources()))
-            .toBe(std::vector<std::string>{
-                source});
-
-        expect(asVector(cache.sources()[source]["import_includes_local"]))
-            .toBe(std::vector<std::string>{
-                "header.hpp",
-                "other_header.hpp"});
-    });
-
-    test("import external header", [] {
-        TestCache testCache;
+    test("import STL headers", [] {
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "import <vector>;\nexport import <string>;"}}};
 
-        abuild::BuildCache cache{testCache.file()};
+        abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
 
-        const std::string source = (testProject.projectRoot() / "main.cpp").string();
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(2u);
 
-        assert_(asVector(cache.sources()))
-            .toBe(std::vector<std::string>{
-                source});
+        auto dep1 = std::get<abuild::ImportSTLHeaderDependency>(cache.sources()[0]->dependencies()[0]);
 
-        expect(asVector(cache.sources()[source]["import_includes_external"]))
-            .toBe(std::vector<std::string>{
-                "string",
-                "vector"});
+        expect(dep1.name).toBe("vector");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Private);
+
+        auto dep2 = std::get<abuild::ImportSTLHeaderDependency>(cache.sources()[0]->dependencies()[1]);
+
+        expect(dep2.name).toBe("string");
+        expect(dep2.visibility).toBe(abuild::DependencyVisibility::Public);
+    });
+
+    test("include local headers", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "#include \"header.hpp\"\n#include \"other_header.hpp\""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(2u);
+
+        auto dep1 = std::get<abuild::IncludeLocalHeaderDependency>(cache.sources()[0]->dependencies()[0]);
+
+        expect(dep1.name).toBe("header.hpp");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep1.header).toBe(nullptr);
+
+        auto dep2 = std::get<abuild::IncludeLocalHeaderDependency>(cache.sources()[0]->dependencies()[1]);
+
+        expect(dep2.name).toBe("other_header.hpp");
+        expect(dep2.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep2.header).toBe(nullptr);
+    });
+
+    test("include local source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "#include \"mysource.cpp\""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+
+        auto dep1 = std::get<abuild::IncludeLocalSourceDependency>(cache.sources()[0]->dependencies()[0]);
+
+        expect(dep1.name).toBe("mysource.cpp");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep1.source).toBe(nullptr);
+    });
+
+    test("include external headers", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "#include <myproject/header.hpp>"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+
+        auto dep1 = std::get<abuild::IncludeExternalHeaderDependency>(cache.sources()[0]->dependencies()[0]);
+
+        expect(dep1.name).toBe("myproject/header.hpp");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep1.header).toBe(nullptr);
+    });
+
+    test("import local headers", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "import \"header.hpp\";\nexport import \"other_header.hpp\";"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(2u);
+
+        auto dep1 = std::get<abuild::ImportLocalHeaderDependency>(cache.sources()[0]->dependencies()[0]);
+
+        expect(dep1.name).toBe("header.hpp");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Private);
+        expect(dep1.header).toBe(nullptr);
+
+        auto dep2 = std::get<abuild::ImportLocalHeaderDependency>(cache.sources()[0]->dependencies()[1]);
+
+        expect(dep2.name).toBe("other_header.hpp");
+        expect(dep2.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep2.header).toBe(nullptr);
+    });
+
+    test("import external header", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "export import <myproject/header.hpp>;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+
+        auto dep1 = std::get<abuild::ImportExternalHeaderDependency>(cache.sources()[0]->dependencies()[0]);
+
+        expect(dep1.name).toBe("myproject/header.hpp");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep1.header).toBe(nullptr);
     });
 
     test("import modules", [] {
-        TestCache testCache;
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "import mymodule;\nexport import othermodule;"}}};
 
-        abuild::BuildCache cache{testCache.file()};
+        abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
 
-        const std::string source = (testProject.projectRoot() / "main.cpp").string();
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(2u);
 
-        assert_(asVector(cache.sources()))
-            .toBe(std::vector<std::string>{
-                source});
+        auto dep1 = std::get<abuild::ImportModuleDependency>(cache.sources()[0]->dependencies()[0]);
 
-        expect(asVector(cache.sources()[source]["import_modules"]))
-            .toBe(std::vector<std::string>{
-                "mymodule",
-                "othermodule"});
+        expect(dep1.name).toBe("mymodule");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Private);
+        expect(dep1.mod).toBe(nullptr);
+
+        auto dep2 = std::get<abuild::ImportModuleDependency>(cache.sources()[0]->dependencies()[1]);
+
+        expect(dep2.name).toBe("othermodule");
+        expect(dep2.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep2.mod).toBe(nullptr);
     });
 
     test("import module partition", [] {
-        TestCache testCache;
         TestProjectWithContent testProject{"build_test_project_scanner",
-                                           {{"main.cpp", "import : mymodule;\nexport import : othermodule;"}}};
+                                           {{"main.cpp", "import : mypartition;\nexport import : otherpartition;"}}};
 
-        abuild::BuildCache cache{testCache.file()};
+        abuild::BuildCache cache;
         abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
 
-        const std::string source = (testProject.projectRoot() / "main.cpp").string();
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(2u);
 
-        assert_(asVector(cache.sources()))
-            .toBe(std::vector<std::string>{
-                source});
+        auto dep1 = std::get<abuild::ImportModulePartitionDependency>(cache.sources()[0]->dependencies()[0]);
 
-        expect(asVector(cache.sources()[source]["import_module_partitions"]))
-            .toBe(std::vector<std::string>{
-                "mymodule",
-                "othermodule"});
+        expect(dep1.name).toBe("mypartition");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Private);
+        expect(dep1.partition).toBe(nullptr);
+
+        auto dep2 = std::get<abuild::ImportModulePartitionDependency>(cache.sources()[0]->dependencies()[1]);
+
+        expect(dep2.name).toBe("otherpartition");
+        expect(dep2.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep2.partition).toBe(nullptr);
     });
 });

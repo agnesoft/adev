@@ -62,9 +62,6 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
         abuild::ProjectScanner{cache, testProject.projectRoot()};
         abuild::CodeScanner{cache};
 
-        const std::string source1 = (testProject.projectRoot() / "mymodule_partition.cpp").string();
-        const std::string source2 = (testProject.projectRoot() / "mymodule_otherpartition.cpp").string();
-
         assert_(cache.modules().size()).toBe(1u);
         assert_(cache.modules()[0]->partitions.size()).toBe(2u);
         expect(cache.modules()[0]->name).toBe("mymodule");

@@ -187,6 +187,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\main.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\file_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\code_scanner_modules_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\code_scanner_sources_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\dependency_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\header_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\source_test.cpp" ^
