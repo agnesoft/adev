@@ -4,6 +4,7 @@ export module abuild;
 export import : settings;
 export import : build_cache;
 export import : project_scanner;
+export import : code_scanner;
 #else
 // clang-format off
 import <astl.hpp>;

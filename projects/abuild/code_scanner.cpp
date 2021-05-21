@@ -1,7 +1,7 @@
 #ifdef _MSC_VER
 export module abuild : code_scanner;
+export import : tokenizer;
 import : build_cache;
-import : tokenizer;
 import : settings;
 #endif
 
@@ -20,15 +20,15 @@ public:
 private:
     [[nodiscard]] static auto isSource(const std::string token) -> bool
     {
-        return Settings::cppSourceExtensions().contains(std::filesystem::path{name}.extension().string());
+        return Settings::cppSourceExtensions().contains(std::filesystem::path{token}.extension().string());
     }
 
-    [[nodiscard]] static auto isSTLHeader(const std::string token) -> bool
+    [[nodiscard]] auto isSTLHeader(const std::string token) -> bool
     {
         return CPP_STL.contains(token);
     }
 
-    auto processImportIncludeExternalToken(ImportIncludeExternalToken *value, File *file) -> void
+    auto processImportIncludeExternalToken(const ImportIncludeExternalToken *value, File *file) -> void
     {
         if (isSource(value->name))
         {
@@ -44,7 +44,7 @@ private:
         }
     }
 
-    auto processImportIncludeLocalToken(ImportIncludeLocalToken *value, File *file) -> void
+    auto processImportIncludeLocalToken(const ImportIncludeLocalToken *value, File *file) -> void
     {
         if (isSource(value->name))
         {
@@ -60,7 +60,7 @@ private:
         }
     }
 
-    auto processIncludeExternalToken(IncludeExternalToken *value, File *file) -> void
+    auto processIncludeExternalToken(const IncludeExternalToken *value, File *file) -> void
     {
         if (isSource(value->name))
         {
@@ -76,7 +76,7 @@ private:
         }
     }
 
-    auto processIncludeLocalToken(IncludeLocalToken *value, File *file) -> void
+    auto processIncludeLocalToken(const IncludeLocalToken *value, File *file) -> void
     {
         if (isSource(value->name))
         {
@@ -97,31 +97,34 @@ private:
         if (auto *value = std::get_if<IncludeExternalToken>(&token))
         {
             processIncludeExternalToken(value, file);
+            return;
         }
-        else if (auto *value = std::get_if<IncludeLocalToken>(&token))
+
+        if (auto *value = std::get_if<IncludeLocalToken>(&token))
         {
             processIncludeLocalToken(value, file);
+            return;
         }
-        else if (auto *value = std::get_if<ImportModuleToken>(&token))
+
+        if (auto *value = std::get_if<ImportModuleToken>(&token))
         {
             file->addDependency(ImportModuleDependency{.name = value->name});
+            return;
         }
-        else if (auto *value = std::get_if<ImportIncludeLocalToken>(&token))
+
+        if (auto *value = std::get_if<ImportIncludeLocalToken>(&token))
         {
             processImportIncludeLocalToken(value, file);
+            return;
         }
-        else if (auto *value = std::get_if<ImportIncludeExternalToken>(&token))
+
+        if (auto *value = std::get_if<ImportIncludeExternalToken>(&token))
         {
             processImportIncludeExternalToken(value, file);
+            return;
         }
-        else if (std::get_if<std::monostate>(&token))
-        {
-            throw 1;
-        }
-        else
-        {
-            throw 0;
-        }
+
+        throw 0;
     }
 
     auto processHeader(const Token &token, Header *file) -> void
@@ -143,18 +146,31 @@ private:
         if (auto *value = std::get_if<ModuleToken>(&token))
         {
             mBuildCache.addModuleInterface(value->name, file);
+            return;
         }
-        else if (auto *value = std::get_if<ModulePartitionToken>(&token))
+
+        if (auto *value = std::get_if<ModulePartitionToken>(&token))
         {
             mBuildCache.addModulePartition(value->mod, value->name, file);
+            return;
         }
-        else if (auto *value = std::get_if<ImportModulePartitionToken>(&token))
+
+        if (auto *value = std::get_if<ImportModulePartitionToken>(&token))
         {
             file->addDependency(ImportModulePartitionDependency{.name = value->name});
+            return;
         }
-        else
+
+        processFile(token, file);
+    }
+
+    auto scanHeader(Header *header) -> void
+    {
+        Tokenizer tokenizer{header->content()};
+
+        for (Token token = tokenizer.next(); std::holds_alternative<std::monostate>(token); token = tokenizer.next())
         {
-            processFile(token, file);
+            processHeader(token, header);
         }
     }
 
@@ -162,7 +178,7 @@ private:
     {
         Tokenizer tokenizer{source->content()};
 
-        for (Token token = tokenizer.next(); token != Token{}; token = tokenizer.next())
+        for (Token token = tokenizer.next(); std::holds_alternative<std::monostate>(token); token = tokenizer.next())
         {
             processSource(token, source);
         }
@@ -172,7 +188,7 @@ private:
     {
         for (const std::unique_ptr<Header> &header : mBuildCache.headers())
         {
-            processHeader(header.get());
+            scanHeader(header.get());
         }
     }
 
@@ -180,7 +196,7 @@ private:
     {
         for (const std::unique_ptr<Source> &source : mBuildCache.sources())
         {
-            processSource(source.get());
+            scanSource(source.get());
         }
     }
 
