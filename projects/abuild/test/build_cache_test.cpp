@@ -26,4 +26,22 @@ static const auto testSuite = suite("abuild::BuildCache", [] {
         expect(std::is_nothrow_move_assignable_v<abuild::BuildCache>).toBe(true);
         expect(std::is_nothrow_destructible_v<abuild::BuildCache>).toBe(true);
     });
+
+    test("Error", [] {
+        abuild::BuildCache cache;
+        cache.addError(abuild::Error{.component = "BuildCache", .what = "Some error"});
+
+        assert_(cache.errors().size()).toBe(1u);
+        expect(cache.errors()[0].component).toBe("BuildCache");
+        expect(cache.errors()[0].what).toBe("Some error");
+    });
+
+    test("Warning", [] {
+        abuild::BuildCache cache;
+        cache.addWarning(abuild::Warning{.component = "BuildCache", .what = "Some warning"});
+
+        assert_(cache.warnings().size()).toBe(1u);
+        expect(cache.warnings()[0].component).toBe("BuildCache");
+        expect(cache.warnings()[0].what).toBe("Some warning");
+    });
 });

@@ -4,6 +4,8 @@ export import : project;
 export import : header;
 export import : source;
 export import : cpp_module;
+export import : error;
+export import : warning;
 #endif
 
 namespace abuild
@@ -11,6 +13,11 @@ namespace abuild
 export class BuildCache
 {
 public:
+    auto addError(Error error) -> void
+    {
+        mErrors.push_back(std::move(error));
+    }
+
     auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         Header *header = mHeaders.emplace_back(std::make_unique<Header>(path, project(projectName))).get();
@@ -31,6 +38,16 @@ public:
     {
         Source *source = mSources.emplace_back(std::make_unique<Source>(path, project(projectName))).get();
         mSourceIndex.insert({path.filename().string(), source});
+    }
+
+    auto addWarning(Warning warning) -> void
+    {
+        mWarnings.push_back(std::move(warning));
+    }
+
+    [[nodiscard]] auto errors() const noexcept -> const std::vector<Error> &
+    {
+        return mErrors;
     }
 
     [[nodiscard]] auto header(const std::filesystem::path &file) const -> Header *
@@ -121,6 +138,11 @@ public:
         return mSources;
     }
 
+    [[nodiscard]] auto warnings() const noexcept -> const std::vector<Warning> &
+    {
+        return mWarnings;
+    }
+
 private:
     [[nodiscard]] auto cppmodule(const std::string &name) -> Module *
     {
@@ -169,6 +191,8 @@ private:
     std::vector<std::unique_ptr<Source>> mSources;
     std::vector<std::unique_ptr<Header>> mHeaders;
     std::vector<std::unique_ptr<Module>> mModules;
+    std::vector<Error> mErrors;
+    std::vector<Warning> mWarnings;
     std::unordered_map<std::string, Project *> mProjectIndex;
     std::unordered_map<std::string, Module *> mModuleIndex;
     std::unordered_multimap<std::string, Source *> mSourceIndex;
