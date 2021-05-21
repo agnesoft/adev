@@ -32,7 +32,7 @@ private:
     {
         if (isSource(value->name))
         {
-            throw 4;
+            mBuildCache.addWarning(Warning{COMPONENT, "Importing '" + value->name + "' (source) is unsupported. Only headers can be imported. Ignoring. (" + file->path().string() + ')'});
         }
         else if (isSTLHeader(value->name))
         {
@@ -48,7 +48,7 @@ private:
     {
         if (isSource(value->name))
         {
-            throw 3;
+            mBuildCache.addWarning(Warning{COMPONENT, "Importing '" + value->name + "' (source) is unsupported. Only headers can be imported. Ignoring. (" + file->path().string() + ')'});
         }
         else if (isSTLHeader(value->name))
         {
@@ -64,7 +64,7 @@ private:
     {
         if (isSource(value->name))
         {
-            throw 2;
+            mBuildCache.addWarning(Warning{COMPONENT, "Including '" + value->name + "' (source) via angle brackets is unsupported. Only headers can be included this way. Ignoring. (" + file->path().string() + ')'});
         }
         else if (isSTLHeader(value->name))
         {
@@ -124,7 +124,7 @@ private:
             return;
         }
 
-        throw 0;
+        mBuildCache.addError(Error{COMPONENT, "Unknown token type. (" + file->path().string() + ')'});
     }
 
     auto processHeader(const Token &token, Header *file) -> void
@@ -133,7 +133,7 @@ private:
             || std::get_if<ModulePartitionToken>(&token)
             || std::get_if<ImportModulePartitionToken>(&token))
         {
-            throw 5;
+            mBuildCache.addWarning(Warning{COMPONENT, "Declaring modules or module partitions or importing module partitions in headres is not supported. (" + file->path().string() + ')'});
         }
         else
         {
@@ -168,7 +168,7 @@ private:
     {
         Tokenizer tokenizer{header->content()};
 
-        for (Token token = tokenizer.next(); std::holds_alternative<std::monostate>(token); token = tokenizer.next())
+        for (Token token = tokenizer.next(); !std::holds_alternative<std::monostate>(token); token = tokenizer.next())
         {
             processHeader(token, header);
         }
@@ -178,7 +178,7 @@ private:
     {
         Tokenizer tokenizer{source->content()};
 
-        for (Token token = tokenizer.next(); std::holds_alternative<std::monostate>(token); token = tokenizer.next())
+        for (Token token = tokenizer.next(); !std::holds_alternative<std::monostate>(token); token = tokenizer.next())
         {
             processSource(token, source);
         }
@@ -201,7 +201,7 @@ private:
     }
 
     BuildCache &mBuildCache;
-
+    static constexpr char COMPONENT[] = "CodeScanner";
     const std::unordered_set<std::string> CPP_STL = {
         "algorithm",
         "any",
