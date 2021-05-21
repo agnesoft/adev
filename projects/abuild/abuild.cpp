@@ -15,6 +15,8 @@ import <astl.hpp>;
 #include "header.cpp"
 #include "source.cpp"
 #include "module.cpp"
+#include "error.cpp"
+#include "warning.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 #include "token.cpp"
