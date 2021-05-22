@@ -1,4 +1,3 @@
-import abuild;
 import abuild_test_utilities;
 
 using atest::assert_;
@@ -7,22 +6,6 @@ using atest::expect;
 using atest::expect_fail;
 using atest::suite;
 using atest::test;
-
-namespace std
-{
-auto operator<<(std::ostream &stream, const abuild::DependencyVisibility &visibility) -> std::ostream &
-{
-    switch (visibility)
-    {
-    case abuild::DependencyVisibility::Public:
-        return stream << "Public";
-    case abuild::DependencyVisibility::Private:
-        return stream << "Private";
-    }
-
-    return stream;
-}
-}
 
 static const auto testSuite = suite("abuild::Dependency", [] {
     test("IncludeExternalHeaderDependency", [] {
@@ -125,7 +108,7 @@ static const auto testSuite = suite("abuild::Dependency", [] {
 
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Source modSource{testProject.projectRoot() / "mymodule.cpp", nullptr};
-        abuild::Module mod{"mymodule", &modSource};
+        abuild::Module mod{.name = "mymodule", .visibility = abuild::ModuleVisibility::Private, .source = &modSource};
 
         source.addDependency(abuild::ImportModuleDependency{.name = "mymodule", .mod = &mod, .visibility = abuild::DependencyVisibility::Public});
 
@@ -142,7 +125,7 @@ static const auto testSuite = suite("abuild::Dependency", [] {
 
         abuild::Source moduleSource{testProject.projectRoot() / "module.cpp", nullptr};
         abuild::Source partitionSource{testProject.projectRoot() / "partition.cpp", nullptr};
-        abuild::ModulePartition partition{"partition", &partitionSource};
+        abuild::ModulePartition partition{.name = "partition", .visibility = abuild::ModuleVisibility::Private, .source = &partitionSource};
 
         moduleSource.addDependency(abuild::ImportModulePartitionDependency{.name = "partition", .partition = &partition, .visibility = abuild::DependencyVisibility::Private});
 
@@ -173,13 +156,13 @@ static const auto testSuite = suite("abuild::Dependency", [] {
         abuild::Source source{testProject.projectRoot() / "main.cpp", nullptr};
         abuild::Source modSource{testProject.projectRoot() / "mymodule.cpp", nullptr};
 
-        source.addDependency(abuild::ImportModuleDependency{.name = "mymodule"});
+        source.addDependency(abuild::ImportModuleDependency{.name = "mymodule", .visibility = abuild::DependencyVisibility::Public});
 
         assert_(source.dependencies().size()).toBe(1u);
         expect(std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).name).toBe("mymodule");
         expect(std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).mod).toBe(nullptr);
 
-        abuild::Module mod{"mymodule", &modSource};
+        abuild::Module mod{.name = "mymodule", .visibility = abuild::ModuleVisibility::Private, .source = &modSource};
         std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).mod = &mod;
 
         expect(std::get<abuild::ImportModuleDependency>(source.dependencies()[0]).mod).toBe(&mod);

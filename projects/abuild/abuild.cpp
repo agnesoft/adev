@@ -4,8 +4,7 @@ export module abuild;
 export import : settings;
 export import : build_cache;
 export import : project_scanner;
-
-export import : tokenizer;
+export import : code_scanner;
 #else
 // clang-format off
 import <astl.hpp>;
@@ -22,5 +21,6 @@ import <astl.hpp>;
 #include "project_scanner.cpp"
 #include "token.cpp"
 #include "tokenizer.cpp"
+#include "code_scanner.cpp"
 // clang-format on
 #endif

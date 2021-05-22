@@ -1,4 +1,3 @@
-import abuild;
 import abuild_test_utilities;
 
 using atest::assert_;

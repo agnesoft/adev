@@ -1,5 +1,6 @@
 export module abuild_test_utilities;
 
+export import abuild;
 export import atest;
 
 #ifdef _MSC_VER
@@ -15,36 +16,33 @@ export import "rapidjson.hpp";
 // clang-format on
 #endif
 
-export class OneOfMatcher : public atest::MatcherBase
+namespace std
 {
-public:
-    [[nodiscard]] auto operator()(const std::vector<std::string> &left, const std::string &right) const -> bool
-    {
-        return std::find(left.begin(), left.end(), right) != left.end();
-    }
-};
-
-export [[nodiscard]] auto asVector(const rapidjson::Value &data) -> std::vector<std::string>
+export auto operator<<(std::ostream &stream, const abuild::ModuleVisibility &visibility) -> std::ostream &
 {
-    std::vector<std::string> values;
-
-    if (data.IsArray())
+    switch (visibility)
     {
-        for (const rapidjson::Value &value : data.GetArray())
-        {
-            values.push_back(value.GetString());
-        }
-    }
-    else if (data.IsObject())
-    {
-        for (auto it = data.MemberBegin(); it != data.MemberEnd(); ++it)
-        {
-            values.push_back(it->name.GetString());
-        }
+    case abuild::ModuleVisibility::Public:
+        return stream << "Public";
+    case abuild::ModuleVisibility::Private:
+        return stream << "Private";
     }
 
-    std::sort(values.begin(), values.end());
-    return values;
+    return stream;
+}
+
+export auto operator<<(std::ostream &stream, const abuild::DependencyVisibility &visibility) -> std::ostream &
+{
+    switch (visibility)
+    {
+    case abuild::DependencyVisibility::Public:
+        return stream << "Public";
+    case abuild::DependencyVisibility::Private:
+        return stream << "Private";
+    }
+
+    return stream;
+}
 }
 
 export [[nodiscard]] auto lastModified(const std::string &path) -> std::int64_t

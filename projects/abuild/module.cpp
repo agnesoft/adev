@@ -7,15 +7,22 @@ namespace abuild
 {
 export class Source;
 
+export enum class ModuleVisibility {
+    Public,
+    Private
+};
+
 export struct ModulePartition
 {
     std::string name;
+    ModuleVisibility visibility = ModuleVisibility::Private;
     Source *source = nullptr;
 };
 
 export struct Module
 {
     std::string name;
+    ModuleVisibility visibility = ModuleVisibility::Private;
     Source *source = nullptr;
     std::vector<ModulePartition> partitions;
 };
