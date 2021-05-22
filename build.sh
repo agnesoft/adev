@@ -107,6 +107,9 @@ cd abuild_test
          "$PROJECTS_ROOT/abuild/test/dependency_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/module_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/file_test.cpp" \
+         "$PROJECTS_ROOT/abuild/test/code_scanner_headers_test.cpp" \
+         "$PROJECTS_ROOT/abuild/test/code_scanner_modules_test.cpp" \
+         "$PROJECTS_ROOT/abuild/test/code_scanner_sources_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/header_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/source_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/project_scanner_headers_test.cpp" \
