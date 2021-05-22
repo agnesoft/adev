@@ -58,9 +58,9 @@ static const auto testSuite = suite("abuild::Module", [] {
         assert_(cache.modules().size()).toBe(1u);
         assert_(cache.modules()[0]->partitions.size()).toBe(1u);
 
-        expect(cache.modules()[0]->partitions[0].name).toBe("mypartition");
-        expect(cache.modules()[0]->partitions[0].visibility).toBe(abuild::ModuleVisibility::Private);
-        expect(cache.modules()[0]->partitions[0].source).toBe(&source2);
+        expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
+        expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Private);
+        expect(cache.modules()[0]->partitions[0]->source).toBe(&source2);
     });
 
     test("add module partitions", [] {
@@ -82,13 +82,13 @@ static const auto testSuite = suite("abuild::Module", [] {
         assert_(cache.modules().size()).toBe(1u);
         assert_(cache.modules()[0]->partitions.size()).toBe(2u);
 
-        expect(cache.modules()[0]->partitions[0].name).toBe("mypartition");
-        expect(cache.modules()[0]->partitions[0].visibility).toBe(abuild::ModuleVisibility::Private);
-        expect(cache.modules()[0]->partitions[0].source).toBe(&source2);
+        expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
+        expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Private);
+        expect(cache.modules()[0]->partitions[0]->source).toBe(&source2);
 
-        expect(cache.modules()[0]->partitions[1].name).toBe("mypartition2");
-        expect(cache.modules()[0]->partitions[1].visibility).toBe(abuild::ModuleVisibility::Public);
-        expect(cache.modules()[0]->partitions[1].source).toBe(&source3);
+        expect(cache.modules()[0]->partitions[1]->name).toBe("mypartition2");
+        expect(cache.modules()[0]->partitions[1]->visibility).toBe(abuild::ModuleVisibility::Public);
+        expect(cache.modules()[0]->partitions[1]->source).toBe(&source3);
     });
 
     test("add module partition before interface", [] {
@@ -110,8 +110,8 @@ static const auto testSuite = suite("abuild::Module", [] {
 
         assert_(cache.modules()[0]->partitions.size()).toBe(1u);
 
-        expect(cache.modules()[0]->partitions[0].name).toBe("mypartition");
-        expect(cache.modules()[0]->partitions[0].visibility).toBe(abuild::ModuleVisibility::Public);
-        expect(cache.modules()[0]->partitions[0].source).toBe(&source2);
+        expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
+        expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Public);
+        expect(cache.modules()[0]->partitions[0]->source).toBe(&source2);
     });
 });

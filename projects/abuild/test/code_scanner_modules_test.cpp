@@ -47,9 +47,9 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
         assert_(cache.modules().size()).toBe(1u);
         assert_(cache.modules()[0]->partitions.size()).toBe(1u);
         expect(cache.modules()[0]->name).toBe("mymodule");
-        expect(cache.modules()[0]->partitions[0].name).toBe("mypartition");
-        expect(cache.modules()[0]->partitions[0].visibility).toBe(abuild::ModuleVisibility::Private);
-        expect(cache.modules()[0]->partitions[0].source->path()).toBe(testProject.projectRoot() / "mymodule_partition.cpp");
+        expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
+        expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Private);
+        expect(cache.modules()[0]->partitions[0]->source->path()).toBe(testProject.projectRoot() / "mymodule_partition.cpp");
     });
 
     test("module partitions", [] {
@@ -66,19 +66,19 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
         assert_(cache.modules()[0]->partitions.size()).toBe(2u);
         expect(cache.modules()[0]->name).toBe("mymodule");
 
-        std::vector<abuild::ModulePartition> partitions = cache.modules()[0]->partitions;
+        std::vector<std::unique_ptr<abuild::ModulePartition>> &partitions = cache.modules()[0]->partitions;
 
-        std::sort(partitions.begin(), partitions.end(), [](const abuild::ModulePartition &left, const abuild::ModulePartition &right) {
-            return left.name < right.name;
+        std::sort(partitions.begin(), partitions.end(), [](const std::unique_ptr<abuild::ModulePartition> &left, const std::unique_ptr<abuild::ModulePartition> &right) {
+            return left->name < right->name;
         });
 
-        expect(partitions[1].name).toBe("mypartition");
-        expect(partitions[1].visibility).toBe(abuild::ModuleVisibility::Private);
-        expect(partitions[1].source->path()).toBe(testProject.projectRoot() / "mymodule_partition.cpp");
+        expect(partitions[1]->name).toBe("mypartition");
+        expect(partitions[1]->visibility).toBe(abuild::ModuleVisibility::Private);
+        expect(partitions[1]->source->path()).toBe(testProject.projectRoot() / "mymodule_partition.cpp");
 
-        expect(partitions[0].name).toBe("myotherpartition");
-        expect(partitions[0].visibility).toBe(abuild::ModuleVisibility::Public);
-        expect(partitions[0].source->path()).toBe(testProject.projectRoot() / "mymodule_otherpartition.cpp");
+        expect(partitions[0]->name).toBe("myotherpartition");
+        expect(partitions[0]->visibility).toBe(abuild::ModuleVisibility::Public);
+        expect(partitions[0]->source->path()).toBe(testProject.projectRoot() / "mymodule_otherpartition.cpp");
     });
 
     test("module in header", [] {
