@@ -129,4 +129,21 @@ static const auto testSuite = suite("abuild::Module", [] {
         expect(cache.moduleByName("mymodule")).toBe(cache.modules()[0].get());
         expect(cache.moduleByName("missing_module")).toBe(nullptr);
     });
+
+    test("lookup module by File", [] {
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "mymodule.cpp"}};
+
+        abuild::BuildCache cache;
+        abuild::Project project{"build_test_project_scanner"};
+        abuild::Source source1{testProject.projectRoot() / "mymodule.cpp", &project};
+        abuild::Source source2{testProject.projectRoot() / "main.cpp", &project};
+
+        cache.addModuleInterface("mymodule", abuild::ModuleVisibility::Public, &source1);
+
+        assert_(cache.modules().size()).toBe(1u);
+        expect(cache.moduleByFile(&source1)).toBe(cache.modules()[0].get());
+        expect(cache.moduleByFile(&source2)).toBe(nullptr);
+    });
 });

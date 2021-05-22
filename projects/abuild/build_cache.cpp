@@ -94,6 +94,19 @@ public:
         return mHeaders;
     }
 
+    [[nodiscard]] auto moduleByFile(File *file) -> Module *
+    {
+        for (const std::unique_ptr<Module> &mod : mModules)
+        {
+            if (mod->source == file)
+            {
+                return mod.get();
+            }
+        }
+
+        return nullptr;
+    }
+
     [[nodiscard]] auto moduleByName(const std::string &name) const -> Module *
     {
         std::unordered_map<std::string, Module *>::const_iterator it = mModuleIndex.find(name);

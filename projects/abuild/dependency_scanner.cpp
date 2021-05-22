@@ -68,6 +68,20 @@ private:
 
         if (auto *value = std::get_if<ImportModulePartitionDependency>(dependency))
         {
+            Module *mod = mBuildCache.moduleByFile(file);
+
+            if (mod)
+            {
+                for (const std::unique_ptr<ModulePartition> &partition : mod->partitions)
+                {
+                    if (partition->name == value->name)
+                    {
+                        value->partition = partition.get();
+                        break;
+                    }
+                }
+            }
+
             return;
         }
     }
