@@ -33,7 +33,10 @@ public:
 
     auto addModulePartition(const std::string &moduleName, std::string partitionName, ModuleVisibility visibility, Source *source) -> void
     {
-        cppmodule(moduleName)->partitions.push_back(ModulePartition{.name = std::move(partitionName), .visibility = visibility, .source = source});
+        ModulePartition *p = cppmodule(moduleName)->partitions.emplace_back(std::make_unique<ModulePartition>()).get();
+        p->name = std::move(partitionName);
+        p->visibility = visibility;
+        p->source = source;
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void

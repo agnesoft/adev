@@ -24,6 +24,6 @@ export struct Module
     std::string name;
     ModuleVisibility visibility = ModuleVisibility::Private;
     Source *source = nullptr;
-    std::vector<ModulePartition> partitions;
+    std::vector<std::unique_ptr<ModulePartition>> partitions;
 };
 }
