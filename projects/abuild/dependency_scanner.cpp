@@ -32,6 +32,7 @@ private:
     {
         if (auto *value = std::get_if<IncludeExternalHeaderDependency>(dependency))
         {
+            value->header = mBuildCache.header(value->name);
             return;
         }
 
@@ -43,21 +44,25 @@ private:
 
         if (auto *value = std::get_if<IncludeLocalSourceDependency>(dependency))
         {
+            value->source = mBuildCache.source(value->name, file->path().parent_path());
             return;
         }
 
         if (auto *value = std::get_if<ImportExternalHeaderDependency>(dependency))
         {
+            value->header = mBuildCache.header(value->name);
             return;
         }
 
         if (auto *value = std::get_if<ImportLocalHeaderDependency>(dependency))
         {
+            value->header = mBuildCache.header(value->name, file->path().parent_path());
             return;
         }
 
         if (auto *value = std::get_if<ImportModuleDependency>(dependency))
         {
+            value->mod = mBuildCache.moduleByName(value->name);
             return;
         }
 

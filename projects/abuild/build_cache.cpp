@@ -94,6 +94,20 @@ public:
         return mHeaders;
     }
 
+    [[nodiscard]] auto moduleByName(const std::string &name) const -> Module *
+    {
+        std::unordered_map<std::string, Module *>::const_iterator it = mModuleIndex.find(name);
+
+        if (it != mModuleIndex.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
     [[nodiscard]] auto modules() const noexcept -> const std::vector<std::unique_ptr<Module>> &
     {
         return mModules;
