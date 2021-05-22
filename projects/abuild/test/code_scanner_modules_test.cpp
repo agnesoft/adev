@@ -80,4 +80,36 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
         expect(partitions[0].visibility).toBe(abuild::ModuleVisibility::Public);
         expect(partitions[0].source->path()).toBe(testProject.projectRoot() / "mymodule_otherpartition.cpp");
     });
+
+    test("module in header", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"header.hpp", "export module mymodule;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.headers().size()).toBe(1u);
+        expect(cache.headers()[0]->dependencies().size()).toBe(0u);
+        assert_(cache.warnings().size()).toBe(1u);
+
+        expect(cache.warnings()[0].component).toBe("CodeScanner");
+        expect(cache.warnings()[0].what).toBe("Declaring modules in headers is unsupported. Ignoring. (" + (testProject.projectRoot() / "header.hpp").string() + ')');
+    });
+
+    test("module partition in header", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"header.hpp", "module mymodule : mypartition;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.headers().size()).toBe(1u);
+        expect(cache.headers()[0]->dependencies().size()).toBe(0u);
+        assert_(cache.warnings().size()).toBe(1u);
+
+        expect(cache.warnings()[0].component).toBe("CodeScanner");
+        expect(cache.warnings()[0].what).toBe("Declaring module partitions in headers is unsupported. Ignoring. (" + (testProject.projectRoot() / "header.hpp").string() + ')');
+    });
 });

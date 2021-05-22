@@ -112,6 +112,22 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
         expect(dep1.header).toBe(nullptr);
     });
 
+    test("include external source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "#include <source.cpp>"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        expect(cache.sources()[0]->dependencies().size()).toBe(0u);
+
+        assert_(cache.warnings().size()).toBe(1u);
+        expect(cache.warnings()[0].component).toBe("CodeScanner");
+        expect(cache.warnings()[0].what).toBe("Including 'source.cpp' (source) via angle brackets is unsupported. Only headers can be included this way. Ignoring. (" + (testProject.projectRoot() / "main.cpp").string() + ')');
+    });
+
     test("import local headers", [] {
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "import \"header.hpp\";\nexport import \"other_header.hpp\";"}}};
@@ -136,6 +152,22 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
         expect(dep2.header).toBe(nullptr);
     });
 
+    test("import local source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "import \"source.cpp\";"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        expect(cache.sources()[0]->dependencies().size()).toBe(0u);
+
+        assert_(cache.warnings().size()).toBe(1u);
+        expect(cache.warnings()[0].component).toBe("CodeScanner");
+        expect(cache.warnings()[0].what).toBe("Importing 'source.cpp' (source) is unsupported. Only headers can be imported. Ignoring. (" + (testProject.projectRoot() / "main.cpp").string() + ')');
+    });
+
     test("import external header", [] {
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "export import <myproject/header.hpp>;"}}};
@@ -152,6 +184,22 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
         expect(dep1.name).toBe("myproject/header.hpp");
         expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
         expect(dep1.header).toBe(nullptr);
+    });
+
+    test("import external source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "import <source.cpp>;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        expect(cache.sources()[0]->dependencies().size()).toBe(0u);
+
+        assert_(cache.warnings().size()).toBe(1u);
+        expect(cache.warnings()[0].component).toBe("CodeScanner");
+        expect(cache.warnings()[0].what).toBe("Importing 'source.cpp' (source) is unsupported. Only headers can be imported. Ignoring. (" + (testProject.projectRoot() / "main.cpp").string() + ')');
     });
 
     test("import modules", [] {

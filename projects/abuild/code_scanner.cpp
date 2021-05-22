@@ -38,7 +38,7 @@ private:
             return DependencyVisibility::Private;
         }
 
-        throw std::runtime_error{"Unknown TokenVisibility value: " + std::to_string(static_cast<std::underlying_type_t<TokenVisibility>>(visibility))};
+        throw std::logic_error{"Unknown TokenVisibility value: " + std::to_string(static_cast<std::underlying_type_t<TokenVisibility>>(visibility))};
     }
 
     [[nodiscard]] auto moduleVisibility(TokenVisibility visibility) -> ModuleVisibility
@@ -51,7 +51,7 @@ private:
             return ModuleVisibility::Private;
         }
 
-        throw std::runtime_error{"Unknown TokenVisibility value: " + std::to_string(static_cast<std::underlying_type_t<TokenVisibility>>(visibility))};
+        throw std::logic_error{"Unknown TokenVisibility value: " + std::to_string(static_cast<std::underlying_type_t<TokenVisibility>>(visibility))};
     }
 
     auto processImportIncludeExternalToken(const ImportIncludeExternalToken *value, File *file) -> void
@@ -118,8 +118,87 @@ private:
         }
     }
 
-    auto processFile(const Token &token, File *file) -> void
+    auto processHeader(const Token &token, Header *file) -> void
     {
+        if (auto *value = std::get_if<ModuleToken>(&token))
+        {
+            mBuildCache.addWarning(Warning{COMPONENT, "Declaring modules in headers is unsupported. Ignoring. (" + file->path().string() + ')'});
+            return;
+        }
+
+        if (auto *value = std::get_if<ModulePartitionToken>(&token))
+        {
+            mBuildCache.addWarning(Warning{COMPONENT, "Declaring module partitions in headers is unsupported. Ignoring. (" + file->path().string() + ')'});
+            return;
+        }
+
+        if (auto *value = std::get_if<ImportModulePartitionToken>(&token))
+        {
+            mBuildCache.addWarning(Warning{COMPONENT, "Importing module partitions in headers is unsupported. Ignoring. (" + file->path().string() + ')'});
+            return;
+        }
+
+        if (auto *value = std::get_if<IncludeExternalToken>(&token))
+        {
+            processIncludeExternalToken(value, file);
+            return;
+        }
+
+        if (auto *value = std::get_if<IncludeLocalToken>(&token))
+        {
+            if (isSource(value->name))
+            {
+                mBuildCache.addWarning(Warning{COMPONENT, "Including '" + value->name + "' (source) in header is unsupported. Only headers can be included in headers. Ignoring. (" + file->path().string() + ')'});
+            }
+            else
+            {
+                processIncludeLocalToken(value, file);
+            }
+
+            return;
+        }
+
+        if (auto *value = std::get_if<ImportModuleToken>(&token))
+        {
+            file->addDependency(ImportModuleDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
+            return;
+        }
+
+        if (auto *value = std::get_if<ImportIncludeLocalToken>(&token))
+        {
+            processImportIncludeLocalToken(value, file);
+            return;
+        }
+
+        if (auto *value = std::get_if<ImportIncludeExternalToken>(&token))
+        {
+            processImportIncludeExternalToken(value, file);
+            return;
+        }
+
+        throw std::logic_error{"Unknown token type. (" + file->path().string() + ')'};
+    }
+
+    auto processSource(const Token &token, Source *file) -> void
+    {
+        if (auto *value = std::get_if<ModuleToken>(&token))
+        {
+            mBuildCache.addModuleInterface(value->name, moduleVisibility(value->visibility), file);
+            return;
+        }
+
+        if (auto *value = std::get_if<ModulePartitionToken>(&token))
+        {
+            mBuildCache.addModulePartition(value->mod, value->name, moduleVisibility(value->visibility), file);
+            return;
+        }
+
+        if (auto *value = std::get_if<ImportModulePartitionToken>(&token))
+        {
+            file->addDependency(ImportModulePartitionDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
+            return;
+        }
+
         if (auto *value = std::get_if<IncludeExternalToken>(&token))
         {
             processIncludeExternalToken(value, file);
@@ -150,44 +229,7 @@ private:
             return;
         }
 
-        mBuildCache.addError(Error{COMPONENT, "Unknown token type. (" + file->path().string() + ')'});
-    }
-
-    auto processHeader(const Token &token, Header *file) -> void
-    {
-        if (std::get_if<ModuleToken>(&token)
-            || std::get_if<ModulePartitionToken>(&token)
-            || std::get_if<ImportModulePartitionToken>(&token))
-        {
-            mBuildCache.addWarning(Warning{COMPONENT, "Declaring modules or module partitions or importing module partitions in headres is not supported. (" + file->path().string() + ')'});
-        }
-        else
-        {
-            processFile(token, file);
-        }
-    }
-
-    auto processSource(const Token &token, Source *file) -> void
-    {
-        if (auto *value = std::get_if<ModuleToken>(&token))
-        {
-            mBuildCache.addModuleInterface(value->name, moduleVisibility(value->visibility), file);
-            return;
-        }
-
-        if (auto *value = std::get_if<ModulePartitionToken>(&token))
-        {
-            mBuildCache.addModulePartition(value->mod, value->name, moduleVisibility(value->visibility), file);
-            return;
-        }
-
-        if (auto *value = std::get_if<ImportModulePartitionToken>(&token))
-        {
-            file->addDependency(ImportModulePartitionDependency{.name = value->name, .visibility = dependencyVisibility(value->visibility)});
-            return;
-        }
-
-        processFile(token, file);
+        throw std::logic_error{"Unknown token type. (" + file->path().string() + ')'};
     }
 
     auto scanHeader(Header *header) -> void
