@@ -48,7 +48,7 @@ public:
 
         if (!hint.empty())
         {
-            const std::filesystem::path hintedPath = hint / file;
+            const std::filesystem::path hintedPath = (hint / file).lexically_normal();
 
             for (It it = range.first; it != range.second; ++it)
             {
@@ -133,7 +133,7 @@ public:
 
         if (!hint.empty())
         {
-            const std::filesystem::path hintedPath = hint / file;
+            const std::filesystem::path hintedPath = (hint / file).lexically_normal();
 
             for (It it = range.first; it != range.second; ++it)
             {
