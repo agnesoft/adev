@@ -327,4 +327,8 @@ static const auto testSuite = suite("abuild::Tokenizer", [] {
             abuild::Token{abuild::ImportModuleToken{.name = "mymodule", .visibility = abuild::TokenVisibility::Private}},
             abuild::Token{abuild::ImportModuleToken{.name = "yetanothermodule", .visibility = abuild::TokenVisibility::Private}}});
     });
+
+    test("comment at the end of file", [] {
+        expect(abuild::Tokenizer{"unsigned int foo(); // expected-error {{C++ requires a type specifier for all declarations}}"}.next()).toBe(abuild::Token{});
+    });
 });
