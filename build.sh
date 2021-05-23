@@ -105,6 +105,7 @@ cd abuild_test
          "$PROJECTS_ROOT/abuild/test/main.cpp" \
          "$PROJECTS_ROOT/abuild/test/tokenizer_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/dependency_test.cpp" \
+         "$PROJECTS_ROOT/abuild/test/dependency_scanner_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/module_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/file_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/code_scanner_headers_test.cpp" \

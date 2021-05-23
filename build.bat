@@ -73,10 +73,12 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\p
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\token.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\tokenizer.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\code_scanner.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\dependency_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
 lib.exe /NOLOGO ^
         /OUT:abuild.lib ^
         code_scanner.obj ^
+        dependency_scanner.obj ^
         token.obj ^
         tokenizer.obj ^
         dependency.obj ^
@@ -190,6 +192,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\code_scanner_modules_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\code_scanner_sources_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\dependency_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\dependency_scanner_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\header_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\source_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\module_test.cpp" ^

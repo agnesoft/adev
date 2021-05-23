@@ -29,14 +29,18 @@ public:
         Module *mod = cppmodule(moduleName);
         mod->source = source;
         mod->visibility = visibility;
+        mModuleFileIndex.insert({source, mod});
     }
 
     auto addModulePartition(const std::string &moduleName, std::string partitionName, ModuleVisibility visibility, Source *source) -> void
     {
-        ModulePartition *p = cppmodule(moduleName)->partitions.emplace_back(std::make_unique<ModulePartition>()).get();
-        p->name = std::move(partitionName);
-        p->visibility = visibility;
-        p->source = source;
+        Module *mod = cppmodule(moduleName);
+        ModulePartition *partition = mod->partitions.emplace_back(std::make_unique<ModulePartition>()).get();
+        partition->name = std::move(partitionName);
+        partition->visibility = visibility;
+        partition->source = source;
+        partition->mod = mod;
+        mModulePartitionsFileIndex.insert({source, partition});
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
@@ -92,6 +96,48 @@ public:
     [[nodiscard]] auto headers() const noexcept -> const std::vector<std::unique_ptr<Header>> &
     {
         return mHeaders;
+    }
+
+    [[nodiscard]] auto moduleByFile(const File *file) const -> Module *
+    {
+        std::unordered_map<const File *, Module *>::const_iterator it = mModuleFileIndex.find(file);
+
+        if (it != mModuleFileIndex.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    [[nodiscard]] auto moduleByName(const std::string &name) const -> Module *
+    {
+        std::unordered_map<std::string, Module *>::const_iterator it = mModuleIndex.find(name);
+
+        if (it != mModuleIndex.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    [[nodiscard]] auto modulePartitionByFile(const File *file) const -> ModulePartition *
+    {
+        std::unordered_map<const File *, ModulePartition *>::const_iterator it = mModulePartitionsFileIndex.find(file);
+
+        if (it != mModulePartitionsFileIndex.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     [[nodiscard]] auto modules() const noexcept -> const std::vector<std::unique_ptr<Module>> &
@@ -202,5 +248,7 @@ private:
     std::unordered_map<std::string, Module *> mModuleIndex;
     std::unordered_multimap<std::string, Source *> mSourceIndex;
     std::unordered_multimap<std::string, Header *> mHeaderIndex;
+    std::unordered_map<const File *, Module *> mModuleFileIndex;
+    std::unordered_map<const File *, ModulePartition *> mModulePartitionsFileIndex;
 };
 }

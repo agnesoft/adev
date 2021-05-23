@@ -12,11 +12,14 @@ export enum class ModuleVisibility {
     Private
 };
 
+export struct Module;
+
 export struct ModulePartition
 {
     std::string name;
     ModuleVisibility visibility = ModuleVisibility::Private;
     Source *source = nullptr;
+    Module *mod = nullptr;
 };
 
 export struct Module
