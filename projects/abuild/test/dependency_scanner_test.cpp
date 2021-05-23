@@ -306,4 +306,21 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         expect(cache.warnings()[0].component).toBe("DependencyScanner");
         expect(cache.warnings()[0].what).toBe("Module of module partition 'mypartition' not found. (" + (testProject.projectRoot() / "main.cpp").string() + ')');
     });
+
+    test("local include via ../", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"src/main.cpp", "#include \"../header.hpp\""},
+                                            {"header.hpp", ""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+
+        assert_(cache.sources().size()).toBe(1u);
+        assert_(cache.headers().size()).toBe(1u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+
+        expect(std::get<abuild::IncludeLocalHeaderDependency>(cache.sources()[0]->dependencies()[0]).header).toBe(cache.headers()[0].get());
+    });
 });
