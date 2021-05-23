@@ -131,4 +131,37 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                 "atest",
                 "atest.test"});
     });
+
+    test("project type", [] {
+        TestProject testProject{"abuild_project_scanner_test",
+                                {"projects/abuild/src/main.cpp",
+                                 "projects/abuild/test/src/some_test.cpp",
+                                 "projects/acore/include/header.hpp",
+                                 "projects/acore/test/other_test.cpp",
+                                 "projects/atest/atest.cpp",
+                                 "projects/atest/test/src/main.cpp"}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        std::vector<std::pair<std::string, abuild::Project::Type>> actualProjects;
+
+        for (const std::unique_ptr<abuild::Project> &project : cache.projects())
+        {
+            actualProjects.push_back({project->name(), project->type()});
+        }
+
+        std::sort(actualProjects.begin(), actualProjects.end(), [](const std::pair<std::string, abuild::Project::Type> &left, const std::pair<std::string, abuild::Project::Type> &right) {
+            return left.first < right.first;
+        });
+
+        expect(actualProjects)
+            .toBe(std::vector<std::pair<std::string, abuild::Project::Type>>{
+                {"abuild", abuild::Project::Type::Executable},
+                {"abuild.test", abuild::Project::Type::Executable},
+                {"acore", abuild::Project::Type::Library},
+                {"acore.test", abuild::Project::Type::Executable},
+                {"atest", abuild::Project::Type::Library},
+                {"atest.test", abuild::Project::Type::Executable}});
+    });
 });

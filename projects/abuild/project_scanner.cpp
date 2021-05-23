@@ -80,6 +80,11 @@ private:
         if (Settings::cppSourceExtensions().contains(path.extension().string()))
         {
             mBuildCache.addSource(path, projectName);
+
+            if (Settings::executableFilenames().contains(path.stem().string()))
+            {
+                mBuildCache.project(projectName)->setType(Project::Type::Executable);
+            }
         }
         else if (Settings::cppHeaderExtensions().contains(path.extension().string()))
         {
@@ -132,6 +137,13 @@ private:
         for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(path))
         {
             scanDirectoryEntry(entry, projectName);
+        }
+
+        Project *project = mBuildCache.project(projectName);
+
+        if (isTestDirectory(path) && project)
+        {
+            project->setType(Project::Type::Executable);
         }
     }
 

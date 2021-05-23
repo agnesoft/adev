@@ -23,4 +23,23 @@ static const auto testSuite = suite("abuild::Project", [] {
         assert_(noexcept(project.name())).toBe(true);
         expect(project.name()).toBe("myproject");
     });
+
+    test("type", [] {
+        const abuild::Project project{"myproject"};
+
+        assert_(noexcept(project.type())).toBe(true);
+        expect(project.type()).toBe(abuild::Project::Type::Library);
+    });
+
+    test("lookup project by name", [] {
+        TestProject testProject{"abuild_project_scanner_test",
+                                {"projects/abuild/src/main.cpp"}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        assert_(cache.projects().size()).toBe(1u);
+        expect(cache.project("abuild_project_scanner_test")).toBe(nullptr);
+        expect(cache.project("abuild")).toBe(cache.projects()[0].get());
+    });
 });

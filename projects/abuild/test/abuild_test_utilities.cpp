@@ -18,6 +18,19 @@ export import "rapidjson.hpp";
 
 namespace std
 {
+export auto operator<<(std::ostream &stream, const abuild::Project::Type &type) -> std::ostream &
+{
+    switch (type)
+    {
+    case abuild::Project::Type::Executable:
+        return stream << "Executable";
+    case abuild::Project::Type::Library:
+        return stream << "Library";
+    }
+
+    return stream;
+}
+
 export auto operator<<(std::ostream &stream, const abuild::ModuleVisibility &visibility) -> std::ostream &
 {
     switch (visibility)
