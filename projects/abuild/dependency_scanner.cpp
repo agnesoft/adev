@@ -15,6 +15,36 @@ public:
     }
 
 private:
+    [[nodiscard]] auto moduleFromFile(File *file) -> Module *
+    {
+        Module *mod = mBuildCache.moduleByFile(file);
+
+        if (!mod)
+        {
+            ModulePartition *partition = mBuildCache.modulePartitionByFile(file);
+
+            if (partition)
+            {
+                mod = partition->mod;
+            }
+        }
+
+        return mod;
+    }
+
+    [[nodiscard]] auto modulePartition(Module *mod, const std::string &name) -> ModulePartition *
+    {
+        for (const std::unique_ptr<ModulePartition> &partition : mod->partitions)
+        {
+            if (partition->name == name)
+            {
+                return partition.get();
+            }
+        }
+
+        return nullptr;
+    }
+
     auto scan() -> void
     {
         for (const std::unique_ptr<Source> &source : mBuildCache.sources())
@@ -74,19 +104,11 @@ private:
 
         if (auto *value = std::get_if<ImportModulePartitionDependency>(dependency))
         {
-            Module *mod = mBuildCache.moduleByFile(file);
+            Module *mod = moduleFromFile(file);
 
             if (mod)
             {
-                for (const std::unique_ptr<ModulePartition> &partition : mod->partitions)
-                {
-                    if (partition->name == value->name)
-                    {
-                        value->partition = partition.get();
-                        break;
-                    }
-                }
-
+                value->partition = modulePartition(mod, value->name);
                 validateModulePartition(value->partition, value->name, mod->name, file);
             }
             else
