@@ -61,6 +61,7 @@ static const auto testSuite = suite("abuild::Module", [] {
         expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
         expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Private);
         expect(cache.modules()[0]->partitions[0]->source).toBe(&source2);
+        expect(cache.modules()[0]->partitions[0]->mod).toBe(cache.modules()[0].get());
     });
 
     test("add module partitions", [] {
@@ -85,10 +86,12 @@ static const auto testSuite = suite("abuild::Module", [] {
         expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
         expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Private);
         expect(cache.modules()[0]->partitions[0]->source).toBe(&source2);
+        expect(cache.modules()[0]->partitions[0]->mod).toBe(cache.modules()[0].get());
 
         expect(cache.modules()[0]->partitions[1]->name).toBe("mypartition2");
         expect(cache.modules()[0]->partitions[1]->visibility).toBe(abuild::ModuleVisibility::Public);
         expect(cache.modules()[0]->partitions[1]->source).toBe(&source3);
+        expect(cache.modules()[0]->partitions[1]->mod).toBe(cache.modules()[0].get());
     });
 
     test("add module partition before interface", [] {
@@ -113,6 +116,7 @@ static const auto testSuite = suite("abuild::Module", [] {
         expect(cache.modules()[0]->partitions[0]->name).toBe("mypartition");
         expect(cache.modules()[0]->partitions[0]->visibility).toBe(abuild::ModuleVisibility::Public);
         expect(cache.modules()[0]->partitions[0]->source).toBe(&source2);
+        expect(cache.modules()[0]->partitions[0]->mod).toBe(cache.modules()[0].get());
     });
 
     test("lookup module by name", [] {
@@ -145,5 +149,22 @@ static const auto testSuite = suite("abuild::Module", [] {
         assert_(cache.modules().size()).toBe(1u);
         expect(cache.moduleByFile(&source1)).toBe(cache.modules()[0].get());
         expect(cache.moduleByFile(&source2)).toBe(nullptr);
+    });
+
+    test("lookup module partition by File", [] {
+        TestProject testProject{"build_test_project_scanner",
+                                {"main.cpp",
+                                 "mypartition.cpp"}};
+
+        abuild::BuildCache cache;
+        abuild::Project project{"build_test_project_scanner"};
+        abuild::Source source1{testProject.projectRoot() / "mypartition.cpp", &project};
+        abuild::Source source2{testProject.projectRoot() / "main.cpp", &project};
+
+        cache.addModulePartition("mymodule", "mypartition", abuild::ModuleVisibility::Public, &source1);
+
+        assert_(cache.modules().size()).toBe(1u);
+        expect(cache.modulePartitionByFile(&source1)->mod).toBe(cache.modules()[0].get());
+        expect(cache.modulePartitionByFile(&source2)).toBe(nullptr);
     });
 });

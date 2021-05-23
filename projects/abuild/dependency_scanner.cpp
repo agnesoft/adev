@@ -33,36 +33,42 @@ private:
         if (auto *value = std::get_if<IncludeExternalHeaderDependency>(dependency))
         {
             value->header = mBuildCache.header(value->name);
+            validateHeader(value->header, value->name, file);
             return;
         }
 
         if (auto *value = std::get_if<IncludeLocalHeaderDependency>(dependency))
         {
             value->header = mBuildCache.header(value->name, file->path().parent_path());
+            validateHeader(value->header, value->name, file);
             return;
         }
 
         if (auto *value = std::get_if<IncludeLocalSourceDependency>(dependency))
         {
             value->source = mBuildCache.source(value->name, file->path().parent_path());
+            validateSource(value->source, value->name, file);
             return;
         }
 
         if (auto *value = std::get_if<ImportExternalHeaderDependency>(dependency))
         {
             value->header = mBuildCache.header(value->name);
+            validateHeader(value->header, value->name, file);
             return;
         }
 
         if (auto *value = std::get_if<ImportLocalHeaderDependency>(dependency))
         {
             value->header = mBuildCache.header(value->name, file->path().parent_path());
+            validateHeader(value->header, value->name, file);
             return;
         }
 
         if (auto *value = std::get_if<ImportModuleDependency>(dependency))
         {
             value->mod = mBuildCache.moduleByName(value->name);
+            validateModule(value->mod, value->name, file);
             return;
         }
 
@@ -80,6 +86,12 @@ private:
                         break;
                     }
                 }
+
+                validateModulePartition(value->partition, value->name, mod->name, file);
+            }
+            else
+            {
+                mBuildCache.addWarning(Warning{.component = COMPONENT, .what = "Module of module partition '" + value->name + "' not found. (" + file->path().string() + ')'});
             }
 
             return;
@@ -94,6 +106,39 @@ private:
         }
     }
 
+    auto validateHeader(Header *header, std::string name, File *file) -> void
+    {
+        if (!header)
+        {
+            mBuildCache.addWarning(Warning{.component = COMPONENT, .what = "Header '" + name + "' not found. (" + file->path().string() + ')'});
+        }
+    }
+
+    auto validateModule(Module *mod, std::string name, File *file) -> void
+    {
+        if (!mod)
+        {
+            mBuildCache.addWarning(Warning{.component = COMPONENT, .what = "Module '" + name + "' not found. (" + file->path().string() + ')'});
+        }
+    }
+
+    auto validateModulePartition(ModulePartition *partition, std::string name, std::string moduleName, File *file) -> void
+    {
+        if (!partition)
+        {
+            mBuildCache.addWarning(Warning{.component = COMPONENT, .what = "Module partition '" + name + "' not found in module '" + moduleName + "'. (" + file->path().string() + ')'});
+        }
+    }
+
+    auto validateSource(Source *source, std::string name, File *file) -> void
+    {
+        if (!source)
+        {
+            mBuildCache.addWarning(Warning{.component = COMPONENT, .what = "Source '" + name + "' not found. (" + file->path().string() + ')'});
+        }
+    }
+
     BuildCache &mBuildCache;
+    static constexpr char COMPONENT[] = "DependencyScanner";
 };
 }
