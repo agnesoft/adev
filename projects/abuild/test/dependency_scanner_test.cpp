@@ -193,7 +193,7 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         assert_(cache.source("mymodule.cpp") != nullptr).toBe(true);
         assert_(cache.source("mymodule.cpp")->dependencies().size()).toBe(1u);
 
-        expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mymodule.cpp")->dependencies()[0]).partition).toBe(cache.modules()[0]->partitions[0].get());
+        expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mymodule.cpp")->dependencies()[0]).partition).toBe(cache.modules()[0]->partitions[0]);
     });
 
     test("import module partition from another partition", [] {
@@ -215,8 +215,8 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         assert_(cache.source("mymodule.cpp")->dependencies().size()).toBe(1u);
         assert_(cache.source("mypartition.cpp")->dependencies().size()).toBe(1u);
 
-        abuild::ModulePartition *partition1 = cache.modulePartitionByFile(cache.source("mypartition.cpp"));
-        abuild::ModulePartition *partition2 = cache.modulePartitionByFile(cache.source("otherpartition.cpp"));
+        abuild::ModulePartition *partition1 = cache.cppModulePartition(cache.source("mypartition.cpp"));
+        abuild::ModulePartition *partition2 = cache.cppModulePartition(cache.source("otherpartition.cpp"));
 
         expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mymodule.cpp")->dependencies()[0]).partition).toBe(partition1);
         expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mypartition.cpp")->dependencies()[0]).partition).toBe(partition2);

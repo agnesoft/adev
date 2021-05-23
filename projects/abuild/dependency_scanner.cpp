@@ -17,11 +17,11 @@ public:
 private:
     [[nodiscard]] auto moduleFromFile(File *file) -> Module *
     {
-        Module *mod = mBuildCache.moduleByFile(file);
+        Module *mod = mBuildCache.cppModule(file);
 
         if (!mod)
         {
-            ModulePartition *partition = mBuildCache.modulePartitionByFile(file);
+            ModulePartition *partition = mBuildCache.cppModulePartition(file);
 
             if (partition)
             {
@@ -34,11 +34,11 @@ private:
 
     [[nodiscard]] auto modulePartition(Module *mod, const std::string &name) -> ModulePartition *
     {
-        for (const std::unique_ptr<ModulePartition> &partition : mod->partitions)
+        for (ModulePartition *partition : mod->partitions)
         {
             if (partition->name == name)
             {
-                return partition.get();
+                return partition;
             }
         }
 
@@ -97,7 +97,7 @@ private:
 
         if (auto *value = std::get_if<ImportModuleDependency>(dependency))
         {
-            value->mod = mBuildCache.moduleByName(value->name);
+            value->mod = mBuildCache.cppModule(value->name);
             validateModule(value->mod, value->name, file);
             return;
         }

@@ -18,6 +18,7 @@ import <astl.hpp>;
 #include "module.cpp"
 #include "error.cpp"
 #include "warning.cpp"
+#include "build_cache_index.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 #include "token.cpp"
