@@ -29,6 +29,16 @@ public:
         return extensions;
     }
 
+    [[nodiscard]] static auto executableFilenames() -> const std::unordered_set<std::string> &
+    {
+        static const std::unordered_set<std::string> filenames{
+            "main",
+            "Main",
+            "WinMain"};
+
+        return filenames;
+    }
+
     [[nodiscard]] static auto ignoreDirectories() -> const std::unordered_set<std::string> &
     {
         static const std::unordered_set<std::string> dirs{

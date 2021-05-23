@@ -17,7 +17,7 @@ public:
 
     auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        Project *proj = project(projectName);
+        Project *proj = getProject(projectName);
         Header *header = mData.headers.emplace_back(std::make_unique<Header>(path, proj)).get();
         mIndex.addHeader(path.filename().string(), header);
     }
@@ -44,7 +44,7 @@ public:
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        Project *proj = project(projectName);
+        Project *proj = getProject(projectName);
         Source *source = mData.sources.emplace_back(std::make_unique<Source>(path, proj)).get();
         mIndex.addSource(path.filename().string(), source);
     }
@@ -92,6 +92,11 @@ public:
     [[nodiscard]] auto modules() const noexcept -> const std::vector<std::unique_ptr<Module>> &
     {
         return mData.modules;
+    }
+
+    [[nodiscard]] auto project(const std::string &name) const -> Project *
+    {
+        return mIndex.project(name);
     }
 
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
@@ -145,7 +150,7 @@ private:
         return mod;
     }
 
-    [[nodiscard]] auto project(const std::string &name) -> Project *
+    [[nodiscard]] auto getProject(const std::string &name) -> Project *
     {
         Project *proj = mIndex.project(name);
 
