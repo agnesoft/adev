@@ -383,7 +383,7 @@ private:
 
     auto skipString() -> void
     {
-        while (mContent[pos++] != '"' && mContent[pos - 2] != '\\' && !atEnd())
+        while (!(mContent[pos++] == '"' && mContent[pos - 2] != '\\') && !atEnd())
         {
         }
     }
