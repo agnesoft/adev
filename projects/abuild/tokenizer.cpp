@@ -25,55 +25,58 @@ public:
             {
                 skipWhiteSpaceOrComment();
 
-                const char c = mContent[pos++];
+                if (!atEnd())
+                {
+                    const char c = mContent[pos++];
 
-                if (c == '#')
-                {
-                    if (isInclude())
+                    if (c == '#')
                     {
-                        return extractInclude();
+                        if (isInclude())
+                        {
+                            return extractInclude();
+                        }
+                        else
+                        {
+                            skipLine();
+                        }
                     }
-                    else
+                    else if (c == 'i')
                     {
-                        skipLine();
+                        if (isImport())
+                        {
+                            return extractImport(TokenVisibility::Private);
+                        }
+                        else
+                        {
+                            skipToSemicolonOrLine();
+                        }
                     }
-                }
-                else if (c == 'i')
-                {
-                    if (isImport())
+                    else if (c == 'm')
                     {
-                        return extractImport(TokenVisibility::Private);
+                        if (isModule())
+                        {
+                            return extractModule(TokenVisibility::Private);
+                        }
+                        else
+                        {
+                            skipToSemicolonOrLine();
+                        }
+                    }
+                    else if (c == 'e')
+                    {
+                        if (isExport())
+                        {
+                            return extractExport();
+                        }
+                        else
+                        {
+                            skipToSemicolonOrLine();
+                        }
                     }
                     else
                     {
                         skipToSemicolonOrLine();
                     }
-                }
-                else if (c == 'm')
-                {
-                    if (isModule())
-                    {
-                        return extractModule(TokenVisibility::Private);
-                    }
-                    else
-                    {
-                        skipToSemicolonOrLine();
-                    }
-                }
-                else if (c == 'e')
-                {
-                    if (isExport())
-                    {
-                        return extractExport();
-                    }
-                    else
-                    {
-                        skipToSemicolonOrLine();
-                    }
-                }
-                else
-                {
-                    skipToSemicolonOrLine();
                 }
             }
             catch ([[maybe_unused]] BadTokenError &badToken)
@@ -200,7 +203,7 @@ private:
     {
         std::string name;
 
-        while (mContent[pos] != separator && mContent[pos] != '\n' && !atEnd())
+        while (!atEnd() && mContent[pos] != separator && mContent[pos] != '\n')
         {
             name += mContent[pos++];
         }
@@ -217,7 +220,7 @@ private:
     {
         std::string name;
 
-        while (mContent[pos] != ':' && mContent[pos] != ';' && !std::isspace(mContent[pos]) && !atEnd())
+        while (!atEnd() && mContent[pos] != ':' && mContent[pos] != ';' && !std::isspace(mContent[pos]))
         {
             if (isComment())
             {
@@ -335,7 +338,7 @@ private:
 
     auto skipLine() -> void
     {
-        while (mContent[pos] != '\n' && !atEnd())
+        while (!atEnd() && mContent[pos] != '\n')
         {
             pos++;
         }
@@ -356,7 +359,7 @@ private:
     {
         std::string sequence{')'};
 
-        while (mContent[pos] != '(' && !atEnd())
+        while (!atEnd() && mContent[pos] != '(')
         {
             sequence += mContent[pos++];
         }
@@ -383,14 +386,14 @@ private:
 
     auto skipString() -> void
     {
-        while (!(mContent[pos++] == '"' && mContent[pos - 2] != '\\') && !atEnd())
+        while (!atEnd() && !(mContent[pos++] == '"' && mContent[pos - 2] != '\\'))
         {
         }
     }
 
     auto skipToSemicolonOrLine() -> void
     {
-        while (mContent[pos] != ';' && mContent[pos] != '\n' && !atEnd())
+        while (!atEnd() && mContent[pos] != ';' && mContent[pos] != '\n')
         {
             if (mContent[pos] == '/')
             {
@@ -411,7 +414,7 @@ private:
 
     auto skipMultiLineComment() -> void
     {
-        while (!(mContent[pos] == '/' && mContent[pos - 1] == '*') && !atEnd())
+        while (!atEnd() && !(mContent[pos] == '/' && mContent[pos - 1] == '*'))
         {
             pos++;
         }
