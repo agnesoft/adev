@@ -1,11 +1,8 @@
 #ifdef _MSC_VER
 export module abuild : build_cache;
-export import : project;
-export import : header;
-export import : source;
-export import : cpp_module;
 export import : error;
 export import : warning;
+export import : build_cache_index;
 #endif
 
 namespace abuild
@@ -15,48 +12,66 @@ export class BuildCache
 public:
     auto addError(Error error) -> void
     {
-        mErrors.push_back(std::move(error));
+        mData.errors.push_back(std::move(error));
     }
 
     auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        Header *header = mHeaders.emplace_back(std::make_unique<Header>(path, project(projectName))).get();
-        mHeaderIndex.insert({path.filename().string(), header});
+        Project *proj = project(projectName);
+        Header *header = mData.headers.emplace_back(std::make_unique<Header>(path, proj)).get();
+        mIndex.addHeader(path.filename().string(), header);
     }
 
     auto addModuleInterface(const std::string &moduleName, ModuleVisibility visibility, Source *source) -> void
     {
-        Module *mod = cppmodule(moduleName);
+        Module *mod = getCppModule(moduleName);
         mod->source = source;
         mod->visibility = visibility;
-        mModuleFileIndex.insert({source, mod});
+        mIndex.addModuleFile(source, mod);
     }
 
     auto addModulePartition(const std::string &moduleName, std::string partitionName, ModuleVisibility visibility, Source *source) -> void
     {
-        Module *mod = cppmodule(moduleName);
-        ModulePartition *partition = mod->partitions.emplace_back(std::make_unique<ModulePartition>()).get();
+        Module *mod = getCppModule(moduleName);
+        ModulePartition *partition = mData.modulePartitions.emplace_back(std::make_unique<ModulePartition>()).get();
+        mod->partitions.push_back(partition);
         partition->name = std::move(partitionName);
         partition->visibility = visibility;
         partition->source = source;
         partition->mod = mod;
-        mModulePartitionsFileIndex.insert({source, partition});
+        mIndex.addModulePartitionFile(source, partition);
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        Source *source = mSources.emplace_back(std::make_unique<Source>(path, project(projectName))).get();
-        mSourceIndex.insert({path.filename().string(), source});
+        Project *proj = project(projectName);
+        Source *source = mData.sources.emplace_back(std::make_unique<Source>(path, proj)).get();
+        mIndex.addSource(path.filename().string(), source);
     }
 
     auto addWarning(Warning warning) -> void
     {
-        mWarnings.push_back(std::move(warning));
+        mData.warnings.push_back(std::move(warning));
+    }
+
+    [[nodiscard]] auto cppModule(const File *file) const -> Module *
+    {
+        return mIndex.cppModule(file);
+    }
+
+    [[nodiscard]] auto cppModule(const std::string &name) const -> Module *
+    {
+        return mIndex.cppModule(name);
+    }
+
+    [[nodiscard]] auto cppModulePartition(const File *file) const -> ModulePartition *
+    {
+        return mIndex.cppModulePartition(file);
     }
 
     [[nodiscard]] auto errors() const noexcept -> const std::vector<Error> &
     {
-        return mErrors;
+        return mData.errors;
     }
 
     [[nodiscard]] auto header(const std::filesystem::path &file) const -> Header *
@@ -66,117 +81,22 @@ public:
 
     [[nodiscard]] auto header(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Header *
     {
-        using It = std::unordered_multimap<std::string, Header *>::const_iterator;
-        std::pair<It, It> range = mHeaderIndex.equal_range(file.filename().string());
-
-        if (!hint.empty())
-        {
-            const std::filesystem::path hintedPath = hint / file;
-
-            for (It it = range.first; it != range.second; ++it)
-            {
-                if (it->second->path() == hintedPath)
-                {
-                    return it->second;
-                }
-            }
-        }
-
-        for (It it = range.first; it != range.second; ++it)
-        {
-            if (isSame(it->second->path(), file))
-            {
-                return it->second;
-            }
-        }
-
-        return nullptr;
+        return mIndex.header(file, hint);
     }
 
     [[nodiscard]] auto headers() const noexcept -> const std::vector<std::unique_ptr<Header>> &
     {
-        return mHeaders;
-    }
-
-    [[nodiscard]] auto moduleByFile(const File *file) const -> Module *
-    {
-        std::unordered_map<const File *, Module *>::const_iterator it = mModuleFileIndex.find(file);
-
-        if (it != mModuleFileIndex.end())
-        {
-            return it->second;
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
-
-    [[nodiscard]] auto moduleByName(const std::string &name) const -> Module *
-    {
-        std::unordered_map<std::string, Module *>::const_iterator it = mModuleIndex.find(name);
-
-        if (it != mModuleIndex.end())
-        {
-            return it->second;
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
-
-    [[nodiscard]] auto modulePartitionByFile(const File *file) const -> ModulePartition *
-    {
-        std::unordered_map<const File *, ModulePartition *>::const_iterator it = mModulePartitionsFileIndex.find(file);
-
-        if (it != mModulePartitionsFileIndex.end())
-        {
-            return it->second;
-        }
-        else
-        {
-            return nullptr;
-        }
+        return mData.headers;
     }
 
     [[nodiscard]] auto modules() const noexcept -> const std::vector<std::unique_ptr<Module>> &
     {
-        return mModules;
+        return mData.modules;
     }
 
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
     {
-        return mProjects;
-    }
-
-    [[nodiscard]] auto source(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Source *
-    {
-        using It = std::unordered_multimap<std::string, Source *>::const_iterator;
-        std::pair<It, It> range = mSourceIndex.equal_range(file.filename().string());
-
-        if (!hint.empty())
-        {
-            const std::filesystem::path hintedPath = hint / file;
-
-            for (It it = range.first; it != range.second; ++it)
-            {
-                if (it->second->path() == hintedPath)
-                {
-                    return it->second;
-                }
-            }
-        }
-
-        for (It it = range.first; it != range.second; ++it)
-        {
-            if (isSame(it->second->path(), file))
-            {
-                return it->second;
-            }
-        }
-
-        return nullptr;
+        return mData.projects;
     }
 
     [[nodiscard]] auto source(const std::filesystem::path &file) const -> Source *
@@ -184,71 +104,61 @@ public:
         return source(file, {});
     }
 
+    [[nodiscard]] auto source(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Source *
+    {
+        return mIndex.source(file, hint);
+    }
+
     [[nodiscard]] auto sources() const noexcept -> const std::vector<std::unique_ptr<Source>> &
     {
-        return mSources;
+        return mData.sources;
     }
 
     [[nodiscard]] auto warnings() const noexcept -> const std::vector<Warning> &
     {
-        return mWarnings;
+        return mData.warnings;
     }
 
 private:
-    [[nodiscard]] auto cppmodule(const std::string &name) -> Module *
+    struct Data
     {
-        std::unordered_map<std::string, Module *>::iterator it = mModuleIndex.find(name);
+        std::vector<std::unique_ptr<Project>> projects;
+        std::vector<std::unique_ptr<Source>> sources;
+        std::vector<std::unique_ptr<Header>> headers;
+        std::vector<std::unique_ptr<Module>> modules;
+        std::vector<std::unique_ptr<ModulePartition>> modulePartitions;
+        std::vector<Error> errors;
+        std::vector<Warning> warnings;
+    };
 
-        if (it == mModuleIndex.end())
+    [[nodiscard]] auto getCppModule(const std::string &name) -> Module *
+    {
+        Module *mod = mIndex.cppModule(name);
+
+        if (!mod)
         {
-            Module *m = mModules.emplace_back(std::make_unique<Module>()).get();
-            m->name = name;
-            it = mModuleIndex.insert({name, m}).first;
+            mod = mData.modules.emplace_back(std::make_unique<Module>()).get();
+            mod->name = name;
+            mIndex.addModule(name, mod);
         }
 
-        return it->second;
-    }
-
-    [[nodiscard]] static auto isSame(std::filesystem::path left, std::filesystem::path right) -> bool
-    {
-        while (right.has_parent_path())
-        {
-            left = left.parent_path();
-            right = right.parent_path();
-
-            if (left.filename() != right.filename())
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return mod;
     }
 
     [[nodiscard]] auto project(const std::string &name) -> Project *
     {
-        std::unordered_map<std::string, Project *>::iterator it = mProjectIndex.find(name);
+        Project *proj = mIndex.project(name);
 
-        if (it == mProjectIndex.end())
+        if (!proj)
         {
-            Project *p = mProjects.emplace_back(std::make_unique<Project>(name)).get();
-            it = mProjectIndex.insert({name, p}).first;
+            proj = mData.projects.emplace_back(std::make_unique<Project>(name)).get();
+            mIndex.addProject(name, proj);
         }
 
-        return it->second;
+        return proj;
     }
 
-    std::vector<std::unique_ptr<Project>> mProjects;
-    std::vector<std::unique_ptr<Source>> mSources;
-    std::vector<std::unique_ptr<Header>> mHeaders;
-    std::vector<std::unique_ptr<Module>> mModules;
-    std::vector<Error> mErrors;
-    std::vector<Warning> mWarnings;
-    std::unordered_map<std::string, Project *> mProjectIndex;
-    std::unordered_map<std::string, Module *> mModuleIndex;
-    std::unordered_multimap<std::string, Source *> mSourceIndex;
-    std::unordered_multimap<std::string, Header *> mHeaderIndex;
-    std::unordered_map<const File *, Module *> mModuleFileIndex;
-    std::unordered_map<const File *, ModulePartition *> mModulePartitionsFileIndex;
+    Data mData;
+    BuildCacheIndex mIndex;
 };
 }

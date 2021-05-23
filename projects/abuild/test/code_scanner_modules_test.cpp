@@ -66,9 +66,9 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
         assert_(cache.modules()[0]->partitions.size()).toBe(2u);
         expect(cache.modules()[0]->name).toBe("mymodule");
 
-        std::vector<std::unique_ptr<abuild::ModulePartition>> &partitions = cache.modules()[0]->partitions;
+        std::vector<abuild::ModulePartition *> &partitions = cache.modules()[0]->partitions;
 
-        std::sort(partitions.begin(), partitions.end(), [](const std::unique_ptr<abuild::ModulePartition> &left, const std::unique_ptr<abuild::ModulePartition> &right) {
+        std::sort(partitions.begin(), partitions.end(), [](const abuild::ModulePartition *left, const abuild::ModulePartition *right) {
             return left->name < right->name;
         });
 

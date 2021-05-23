@@ -130,8 +130,8 @@ static const auto testSuite = suite("abuild::Module", [] {
         cache.addModuleInterface("mymodule", abuild::ModuleVisibility::Public, &source);
 
         assert_(cache.modules().size()).toBe(1u);
-        expect(cache.moduleByName("mymodule")).toBe(cache.modules()[0].get());
-        expect(cache.moduleByName("missing_module")).toBe(nullptr);
+        expect(cache.cppModule("mymodule")).toBe(cache.modules()[0].get());
+        expect(cache.cppModule("missing_module")).toBe(nullptr);
     });
 
     test("lookup module by File", [] {
@@ -147,8 +147,8 @@ static const auto testSuite = suite("abuild::Module", [] {
         cache.addModuleInterface("mymodule", abuild::ModuleVisibility::Public, &source1);
 
         assert_(cache.modules().size()).toBe(1u);
-        expect(cache.moduleByFile(&source1)).toBe(cache.modules()[0].get());
-        expect(cache.moduleByFile(&source2)).toBe(nullptr);
+        expect(cache.cppModule(&source1)).toBe(cache.modules()[0].get());
+        expect(cache.cppModule(&source2)).toBe(nullptr);
     });
 
     test("lookup module partition by File", [] {
@@ -164,7 +164,7 @@ static const auto testSuite = suite("abuild::Module", [] {
         cache.addModulePartition("mymodule", "mypartition", abuild::ModuleVisibility::Public, &source1);
 
         assert_(cache.modules().size()).toBe(1u);
-        expect(cache.modulePartitionByFile(&source1)->mod).toBe(cache.modules()[0].get());
-        expect(cache.modulePartitionByFile(&source2)).toBe(nullptr);
+        expect(cache.cppModulePartition(&source1)->mod).toBe(cache.modules()[0].get());
+        expect(cache.cppModulePartition(&source2)).toBe(nullptr);
     });
 });
