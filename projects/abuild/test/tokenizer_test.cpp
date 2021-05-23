@@ -289,13 +289,33 @@ static const auto testSuite = suite("abuild::Tokenizer", [] {
     });
 
     test("string literals", [] {
-        expect(abuild::Tokenizer{"const char *c = \"import : myotherpartition;import : quoted;\";"}.next()).toBe(abuild::Token{});
-        expect(abuild::Tokenizer{"const char *c = R\"(import : myotherpartition;import : quoted;)\";"}.next()).toBe(abuild::Token{});
-        expect(abuild::Tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted;)asd\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = \"import : myotherpartition;import : quoted1;\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = R\"(import : myotherpartition;import : quoted2;)\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted3;)asd\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = \\\"import : myotherpartition;import : quoted4;\\\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = R\\\"(import : myotherpartition;import : quoted5;)\\\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = R\\\"asd(import : myotherpartition;import : quoted6;)asd\\\";"}.next()).toBe(abuild::Token{});
+    });
+
+    test("string literals from file", [] {
+        const std::string content =
+            R"xxx(
+        expect(abuild::Tokenizer{"const char *c = \"import : myotherpartition;import : quoted7;\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = R\"(import : myotherpartition;import : quoted8;)\";"}.next()).toBe(abuild::Token{});
+        expect(abuild::Tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted9;)asd\";"}.next()).toBe(abuild::Token{});
+        abuild::Tokenizer tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted10;)asd\";import mymodule;c = \"import othermodule;\";import yetanothermodule;"};
+            )xxx";
+
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"test.cpp", content}}};
+        abuild::File file{testProject.projectRoot() / "test.cpp", nullptr};
+
+        expect(abuild::Tokenizer{file.content()}.next())
+            .toBe(abuild::Token{});
     });
 
     test("string literals with real tokens", [] {
-        abuild::Tokenizer tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted;)asd\";import mymodule;c = \"import othermodule;\";import yetanothermodule;"};
+        abuild::Tokenizer tokenizer{"const char *c = R\"asd(import : myotherpartition;import : quoted11;)asd\";import mymodule;c = \"import othermodule;\";import yetanothermodule;"};
         std::vector<abuild::Token> tokens;
 
         for (abuild::Token token = tokenizer.next(); token != abuild::Token{}; token = tokenizer.next())
