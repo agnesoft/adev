@@ -170,4 +170,18 @@ static const auto testSuite = suite("abuild::Header", [] {
         expect(header->path()).toBe(testProject.projectRoot() / "include" / "header.hpp");
         expect(header->project()->name()).toBe("build_test_project_scanner");
     });
+
+    test("lookup header with impossible sequence of ../", [] {
+        TestProject testProject{"build_test_project_scanner",
+                                {"include/header.hpp",
+                                 "include/subdir/myheader.hpp"}};
+
+        abuild::BuildCache cache;
+        cache.addHeader(testProject.projectRoot() / "include" / "header.hpp", "build_test_project_scanner");
+        cache.addHeader(testProject.projectRoot() / "include" / "subdir" / "myheader.hpp", "build_test_project_scanner");
+
+        const abuild::Header *header = cache.header("../../../header.hpp", testProject.projectRoot().root_path());
+
+        expect(header).toBe(nullptr);
+    });
 });
