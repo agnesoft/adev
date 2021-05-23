@@ -120,10 +120,10 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
 
-        assert_(cache.sources().size()).toBe(2u);
-        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+        assert_(cache.source("main.cpp") != nullptr).toBe(true);
+        assert_(cache.source("main.cpp")->dependencies().size()).toBe(1u);
 
-        expect(std::get<abuild::IncludeLocalSourceDependency>(cache.sources()[0]->dependencies()[0]).source).toBe(cache.sources()[1].get());
+        expect(std::get<abuild::IncludeLocalSourceDependency>(cache.source("main.cpp")->dependencies()[0]).source).toBe(cache.sources()[1].get());
     });
 
     test("import local header", [] {
@@ -170,11 +170,11 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
 
-        assert_(cache.sources().size()).toBe(2u);
         assert_(cache.modules().size()).toBe(1u);
-        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+        assert_(cache.source("main.cpp") != nullptr).toBe(true);
+        assert_(cache.source("main.cpp")->dependencies().size()).toBe(1u);
 
-        expect(std::get<abuild::ImportModuleDependency>(cache.sources()[0]->dependencies()[0]).mod).toBe(cache.modules()[0].get());
+        expect(std::get<abuild::ImportModuleDependency>(cache.source("main.cpp")->dependencies()[0]).mod).toBe(cache.modules()[0].get());
     });
 
     test("import module partition", [] {
@@ -187,12 +187,12 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
 
-        assert_(cache.sources().size()).toBe(2u);
         assert_(cache.modules().size()).toBe(1u);
         assert_(cache.modules()[0]->partitions.size()).toBe(1u);
-        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
+        assert_(cache.source("mymodule.cpp") != nullptr).toBe(true);
+        assert_(cache.source("mymodule.cpp")->dependencies().size()).toBe(1u);
 
-        expect(std::get<abuild::ImportModulePartitionDependency>(cache.sources()[0]->dependencies()[0]).partition).toBe(cache.modules()[0]->partitions[0].get());
+        expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mymodule.cpp")->dependencies()[0]).partition).toBe(cache.modules()[0]->partitions[0].get());
     });
 
     test("import module partition from another partition", [] {
@@ -206,15 +206,19 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
 
-        assert_(cache.sources().size()).toBe(3u);
         assert_(cache.modules().size()).toBe(1u);
         assert_(cache.modules()[0]->partitions.size()).toBe(2u);
-        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
-        assert_(cache.sources()[1]->dependencies().size()).toBe(1u);
-        assert_(cache.sources()[2]->dependencies().size()).toBe(0u);
+        assert_(cache.source("mymodule.cpp") != nullptr).toBe(true);
+        assert_(cache.source("mypartition.cpp") != nullptr).toBe(true);
+        assert_(cache.source("otherpartition.cpp") != nullptr).toBe(true);
+        assert_(cache.source("mymodule.cpp")->dependencies().size()).toBe(1u);
+        assert_(cache.source("mypartition.cpp")->dependencies().size()).toBe(1u);
 
-        expect(std::get<abuild::ImportModulePartitionDependency>(cache.sources()[0]->dependencies()[0]).partition).toBe(cache.modules()[0]->partitions[0].get());
-        expect(std::get<abuild::ImportModulePartitionDependency>(cache.sources()[1]->dependencies()[0]).partition).toBe(cache.modules()[0]->partitions[1].get());
+        abuild::ModulePartition *partition1 = cache.modulePartitionByFile(cache.source("mypartition.cpp"));
+        abuild::ModulePartition *partition2 = cache.modulePartitionByFile(cache.source("otherpartition.cpp"));
+
+        expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mymodule.cpp")->dependencies()[0]).partition).toBe(partition1);
+        expect(std::get<abuild::ImportModulePartitionDependency>(cache.source("mypartition.cpp")->dependencies()[0]).partition).toBe(partition2);
     });
 
     test("header not found", [] {
