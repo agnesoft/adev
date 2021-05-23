@@ -121,9 +121,10 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         abuild::DependencyScanner{cache};
 
         assert_(cache.source("main.cpp") != nullptr).toBe(true);
+        assert_(cache.source("source.cpp") != nullptr).toBe(true);
         assert_(cache.source("main.cpp")->dependencies().size()).toBe(1u);
 
-        expect(std::get<abuild::IncludeLocalSourceDependency>(cache.source("main.cpp")->dependencies()[0]).source).toBe(cache.sources()[1].get());
+        expect(std::get<abuild::IncludeLocalSourceDependency>(cache.source("main.cpp")->dependencies()[0]).source).toBe(cache.source("source.cpp"));
     });
 
     test("import local header", [] {
