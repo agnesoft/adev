@@ -345,7 +345,7 @@ private:
         "set",
         "shared_mutex",
         "source_location",
-        "span:",
+        "span",
         "sstream",
         "stack",
         "stdexcept",
