@@ -19,6 +19,7 @@ public:
     {
         Project *proj = getProject(projectName);
         Header *header = mData.headers.emplace_back(std::make_unique<Header>(path, proj)).get();
+        proj->addHeader(header);
         mIndex.addHeader(path.filename().string(), header);
     }
 
@@ -46,6 +47,7 @@ public:
     {
         Project *proj = getProject(projectName);
         Source *source = mData.sources.emplace_back(std::make_unique<Source>(path, proj)).get();
+        proj->addSource(source);
         mIndex.addSource(path.filename().string(), source);
     }
 

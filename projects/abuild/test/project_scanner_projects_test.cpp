@@ -164,4 +164,61 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                 {"atest", abuild::Project::Type::Library},
                 {"atest.test", abuild::Project::Type::Executable}});
     });
+
+    test("sources", [] {
+        TestProject testProject{"abuild_project_scanner_test",
+                                {"projects/abuild/main.cpp",
+                                 "projects/abuild/src/source1.cpp",
+                                 "projects/abuild/src/source2.cpp",
+                                 "projects/abuild/src/source3.cpp"}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        assert_(cache.projects().size()).toBe(1u);
+
+        std::vector<std::filesystem::path> sources;
+
+        for (abuild::Source *source : cache.projects()[0]->sources())
+        {
+            sources.push_back(source->path());
+        }
+
+        std::sort(sources.begin(), sources.end());
+
+        expect(sources)
+            .toBe(std::vector<std::filesystem::path>{
+                testProject.projectRoot() / "projects" / "abuild" / "main.cpp",
+                testProject.projectRoot() / "projects" / "abuild" / "src" / "source1.cpp",
+                testProject.projectRoot() / "projects" / "abuild" / "src" / "source2.cpp",
+                testProject.projectRoot() / "projects" / "abuild" / "src" / "source3.cpp"});
+    });
+
+    test("headers", [] {
+        TestProject testProject{"abuild_project_scanner_test",
+                                {"projects/abuild/main.cpp",
+                                 "projects/abuild/include/abuild/header1.hpp",
+                                 "projects/abuild/include/abuild/header2.hpp",
+                                 "projects/abuild/include/abuild/header3.hpp"}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+
+        assert_(cache.projects().size()).toBe(1u);
+
+        std::vector<std::filesystem::path> headers;
+
+        for (abuild::Header *header : cache.projects()[0]->headers())
+        {
+            headers.push_back(header->path());
+        }
+
+        std::sort(headers.begin(), headers.end());
+
+        expect(headers)
+            .toBe(std::vector<std::filesystem::path>{
+                testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header1.hpp",
+                testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header2.hpp",
+                testProject.projectRoot() / "projects" / "abuild" / "include" / "abuild" / "header3.hpp"});
+    });
 });
