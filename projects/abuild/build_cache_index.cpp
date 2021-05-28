@@ -4,6 +4,7 @@ export import : project;
 export import : header;
 export import : source;
 export import : cpp_module;
+export import : build_task;
 #endif
 
 namespace abuild
@@ -11,6 +12,11 @@ namespace abuild
 class BuildCacheIndex
 {
 public:
+    auto addBuildTask(const void *entity, BuildTask *task) -> void
+    {
+        mBuildTaskIndex.insert({entity, task});
+    }
+
     auto addHeader(const std::string &name, Header *header) -> void
     {
         mHeaderIndex.insert({name, header});
@@ -39,6 +45,20 @@ public:
     auto addSource(const std::string &name, Source *source) -> void
     {
         mSourceIndex.insert({name, source});
+    }
+
+    [[nodiscard]] auto buildTask(const void *entity) const -> BuildTask *
+    {
+        std::unordered_map<const void *, BuildTask *>::const_iterator it = mBuildTaskIndex.find(entity);
+
+        if (it != mBuildTaskIndex.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     [[nodiscard]] auto header(const std::filesystem::path &file, const std::filesystem::path &hint) const -> Header *
@@ -178,5 +198,6 @@ private:
     std::unordered_multimap<std::string, Header *> mHeaderIndex;
     std::unordered_map<const File *, Module *> mModuleFileIndex;
     std::unordered_map<const File *, ModulePartition *> mModulePartitionsFileIndex;
+    std::unordered_map<const void *, BuildTask *> mBuildTaskIndex;
 };
 }

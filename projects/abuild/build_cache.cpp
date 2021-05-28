@@ -10,6 +10,12 @@ namespace abuild
 export class BuildCache
 {
 public:
+    auto addBuildTask(const void *entity, BuildTask buildTask) -> void
+    {
+        BuildTask *task = mData.buildTasks.emplace_back(std::make_unique<BuildTask>(std::move(buildTask))).get();
+        mIndex.addBuildTask(entity, task);
+    }
+
     auto addError(Error error) -> void
     {
         mData.errors.push_back(std::move(error));
@@ -54,6 +60,16 @@ public:
     auto addWarning(Warning warning) -> void
     {
         mData.warnings.push_back(std::move(warning));
+    }
+
+    [[nodiscard]] auto buildTasks() const noexcept -> const std::vector<std::unique_ptr<BuildTask>> &
+    {
+        return mData.buildTasks;
+    }
+
+    [[nodiscard]] auto buildTask(const void *entity) const -> BuildTask *
+    {
+        return mIndex.buildTask(entity);
     }
 
     [[nodiscard]] auto cppModule(const File *file) const -> Module *
@@ -134,6 +150,7 @@ private:
         std::vector<std::unique_ptr<Header>> headers;
         std::vector<std::unique_ptr<Module>> modules;
         std::vector<std::unique_ptr<ModulePartition>> modulePartitions;
+        std::vector<std::unique_ptr<BuildTask>> buildTasks;
         std::vector<Error> errors;
         std::vector<Warning> warnings;
     };
