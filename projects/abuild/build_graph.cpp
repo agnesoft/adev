@@ -17,19 +17,77 @@ public:
     }
 
 private:
+    static auto addInput(BuildTask *task, BuildTask *input) -> void
+    {
+        std::visit([&](auto &&value) {
+            value.inputTasks.push_back(input);
+        },
+                   *task);
+    }
+
+    template<typename T>
+    [[nodiscard]] auto buildTask(Source *source) -> BuildTask *
+    {
+        BuildTask *task = mBuildCache.buildTask(source);
+
+        if (!task)
+        {
+            mBuildCache.addBuildTask(source, T{});
+            task = mBuildCache.buildTask(source);
+        }
+
+        return task;
+    }
+
+    auto createCompileModuleInterfaceTask(Module *mod) -> void
+    {
+        BuildTask *task = buildTask<CompileModuleInterfaceTask>(mod->source);
+        auto compileTask = &std::get<CompileModuleInterfaceTask>(*task);
+
+        if (!compileTask->source)
+        {
+            compileTask->source = mod->source;
+            addInput(mBuildCache.buildTask(mod), task);
+        }
+    }
+
+    auto createCompileModulePartitionTask(ModulePartition *partition) -> void
+    {
+        BuildTask *task = buildTask<CompileModulePartitionTask>(partition->source);
+        auto compileTask = &std::get<CompileModulePartitionTask>(*task);
+
+        if (!compileTask->source)
+        {
+            compileTask->source = partition->source;
+            addInput(mBuildCache.buildTask(partition->mod), task);
+        }
+    }
+
+    auto createCompileSourceTask(Source *source)
+    {
+        BuildTask *task = buildTask<CompileSourceTask>(source);
+        auto compileTask = &std::get<CompileSourceTask>(*task);
+
+        if (!compileTask->source)
+        {
+            compileTask->source = source;
+            addInput(mBuildCache.buildTask(source->project()), task);
+        }
+    }
+
     auto createCompileTask(Source *source) -> void
     {
         if (Module *mod = mBuildCache.cppModule(source))
         {
-            mBuildCache.addBuildTask(mod->source, CompileModuleInterfaceTask{.source = source});
+            createCompileModuleInterfaceTask(mod);
         }
         else if (ModulePartition *partition = mBuildCache.cppModulePartition(source))
         {
-            mBuildCache.addBuildTask(partition->source, CompileModulePartitionTask{.source = source});
+            createCompileModulePartitionTask(partition);
         }
         else
         {
-            mBuildCache.addBuildTask(source, CompileSourceTask{.source = source});
+            createCompileSourceTask(source);
         }
     }
 

@@ -46,6 +46,9 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
 
         expect(link->project).toBe(cache.projects()[0].get());
         expect(compile->source).toBe(cache.sources()[0].get());
+
+        assert_(link->inputTasks.size()).toBe(1u);
+        expect(link->inputTasks[0]).toBe(compileTask);
     });
 
     test("compile & link single library", [] {
@@ -72,6 +75,9 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
 
         expect(link->project).toBe(cache.projects()[0].get());
         expect(compile->source).toBe(cache.sources()[0].get());
+
+        assert_(link->inputTasks.size()).toBe(1u);
+        expect(link->inputTasks[0]).toBe(compileTask);
     });
 
     test("compile & link module library", [] {
@@ -98,6 +104,9 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
 
         expect(link->mod).toBe(cache.modules()[0].get());
         expect(compile->source).toBe(cache.sources()[0].get());
+
+        assert_(link->inputTasks.size()).toBe(1u);
+        expect(link->inputTasks[0]).toBe(compileTask);
     });
 
     test("compile module partition", [] {
