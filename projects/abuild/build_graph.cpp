@@ -17,10 +17,48 @@ public:
     }
 
 private:
+    auto addDependency(CompileTask *compileTask, LinkTask *linkTask, const Dependency &dependency) -> void
+    {
+        if (auto *dep = std::get_if<IncludeExternalHeaderDependency>(&dependency))
+        {
+            if (dep->header)
+            {
+                BuildTask *link = mBuildCache.buildTask(dep->header->project());
+
+                if (link)
+                {
+                    linkTask->inputTasks.insert(link);
+                }
+
+                addDependencies(compileTask, linkTask, dep->header->dependencies());
+            }
+
+            return;
+        }
+
+        if (auto *dep = std::get_if<ImportModulePartitionDependency>(&dependency))
+        {
+            if (dep->partition && dep->partition->source)
+            {
+                compileTask->inputTasks.insert(createCompileModulePartitionTask(dep->partition));
+            }
+
+            return;
+        }
+    }
+
+    auto addDependencies(CompileTask *compileTask, LinkTask *linkTask, const std::vector<Dependency> &dependencies) -> void
+    {
+        for (const Dependency &dependency : dependencies)
+        {
+            addDependency(compileTask, linkTask, dependency);
+        }
+    }
+
     static auto addInput(BuildTask *task, BuildTask *input) -> void
     {
         std::visit([&](auto &&value) {
-            value.inputTasks.push_back(input);
+            value.inputTasks.insert(input);
         },
                    *task);
     }
@@ -39,7 +77,7 @@ private:
         return task;
     }
 
-    auto createCompileModuleInterfaceTask(Module *mod) -> void
+    [[nodiscard]] auto createCompileModuleInterfaceTask(Module *mod) -> BuildTask *
     {
         BuildTask *task = buildTask<CompileModuleInterfaceTask>(mod->source);
         auto compileTask = &std::get<CompileModuleInterfaceTask>(*task);
@@ -47,11 +85,15 @@ private:
         if (!compileTask->source)
         {
             compileTask->source = mod->source;
-            addInput(mBuildCache.buildTask(mod), task);
+            auto linkTask = mBuildCache.buildTask(mod);
+            addInput(linkTask, task);
+            addDependencies(compileTask, &std::get<LinkModuleLibraryTask>(*linkTask), mod->source->dependencies());
         }
+
+        return task;
     }
 
-    auto createCompileModulePartitionTask(ModulePartition *partition) -> void
+    [[nodiscard]] auto createCompileModulePartitionTask(ModulePartition *partition) -> BuildTask *
     {
         BuildTask *task = buildTask<CompileModulePartitionTask>(partition->source);
         auto compileTask = &std::get<CompileModulePartitionTask>(*task);
@@ -59,11 +101,15 @@ private:
         if (!compileTask->source)
         {
             compileTask->source = partition->source;
-            addInput(mBuildCache.buildTask(partition->mod), task);
+            auto linkTask = mBuildCache.buildTask(partition->mod);
+            addInput(linkTask, task);
+            addDependencies(compileTask, &std::get<LinkModuleLibraryTask>(*linkTask), partition->source->dependencies());
         }
+
+        return task;
     }
 
-    auto createCompileSourceTask(Source *source)
+    [[nodiscard]] auto createCompileSourceTask(Source *source) -> BuildTask *
     {
         BuildTask *task = buildTask<CompileSourceTask>(source);
         auto compileTask = &std::get<CompileSourceTask>(*task);
@@ -71,23 +117,35 @@ private:
         if (!compileTask->source)
         {
             compileTask->source = source;
-            addInput(mBuildCache.buildTask(source->project()), task);
+            auto linkTask = mBuildCache.buildTask(source->project());
+            addInput(linkTask, task);
+            std::visit([&](auto &&value) {
+                using T = std::remove_pointer_t<std::decay_t<decltype(value)>>;
+
+                if constexpr (std::is_base_of_v<LinkTask, T>)
+                {
+                    addDependencies(compileTask, &value, source->dependencies());
+                }
+            },
+                       *linkTask);
         }
+
+        return task;
     }
 
-    auto createCompileTask(Source *source) -> void
+    auto createCompileTask(Source *source) -> BuildTask *
     {
         if (Module *mod = mBuildCache.cppModule(source))
         {
-            createCompileModuleInterfaceTask(mod);
+            return createCompileModuleInterfaceTask(mod);
         }
         else if (ModulePartition *partition = mBuildCache.cppModulePartition(source))
         {
-            createCompileModulePartitionTask(partition);
+            return createCompileModulePartitionTask(partition);
         }
         else
         {
-            createCompileSourceTask(source);
+            return createCompileSourceTask(source);
         }
     }
 

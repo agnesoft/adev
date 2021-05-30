@@ -15,7 +15,6 @@ export struct CompileHeaderUnitTask;
 export struct CompileModuleInterfaceTask;
 export struct CompileModulePartitionTask;
 export struct CompileSourceTask;
-export struct IncludeTask;
 export struct LinkExecutableTask;
 export struct LinkLibraryTask;
 export struct LinkModuleLibraryTask;
@@ -25,24 +24,18 @@ export using BuildTask = std::variant<
     CompileModuleInterfaceTask,
     CompileModulePartitionTask,
     CompileSourceTask,
-    IncludeTask,
     LinkExecutableTask,
     LinkLibraryTask,
     LinkModuleLibraryTask>;
 
 export struct CompileTask
 {
-    std::vector<BuildTask *> inputTasks;
+    std::unordered_set<BuildTask *> inputTasks;
 };
 
 export struct LinkTask
 {
-    std::vector<BuildTask *> inputTasks;
-};
-
-export struct IncludeTask : CompileTask
-{
-    File *file = nullptr;
+    std::unordered_set<BuildTask *> inputTasks;
 };
 
 export struct CompileHeaderUnitTask : CompileTask
