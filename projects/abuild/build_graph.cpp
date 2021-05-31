@@ -17,72 +17,60 @@ public:
     }
 
 private:
-    auto addDependency(CompileTask *compileTask, LinkTask *linkTask, const Dependency &dependency) -> void
+    auto addDependency(CompileTask *compileTask, BuildTask *linkTask, const Dependency &dependency) -> void
     {
         if (auto *dep = std::get_if<IncludeExternalHeaderDependency>(&dependency))
         {
-            if (dep->header)
-            {
-                addIncludeDependency(compileTask, linkTask, dep->header);
-            }
-
+            addIncludeDependency(compileTask, linkTask, dep->header);
             return;
         }
 
         if (auto *dep = std::get_if<IncludeLocalHeaderDependency>(&dependency))
         {
-            if (dep->header)
-            {
-                addIncludeDependency(compileTask, linkTask, dep->header);
-            }
-
+            addIncludeDependency(compileTask, linkTask, dep->header);
             return;
         }
 
         if (auto *dep = std::get_if<ImportModuleDependency>(&dependency))
         {
-            if (dep->mod && dep->mod->source)
-            {
-                addImportModuleDependency(compileTask, linkTask, dep->mod);
-            }
+            addImportModuleDependency(compileTask, linkTask, dep->mod);
+            return;
         }
 
         if (auto *dep = std::get_if<ImportModulePartitionDependency>(&dependency))
         {
-            if (dep->partition && dep->partition->source)
-            {
-                compileTask->inputTasks.insert(createCompileModulePartitionTask(dep->partition));
-            }
-
+            addImportModulePartitionDependency(compileTask, linkTask, dep->partition);
             return;
         }
     }
 
-    auto addImportModuleDependency(CompileTask *compileTask, LinkTask *linkTask, Module *mod) -> void
+    auto addImportModuleDependency(CompileTask *compileTask, BuildTask *linkTask, Module *mod) -> void
     {
-        compileTask->inputTasks.insert(createCompileModuleInterfaceTask(mod));
-
-        BuildTask *link = mBuildCache.buildTask(mod);
-
-        if (link)
+        if (mod && mod->source)
         {
-            linkTask->inputTasks.insert(link);
+            compileTask->inputTasks.insert(createCompileModuleInterfaceTask(mod));
+            addInput(linkTask, mBuildCache.buildTask(mod));
         }
     }
 
-    auto addIncludeDependency(CompileTask *compileTask, LinkTask *linkTask, File *file) -> void
+    auto addImportModulePartitionDependency(CompileTask *compileTask, [[maybe_unused]] BuildTask *linkTask, ModulePartition *partition) -> void
     {
-        addDependencies(compileTask, linkTask, file->dependencies());
-
-        BuildTask *link = mBuildCache.buildTask(file->project());
-
-        if (link && link != linkTask)
+        if (partition && partition->source)
         {
-            linkTask->inputTasks.insert(link);
+            compileTask->inputTasks.insert(createCompileModulePartitionTask(partition));
         }
     }
 
-    auto addDependencies(CompileTask *compileTask, LinkTask *linkTask, const std::vector<Dependency> &dependencies) -> void
+    auto addIncludeDependency(CompileTask *compileTask, BuildTask *linkTask, File *file) -> void
+    {
+        if (file)
+        {
+            addDependencies(compileTask, linkTask, file->dependencies());
+            addInput(linkTask, mBuildCache.buildTask(file->project()));
+        }
+    }
+
+    auto addDependencies(CompileTask *compileTask, BuildTask *linkTask, const std::vector<Dependency> &dependencies) -> void
     {
         for (const Dependency &dependency : dependencies)
         {
@@ -92,10 +80,13 @@ private:
 
     static auto addInput(BuildTask *task, BuildTask *input) -> void
     {
-        std::visit([&](auto &&value) {
-            value.inputTasks.insert(input);
-        },
-                   *task);
+        if (task && input && task != input)
+        {
+            std::visit([&](auto &&value) {
+                value.inputTasks.insert(input);
+            },
+                       *task);
+        }
     }
 
     template<typename T>
@@ -122,7 +113,7 @@ private:
             compileTask->source = mod->source;
             auto linkTask = mBuildCache.buildTask(mod);
             addInput(linkTask, task);
-            addDependencies(compileTask, &std::get<LinkModuleLibraryTask>(*linkTask), mod->source->dependencies());
+            addDependencies(compileTask, linkTask, mod->source->dependencies());
         }
 
         return task;
@@ -138,7 +129,7 @@ private:
             compileTask->source = partition->source;
             auto linkTask = mBuildCache.buildTask(partition->mod);
             addInput(linkTask, task);
-            addDependencies(compileTask, &std::get<LinkModuleLibraryTask>(*linkTask), partition->source->dependencies());
+            addDependencies(compileTask, linkTask, partition->source->dependencies());
         }
 
         return task;
@@ -154,15 +145,7 @@ private:
             compileTask->source = source;
             auto linkTask = mBuildCache.buildTask(source->project());
             addInput(linkTask, task);
-            std::visit([&](auto &&value) {
-                using T = std::remove_pointer_t<std::decay_t<decltype(value)>>;
-
-                if constexpr (std::is_base_of_v<LinkTask, T>)
-                {
-                    addDependencies(compileTask, &value, source->dependencies());
-                }
-            },
-                       *linkTask);
+            addDependencies(compileTask, linkTask, source->dependencies());
         }
 
         return task;
