@@ -23,14 +23,17 @@ private:
         {
             if (dep->header)
             {
-                addDependencies(compileTask, linkTask, dep->header->dependencies());
+                addIncludeDependency(compileTask, linkTask, dep->header);
+            }
 
-                BuildTask *link = mBuildCache.buildTask(dep->header->project());
+            return;
+        }
 
-                if (link)
-                {
-                    linkTask->inputTasks.insert(link);
-                }
+        if (auto *dep = std::get_if<IncludeLocalHeaderDependency>(&dependency))
+        {
+            if (dep->header)
+            {
+                addIncludeDependency(compileTask, linkTask, dep->header);
             }
 
             return;
@@ -40,14 +43,7 @@ private:
         {
             if (dep->mod && dep->mod->source)
             {
-                compileTask->inputTasks.insert(createCompileModuleInterfaceTask(dep->mod));
-
-                BuildTask *link = mBuildCache.buildTask(dep->mod);
-
-                if (link)
-                {
-                    linkTask->inputTasks.insert(link);
-                }
+                addImportModuleDependency(compileTask, linkTask, dep->mod);
             }
         }
 
@@ -59,6 +55,30 @@ private:
             }
 
             return;
+        }
+    }
+
+    auto addImportModuleDependency(CompileTask *compileTask, LinkTask *linkTask, Module *mod) -> void
+    {
+        compileTask->inputTasks.insert(createCompileModuleInterfaceTask(mod));
+
+        BuildTask *link = mBuildCache.buildTask(mod);
+
+        if (link)
+        {
+            linkTask->inputTasks.insert(link);
+        }
+    }
+
+    auto addIncludeDependency(CompileTask *compileTask, LinkTask *linkTask, File *file) -> void
+    {
+        addDependencies(compileTask, linkTask, file->dependencies());
+
+        BuildTask *link = mBuildCache.buildTask(file->project());
+
+        if (link && link != linkTask)
+        {
+            linkTask->inputTasks.insert(link);
         }
     }
 

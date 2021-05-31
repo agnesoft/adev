@@ -280,4 +280,42 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
                 compileTask,
                 linkModuleTask});
     });
+
+    test("import module via header", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "#include \"header.hpp\""},
+                                            {"header.hpp", "import mymodule;"},
+                                            {"mymodule.cpp", "module mymodule;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        assert_(cache.projects().size()).toBe(1u);
+        assert_(cache.modules().size()).toBe(1u);
+
+        abuild::BuildTask *linkExecutableTask = cache.buildTask(cache.projects()[0].get());
+        abuild::BuildTask *linkModuleTask = cache.buildTask(cache.modules()[0].get());
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("main.cpp"));
+        abuild::BuildTask *compileModuleTask = cache.buildTask(cache.source("mymodule.cpp"));
+
+        assert_(linkExecutableTask != nullptr).toBe(true);
+        assert_(linkModuleTask != nullptr).toBe(true);
+        assert_(compileTask != nullptr).toBe(true);
+        assert_(compileModuleTask != nullptr).toBe(true);
+
+        const auto *compile = &std::get<abuild::CompileSourceTask>(*compileTask);
+        const auto *link = &std::get<abuild::LinkExecutableTask>(*linkExecutableTask);
+
+        expect(compile->inputTasks)
+            .toBe(std::unordered_set<abuild::BuildTask *>{
+                compileModuleTask});
+
+        expect(link->inputTasks)
+            .toBe(std::unordered_set<abuild::BuildTask *>{
+                compileTask,
+                linkModuleTask});
+    });
 });
