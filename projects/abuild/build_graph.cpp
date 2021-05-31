@@ -23,17 +23,32 @@ private:
         {
             if (dep->header)
             {
+                addDependencies(compileTask, linkTask, dep->header->dependencies());
+
                 BuildTask *link = mBuildCache.buildTask(dep->header->project());
 
                 if (link)
                 {
                     linkTask->inputTasks.insert(link);
                 }
-
-                addDependencies(compileTask, linkTask, dep->header->dependencies());
             }
 
             return;
+        }
+
+        if (auto *dep = std::get_if<ImportModuleDependency>(&dependency))
+        {
+            if (dep->mod && dep->mod->source)
+            {
+                compileTask->inputTasks.insert(createCompileModuleInterfaceTask(dep->mod));
+
+                BuildTask *link = mBuildCache.buildTask(dep->mod);
+
+                if (link)
+                {
+                    linkTask->inputTasks.insert(link);
+                }
+            }
         }
 
         if (auto *dep = std::get_if<ImportModulePartitionDependency>(&dependency))
