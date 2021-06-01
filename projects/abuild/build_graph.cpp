@@ -31,6 +31,18 @@ private:
             return;
         }
 
+        if (auto *dep = std::get_if<ImportExternalHeaderDependency>(&dependency))
+        {
+            addImportHeaderDependency(compileTask, linkTask, dep->header);
+            return;
+        }
+
+        if (auto *dep = std::get_if<ImportLocalHeaderDependency>(&dependency))
+        {
+            addImportHeaderDependency(compileTask, linkTask, dep->header);
+            return;
+        }
+
         if (auto *dep = std::get_if<ImportModuleDependency>(&dependency))
         {
             addImportModuleDependency(compileTask, linkTask, dep->mod);
@@ -41,6 +53,15 @@ private:
         {
             addImportModulePartitionDependency(compileTask, linkTask, dep->partition);
             return;
+        }
+    }
+
+    auto addImportHeaderDependency(CompileTask *compileTask, BuildTask *linkTask, Header *header) -> void
+    {
+        if (header)
+        {
+            compileTask->inputTasks.insert(createCompileHeaderUnitTask(header));
+            addInput(linkTask, mBuildCache.buildTask(header->project()));
         }
     }
 
@@ -90,14 +111,14 @@ private:
     }
 
     template<typename T>
-    [[nodiscard]] auto buildTask(Source *source) -> BuildTask *
+    [[nodiscard]] auto buildTask(const void *entity) -> BuildTask *
     {
-        BuildTask *task = mBuildCache.buildTask(source);
+        BuildTask *task = mBuildCache.buildTask(entity);
 
         if (!task)
         {
-            mBuildCache.addBuildTask(source, T{});
-            task = mBuildCache.buildTask(source);
+            mBuildCache.addBuildTask(entity, T{});
+            task = mBuildCache.buildTask(entity);
         }
 
         return task;
@@ -114,6 +135,22 @@ private:
             auto linkTask = mBuildCache.buildTask(mod);
             addInput(linkTask, task);
             addDependencies(compileTask, linkTask, mod->source->dependencies());
+        }
+
+        return task;
+    }
+
+    [[nodiscard]] auto createCompileHeaderUnitTask(Header *header) -> BuildTask *
+    {
+        BuildTask *task = buildTask<CompileHeaderUnitTask>(header);
+        auto compileTask = &std::get<CompileHeaderUnitTask>(*task);
+
+        if (!compileTask->header)
+        {
+            compileTask->header = header;
+            auto linkTask = createHeaderLinkTask(header->project());
+            addInput(linkTask, task);
+            addDependencies(compileTask, linkTask, header->dependencies());
         }
 
         return task;
@@ -186,6 +223,18 @@ private:
         {
             mBuildCache.addBuildTask(project, createProjectLinkTask(project));
         }
+    }
+
+    [[nodiscard]] auto createHeaderLinkTask(const Project *project) -> BuildTask *
+    {
+        BuildTask *task = buildTask<LinkLibraryTask>(project);
+
+        if (!task->project)
+        {
+            task->project = project;
+        }
+
+        return task;
     }
 
     auto createLinkTasks() -> void

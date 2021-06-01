@@ -318,4 +318,56 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
                 compileTask,
                 linkModuleTask});
     });
+
+    test("import header", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "import <mylib.hpp>;"},
+                                            {"mylib/mylib.hpp", "import <otherlib.hpp>"},
+                                            {"otherlib/otherlib.cpp", "import \"otherlib.hpp\";"},
+                                            {"otherlib/otherlib.hpp", ""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        const abuild::Project *exe = findProject(cache.projects(), "build_test_project_scanner");
+        const abuild::Project *mylib = findProject(cache.projects(), "mylib");
+        const abuild::Project *otherlib = findProject(cache.projects(), "otherlib");
+
+        assert_(exe != nullptr).toBe(true);
+        assert_(mylib != nullptr).toBe(true);
+        assert_(otherlib != nullptr).toBe(true);
+
+        abuild::BuildTask *compileMainTask = cache.buildTask(cache.source("main.cpp"));
+        abuild::BuildTask *linkExecutableTask = cache.buildTask(exe);
+        abuild::BuildTask *compileMyLibHppTask = cache.buildTask(cache.header("mylib.hpp"));
+        abuild::BuildTask *linkMyLibTask = cache.buildTask(mylib);
+        abuild::BuildTask *compileOtherLibHppTask = cache.buildTask(cache.header("otherlib.hpp"));
+        abuild::BuildTask *compileOtherLibTask = cache.buildTask(cache.source("otherlib.cpp"));
+        abuild::BuildTask *linkOtherLibTask = cache.buildTask(otherlib);
+
+        assert_(compileMainTask != nullptr).toBe(true);
+        assert_(linkExecutableTask != nullptr).toBe(true);
+        assert_(compileMyLibHppTask != nullptr).toBe(true);
+        assert_(linkMyLibTask != nullptr).toBe(true);
+        assert_(compileOtherLibHppTask != nullptr).toBe(true);
+        assert_(compileOtherLibTask != nullptr).toBe(true);
+        assert_(linkOtherLibTask != nullptr).toBe(true);
+
+        const auto *compileMain = &std::get<abuild::CompileSourceTask>(*compileMainTask);
+        const auto *linkExe = &std::get<abuild::LinkExecutableTask>(*linkExecutableTask);
+        const auto *compileMyLibHeaderUnit = &std::get<abuild::CompileHeaderUnitTask>(*compileMyLibHppTask);
+        const auto *linkMyLib = &std::get<abuild::LinkLibraryTask>(*linkMyLibTask);
+        const auto *compileOtherLib = &std::get<abuild::CompileSourceTask>(*compileOtherLibTask);
+        const auto *linkOtherLib = &std::get<abuild::LinkLibraryTask>(*linkOtherLibTask);
+
+        expect(compileMain->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileMyLibHppTask});
+        expect(linkExe->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileMainTask, linkMyLibTask});
+        expect(compileMyLibHeaderUnit->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask});
+        expect(linkMyLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{linkOtherLibTask, compileOtherLibHppTask});
+        expect(compileOtherLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask});
+        expect(linkOtherLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask, compileOtherLibTask});
+    });
 });
