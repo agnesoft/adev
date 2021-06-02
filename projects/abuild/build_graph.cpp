@@ -225,13 +225,14 @@ private:
         }
     }
 
-    [[nodiscard]] auto createHeaderLinkTask(const Project *project) -> BuildTask *
+    [[nodiscard]] auto createHeaderLinkTask(Project *project) -> BuildTask *
     {
         BuildTask *task = buildTask<LinkLibraryTask>(project);
+        auto linkTask = &std::get<LinkLibraryTask>(*task);
 
-        if (!task->project)
+        if (!linkTask->project)
         {
-            task->project = project;
+            linkTask->project = project;
         }
 
         return task;

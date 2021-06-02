@@ -366,7 +366,7 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
         expect(compileMain->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileMyLibHppTask});
         expect(linkExe->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileMainTask, linkMyLibTask});
         expect(compileMyLibHeaderUnit->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask});
-        expect(linkMyLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{linkOtherLibTask, compileOtherLibHppTask});
+        expect(linkMyLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{linkOtherLibTask, compileMyLibHppTask});
         expect(compileOtherLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask});
         expect(linkOtherLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask, compileOtherLibTask});
     });
