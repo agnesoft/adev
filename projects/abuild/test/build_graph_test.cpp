@@ -370,4 +370,61 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
         expect(compileOtherLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask});
         expect(linkOtherLib->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileOtherLibHppTask, compileOtherLibTask});
     });
+
+    test("include source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"mymodule.cpp", "module mymodule;\n#include \"mypartition.cpp\""},
+                                            {"mypartition.cpp", "module mymodule : mypartition;\nimport othermodule;"},
+                                            {"othermodule/othermodule.cpp", "module othermodule;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("mymodule.cpp"));
+        abuild::BuildTask *otherCompileTask = cache.buildTask(cache.source("othermodule.cpp"));
+
+        assert_(compileTask != nullptr).toBe(true);
+        assert_(otherCompileTask != nullptr).toBe(true);
+
+        const auto *compile = &std::get<abuild::CompileModuleInterfaceTask>(*compileTask);
+
+        expect(compile->inputTasks)
+            .toBe(std::unordered_set<abuild::BuildTask *>{
+                otherCompileTask});
+    });
+
+    test("include source from another project", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "\n#include \"mysource.cpp\""},
+                                            {"mylib/mysource.cpp", ""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        const abuild::Project *exe = findProject(cache.projects(), "build_test_project_scanner");
+        const abuild::Project *lib = findProject(cache.projects(), "mylib");
+
+        assert_(exe != nullptr).toBe(true);
+        assert_(lib != nullptr).toBe(true);
+
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("main.cpp"));
+        abuild::BuildTask *linkTask = cache.buildTask(exe);
+        abuild::BuildTask *linkLib = cache.buildTask(lib);
+
+        assert_(compileTask != nullptr).toBe(true);
+        assert_(linkTask != nullptr).toBe(true);
+        assert_(linkLib != nullptr).toBe(true);
+
+        const auto *compile = &std::get<abuild::CompileSourceTask>(*compileTask);
+        const auto *link = &std::get<abuild::LinkExecutableTask>(*linkTask);
+
+        expect(compile->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{});
+        expect(link->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileTask});
+    });
 });

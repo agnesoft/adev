@@ -31,6 +31,12 @@ private:
             return;
         }
 
+        if (auto *dep = std::get_if<IncludeLocalSourceDependency>(&dependency))
+        {
+            addIncludeDependencyNoLink(compileTask, linkTask, dep->source);
+            return;
+        }
+
         if (auto *dep = std::get_if<ImportExternalHeaderDependency>(&dependency))
         {
             addImportHeaderDependency(compileTask, linkTask, dep->header);
@@ -88,6 +94,14 @@ private:
         {
             addDependencies(compileTask, linkTask, file->dependencies());
             addInput(linkTask, mBuildCache.buildTask(file->project()));
+        }
+    }
+
+    auto addIncludeDependencyNoLink(CompileTask *compileTask, BuildTask *linkTask, File *file) -> void
+    {
+        if (file)
+        {
+            addDependencies(compileTask, linkTask, file->dependencies());
         }
     }
 
