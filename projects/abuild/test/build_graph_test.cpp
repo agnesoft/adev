@@ -205,6 +205,10 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
             .toBe(std::unordered_set<abuild::BuildTask *>{
                 compileTask,
                 linkLibraryTask});
+        expect(std::get<abuild::CompileSourceTask>(*compileTask).includePaths)
+            .toBe(std::unordered_set<std::filesystem::path, abuild::PathHash>{
+                testProject.projectRoot() / "mylib",
+                testProject.projectRoot() / "headeronly"});
     });
 
     test("include header that links in library via another header", [] {
@@ -242,6 +246,11 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
             .toBe(std::unordered_set<abuild::BuildTask *>{
                 compileTask,
                 linkLibraryTask});
+
+        expect(std::get<abuild::CompileSourceTask>(*compileTask).includePaths)
+            .toBe(std::unordered_set<std::filesystem::path, abuild::PathHash>{
+                testProject.projectRoot() / "mylib",
+                testProject.projectRoot() / "headeronly"});
     });
 
     test("import module", [] {
@@ -425,6 +434,7 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
         const auto *link = &std::get<abuild::LinkExecutableTask>(*linkTask);
 
         expect(compile->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{});
+        expect(compile->includePaths).toBe(std::unordered_set<std::filesystem::path, abuild::PathHash>{testProject.projectRoot() / "mylib"});
         expect(link->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileTask});
     });
 });

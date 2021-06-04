@@ -17,22 +17,25 @@ public:
     }
 
 private:
-    auto addDependency(CompileTask *compileTask, BuildTask *linkTask, const Dependency &dependency) -> void
+    auto addDependency(CompileTask *compileTask, BuildTask *linkTask, const Dependency &dependency, File *file) -> void
     {
         if (auto *dep = std::get_if<IncludeExternalHeaderDependency>(&dependency))
         {
+            addIncludePath(compileTask, file->path().parent_path(), includePath(dep->header->path(), dep->name));
             addIncludeDependency(compileTask, linkTask, dep->header);
             return;
         }
 
         if (auto *dep = std::get_if<IncludeLocalHeaderDependency>(&dependency))
         {
+            addIncludePath(compileTask, file->path().parent_path(), includePath(dep->header->path(), dep->name));
             addIncludeDependency(compileTask, linkTask, dep->header);
             return;
         }
 
         if (auto *dep = std::get_if<IncludeLocalSourceDependency>(&dependency))
         {
+            addIncludePath(compileTask, file->path().parent_path(), includePath(dep->source->path(), dep->name));
             addIncludeDependencyNoLink(compileTask, linkTask, dep->source);
             return;
         }
@@ -59,6 +62,14 @@ private:
         {
             addImportModulePartitionDependency(compileTask, linkTask, dep->partition);
             return;
+        }
+    }
+
+    auto addDependencies(CompileTask *compileTask, BuildTask *linkTask, const std::vector<Dependency> &dependencies, File *file) -> void
+    {
+        for (const Dependency &dependency : dependencies)
+        {
+            addDependency(compileTask, linkTask, dependency, file);
         }
     }
 
@@ -92,7 +103,7 @@ private:
     {
         if (file)
         {
-            addDependencies(compileTask, linkTask, file->dependencies());
+            addDependencies(compileTask, linkTask, file->dependencies(), file);
             addInput(linkTask, mBuildCache.buildTask(file->project()));
         }
     }
@@ -101,15 +112,15 @@ private:
     {
         if (file)
         {
-            addDependencies(compileTask, linkTask, file->dependencies());
+            addDependencies(compileTask, linkTask, file->dependencies(), file);
         }
     }
 
-    auto addDependencies(CompileTask *compileTask, BuildTask *linkTask, const std::vector<Dependency> &dependencies) -> void
+    auto addIncludePath(CompileTask *compileTask, const std::filesystem::path &base, const std::filesystem::path &include) -> void
     {
-        for (const Dependency &dependency : dependencies)
+        if (include != base)
         {
-            addDependency(compileTask, linkTask, dependency);
+            compileTask->includePaths.insert(include);
         }
     }
 
@@ -148,7 +159,7 @@ private:
             compileTask->source = mod->source;
             auto linkTask = mBuildCache.buildTask(mod);
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, mod->source->dependencies());
+            addDependencies(compileTask, linkTask, mod->source->dependencies(), mod->source);
         }
 
         return task;
@@ -164,7 +175,7 @@ private:
             compileTask->header = header;
             auto linkTask = createHeaderLinkTask(header->project());
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, header->dependencies());
+            addDependencies(compileTask, linkTask, header->dependencies(), header);
         }
 
         return task;
@@ -180,7 +191,7 @@ private:
             compileTask->source = partition->source;
             auto linkTask = mBuildCache.buildTask(partition->mod);
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, partition->source->dependencies());
+            addDependencies(compileTask, linkTask, partition->source->dependencies(), partition->source);
         }
 
         return task;
@@ -196,7 +207,7 @@ private:
             compileTask->source = source;
             auto linkTask = mBuildCache.buildTask(source->project());
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, source->dependencies());
+            addDependencies(compileTask, linkTask, source->dependencies(), source);
         }
 
         return task;
@@ -297,6 +308,19 @@ private:
         }
 
         return false;
+    }
+
+    [[nodiscard]] auto includePath(std::filesystem::path file, std::filesystem::path include) -> std::filesystem::path
+    {
+        file = file.parent_path();
+
+        while (include.has_parent_path())
+        {
+            include = include.parent_path();
+            file = file.parent_path();
+        }
+
+        return file;
     }
 
     BuildCache &mBuildCache;

@@ -19,6 +19,14 @@ export struct LinkExecutableTask;
 export struct LinkLibraryTask;
 export struct LinkModuleLibraryTask;
 
+export struct PathHash
+{
+    [[nodiscard]] auto operator()(const std::filesystem::path &path) const noexcept -> std::size_t
+    {
+        return std::filesystem::hash_value(path);
+    }
+};
+
 export using BuildTask = std::variant<
     CompileHeaderUnitTask,
     CompileModuleInterfaceTask,
@@ -31,6 +39,7 @@ export using BuildTask = std::variant<
 export struct CompileTask
 {
     std::unordered_set<BuildTask *> inputTasks;
+    std::unordered_set<std::filesystem::path, PathHash> includePaths;
 };
 
 export struct LinkTask
