@@ -11,7 +11,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
             auto start = std::chrono::steady_clock::now();
             abuild::ProjectScanner scanner{cache, std::filesystem::current_path()};
             auto end = std::chrono::steady_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << '\n';
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << "s\n";
         }
 
         {
@@ -19,7 +19,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
             auto start = std::chrono::steady_clock::now();
             abuild::CodeScanner scanner{cache};
             auto end = std::chrono::steady_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << '\n';
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << "s\n";
         }
 
         {
@@ -27,14 +27,22 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
             auto start = std::chrono::steady_clock::now();
             abuild::DependencyScanner scanner{cache};
             auto end = std::chrono::steady_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << '\n';
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << "s\n";
+        }
+
+        {
+            std::cout << "Build graph... ";
+            auto start = std::chrono::steady_clock::now();
+            abuild::BuildGraph graph{cache};
+            auto end = std::chrono::steady_clock::now();
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << "s\n";
         }
 
         std::cout << "\nWarnings: " << cache.warnings().size();
         std::cout << "\nSources: " << cache.sources().size();
         std::cout << "\nHeaders: " << cache.headers().size();
         std::cout << "\nProjects: " << cache.projects().size();
-        std::cout << "\nModules: " << cache.modules().size();
+        std::cout << "\nModules: " << cache.modules().size() << "\n\n";
 
         for (const abuild::Warning &warning : cache.warnings())
         {

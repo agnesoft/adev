@@ -17,26 +17,40 @@ public:
     }
 
 private:
-    auto addDependency(CompileTask *compileTask, BuildTask *linkTask, const Dependency &dependency, File *file) -> void
+    auto addDependency(CompileTask *compileTask, BuildTask *linkTask, const Dependency &dependency, File *base, std::unordered_set<File *> &includes) -> void
     {
         if (auto *dep = std::get_if<IncludeExternalHeaderDependency>(&dependency))
         {
-            addIncludePath(compileTask, file->path().parent_path(), includePath(dep->header->path(), dep->name));
-            addIncludeDependency(compileTask, linkTask, dep->header);
+            if (dep->header && !includes.contains(dep->header))
+            {
+                includes.insert(dep->header);
+                addIncludePath(compileTask, base->path().parent_path(), includePath(dep->header->path(), dep->name));
+                addDependencies(compileTask, linkTask, dep->header->dependencies(), dep->header, includes);
+                addInput(linkTask, mBuildCache.buildTask(dep->header->project()));
+            }
             return;
         }
 
         if (auto *dep = std::get_if<IncludeLocalHeaderDependency>(&dependency))
         {
-            addIncludePath(compileTask, file->path().parent_path(), includePath(dep->header->path(), dep->name));
-            addIncludeDependency(compileTask, linkTask, dep->header);
+            if (dep->header && !includes.contains(dep->header))
+            {
+                includes.insert(dep->header);
+                addIncludePath(compileTask, base->path().parent_path(), includePath(dep->header->path(), dep->name));
+                addDependencies(compileTask, linkTask, dep->header->dependencies(), dep->header, includes);
+                addInput(linkTask, mBuildCache.buildTask(dep->header->project()));
+            }
             return;
         }
 
         if (auto *dep = std::get_if<IncludeLocalSourceDependency>(&dependency))
         {
-            addIncludePath(compileTask, file->path().parent_path(), includePath(dep->source->path(), dep->name));
-            addIncludeDependencyNoLink(compileTask, linkTask, dep->source);
+            if (dep->source && !includes.contains(dep->source))
+            {
+                includes.insert(dep->source);
+                addIncludePath(compileTask, base->path().parent_path(), includePath(dep->source->path(), dep->name));
+                addDependencies(compileTask, linkTask, dep->source->dependencies(), dep->source, includes);
+            }
             return;
         }
 
@@ -65,11 +79,11 @@ private:
         }
     }
 
-    auto addDependencies(CompileTask *compileTask, BuildTask *linkTask, const std::vector<Dependency> &dependencies, File *file) -> void
+    auto addDependencies(CompileTask *compileTask, BuildTask *linkTask, const std::vector<Dependency> &dependencies, File *base, std::unordered_set<File *> &includes) -> void
     {
         for (const Dependency &dependency : dependencies)
         {
-            addDependency(compileTask, linkTask, dependency, file);
+            addDependency(compileTask, linkTask, dependency, base, includes);
         }
     }
 
@@ -96,23 +110,6 @@ private:
         if (partition && partition->source)
         {
             compileTask->inputTasks.insert(createCompileModulePartitionTask(partition));
-        }
-    }
-
-    auto addIncludeDependency(CompileTask *compileTask, BuildTask *linkTask, File *file) -> void
-    {
-        if (file)
-        {
-            addDependencies(compileTask, linkTask, file->dependencies(), file);
-            addInput(linkTask, mBuildCache.buildTask(file->project()));
-        }
-    }
-
-    auto addIncludeDependencyNoLink(CompileTask *compileTask, BuildTask *linkTask, File *file) -> void
-    {
-        if (file)
-        {
-            addDependencies(compileTask, linkTask, file->dependencies(), file);
         }
     }
 
@@ -159,7 +156,8 @@ private:
             compileTask->source = mod->source;
             auto linkTask = mBuildCache.buildTask(mod);
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, mod->source->dependencies(), mod->source);
+            std::unordered_set<File *> includes;
+            addDependencies(compileTask, linkTask, mod->source->dependencies(), mod->source, includes);
         }
 
         return task;
@@ -175,7 +173,8 @@ private:
             compileTask->header = header;
             auto linkTask = createHeaderLinkTask(header->project());
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, header->dependencies(), header);
+            std::unordered_set<File *> includes;
+            addDependencies(compileTask, linkTask, header->dependencies(), header, includes);
         }
 
         return task;
@@ -191,7 +190,8 @@ private:
             compileTask->source = partition->source;
             auto linkTask = mBuildCache.buildTask(partition->mod);
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, partition->source->dependencies(), partition->source);
+            std::unordered_set<File *> includes;
+            addDependencies(compileTask, linkTask, partition->source->dependencies(), partition->source, includes);
         }
 
         return task;
@@ -207,7 +207,8 @@ private:
             compileTask->source = source;
             auto linkTask = mBuildCache.buildTask(source->project());
             addInput(linkTask, task);
-            addDependencies(compileTask, linkTask, source->dependencies(), source);
+            std::unordered_set<File *> includes;
+            addDependencies(compileTask, linkTask, source->dependencies(), source, includes);
         }
 
         return task;

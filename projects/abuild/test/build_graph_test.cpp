@@ -437,4 +437,37 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
         expect(compile->includePaths).toBe(std::unordered_set<std::filesystem::path, abuild::PathHash>{testProject.projectRoot() / "mylib"});
         expect(link->inputTasks).toBe(std::unordered_set<abuild::BuildTask *>{compileTask});
     });
+
+    test("self include", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "\n#include \"myheader.hpp\""},
+                                            {"mylib/myheader.hpp", "#include \"myheader.hpp\""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("main.cpp"));
+
+        expect(compileTask != nullptr).toBe(true);
+    });
+
+    test("circular include", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "\n#include \"myheader.hpp\""},
+                                            {"mylib/myheader.hpp", "#include \"otherheader.hpp\""},
+                                            {"mylib/otherheader.hpp", "#include \"myheader.hpp\""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("main.cpp"));
+
+        expect(compileTask != nullptr).toBe(true);
+    });
 });
