@@ -65,6 +65,11 @@ public:
         return mPath;
     }
 
+    [[nodiscard]] auto project() noexcept -> Project *
+    {
+        return mProject;
+    }
+
     [[nodiscard]] auto project() const noexcept -> const Project *
     {
         return mProject;

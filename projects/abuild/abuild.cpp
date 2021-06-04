@@ -6,9 +6,10 @@ export import : build_cache;
 export import : project_scanner;
 export import : code_scanner;
 export import : dependency_scanner;
+export import : build_graph;
 #else
 // clang-format off
-import <astl.hpp>;
+export import <astl.hpp>;
 #include "settings.cpp"
 #include "project.cpp"
 #include "dependency.cpp"
@@ -18,6 +19,7 @@ import <astl.hpp>;
 #include "module.cpp"
 #include "error.cpp"
 #include "warning.cpp"
+#include "build_task.cpp"
 #include "build_cache_index.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
@@ -25,5 +27,6 @@ import <astl.hpp>;
 #include "tokenizer.cpp"
 #include "code_scanner.cpp"
 #include "dependency_scanner.cpp"
+#include "build_graph.cpp"
 // clang-format on
 #endif
