@@ -11,7 +11,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
             auto start = std::chrono::steady_clock::now();
             abuild::ProjectScanner scanner{cache, std::filesystem::current_path()};
             auto end = std::chrono::steady_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start) << '\n';
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << '\n';
         }
 
         {
@@ -19,7 +19,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
             auto start = std::chrono::steady_clock::now();
             abuild::CodeScanner scanner{cache};
             auto end = std::chrono::steady_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start) << '\n';
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << '\n';
         }
 
         {
@@ -27,7 +27,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
             auto start = std::chrono::steady_clock::now();
             abuild::DependencyScanner scanner{cache};
             auto end = std::chrono::steady_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start) << '\n';
+            std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << '\n';
         }
 
         std::cout << "\nWarnings: " << cache.warnings().size();
