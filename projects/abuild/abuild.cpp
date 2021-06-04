@@ -9,7 +9,7 @@ export import : dependency_scanner;
 export import : build_graph;
 #else
 // clang-format off
-import <astl.hpp>;
+export import <astl.hpp>;
 #include "settings.cpp"
 #include "project.cpp"
 #include "dependency.cpp"
