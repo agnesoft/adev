@@ -90,7 +90,7 @@ private:
     {
         if (isSource(value->name))
         {
-            mBuildCache.addWarning(Warning{COMPONENT, "Including '" + value->name + "' (source) via angle brackets is unsupported. Only headers can be included this way. Ignoring. (" + file->path().string() + ')'});
+            file->addDependency(IncludeExternalSourceDependency{.name = value->name, .visibility = DependencyVisibility::Public});
         }
         else if (isSTLHeader(value->name))
         {
@@ -146,15 +146,7 @@ private:
 
         if (auto *value = std::get_if<IncludeLocalToken>(&token))
         {
-            if (isSource(value->name))
-            {
-                mBuildCache.addWarning(Warning{COMPONENT, "Including '" + value->name + "' (source) in header is unsupported. Only headers can be included in headers. Ignoring. (" + file->path().string() + ')'});
-            }
-            else
-            {
-                processIncludeLocalToken(value, file);
-            }
-
+            processIncludeLocalToken(value, file);
             return;
         }
 

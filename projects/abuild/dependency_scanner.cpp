@@ -67,6 +67,13 @@ private:
             return;
         }
 
+        if (auto *value = std::get_if<IncludeExternalSourceDependency>(dependency))
+        {
+            value->source = mBuildCache.source(value->name);
+            validateSource(value->source, value->name, file);
+            return;
+        }
+
         if (auto *value = std::get_if<IncludeLocalHeaderDependency>(dependency))
         {
             value->header = mBuildCache.header(value->name, file->path().parent_path());

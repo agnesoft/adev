@@ -54,6 +54,17 @@ private:
             return;
         }
 
+        if (auto *dep = std::get_if<IncludeExternalSourceDependency>(&dependency))
+        {
+            if (dep->source && !includes.contains(dep->source))
+            {
+                includes.insert(dep->source);
+                addIncludePath(compileTask, base->path().parent_path(), includePath(dep->source->path(), dep->name));
+                addDependencies(compileTask, linkTask, dep->source->dependencies(), dep->source, includes);
+            }
+            return;
+        }
+
         if (auto *dep = std::get_if<ImportExternalHeaderDependency>(&dependency))
         {
             addImportHeaderDependency(compileTask, linkTask, dep->header);
