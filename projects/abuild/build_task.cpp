@@ -12,6 +12,7 @@ export struct ModulePartition;
 export class Project;
 export class Source;
 export struct CompileHeaderUnitTask;
+export struct CompileSTLHeaderUnitTask;
 export struct CompileModuleInterfaceTask;
 export struct CompileModulePartitionTask;
 export struct CompileSourceTask;
@@ -29,6 +30,7 @@ export struct PathHash
 
 export using BuildTask = std::variant<
     CompileHeaderUnitTask,
+    CompileSTLHeaderUnitTask,
     CompileModuleInterfaceTask,
     CompileModulePartitionTask,
     CompileSourceTask,
@@ -50,6 +52,11 @@ export struct LinkTask
 export struct CompileHeaderUnitTask : CompileTask
 {
     Header *header = nullptr;
+};
+
+export struct CompileSTLHeaderUnitTask : CompileTask
+{
+    std::string name;
 };
 
 export struct CompileModuleInterfaceTask : CompileTask

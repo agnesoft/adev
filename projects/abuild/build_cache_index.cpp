@@ -17,6 +17,11 @@ public:
         mBuildTaskIndex.insert({entity, task});
     }
 
+    auto addBuildTask(const char *name, BuildTask *task) -> void
+    {
+        mBuildTaskNameIndex.insert({name, task});
+    }
+
     auto addHeader(const std::string &name, Header *header) -> void
     {
         mHeaderIndex.insert({name, header});
@@ -52,6 +57,20 @@ public:
         std::unordered_map<const void *, BuildTask *>::const_iterator it = mBuildTaskIndex.find(entity);
 
         if (it != mBuildTaskIndex.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    [[nodiscard]] auto buildTask(const char *name) const -> BuildTask *
+    {
+        std::unordered_map<std::string, BuildTask *>::const_iterator it = mBuildTaskNameIndex.find(name);
+
+        if (it != mBuildTaskNameIndex.end())
         {
             return it->second;
         }
@@ -199,5 +218,6 @@ private:
     std::unordered_map<const File *, Module *> mModuleFileIndex;
     std::unordered_map<const File *, ModulePartition *> mModulePartitionsFileIndex;
     std::unordered_map<const void *, BuildTask *> mBuildTaskIndex;
+    std::unordered_map<std::string, BuildTask *> mBuildTaskNameIndex;
 };
 }

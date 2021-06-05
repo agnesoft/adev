@@ -88,6 +88,12 @@ private:
             addImportModulePartitionDependency(compileTask, linkTask, dep->partition);
             return;
         }
+
+        if (auto *dep = std::get_if<ImportSTLHeaderDependency>(&dependency))
+        {
+            compileTask->inputTasks.insert(createCompileSTLHeaderUnitTask(dep->name));
+            return;
+        }
     }
 
     auto addDependencies(CompileTask *compileTask, BuildTask *linkTask, const std::vector<Dependency> &dependencies, File *base, std::unordered_set<File *> &includes) -> void
@@ -143,15 +149,14 @@ private:
         }
     }
 
-    template<typename T>
-    [[nodiscard]] auto buildTask(const void *entity) -> BuildTask *
+    template<typename T, typename E>
+    [[nodiscard]] auto buildTask(E entity) -> BuildTask *
     {
         BuildTask *task = mBuildCache.buildTask(entity);
 
         if (!task)
         {
-            mBuildCache.addBuildTask(entity, T{});
-            task = mBuildCache.buildTask(entity);
+            task = mBuildCache.addBuildTask(entity, T{});
         }
 
         return task;
@@ -220,6 +225,19 @@ private:
             addInput(linkTask, task);
             std::unordered_set<File *> includes;
             addDependencies(compileTask, linkTask, source->dependencies(), source, includes);
+        }
+
+        return task;
+    }
+
+    [[nodiscard]] auto createCompileSTLHeaderUnitTask(const std::string &name) -> BuildTask *
+    {
+        BuildTask *task = buildTask<CompileSTLHeaderUnitTask>(name.c_str());
+        auto compileTask = &std::get<CompileSTLHeaderUnitTask>(*task);
+
+        if (compileTask->name.empty())
+        {
+            compileTask->name = name;
         }
 
         return task;
