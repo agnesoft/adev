@@ -22,6 +22,13 @@ export struct IncludeExternalHeaderDependency
     DependencyVisibility visibility = DependencyVisibility::Public;
 };
 
+export struct IncludeExternalSourceDependency
+{
+    std::string name;
+    Source *source = nullptr;
+    DependencyVisibility visibility = DependencyVisibility::Public;
+};
+
 export struct IncludeLocalHeaderDependency
 {
     std::string name;
@@ -78,6 +85,7 @@ export struct ImportSTLHeaderDependency
 
 export using Dependency = std::variant<
     IncludeExternalHeaderDependency,
+    IncludeExternalSourceDependency,
     IncludeLocalHeaderDependency,
     IncludeLocalSourceDependency,
     IncludeSTLHeaderDependency,
