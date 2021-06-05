@@ -121,11 +121,13 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
-        expect(cache.sources()[0]->dependencies().size()).toBe(0u);
+        assert_(cache.sources()[0]->dependencies().size()).toBe(1u);
 
-        assert_(cache.warnings().size()).toBe(1u);
-        expect(cache.warnings()[0].component).toBe("CodeScanner");
-        expect(cache.warnings()[0].what).toBe("Including 'source.cpp' (source) via angle brackets is unsupported. Only headers can be included this way. Ignoring. (" + (testProject.projectRoot() / "main.cpp").string() + ')');
+        auto dep1 = std::get<abuild::IncludeExternalSourceDependency>(cache.sources()[0]->dependencies()[0]);
+
+        expect(dep1.name).toBe("source.cpp");
+        expect(dep1.visibility).toBe(abuild::DependencyVisibility::Public);
+        expect(dep1.source).toBe(nullptr);
     });
 
     test("import local headers", [] {

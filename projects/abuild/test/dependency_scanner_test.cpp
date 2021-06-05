@@ -127,6 +127,23 @@ static const auto testSuite = suite("abuild::DependencyScanner", [] {
         expect(std::get<abuild::IncludeLocalSourceDependency>(cache.source("main.cpp")->dependencies()[0]).source).toBe(cache.source("source.cpp"));
     });
 
+    test("external source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "#include <source.cpp>"},
+                                            {"subproject/source.cpp", ""}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+
+        assert_(cache.source("main.cpp") != nullptr).toBe(true);
+        assert_(cache.source("subproject/source.cpp") != nullptr).toBe(true);
+        assert_(cache.source("main.cpp")->dependencies().size()).toBe(1u);
+
+        expect(std::get<abuild::IncludeExternalSourceDependency>(cache.source("main.cpp")->dependencies()[0]).source).toBe(cache.source("subproject/source.cpp"));
+    });
+
     test("import local header", [] {
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "import \"include/header.hpp\";"},

@@ -405,6 +405,31 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
                 otherCompileTask});
     });
 
+    test("include external source", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"mymodule.cpp", "module mymodule;\n#include <mypartition.cpp>"},
+                                            {"someproject/mypartition.cpp", "module mymodule : mypartition;\nimport othermodule;"},
+                                            {"othermodule/othermodule.cpp", "module othermodule;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("mymodule.cpp"));
+        abuild::BuildTask *otherCompileTask = cache.buildTask(cache.source("othermodule.cpp"));
+
+        assert_(compileTask != nullptr).toBe(true);
+        assert_(otherCompileTask != nullptr).toBe(true);
+
+        const auto *compile = &std::get<abuild::CompileModuleInterfaceTask>(*compileTask);
+
+        expect(compile->inputTasks)
+            .toBe(std::unordered_set<abuild::BuildTask *>{
+                otherCompileTask});
+    });
+
     test("include source from another project", [] {
         TestProjectWithContent testProject{"build_test_project_scanner",
                                            {{"main.cpp", "\n#include \"mysource.cpp\""},
