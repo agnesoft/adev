@@ -32,4 +32,14 @@ static const auto testSuite = suite("abuild::BuildTask", [] {
         expect(cache.buildTask(&project2) != nullptr).toBe(true);
         expect(std::get<abuild::LinkExecutableTask>(*cache.buildTask(&project2)).project).toBe(&project2);
     });
+
+    test("lookup build task by name", [] {
+        abuild::BuildCache cache;
+
+        cache.addBuildTask("string", abuild::CompileSTLHeaderUnitTask{.name = "string"});
+        cache.addBuildTask("vector", abuild::CompileSTLHeaderUnitTask{.name = "vector"});
+        cache.addBuildTask("map", abuild::CompileSTLHeaderUnitTask{.name = "map"});
+
+        expect(std::get<abuild::CompileSTLHeaderUnitTask>(*cache.buildTask("vector")).name).toBe("vector");
+    });
 });
