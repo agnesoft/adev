@@ -10,10 +10,18 @@ namespace abuild
 export class BuildCache
 {
 public:
-    auto addBuildTask(const void *entity, BuildTask buildTask) -> void
+    auto addBuildTask(const void *entity, BuildTask buildTask) -> BuildTask *
     {
         BuildTask *task = mData.buildTasks.emplace_back(std::make_unique<BuildTask>(std::move(buildTask))).get();
         mIndex.addBuildTask(entity, task);
+        return task;
+    }
+
+    auto addBuildTask(const char *name, BuildTask buildTask) -> BuildTask *
+    {
+        BuildTask *task = mData.buildTasks.emplace_back(std::make_unique<BuildTask>(std::move(buildTask))).get();
+        mIndex.addBuildTask(name, task);
+        return task;
     }
 
     auto addError(Error error) -> void
@@ -21,23 +29,25 @@ public:
         mData.errors.push_back(std::move(error));
     }
 
-    auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> void
+    auto addHeader(const std::filesystem::path &path, const std::string &projectName) -> Header *
     {
         Project *proj = getProject(projectName);
         Header *header = mData.headers.emplace_back(std::make_unique<Header>(path, proj)).get();
         proj->addHeader(header);
         mIndex.addHeader(path.filename().string(), header);
+        return header;
     }
 
-    auto addModuleInterface(const std::string &moduleName, ModuleVisibility visibility, Source *source) -> void
+    auto addModuleInterface(const std::string &moduleName, ModuleVisibility visibility, Source *source) -> Module *
     {
         Module *mod = getCppModule(moduleName);
         mod->source = source;
         mod->visibility = visibility;
         mIndex.addModuleFile(source, mod);
+        return mod;
     }
 
-    auto addModulePartition(const std::string &moduleName, std::string partitionName, ModuleVisibility visibility, Source *source) -> void
+    auto addModulePartition(const std::string &moduleName, std::string partitionName, ModuleVisibility visibility, Source *source) -> ModulePartition *
     {
         Module *mod = getCppModule(moduleName);
         ModulePartition *partition = mData.modulePartitions.emplace_back(std::make_unique<ModulePartition>()).get();
@@ -47,14 +57,16 @@ public:
         partition->source = source;
         partition->mod = mod;
         mIndex.addModulePartitionFile(source, partition);
+        return partition;
     }
 
-    auto addSource(const std::filesystem::path &path, const std::string &projectName) -> void
+    auto addSource(const std::filesystem::path &path, const std::string &projectName) -> Source *
     {
         Project *proj = getProject(projectName);
         Source *source = mData.sources.emplace_back(std::make_unique<Source>(path, proj)).get();
         proj->addSource(source);
         mIndex.addSource(path.filename().string(), source);
+        return source;
     }
 
     auto addWarning(Warning warning) -> void
@@ -70,6 +82,11 @@ public:
     [[nodiscard]] auto buildTask(const void *entity) const -> BuildTask *
     {
         return mIndex.buildTask(entity);
+    }
+
+    [[nodiscard]] auto buildTask(const char *name) const -> BuildTask *
+    {
+        return mIndex.buildTask(name);
     }
 
     [[nodiscard]] auto cppModule(const File *file) const -> Module *

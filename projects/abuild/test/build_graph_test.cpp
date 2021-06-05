@@ -495,4 +495,27 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
 
         expect(compileTask != nullptr).toBe(true);
     });
+
+    test("import STL", [] {
+        TestProjectWithContent testProject{"build_test_project_scanner",
+                                           {{"main.cpp", "import <vector>;"}}};
+
+        abuild::BuildCache cache;
+        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::CodeScanner{cache};
+        abuild::DependencyScanner{cache};
+        abuild::BuildGraph{cache};
+
+        abuild::BuildTask *compileTask = cache.buildTask(cache.source("main.cpp"));
+        abuild::BuildTask *compileSTLHeaderUnitTask = cache.buildTask("vector");
+
+        assert_(compileTask != nullptr).toBe(true);
+        assert_(compileSTLHeaderUnitTask != nullptr).toBe(true);
+
+        const auto *compile = &std::get<abuild::CompileSourceTask>(*compileTask);
+
+        expect(compile->inputTasks)
+            .toBe(std::unordered_set<abuild::BuildTask *>{
+                compileSTLHeaderUnitTask});
+    });
 });
