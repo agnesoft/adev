@@ -7,6 +7,8 @@ export import : project_scanner;
 export import : code_scanner;
 export import : dependency_scanner;
 export import : build_graph;
+
+export import : toolchain;
 #else
 // clang-format off
 export import <astl.hpp>;
@@ -21,6 +23,7 @@ export import <astl.hpp>;
 #include "warning.cpp"
 #include "build_task.cpp"
 #include "build_cache_index.cpp"
+#include "toolchain.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 #include "token.cpp"
