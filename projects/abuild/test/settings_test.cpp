@@ -8,17 +8,8 @@ using atest::suite;
 using atest::test;
 
 static const auto testSuite = suite("abuild::Settings", [] {
-    test("type traits", [] {
-        expect(std::is_default_constructible_v<abuild::Settings>).toBe(true);
-        expect(std::is_copy_constructible_v<abuild::Settings>).toBe(true);
-        expect(std::is_nothrow_move_constructible_v<abuild::Settings>).toBe(true);
-        expect(std::is_copy_assignable_v<abuild::Settings>).toBe(true);
-        expect(std::is_nothrow_move_assignable_v<abuild::Settings>).toBe(true);
-        expect(std::is_nothrow_destructible_v<abuild::Settings>).toBe(true);
-    });
-
     test("c++ source extensions", [] {
-        expect(abuild::Settings::cppSourceExtensions())
+        expect(abuild::Settings{}.cppSourceExtensions())
             .toBe(std::unordered_set<std::string>{
                 ".cc",
                 ".cpp",
@@ -27,7 +18,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     });
 
     test("c++ header extensions", [] {
-        expect(abuild::Settings::cppHeaderExtensions())
+        expect(abuild::Settings{}.cppHeaderExtensions())
             .toBe(std::unordered_set<std::string>{
                 ".h",
                 ".hpp",
@@ -35,24 +26,24 @@ static const auto testSuite = suite("abuild::Settings", [] {
     });
 
     test("ignore directories", [] {
-        expect(abuild::Settings::ignoreDirectories())
+        expect(abuild::Settings{}.ignoreDirectories())
             .toBe(std::unordered_set<std::string>{
                 "build"});
     });
 
     test("project name Separator", [] {
-        expect(abuild::Settings::projectNameSeparator()).toBe(".");
+        expect(abuild::Settings{}.projectNameSeparator()).toBe(".");
     });
 
     test("skip directories", [] {
-        expect(abuild::Settings::skipDirectories())
+        expect(abuild::Settings{}.skipDirectories())
             .toBe(std::unordered_set<std::string>{
                 "Projects",
                 "projects"});
     });
 
     test("squash directories", [] {
-        expect(abuild::Settings::squashDirectories())
+        expect(abuild::Settings{}.squashDirectories())
             .toBe(std::unordered_set<std::string>{
                 "Include",
                 "Includes",
@@ -69,7 +60,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     });
 
     test("test directories", [] {
-        expect(abuild::Settings::testDirectories())
+        expect(abuild::Settings{}.testDirectories())
             .toBe(std::unordered_set<std::string>{
                 "Test",
                 "Tests",
@@ -78,7 +69,7 @@ static const auto testSuite = suite("abuild::Settings", [] {
     });
 
     test("executable filenames", [] {
-        expect(abuild::Settings::executableFilenames())
+        expect(abuild::Settings{}.executableFilenames())
             .toBe(std::unordered_set<std::string>{
                 "main",
                 "Main",
