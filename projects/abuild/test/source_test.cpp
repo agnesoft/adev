@@ -21,7 +21,7 @@ static const auto testSuite = suite("abuild::Source", [] {
         TestProject testProject{"build_test_project_scanner",
                                 {"main.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
 
         assert_(cache.sources().size()).toBe(1u);
@@ -35,7 +35,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/main.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
@@ -57,7 +57,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/abuild.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "abuild.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
@@ -75,7 +75,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/main.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
@@ -93,7 +93,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/main.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
@@ -111,7 +111,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/main.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
@@ -125,7 +125,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/main.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");
@@ -143,7 +143,7 @@ static const auto testSuite = suite("abuild::Source", [] {
                                  "projects/abuild/main.cpp",
                                  "projects/atest/atest.cpp"}};
 
-        abuild::BuildCache cache;
+        abuild::BuildCache cache{testProject.projectRoot()};
         cache.addSource(testProject.projectRoot() / "main.cpp", "build_test_project_scanner");
         cache.addSource(testProject.projectRoot() / "projects" / "abuild" / "main.cpp", "abuild");
         cache.addSource(testProject.projectRoot() / "projects" / "atest" / "atest.cpp", "atest");

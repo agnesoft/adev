@@ -20,6 +20,7 @@ export import <astl.hpp>;
 #include "warning.cpp"
 #include "build_task.cpp"
 #include "build_cache_index.cpp"
+#include "override.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 #include "token.cpp"

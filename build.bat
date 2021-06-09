@@ -70,6 +70,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\e
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\warning.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_task.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache_index.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\override.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_cache.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\project_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\token.cpp"
@@ -98,6 +99,7 @@ lib.exe /NOLOGO ^
         project_scanner.obj ^
         build_task.obj ^
         build_graph.obj ^
+        override.obj ^
         abuild.obj
 cl.exe %CPP_FLAGS_OPTIMIZED% ^
        /Fe"%BUILD_ROOT%\bin\abuild.exe" ^
@@ -211,6 +213,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\build_cache_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\build_task_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\build_graph_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\override_test.cpp" ^
        "%BUILD_ROOT%\astl\astl.obj" ^
        "%BUILD_ROOT%\atest\atest.lib" ^
        "%BUILD_ROOT%\acore\acore.lib" ^

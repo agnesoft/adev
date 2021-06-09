@@ -9,7 +9,7 @@ auto main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) -> int
         {
             std::cout << "ProjectScanner... ";
             auto start = std::chrono::steady_clock::now();
-            abuild::ProjectScanner scanner{cache, std::filesystem::current_path()};
+            abuild::ProjectScanner scanner{cache};
             auto end = std::chrono::steady_clock::now();
             std::cout << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << "s\n";
         }

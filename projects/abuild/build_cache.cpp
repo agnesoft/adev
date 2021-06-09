@@ -3,7 +3,7 @@ export module abuild : build_cache;
 export import : error;
 export import : warning;
 export import : build_cache_index;
-export import : settings;
+export import : abuild_override;
 #endif
 
 namespace abuild
@@ -11,6 +11,17 @@ namespace abuild
 export class BuildCache
 {
 public:
+    BuildCache() :
+        BuildCache(std::filesystem::current_path())
+    {
+    }
+
+    BuildCache(const std::filesystem::path &projectRoot) :
+        mData{.projectRoot{projectRoot}, .dataOverride{projectRoot}}
+    {
+        mData.dataOverride.doOverride(&mData.settings);
+    }
+
     auto addBuildTask(const void *entity, BuildTask buildTask) -> BuildTask *
     {
         BuildTask *task = mData.buildTasks.emplace_back(std::make_unique<BuildTask>(std::move(buildTask))).get();
@@ -135,6 +146,11 @@ public:
         return mIndex.project(name);
     }
 
+    [[nodiscard]] auto projectRoot() const noexcept -> const std::filesystem::path &
+    {
+        return mData.projectRoot;
+    }
+
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
     {
         return mData.projects;
@@ -176,7 +192,9 @@ private:
         std::vector<std::unique_ptr<BuildTask>> buildTasks;
         std::vector<Error> errors;
         std::vector<Warning> warnings;
+        std::filesystem::path projectRoot;
         Settings settings;
+        Override dataOverride;
     };
 
     [[nodiscard]] auto getCppModule(const std::string &name) -> Module *

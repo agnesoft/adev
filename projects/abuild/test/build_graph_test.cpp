@@ -20,11 +20,11 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::BuildGraph", [] {
     test("no sources", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"header.hpp", ""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -34,11 +34,11 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("executable", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", ""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -63,11 +63,11 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("library", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"source.cpp", ""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -92,11 +92,11 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("module library", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"mymodule.cpp", "module mymodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -121,11 +121,11 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("module partition", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"mypartition.cpp", "module mymodule : mypartition;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -140,12 +140,12 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("module with partition", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"mymodule.cpp", "module mymodule; import : mypartition;"},
                                             {"mypartition.cpp", "module mymodule : mypartition;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -171,19 +171,19 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("include header that links in library", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "#include <myheader.hpp>\n#include <headeronly.hpp>"},
                                             {"mylib/mysource.cpp", ""},
                                             {"mylib/myheader.hpp", ""},
                                             {"headeronly/headeronly.hpp", ""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
 
-        const abuild::Project *exe = findProject(cache.projects(), "build_test_project_scanner");
+        const abuild::Project *exe = findProject(cache.projects(), "abuild_build_graph_test");
         const abuild::Project *lib = findProject(cache.projects(), "mylib");
         const abuild::Project *headerLib = findProject(cache.projects(), "headeronly");
 
@@ -212,19 +212,19 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("include header that links in library via another header", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "#include <headeronly.hpp>"},
                                             {"mylib/mysource.cpp", ""},
                                             {"mylib/myheader.hpp", ""},
                                             {"headeronly/headeronly.hpp", "#include <myheader.hpp>"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
 
-        const abuild::Project *exe = findProject(cache.projects(), "build_test_project_scanner");
+        const abuild::Project *exe = findProject(cache.projects(), "abuild_build_graph_test");
         const abuild::Project *lib = findProject(cache.projects(), "mylib");
         const abuild::Project *headerLib = findProject(cache.projects(), "headeronly");
 
@@ -254,12 +254,12 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("import module", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "import mymodule;"},
                                             {"mymodule.cpp", "module mymodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -291,13 +291,13 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("import module via header", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "#include \"header.hpp\""},
                                             {"header.hpp", "import mymodule;"},
                                             {"mymodule.cpp", "module mymodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -329,19 +329,19 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("import header", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "import <mylib.hpp>;"},
                                             {"mylib/mylib.hpp", "import <otherlib.hpp>"},
                                             {"otherlib/otherlib.cpp", "import \"otherlib.hpp\";"},
                                             {"otherlib/otherlib.hpp", ""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
 
-        const abuild::Project *exe = findProject(cache.projects(), "build_test_project_scanner");
+        const abuild::Project *exe = findProject(cache.projects(), "abuild_build_graph_test");
         const abuild::Project *mylib = findProject(cache.projects(), "mylib");
         const abuild::Project *otherlib = findProject(cache.projects(), "otherlib");
 
@@ -381,13 +381,13 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("include source", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"mymodule.cpp", "module mymodule;\n#include \"mypartition.cpp\""},
                                             {"mypartition.cpp", "module mymodule : mypartition;\nimport othermodule;"},
                                             {"othermodule/othermodule.cpp", "module othermodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -406,13 +406,13 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("include external source", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"mymodule.cpp", "module mymodule;\n#include <mypartition.cpp>"},
                                             {"someproject/mypartition.cpp", "module mymodule : mypartition;\nimport othermodule;"},
                                             {"othermodule/othermodule.cpp", "module othermodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -431,17 +431,17 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("include source from another project", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "\n#include \"mysource.cpp\""},
                                             {"mylib/mysource.cpp", ""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
 
-        const abuild::Project *exe = findProject(cache.projects(), "build_test_project_scanner");
+        const abuild::Project *exe = findProject(cache.projects(), "abuild_build_graph_test");
         const abuild::Project *lib = findProject(cache.projects(), "mylib");
 
         assert_(exe != nullptr).toBe(true);
@@ -464,12 +464,12 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("self include", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "\n#include \"myheader.hpp\""},
                                             {"mylib/myheader.hpp", "#include \"myheader.hpp\""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -480,13 +480,13 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("circular include", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "\n#include \"myheader.hpp\""},
                                             {"mylib/myheader.hpp", "#include \"otherheader.hpp\""},
                                             {"mylib/otherheader.hpp", "#include \"myheader.hpp\""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
@@ -497,11 +497,11 @@ static const auto testSuite = suite("abuild::BuildGraph", [] {
     });
 
     test("import STL", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_build_graph_test",
                                            {{"main.cpp", "import <vector>;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
         abuild::DependencyScanner{cache};
         abuild::BuildGraph{cache};
