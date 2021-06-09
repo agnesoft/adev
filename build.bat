@@ -78,6 +78,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\t
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\code_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\dependency_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\build_graph.cpp"
+cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\abuild\toolchain_scanner.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\abuild\abuild.cpp"
 lib.exe /NOLOGO ^
         /OUT:abuild.lib ^
@@ -100,6 +101,7 @@ lib.exe /NOLOGO ^
         build_task.obj ^
         build_graph.obj ^
         toolchain.obj ^
+        toolchain_scanner.obj ^
         abuild.obj
 cl.exe %CPP_FLAGS_OPTIMIZED% ^
        /Fe"%BUILD_ROOT%\bin\abuild.exe" ^
@@ -214,6 +216,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\build_task_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\build_graph_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\toolchain_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\toolchain_scanner_test.cpp" ^
        "%BUILD_ROOT%\astl\astl.obj" ^
        "%BUILD_ROOT%\atest\atest.lib" ^
        "%BUILD_ROOT%\acore\acore.lib" ^

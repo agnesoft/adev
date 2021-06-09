@@ -7,8 +7,7 @@ export import : project_scanner;
 export import : code_scanner;
 export import : dependency_scanner;
 export import : build_graph;
-
-export import : toolchain;
+export import : toolchain_scanner;
 #else
 // clang-format off
 export import <astl.hpp>;
@@ -31,5 +30,6 @@ export import <astl.hpp>;
 #include "code_scanner.cpp"
 #include "dependency_scanner.cpp"
 #include "build_graph.cpp"
+#include "toolchain_scanner.cpp"
 // clang-format on
 #endif
