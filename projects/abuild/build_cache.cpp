@@ -4,6 +4,7 @@ export import : error;
 export import : warning;
 export import : toolchain;
 export import : build_cache_index;
+export import : settings;
 #endif
 
 namespace abuild
@@ -145,6 +146,11 @@ public:
         return mData.projects;
     }
 
+    [[nodiscard]] auto settings() const noexcept -> const Settings &
+    {
+        return mData.settings;
+    }
+
     [[nodiscard]] auto source(const std::filesystem::path &file) const -> Source *
     {
         return source(file, {});
@@ -195,6 +201,7 @@ private:
         std::vector<std::unique_ptr<Toolchain>> toolchains;
         std::vector<Error> errors;
         std::vector<Warning> warnings;
+        Settings settings;
     };
 
     [[nodiscard]] auto getCppModule(const std::string &name) -> Module *

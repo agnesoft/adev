@@ -8,91 +8,54 @@ namespace abuild
 export class Settings
 {
 public:
-    [[nodiscard]] static auto cppHeaderExtensions() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto cppHeaderExtensions() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> extensions{
-            ".hpp",
-            ".hxx",
-            ".h"};
-
-        return extensions;
+        return mHeaderExtensions;
     }
 
-    [[nodiscard]] static auto cppSourceExtensions() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto cppSourceExtensions() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> extensions{
-            ".cpp",
-            ".cxx",
-            ".cc",
-            ".ixx"};
-
-        return extensions;
+        return mSourceExtensions;
     }
 
-    [[nodiscard]] static auto executableFilenames() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto executableFilenames() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> filenames{
-            "main",
-            "Main",
-            "WinMain"};
-
-        return filenames;
+        return mExeFilenames;
     }
 
-    [[nodiscard]] static auto ignoreDirectories() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto ignoreDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> dirs{
-            "build"};
-
-        return dirs;
+        return mIgnoreDirs;
     }
 
-    [[nodiscard]] static auto projectNameSeparator() -> const std::string &
+    [[nodiscard]] auto projectNameSeparator() const noexcept -> const std::string &
     {
-        static const std::string separator = ".";
-        return separator;
+        return mSeparator;
     }
 
-    [[nodiscard]] static auto skipDirectories() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto skipDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> dirs{
-            "projects",
-            "Projects"};
-
-        return dirs;
+        return mSkipDirs;
     }
 
-    [[nodiscard]] static auto squashDirectories() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto squashDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> dirs{
-            "src",
-            "srcs",
-            "SRC",
-            "Src",
-            "source",
-            "sources",
-            "Source",
-            "Sources",
-            "include",
-            "Include",
-            "includes",
-            "Includes"};
-
-        return dirs;
+        return mSquashDirs;
     }
 
-    [[nodiscard]] static auto testDirectories() -> const std::unordered_set<std::string> &
+    [[nodiscard]] auto testDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        static const std::unordered_set<std::string> dirs{
-            "test",
-            "Test",
-            "tests",
-            "Tests"};
-
-        return dirs;
+        return mTestDirs;
     }
 
 private:
-    std::string mName;
+    std::string mSeparator = ".";
+    std::unordered_set<std::string> mHeaderExtensions{".hpp", ".hxx", ".h"};
+    std::unordered_set<std::string> mSourceExtensions{".cpp", ".cxx", ".cc", ".ixx"};
+    std::unordered_set<std::string> mExeFilenames{"main", "Main", "WinMain"};
+    std::unordered_set<std::string> mIgnoreDirs{"build"};
+    std::unordered_set<std::string> mSkipDirs{"projects", "Projects"};
+    std::unordered_set<std::string> mSquashDirs{"src", "srcs", "SRC", "Src", "source", "sources", "Source", "Sources", "include", "Include", "includes", "Includes"};
+    std::unordered_set<std::string> mTestDirs{"test", "Test", "tests", "Tests"};
 };
 }

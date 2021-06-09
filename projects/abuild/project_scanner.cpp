@@ -18,7 +18,7 @@ public:
     }
 
 private:
-    static auto appendProjectName(std::string *projectName, const std::string &directoryName) -> void
+    auto appendProjectName(std::string *projectName, const std::string &directoryName) const -> void
     {
         if (projectName->empty())
         {
@@ -26,7 +26,7 @@ private:
         }
         else
         {
-            *projectName += Settings::projectNameSeparator() + directoryName;
+            *projectName += mBuildCache.settings().projectNameSeparator() + directoryName;
         }
     }
 
@@ -44,22 +44,22 @@ private:
 
     [[nodiscard]] auto isIgnoreDirectory(const std::filesystem::path &path) -> bool
     {
-        return path.filename().string().front() == '.' || Settings::ignoreDirectories().contains(path.filename().string());
+        return path.filename().string().front() == '.' || mBuildCache.settings().ignoreDirectories().contains(path.filename().string());
     }
 
     [[nodiscard]] auto isSkipDirectory(const std::filesystem::path &path) -> bool
     {
-        return Settings::skipDirectories().contains(path.filename().string());
+        return mBuildCache.settings().skipDirectories().contains(path.filename().string());
     }
 
     [[nodiscard]] auto isSquashDirectory(const std::filesystem::path &path) -> bool
     {
-        return Settings::squashDirectories().contains(path.filename().string());
+        return mBuildCache.settings().squashDirectories().contains(path.filename().string());
     }
 
     [[nodiscard]] auto isTestDirectory(const std::filesystem::path &path) -> bool
     {
-        return Settings::testDirectories().contains(path.filename().string());
+        return mBuildCache.settings().testDirectories().contains(path.filename().string());
     }
 
     [[nodiscard]] auto pathDirectories(std::filesystem::path path) -> std::vector<std::filesystem::path>
@@ -77,16 +77,16 @@ private:
 
     auto processFile(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        if (Settings::cppSourceExtensions().contains(path.extension().string()))
+        if (mBuildCache.settings().cppSourceExtensions().contains(path.extension().string()))
         {
             mBuildCache.addSource(path, projectName);
 
-            if (Settings::executableFilenames().contains(path.stem().string()))
+            if (mBuildCache.settings().executableFilenames().contains(path.stem().string()))
             {
                 mBuildCache.project(projectName)->setType(Project::Type::Executable);
             }
         }
-        else if (Settings::cppHeaderExtensions().contains(path.extension().string()))
+        else if (mBuildCache.settings().cppHeaderExtensions().contains(path.extension().string()))
         {
             mBuildCache.addHeader(path, projectName);
         }
@@ -100,7 +100,7 @@ private:
         {
             if (isTestDirectory(*it))
             {
-                return ensureProjectName(projectName) + Settings::projectNameSeparator() + it->filename().string();
+                return ensureProjectName(projectName) + mBuildCache.settings().projectNameSeparator() + it->filename().string();
             }
             else if (!isSkipDirectory(*it))
             {

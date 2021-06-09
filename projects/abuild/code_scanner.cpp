@@ -18,9 +18,9 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto isSource(const std::string token) -> bool
+    [[nodiscard]] auto isSource(const std::string token) -> bool
     {
-        return Settings::cppSourceExtensions().contains(std::filesystem::path{token}.extension().string());
+        return mBuildCache.settings().cppSourceExtensions().contains(std::filesystem::path{token}.extension().string());
     }
 
     [[nodiscard]] auto isSTLHeader(const std::string token) -> bool
