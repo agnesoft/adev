@@ -19,7 +19,7 @@ public:
     BuildCache(const std::filesystem::path &projectRoot) :
         mData{.projectRoot{projectRoot}, .dataOverride{projectRoot}}
     {
-        mData.dataOverride.doOverride(&mData.settings);
+        mData.dataOverride.applyOverride(&mData.settings);
     }
 
     auto addBuildTask(const void *entity, BuildTask buildTask) -> BuildTask *

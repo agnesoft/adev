@@ -23,7 +23,7 @@ public:
         }
     }
 
-    auto doOverride([[maybe_unused]] Settings *settings) -> void
+    auto applyOverride([[maybe_unused]] Settings *settings) -> void
     {
         if (mData.IsObject())
         {
