@@ -7,7 +7,7 @@ using atest::expect_fail;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::BuildCache", [] {
+static const auto testSuite = suite("abuild::Override", [] {
     test("non existing override file", [] {
         const std::filesystem::path root = TestProject{"abuild_test_override_test", {}}.projectRoot();
         expect([&] { abuild::Override{root}; }).toThrow<std::filesystem::filesystem_error>();

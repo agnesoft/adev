@@ -33,6 +33,16 @@ public:
         return mSeparator;
     }
 
+    auto setCppHeaderExtensions(std::unordered_set<std::string> extensions) -> void
+    {
+        mHeaderExtensions = std::move(extensions);
+    }
+
+    auto setCppSourceExtensions(std::unordered_set<std::string> extensions) -> void
+    {
+        mSourceExtensions = std::move(extensions);
+    }
+
     [[nodiscard]] auto skipDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
         return mSkipDirs;

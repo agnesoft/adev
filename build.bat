@@ -214,6 +214,7 @@ cl.exe %CPP_FLAGS_OPTIMIZED% ^
        "%PROJECTS_ROOT%\abuild\test\build_task_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\build_graph_test.cpp" ^
        "%PROJECTS_ROOT%\abuild\test\override_test.cpp" ^
+       "%PROJECTS_ROOT%\abuild\test\override_settings_test.cpp" ^
        "%BUILD_ROOT%\astl\astl.obj" ^
        "%BUILD_ROOT%\atest\atest.lib" ^
        "%BUILD_ROOT%\acore\acore.lib" ^
