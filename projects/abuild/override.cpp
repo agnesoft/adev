@@ -41,7 +41,7 @@ public:
 private:
     auto applyCppHeaderExtensions(Settings *settings) -> void
     {
-        if (hasArray("settings", "cppHeaderExtensions"))
+        if (hasValidArray("settings", "cppHeaderExtensions"))
         {
             settings->setCppHeaderExtensions(values("settings", "cppHeaderExtensions"));
         }
@@ -49,7 +49,7 @@ private:
 
     auto applyCppSourceExtensions(Settings *settings) -> void
     {
-        if (hasArray("settings", "cppSourceExtensions"))
+        if (hasValidArray("settings", "cppSourceExtensions"))
         {
             settings->setCppSourceExtensions(values("settings", "cppSourceExtensions"));
         }
@@ -57,7 +57,7 @@ private:
 
     auto applyExecutableFilenames(Settings *settings) -> void
     {
-        if (hasArray("settings", "executableFilenames"))
+        if (hasValidArray("settings", "executableFilenames"))
         {
             settings->setExecutableFilenames(values("settings", "executableFilenames"));
         }
@@ -65,7 +65,7 @@ private:
 
     auto applyIgnoreDirectories(Settings *settings) -> void
     {
-        if (hasArray("settings", "ignoreDirectories"))
+        if (hasValidArray("settings", "ignoreDirectories"))
         {
             settings->setIgnoreDirectories(values("settings", "ignoreDirectories"));
         }
@@ -73,7 +73,7 @@ private:
 
     auto applyProjectNameSeparator(Settings *settings) -> void
     {
-        if (hasString("settings", "projectNameSeparator"))
+        if (hasValidString("settings", "projectNameSeparator"))
         {
             settings->setProjectNameSeparator(value("settings", "projectNameSeparator"));
         }
@@ -81,7 +81,7 @@ private:
 
     auto applySkipDirectories(Settings *settings) -> void
     {
-        if (hasArray("settings", "skipDirectories"))
+        if (hasValidArray("settings", "skipDirectories"))
         {
             settings->setSkipDirectories(values("settings", "skipDirectories"));
         }
@@ -89,7 +89,7 @@ private:
 
     auto applySquashDirectories(Settings *settings) -> void
     {
-        if (hasArray("settings", "squashDirectories"))
+        if (hasValidArray("settings", "squashDirectories"))
         {
             settings->setSquashDirectories(values("settings", "squashDirectories"));
         }
@@ -97,20 +97,20 @@ private:
 
     auto applyTestDirectories(Settings *settings) -> void
     {
-        if (hasArray("settings", "testDirectories"))
+        if (hasValidArray("settings", "testDirectories"))
         {
             settings->setTestDirectories(values("settings", "testDirectories"));
         }
     }
 
-    [[nodiscard]] auto hasArray(const char *parent, const char *name) const -> bool
+    [[nodiscard]] auto hasValidArray(const char *parent, const char *name) const -> bool
     {
-        return mData[parent].HasMember(name) && mData[parent][name].IsArray();
+        return mData[parent].HasMember(name) && validateArray(parent, name);
     }
 
-    [[nodiscard]] auto hasString(const char *parent, const char *name) const -> bool
+    [[nodiscard]] auto hasValidString(const char *parent, const char *name) const -> bool
     {
-        return mData[parent].HasMember(name) && mData[parent][name].IsString();
+        return mData[parent].HasMember(name) && validateString(parent, name);
     }
 
     [[nodiscard]] auto readFile(const std::filesystem::path &path) -> std::string
@@ -126,6 +126,38 @@ private:
         return data;
     }
 
+    auto validateArray(const char *parent, const char *name) const -> bool
+    {
+        if (!mData[parent][name].IsArray())
+        {
+            throw std::runtime_error{"Override error. Value of [\"" + std::string{parent} + "\"][\"" + std::string{name} + "\"] must be a list of strings."};
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    auto validateArrayValue(const char *parent, const char *name, const rapidjson::Value &val) const -> void
+    {
+        if (!val.IsString())
+        {
+            throw std::runtime_error{"Override error. Value of [\"" + std::string{parent} + "\"][\"" + std::string{name} + "\"] must be a list of strings."};
+        }
+    }
+
+    auto validateString(const char *parent, const char *name) const -> bool
+    {
+        if (!mData[parent][name].IsString())
+        {
+            throw std::runtime_error{"Override error. Value of [\"" + std::string{parent} + "\"][\"" + std::string{name} + "\"] must be a string."};
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     [[nodiscard]] auto value(const char *parent, const char *name) const -> std::string
     {
         return mData[parent][name].GetString();
@@ -135,9 +167,10 @@ private:
     {
         std::unordered_set<std::string> vals;
 
-        for (const rapidjson::Value &value : mData[parent][name].GetArray())
+        for (const rapidjson::Value &val : mData[parent][name].GetArray())
         {
-            vals.insert(value.GetString());
+            validateArrayValue(parent, name, val);
+            vals.insert(val.GetString());
         }
 
         return vals;

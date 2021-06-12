@@ -87,4 +87,37 @@ static const auto testSuite = suite("abuild::Override (settings)", [] {
 
         expect(settings.testDirectories()).toBe(std::unordered_set<std::string>{"tst"});
     });
+
+    test("bad value, expected string", [] {
+        TestProjectWithContent testProject{"abuild_test_override_test",
+                                           {{".abuild", "{ \"settings\": { \"projectNameSeparator\": [ {} ] } }"}}};
+
+        abuild::Settings settings;
+
+        expect([&] {
+            abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+        }).toThrow<std::runtime_error>("Override error. Value of [\"settings\"][\"projectNameSeparator\"] must be a string.");
+    });
+
+    test("bad value type, expected array", [] {
+        TestProjectWithContent testProject{"abuild_test_override_test",
+                                           {{".abuild", "{ \"settings\": { \"ignoreDirectories\": {} } }"}}};
+
+        abuild::Settings settings;
+
+        expect([&] {
+            abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+        }).toThrow<std::runtime_error>("Override error. Value of [\"settings\"][\"ignoreDirectories\"] must be a list of strings.");
+    });
+
+    test("bad value in list, expected string", [] {
+        TestProjectWithContent testProject{"abuild_test_override_test",
+                                           {{".abuild", "{ \"settings\": { \"testDirectories\": [ {} ] } }"}}};
+
+        abuild::Settings settings;
+
+        expect([&] {
+            abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+        }).toThrow<std::runtime_error>("Override error. Value of [\"settings\"][\"testDirectories\"] must be a list of strings.");
+    });
 });
