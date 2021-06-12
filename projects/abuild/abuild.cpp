@@ -9,6 +9,7 @@ export import : build_graph;
 #else
 // clang-format off
 export import <astl.hpp>;
+import<rapidjson.hpp>;
 #include "settings.cpp"
 #include "project.cpp"
 #include "dependency.cpp"
