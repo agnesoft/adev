@@ -30,49 +30,61 @@ static const auto testSuite = suite("abuild::Override (settings)", [] {
 
     test("executableFilenames", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": {  } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"executableFilenames\": [ \"MAIN\" ] } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.executableFilenames()).toBe(std::unordered_set<std::string>{"MAIN"});
     });
 
     test("ignoreDirectories", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": {  } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"ignoreDirectories\": [ \"!old\", \"_old\" ] } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.ignoreDirectories()).toBe(std::unordered_set<std::string>{"!old", "_old"});
     });
 
     test("projectNameSeparator", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": {  } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"projectNameSeparator\": \"_\" } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.projectNameSeparator()).toBe("_");
     });
 
     test("skipDirectories", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": {  } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"skipDirectories\": [ \"abc\", \"cde\", \"efg\" ] } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.skipDirectories()).toBe(std::unordered_set<std::string>{"abc", "cde", "efg"});
     });
 
     test("squashDirectories", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": {  } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"squashDirectories\": [ \"SrC\", \"inc\" ] } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.squashDirectories()).toBe(std::unordered_set<std::string>{"SrC", "inc"});
     });
 
     test("testDirectories", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": {  } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"testDirectories\": [ \"tst\" ] } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.testDirectories()).toBe(std::unordered_set<std::string>{"tst"});
     });
 });

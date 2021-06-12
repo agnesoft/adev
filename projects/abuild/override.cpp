@@ -29,34 +29,88 @@ public:
         {
             applyCppHeaderExtensions(settings);
             applyCppSourceExtensions(settings);
+            applyExecutableFilenames(settings);
+            applyIgnoreDirectories(settings);
+            applyProjectNameSeparator(settings);
+            applySkipDirectories(settings);
+            applySquashDirectories(settings);
+            applyTestDirectories(settings);
         }
     }
 
 private:
     auto applyCppHeaderExtensions(Settings *settings) -> void
     {
-        if (hasCppHeaderExtensions())
+        if (hasArray("settings", "cppHeaderExtensions"))
         {
-            settings->setCppHeaderExtensions(values("cppHeaderExtensions"));
+            settings->setCppHeaderExtensions(values("settings", "cppHeaderExtensions"));
         }
     }
 
     auto applyCppSourceExtensions(Settings *settings) -> void
     {
-        if (hasCppSourceExtensions())
+        if (hasArray("settings", "cppSourceExtensions"))
         {
-            settings->setCppSourceExtensions(values("cppSourceExtensions"));
+            settings->setCppSourceExtensions(values("settings", "cppSourceExtensions"));
         }
     }
 
-    [[nodiscard]] auto hasCppHeaderExtensions() const -> bool
+    auto applyExecutableFilenames(Settings *settings) -> void
     {
-        return mData["settings"].HasMember("cppHeaderExtensions") && mData["settings"]["cppHeaderExtensions"].IsArray();
+        if (hasArray("settings", "executableFilenames"))
+        {
+            settings->setExecutableFilenames(values("settings", "executableFilenames"));
+        }
     }
 
-    [[nodiscard]] auto hasCppSourceExtensions() const -> bool
+    auto applyIgnoreDirectories(Settings *settings) -> void
     {
-        return mData["settings"].HasMember("cppSourceExtensions") && mData["settings"]["cppSourceExtensions"].IsArray();
+        if (hasArray("settings", "ignoreDirectories"))
+        {
+            settings->setIgnoreDirectories(values("settings", "ignoreDirectories"));
+        }
+    }
+
+    auto applyProjectNameSeparator(Settings *settings) -> void
+    {
+        if (hasString("settings", "projectNameSeparator"))
+        {
+            settings->setProjectNameSeparator(value("settings", "projectNameSeparator"));
+        }
+    }
+
+    auto applySkipDirectories(Settings *settings) -> void
+    {
+        if (hasArray("settings", "skipDirectories"))
+        {
+            settings->setSkipDirectories(values("settings", "skipDirectories"));
+        }
+    }
+
+    auto applySquashDirectories(Settings *settings) -> void
+    {
+        if (hasArray("settings", "squashDirectories"))
+        {
+            settings->setSquashDirectories(values("settings", "squashDirectories"));
+        }
+    }
+
+    auto applyTestDirectories(Settings *settings) -> void
+    {
+        if (hasArray("settings", "testDirectories"))
+        {
+            settings->setTestDirectories(values("settings", "testDirectories"));
+        }
+    }
+
+    [[nodiscard]] auto hasArray(const char *parent, const char *name) const -> bool
+    {
+        return mData[parent].HasMember(name) && mData[parent][name].IsArray();
+    }
+
+    [[nodiscard]] auto hasString(const char *parent, const char *name) const -> bool
+    {
+        return mData[parent].HasMember(name) && mData[parent][name].IsString();
     }
 
     [[nodiscard]] auto readFile(const std::filesystem::path &path) -> std::string
@@ -72,11 +126,16 @@ private:
         return data;
     }
 
-    [[nodiscard]] auto values(const char *name) const -> std::unordered_set<std::string>
+    [[nodiscard]] auto value(const char *parent, const char *name) const -> std::string
+    {
+        return mData[parent][name].GetString();
+    }
+
+    [[nodiscard]] auto values(const char *parent, const char *name) const -> std::unordered_set<std::string>
     {
         std::unordered_set<std::string> vals;
 
-        for (const rapidjson::Value &value : mData["settings"][name].GetArray())
+        for (const rapidjson::Value &value : mData[parent][name].GetArray())
         {
             vals.insert(value.GetString());
         }

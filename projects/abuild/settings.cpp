@@ -33,14 +33,44 @@ public:
         return mSeparator;
     }
 
-    auto setCppHeaderExtensions(std::unordered_set<std::string> extensions) -> void
+    auto setCppHeaderExtensions(std::unordered_set<std::string> extensions) noexcept -> void
     {
         mHeaderExtensions = std::move(extensions);
     }
 
-    auto setCppSourceExtensions(std::unordered_set<std::string> extensions) -> void
+    auto setCppSourceExtensions(std::unordered_set<std::string> extensions) noexcept -> void
     {
         mSourceExtensions = std::move(extensions);
+    }
+
+    auto setExecutableFilenames(std::unordered_set<std::string> filenames) noexcept -> void
+    {
+        mExeFilenames = std::move(filenames);
+    }
+
+    auto setIgnoreDirectories(std::unordered_set<std::string> directories) noexcept -> void
+    {
+        mIgnoreDirs = std::move(directories);
+    }
+
+    auto setProjectNameSeparator(std::string separator) noexcept -> void
+    {
+        mSeparator = std::move(separator);
+    }
+
+    auto setSkipDirectories(std::unordered_set<std::string> directories) noexcept -> void
+    {
+        mSkipDirs = std::move(directories);
+    }
+
+    auto setSquashDirectories(std::unordered_set<std::string> directories) noexcept -> void
+    {
+        mSquashDirs = std::move(directories);
+    }
+
+    auto setTestDirectories(std::unordered_set<std::string> directories) noexcept -> void
+    {
+        mTestDirs = std::move(directories);
     }
 
     [[nodiscard]] auto skipDirectories() const noexcept -> const std::unordered_set<std::string> &
