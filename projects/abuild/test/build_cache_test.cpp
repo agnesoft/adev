@@ -10,7 +10,7 @@ using atest::test;
 static const auto testSuite = suite("abuild::BuildCache", [] {
     test("type traits", [] {
         expect(std::is_default_constructible_v<abuild::BuildCache>).toBe(true);
-        expect(std::is_copy_constructible_v<abuild::BuildCache>).toBe(true);
+        expect(std::is_copy_constructible_v<abuild::BuildCache>).toBe(false);
 
         // clang-format off
 #if defined(_MSC_VER)
@@ -21,7 +21,7 @@ static const auto testSuite = suite("abuild::BuildCache", [] {
         // clang-format on
 
         expect(std::is_nothrow_move_constructible_v<abuild::BuildCache>).toBe(isNothrowMoveConstructible);
-        expect(std::is_copy_assignable_v<abuild::BuildCache>).toBe(true);
+        expect(std::is_copy_assignable_v<abuild::BuildCache>).toBe(false);
         expect(std::is_nothrow_move_assignable_v<abuild::BuildCache>).toBe(true);
         expect(std::is_nothrow_destructible_v<abuild::BuildCache>).toBe(true);
     });
@@ -42,5 +42,13 @@ static const auto testSuite = suite("abuild::BuildCache", [] {
         assert_(cache.warnings().size()).toBe(1u);
         expect(cache.warnings()[0].component).toBe("BuildCache");
         expect(cache.warnings()[0].what).toBe("Some warning");
+    });
+
+    test("project root", [] {
+        TestProject testProject{"abuild_build_cache_test", {}};
+
+        const abuild::BuildCache cache{testProject.projectRoot()};
+
+        expect(cache.projectRoot()).toBe(testProject.projectRoot());
     });
 });

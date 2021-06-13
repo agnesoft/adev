@@ -35,8 +35,8 @@ static const auto testSuite = suite("abuild::Project", [] {
         TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/src/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.project("abuild_project_scanner_test")).toBe(nullptr);

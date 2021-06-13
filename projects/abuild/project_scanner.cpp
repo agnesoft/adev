@@ -9,12 +9,10 @@ namespace abuild
 export class ProjectScanner
 {
 public:
-    ProjectScanner(BuildCache &cache, const std::filesystem::path &projectRoot) :
-        mBuildCache{cache},
-        mProjectRoot{std::filesystem::canonical(projectRoot)}
-
+    explicit ProjectScanner(BuildCache &cache) :
+        mBuildCache{cache}
     {
-        scanDirectory(mProjectRoot);
+        scanDirectory(mBuildCache.projectRoot());
     }
 
 private:
@@ -34,7 +32,7 @@ private:
     {
         if (projectName.empty())
         {
-            return mProjectRoot.filename().string();
+            return mBuildCache.projectRoot().filename().string();
         }
         else
         {
@@ -66,7 +64,7 @@ private:
     {
         std::vector<std::filesystem::path> directories;
 
-        while (path != mProjectRoot)
+        while (path != mBuildCache.projectRoot())
         {
             directories.push_back(path);
             path = path.parent_path();
@@ -148,6 +146,5 @@ private:
     }
 
     BuildCache &mBuildCache;
-    std::filesystem::path mProjectRoot;
 };
 }

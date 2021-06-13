@@ -10,6 +10,7 @@ export import : toolchain_scanner;
 #else
 // clang-format off
 export import <astl.hpp>;
+import<rapidjson.hpp>;
 #include "settings.cpp"
 #include "project.cpp"
 #include "dependency.cpp"
@@ -22,6 +23,7 @@ export import <astl.hpp>;
 #include "build_task.cpp"
 #include "build_cache_index.cpp"
 #include "toolchain.cpp"
+#include "override.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
 #include "token.cpp"

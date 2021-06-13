@@ -9,11 +9,11 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
     test("module interface", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"mymodule.cpp", "module mymodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.modules().size()).toBe(1u);
@@ -23,11 +23,11 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
     });
 
     test("exported module interface", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"mymodule.cpp", "export module mymodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.modules().size()).toBe(1u);
@@ -37,11 +37,11 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
     });
 
     test("module partition", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"mymodule_partition.cpp", "module mymodule : mypartition;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.modules().size()).toBe(1u);
@@ -54,12 +54,12 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
 
     test("module partitions", [] {
         TestCache testCache;
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"mymodule_partition.cpp", "module mymodule : mypartition;"},
                                             {"mymodule_otherpartition.cpp", "export module mymodule : myotherpartition;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.modules().size()).toBe(1u);
@@ -82,11 +82,11 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
     });
 
     test("module in header", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"header.hpp", "export module mymodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.headers().size()).toBe(1u);
@@ -98,11 +98,11 @@ static const auto testSuite = suite("abuild::CodeScanner (modules)", [] {
     });
 
     test("module partition in header", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"header.hpp", "module mymodule : mypartition;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.headers().size()).toBe(1u);

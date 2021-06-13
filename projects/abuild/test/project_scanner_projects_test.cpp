@@ -12,8 +12,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         TestProject testProject{"abuild_project_scanner_test",
                                 {"main"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(noexcept(cache.projects())).toBe(true);
         expect(cache.projects().size()).toBe(0u);
@@ -23,8 +23,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         TestProject testProject{"abuild_project_scanner_test",
                                 {"main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test");
@@ -34,8 +34,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         TestProject testProject{"abuild_project_scanner_test",
                                 {"test/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test.test");
@@ -45,8 +45,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild");
@@ -56,8 +56,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
         TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/test/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild.test");
@@ -69,8 +69,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                  "test/another/dir/main.cpp",
                                  "test/more/test/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test.test");
@@ -81,8 +81,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                 {"src/main.cpp",
                                  "include/another/dir/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild_project_scanner_test");
@@ -94,8 +94,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                  "projects/abuild/include/another/dir/main.cpp",
                                  "projects/abuild/include/abuild/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
         expect(cache.projects()[0]->name()).toBe("abuild");
@@ -110,8 +110,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                  "projects/atest/atest.cpp",
                                  "projects/atest/test/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::string> actualProjects;
 
@@ -141,8 +141,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                  "projects/atest/atest.cpp",
                                  "projects/atest/test/src/main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::string, abuild::Project::Type>> actualProjects;
 
@@ -172,8 +172,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                  "projects/abuild/src/source2.cpp",
                                  "projects/abuild/src/source3.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
 
@@ -201,8 +201,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (projects)", [] {
                                  "projects/abuild/include/abuild/header2.hpp",
                                  "projects/abuild/include/abuild/header3.hpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.projects().size()).toBe(1u);
 
