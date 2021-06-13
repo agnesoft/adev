@@ -9,22 +9,22 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     test("no source", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"header.hpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(noexcept(cache.sources())).toBe(true);
         assert_(cache.sources().size()).toBe(0u);
     });
 
     test("single source", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
         assert_(cache.projects().size()).toBe(1u);
@@ -34,13 +34,13 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     });
 
     test("multiple sources", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"main.cpp",
                                  "source1.cpp",
                                  "source2.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::filesystem::path, std::string>> sources;
 
@@ -53,19 +53,19 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
 
         expect(sources)
             .toBe(std::vector<std::pair<std::filesystem::path, std::string>>{
-                {testProject.projectRoot() / "main.cpp", "build_test_project_scanner"},
-                {testProject.projectRoot() / "source1.cpp", "build_test_project_scanner"},
-                {testProject.projectRoot() / "source2.cpp", "build_test_project_scanner"}});
+                {testProject.projectRoot() / "main.cpp", "abuild_project_scanner_test"},
+                {testProject.projectRoot() / "source1.cpp", "abuild_project_scanner_test"},
+                {testProject.projectRoot() / "source2.cpp", "abuild_project_scanner_test"}});
     });
 
     test("using skip & squash dirs", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/main.cpp",
                                  "projects/acore/src/source1.cpp",
                                  "projects/atest/source2.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::filesystem::path, std::string>> sources;
 
@@ -84,7 +84,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
     });
 
     test("multiple sources per project", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/main.cpp",
                                  "projects/abuild/source1.cpp",
                                  "projects/acore/src/source1.cpp",
@@ -93,8 +93,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (sources)", [] {
                                  "projects/atest/source2.cpp",
                                  "projects/atest/source3.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::filesystem::path, std::string>> sources;
 

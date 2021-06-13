@@ -9,22 +9,22 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     test("no header", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"main.cpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(noexcept(cache.headers())).toBe(true);
         assert_(cache.headers().size()).toBe(0u);
     });
 
     test("single header", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"header.hpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         assert_(cache.headers().size()).toBe(1u);
         assert_(cache.projects().size()).toBe(1u);
@@ -34,13 +34,13 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     });
 
     test("multiple headers", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"header1.hpp",
                                  "header2.hpp",
                                  "header3.hpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::filesystem::path, std::string>> headers;
 
@@ -53,19 +53,19 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
 
         expect(headers)
             .toBe(std::vector<std::pair<std::filesystem::path, std::string>>{
-                {testProject.projectRoot() / "header1.hpp", "build_test_project_scanner"},
-                {testProject.projectRoot() / "header2.hpp", "build_test_project_scanner"},
-                {testProject.projectRoot() / "header3.hpp", "build_test_project_scanner"}});
+                {testProject.projectRoot() / "header1.hpp", "abuild_project_scanner_test"},
+                {testProject.projectRoot() / "header2.hpp", "abuild_project_scanner_test"},
+                {testProject.projectRoot() / "header3.hpp", "abuild_project_scanner_test"}});
     });
 
     test("using include dirs", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/header1.hpp",
                                  "projects/acore/include/subdir/header2.hpp",
                                  "projects/atest/include/atest/header3.hpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::filesystem::path, std::string>> headers;
 
@@ -84,7 +84,7 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
     });
 
     test("multiple headers per project", [] {
-        TestProject testProject{"build_test_project_scanner",
+        TestProject testProject{"abuild_project_scanner_test",
                                 {"projects/abuild/header1.hpp",
                                  "projects/abuild/header2.hpp",
                                  "projects/acore/include/header1.hpp",
@@ -93,8 +93,8 @@ static const auto testSuite = suite("abuild::ProjectScanner (headers)", [] {
                                  "projects/atest/header2.hpp",
                                  "projects/atest/header3.hpp"}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
 
         std::vector<std::pair<std::filesystem::path, std::string>> headers;
 

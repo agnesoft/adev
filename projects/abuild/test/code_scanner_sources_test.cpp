@@ -9,11 +9,11 @@ using atest::test;
 
 static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     test("include STL headers", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "#include <vector>\n#include <string>"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -31,11 +31,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import STL headers", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "import <vector>;\nexport import <string>;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -53,11 +53,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("include local headers", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "#include \"header.hpp\"\n#include \"other_header.hpp\""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -77,11 +77,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("include local source", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "#include \"mysource.cpp\""}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -95,11 +95,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("include external headers", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "#include <myproject/header.hpp>"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -113,11 +113,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("include external source", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "#include <source.cpp>"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -131,11 +131,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import local headers", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "import \"header.hpp\";\nexport import \"other_header.hpp\";"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -155,11 +155,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import local source", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "import \"source.cpp\";"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -171,11 +171,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import external header", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "export import <myproject/header.hpp>;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -189,11 +189,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import external source", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "import <source.cpp>;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -205,11 +205,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import modules", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "import mymodule;\nexport import othermodule;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
@@ -229,11 +229,11 @@ static const auto testSuite = suite("abuild::CodeScanner (sources)", [] {
     });
 
     test("import module partition", [] {
-        TestProjectWithContent testProject{"build_test_project_scanner",
+        TestProjectWithContent testProject{"abuild_code_scanner_test",
                                            {{"main.cpp", "import : mypartition;\nexport import : otherpartition;"}}};
 
-        abuild::BuildCache cache;
-        abuild::ProjectScanner{cache, testProject.projectRoot()};
+        abuild::BuildCache cache{testProject.projectRoot()};
+        abuild::ProjectScanner{cache};
         abuild::CodeScanner{cache};
 
         assert_(cache.sources().size()).toBe(1u);
