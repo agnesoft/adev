@@ -35,10 +35,21 @@ public:
             applySkipDirectories(settings);
             applySquashDirectories(settings);
             applyTestDirectories(settings);
+            applyGCCInstallDirectory(settings);
+            applyClangInstallDirectory(settings);
+            applyMSVCInstallDirectory(settings);
         }
     }
 
 private:
+    auto applyClangInstallDirectory(Settings *settings) -> void
+    {
+        if (hasValidString("settings", "clangInstallDirectory"))
+        {
+            settings->setClangInstallDirectory(value("settings", "clangInstallDirectory"));
+        }
+    }
+
     auto applyCppHeaderExtensions(Settings *settings) -> void
     {
         if (hasValidArray("settings", "cppHeaderExtensions"))
@@ -63,11 +74,27 @@ private:
         }
     }
 
+    auto applyGCCInstallDirectory(Settings *settings) -> void
+    {
+        if (hasValidString("settings", "gccInstallDirectory"))
+        {
+            settings->setGCCInstallDirectory(value("settings", "gccInstallDirectory"));
+        }
+    }
+
     auto applyIgnoreDirectories(Settings *settings) -> void
     {
         if (hasValidArray("settings", "ignoreDirectories"))
         {
             settings->setIgnoreDirectories(values("settings", "ignoreDirectories"));
+        }
+    }
+
+    auto applyMSVCInstallDirectory(Settings *settings) -> void
+    {
+        if (hasValidString("settings", "msvcInstallDirectory"))
+        {
+            settings->setMSVCInstallDirectory(value("settings", "msvcInstallDirectory"));
         }
     }
 

@@ -8,94 +8,131 @@ namespace abuild
 export class Settings
 {
 public:
+    [[nodiscard]] auto clangInstallDirectory() const noexcept -> const std::string &
+    {
+        return mClangInstallDirectory;
+    }
+
     [[nodiscard]] auto cppHeaderExtensions() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mHeaderExtensions;
+        return mCppHeaderExtensions;
     }
 
     [[nodiscard]] auto cppSourceExtensions() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mSourceExtensions;
+        return mCppSourceExtensions;
+    }
+
+    [[nodiscard]] auto gccInstallDirectory() const noexcept -> const std::string &
+    {
+        return mGCCInstallDirectory;
     }
 
     [[nodiscard]] auto executableFilenames() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mExeFilenames;
+        return mExecutableFilenames;
     }
 
     [[nodiscard]] auto ignoreDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mIgnoreDirs;
+        return mIgnoreDirectories;
+    }
+
+    [[nodiscard]] auto msvcInstallDirectory() const noexcept -> const std::string &
+    {
+        return mMSVCInstallDirectory;
     }
 
     [[nodiscard]] auto projectNameSeparator() const noexcept -> const std::string &
     {
-        return mSeparator;
+        return mProjectNameSeparator;
+    }
+
+    auto setClangInstallDirectory(std::string directory) noexcept -> void
+    {
+        mClangInstallDirectory = std::move(directory);
     }
 
     auto setCppHeaderExtensions(std::unordered_set<std::string> extensions) noexcept -> void
     {
-        mHeaderExtensions = std::move(extensions);
+        mCppHeaderExtensions = std::move(extensions);
     }
 
     auto setCppSourceExtensions(std::unordered_set<std::string> extensions) noexcept -> void
     {
-        mSourceExtensions = std::move(extensions);
+        mCppSourceExtensions = std::move(extensions);
+    }
+
+    auto setGCCInstallDirectory(std::string directory) -> void
+    {
+        mGCCInstallDirectory = std::move(directory);
     }
 
     auto setExecutableFilenames(std::unordered_set<std::string> filenames) noexcept -> void
     {
-        mExeFilenames = std::move(filenames);
+        mExecutableFilenames = std::move(filenames);
     }
 
     auto setIgnoreDirectories(std::unordered_set<std::string> directories) noexcept -> void
     {
-        mIgnoreDirs = std::move(directories);
+        mIgnoreDirectories = std::move(directories);
+    }
+
+    auto setMSVCInstallDirectory(std::string directory) noexcept -> void
+    {
+        mMSVCInstallDirectory = std::move(directory);
     }
 
     auto setProjectNameSeparator(std::string separator) noexcept -> void
     {
-        mSeparator = std::move(separator);
+        mProjectNameSeparator = std::move(separator);
     }
 
     auto setSkipDirectories(std::unordered_set<std::string> directories) noexcept -> void
     {
-        mSkipDirs = std::move(directories);
+        mSkipDirectories = std::move(directories);
     }
 
     auto setSquashDirectories(std::unordered_set<std::string> directories) noexcept -> void
     {
-        mSquashDirs = std::move(directories);
+        mSquashDirectories = std::move(directories);
     }
 
     auto setTestDirectories(std::unordered_set<std::string> directories) noexcept -> void
     {
-        mTestDirs = std::move(directories);
+        mTestDirectories = std::move(directories);
     }
 
     [[nodiscard]] auto skipDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mSkipDirs;
+        return mSkipDirectories;
     }
 
     [[nodiscard]] auto squashDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mSquashDirs;
+        return mSquashDirectories;
     }
 
     [[nodiscard]] auto testDirectories() const noexcept -> const std::unordered_set<std::string> &
     {
-        return mTestDirs;
+        return mTestDirectories;
     }
 
 private:
-    std::string mSeparator = ".";
-    std::unordered_set<std::string> mHeaderExtensions{".hpp", ".hxx", ".h"};
-    std::unordered_set<std::string> mSourceExtensions{".cpp", ".cxx", ".cc", ".ixx"};
-    std::unordered_set<std::string> mExeFilenames{"main", "Main", "WinMain"};
-    std::unordered_set<std::string> mIgnoreDirs{"build"};
-    std::unordered_set<std::string> mSkipDirs{"projects", "Projects"};
-    std::unordered_set<std::string> mSquashDirs{"src", "srcs", "SRC", "Src", "source", "sources", "Source", "Sources", "include", "Include", "includes", "Includes"};
-    std::unordered_set<std::string> mTestDirs{"test", "Test", "tests", "Tests"};
+    std::string mProjectNameSeparator = ".";
+    std::string mGCCInstallDirectory = "/usr/bin/";
+#ifdef _WIN32
+    std::string mClangInstallDirectory = "C:/Program Files/LLVM/";
+#else
+    std::string mClangInstallDirectory = "/usr/bin/";
+#endif
+    std::string mMSVCInstallDirectory = "C:/Program Files (x86)/Microsoft Visual Studio/";
+    std::unordered_set<std::string> mCppHeaderExtensions{".hpp", ".hxx", ".h"};
+    std::unordered_set<std::string> mCppSourceExtensions{".cpp", ".cxx", ".cc", ".ixx"};
+    std::unordered_set<std::string> mExecutableFilenames{"main", "Main", "WinMain"};
+    std::unordered_set<std::string> mIgnoreDirectories{"build"};
+    std::unordered_set<std::string> mSkipDirectories{"projects", "Projects"};
+    std::unordered_set<std::string> mSquashDirectories{"src", "srcs", "SRC", "Src", "source", "sources", "Source", "Sources", "include", "Include", "includes", "Includes"};
+    std::unordered_set<std::string> mTestDirectories{"test", "Test", "tests", "Tests"};
 };
 }

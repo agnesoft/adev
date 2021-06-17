@@ -88,6 +88,36 @@ static const auto testSuite = suite("abuild::Override (settings)", [] {
         expect(settings.testDirectories()).toBe(std::unordered_set<std::string>{"tst"});
     });
 
+    test("gccInstallDirectory", [] {
+        TestProjectWithContent testProject{"abuild_test_override_test",
+                                           {{".abuild", "{ \"settings\": { \"gccInstallDirectory\": \"/my/dir\" } }"}}};
+
+        abuild::Settings settings;
+        abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.gccInstallDirectory()).toBe("/my/dir");
+    });
+
+    test("clangInstallDirectory", [] {
+        TestProjectWithContent testProject{"abuild_test_override_test",
+                                           {{".abuild", "{ \"settings\": { \"clangInstallDirectory\": \"/my/dir\" } }"}}};
+
+        abuild::Settings settings;
+        abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.clangInstallDirectory()).toBe("/my/dir");
+    });
+
+    test("msvcInstallDirectory", [] {
+        TestProjectWithContent testProject{"abuild_test_override_test",
+                                           {{".abuild", "{ \"settings\": { \"msvcInstallDirectory\": \"C:\\my\\dir\" } }"}}};
+
+        abuild::Settings settings;
+        abuild::Override{testProject.projectRoot()}.applyOverride(&settings);
+
+        expect(settings.msvcInstallDirectory()).toBe("C:\\my\\dir");
+    });
+
     test("bad value, expected string", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
                                            {{".abuild", "{ \"settings\": { \"projectNameSeparator\": [ {} ] } }"}}};

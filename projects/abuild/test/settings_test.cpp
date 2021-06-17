@@ -75,4 +75,20 @@ static const auto testSuite = suite("abuild::Settings", [] {
                 "Main",
                 "WinMain"});
     });
+
+    test("clang install directory", [] {
+#ifdef _WIN32
+        expect(abuild::Settings{}.clangInstallDirectory()).toBe("C:/Program Files/LLVM/");
+#else
+                expect(abuild::Settings{}.clangInstallDirectory()).toBe("/usr/bin/");
+#endif
+    });
+
+    test("gcc install directory", [] {
+        expect(abuild::Settings{}.gccInstallDirectory()).toBe("/usr/bin/");
+    });
+
+    test("MSVC install directory", [] {
+        expect(abuild::Settings{}.msvcInstallDirectory()).toBe("C:/Program Files (x86)/Microsoft Visual Studio/");
+    });
 });
