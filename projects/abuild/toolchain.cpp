@@ -17,11 +17,12 @@ export struct Toolchain
     std::string name;
     Type type = Type::Clang;
     std::filesystem::path compiler;
-    std::vector<std::string> compilerFlags;
     std::filesystem::path linker;
-    std::vector<std::string> linkerFlags;
     std::filesystem::path archiver;
-    std::vector<std::string> archiverFlags;
+    std::unordered_set<std::string> compilerFlags;
+    std::unordered_set<std::string> linkerFlags;
+    std::unordered_set<std::string> archiverFlags;
     std::filesystem::path includePath;
+    std::filesystem::path libPath;
 };
 }

@@ -110,7 +110,7 @@ static const auto testSuite = suite("abuild::Override (settings)", [] {
 
     test("msvcInstallDirectory", [] {
         TestProjectWithContent testProject{"abuild_test_override_test",
-                                           {{".abuild", "{ \"settings\": { \"msvcInstallDirectory\": \"C:\\my\\dir\" } }"}}};
+                                           {{".abuild", "{ \"settings\": { \"msvcInstallDirectory\": \"C:\\\\my\\\\dir\" } }"}}};
 
         abuild::Settings settings;
         abuild::Override{testProject.projectRoot()}.applyOverride(&settings);

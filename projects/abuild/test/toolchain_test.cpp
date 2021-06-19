@@ -15,12 +15,8 @@ static const auto testSuite = suite("abuild::Toolchain", [] {
             .name = "msvc",
             .type = abuild::Toolchain::Type::MSVC,
             .compiler = "cl.exe",
-            .compilerFlags = {"/nologo", "/std:c++latest"},
             .linker = "link.exe",
-            .linkerFlags = {"/NOLOGO"},
-            .archiver = "archiver.exe",
-            .archiverFlags = {},
-            .includePath = "include/"};
+            .archiver = "archiver.exe"};
 
         cache.addToolchain(toolchain);
 
