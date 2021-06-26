@@ -13,6 +13,7 @@ public:
     {
         detectMSVC();
         detectClang();
+        detectGCC();
     }
 
 private:
@@ -24,7 +25,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto clangArchiver(const std::filesystem::path &path, const std::string &suffix) -> std::filesystem::path
+    [[nodiscard]] static auto clangArchiver(const std::filesystem::path &path, const std::string &suffix) -> std::filesystem::path
     {
         const std::filesystem::path llvmar = path / ("llvm-ar" + suffix);
         return std::filesystem::exists(llvmar) ? llvmar : (path / "ar");
@@ -47,7 +48,7 @@ private:
 #endif
     }
 
-    [[nodiscard]] auto clangIncludeDir(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
+    [[nodiscard]] static auto clangIncludeDir(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
     {
         if (version.empty())
         {
@@ -59,7 +60,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto clangLibDir(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
+    [[nodiscard]] static auto clangLibDir(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
     {
         if (version.empty())
         {
@@ -71,7 +72,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto clangIncludeDirAutoVersion(const std::filesystem::path &path) -> std::filesystem::path
+    [[nodiscard]] static auto clangIncludeDirAutoVersion(const std::filesystem::path &path) -> std::filesystem::path
     {
         const std::filesystem::path includeRoot = path / "lib" / "clang";
 
@@ -86,7 +87,7 @@ private:
         return {};
     }
 
-    [[nodiscard]] auto clangLibDirAutoVersion(const std::filesystem::path &path) -> std::filesystem::path
+    [[nodiscard]] static auto clangLibDirAutoVersion(const std::filesystem::path &path) -> std::filesystem::path
     {
         const std::filesystem::path libRoot = path / "lib" / "clang";
 
@@ -106,7 +107,7 @@ private:
         return {};
     }
 
-    [[nodiscard]] auto clangLibDirVersion(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
+    [[nodiscard]] static auto clangLibDirVersion(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
     {
         const std::filesystem::path libRoot = path / "lib" / "clang" / version / "lib";
 
@@ -145,8 +146,36 @@ private:
             .compilerFlags = {"-std=c++20", "-fmodules", "-Wall", "-Wextra", "-pedantic", "-c", "-x c++"},
             .linkerFlags = {},
             .archiverFlags = {},
-            .includePath = clangIncludeDir(path, ""),
-            .libPath = clangLibDir(path, "")});
+            .includePath = clangIncludeDir(path, version),
+            .libPath = clangLibDir(path, version)});
+    }
+
+    auto detectGCC() -> void
+    {
+        if (std::filesystem::exists(mBuildCache.settings().gccInstallDirectory()))
+        {
+            detectGCCVersion(mBuildCache.settings().gccInstallDirectory(), "");
+            detectGCCVersion(mBuildCache.settings().gccInstallDirectory(), "11");
+            detectGCCVersion(mBuildCache.settings().gccInstallDirectory(), "10");
+            detectGCCVersion(mBuildCache.settings().gccInstallDirectory(), "9");
+        }
+    }
+
+    auto detectGCCVersion(const std::filesystem::path &path, const std::string &version) -> void
+    {
+        const std::string suffix = gccSuffix(version);
+
+        addToolchain(Toolchain{
+            .name = "gcc" + version,
+            .type = Toolchain::Type::Clang,
+            .compiler = path / "bin" / ("g++" + suffix),
+            .linker = path / "bin" / "ld",
+            .archiver = path / "bin" / "ar",
+            .compilerFlags = {"-std=c++20", "-fmodules-ts", "-Wall", "-Wextra", "-pedantic", "-c", "-x c++"},
+            .linkerFlags = {},
+            .archiverFlags = {},
+            .includePath = gccIncludeDir(path, version),
+            .libPath = gccLibDir(path, version)});
     }
 
     auto detectMSVC() -> void
@@ -188,6 +217,65 @@ private:
         {
             detectMSVC(path, year, edition, architecture);
         }
+    }
+
+    [[nodiscard]] static auto gccIncludeDir(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
+    {
+        if (version.empty())
+        {
+            return gccIncludeDirAutoVersion(path);
+        }
+        else
+        {
+            return path / "lib" / "gcc" / "x86_64-linux-gnu" / version / "include";
+        }
+    }
+
+    [[nodiscard]] static auto gccIncludeDirAutoVersion(const std::filesystem::path &path) -> std::filesystem::path
+    {
+        const std::filesystem::path includeRoot = path / "lib" / "gcc" / "x86_64-linux-gnu";
+
+        if (std::filesystem::exists(includeRoot))
+        {
+            for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(includeRoot))
+            {
+                return entry.path() / "include";
+            }
+        }
+
+        return {};
+    }
+
+    [[nodiscard]] static auto gccLibDir(const std::filesystem::path &path, const std::string &version) -> std::filesystem::path
+    {
+        if (version.empty())
+        {
+            return gccLibDirAutoVersion(path);
+        }
+        else
+        {
+            return path / "lib" / "gcc" / "x86_64-linux-gnu" / version;
+        }
+    }
+
+    [[nodiscard]] static auto gccLibDirAutoVersion(const std::filesystem::path &path) -> std::filesystem::path
+    {
+        const std::filesystem::path libRoot = path / "lib" / "gcc" / "x86_64-linux-gnu";
+
+        if (std::filesystem::exists(libRoot))
+        {
+            for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(libRoot))
+            {
+                return entry.path();
+            }
+        }
+
+        return {};
+    }
+
+    [[nodiscard]] static auto gccSuffix(const std::string &version) -> std::string
+    {
+        return (version.empty() ? "" : "-") + version;
     }
 
     BuildCache &mBuildCache;
