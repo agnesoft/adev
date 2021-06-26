@@ -21,7 +21,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         abuild::BuildCache cache(testProject.projectRoot());
         abuild::ToolchainScanner{cache};
 
-        assert_(cache.toolchains().size()).toBe(1);
+        assert_(cache.toolchains().size()).toBe(1u);
         expect(cache.toolchains()[0]->name).toBe("msvc2019_x64_Community_14.29.30037");
         expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/cl.exe");
         expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/link.exe");
@@ -50,7 +50,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         abuild::BuildCache cache(testProject.projectRoot());
         abuild::ToolchainScanner{cache};
 
-        assert_(cache.toolchains().size()).toBe(2);
+        assert_(cache.toolchains().size()).toBe(2u);
         expect(cache.toolchains()[1]->name).toBe("msvc2019_x32_Professional_14.29.30037");
         expect(cache.toolchains()[1]->compiler).toBe(testProject.projectRoot() / "2019/Professional/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x32/cl.exe");
         expect(cache.toolchains()[1]->linker).toBe(testProject.projectRoot() / "2019/Professional/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x32/link.exe");
@@ -81,7 +81,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         abuild::BuildCache cache(testProject.projectRoot());
         abuild::ToolchainScanner{cache};
 
-        assert_(cache.toolchains().size()).toBe(1);
+        assert_(cache.toolchains().size()).toBe(1u);
         expect(cache.toolchains()[0]->name).toBe("clang");
 #ifdef _WIN32
         expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "LLVM/bin/clang++.exe");
@@ -116,7 +116,7 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         abuild::BuildCache cache(testProject.projectRoot());
         abuild::ToolchainScanner{cache};
 
-        assert_(cache.toolchains().size()).toBe(1);
+        assert_(cache.toolchains().size()).toBe(1u);
         expect(cache.toolchains()[0]->name).toBe("clang12");
 #ifdef _WIN32
         expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "LLVM/bin/clang++-12.exe");
