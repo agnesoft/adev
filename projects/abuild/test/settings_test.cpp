@@ -78,14 +78,14 @@ static const auto testSuite = suite("abuild::Settings", [] {
 
     test("clang install directory", [] {
 #ifdef _WIN32
-        expect(abuild::Settings{}.clangInstallDirectory()).toBe("C:/Program Files/LLVM/");
+        expect(abuild::Settings{}.clangInstallDirectory()).toBe("C:/Program Files/LLVM");
 #else
-                expect(abuild::Settings{}.clangInstallDirectory()).toBe("/usr/bin/");
+                expect(abuild::Settings{}.clangInstallDirectory()).toBe("/usr");
 #endif
     });
 
     test("gcc install directory", [] {
-        expect(abuild::Settings{}.gccInstallDirectory()).toBe("/usr/bin/");
+        expect(abuild::Settings{}.gccInstallDirectory()).toBe("/usr");
     });
 
     test("MSVC install directory", [] {

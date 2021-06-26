@@ -120,11 +120,11 @@ public:
 
 private:
     std::string mProjectNameSeparator = ".";
-    std::string mGCCInstallDirectory = "/usr/bin/";
+    std::string mGCCInstallDirectory = "/usr";
 #ifdef _WIN32
-    std::string mClangInstallDirectory = "C:/Program Files/LLVM/";
+    std::string mClangInstallDirectory = "C:/Program Files/LLVM";
 #else
-    std::string mClangInstallDirectory = "/usr/bin/";
+    std::string mClangInstallDirectory = "/usr";
 #endif
     std::string mMSVCInstallDirectory = "C:/Program Files (x86)/Microsoft Visual Studio/";
     std::unordered_set<std::string> mCppHeaderExtensions{".hpp", ".hxx", ".h"};
