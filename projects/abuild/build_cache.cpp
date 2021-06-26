@@ -2,6 +2,7 @@
 export module abuild : build_cache;
 export import : error;
 export import : warning;
+export import : toolchain;
 export import : build_cache_index;
 export import : abuild_override;
 #endif
@@ -79,6 +80,11 @@ public:
         proj->addSource(source);
         mIndex.addSource(path.filename().string(), source);
         return source;
+    }
+
+    auto addToolchain(Toolchain toolchain) -> Toolchain *
+    {
+        return mData.toolchains.emplace_back(std::make_unique<Toolchain>(std::move(toolchain))).get();
     }
 
     auto addWarning(Warning warning) -> void
@@ -176,6 +182,24 @@ public:
         return mData.sources;
     }
 
+    [[nodiscard]] auto toolchain(const std::string &name) const -> Toolchain *
+    {
+        for (const std::unique_ptr<Toolchain> &toolchain : mData.toolchains)
+        {
+            if (toolchain->name.starts_with(name))
+            {
+                return toolchain.get();
+            }
+        }
+
+        return nullptr;
+    }
+
+    [[nodiscard]] auto toolchains() const noexcept -> const std::vector<std::unique_ptr<Toolchain>> &
+    {
+        return mData.toolchains;
+    }
+
     [[nodiscard]] auto warnings() const noexcept -> const std::vector<Warning> &
     {
         return mData.warnings;
@@ -190,6 +214,7 @@ private:
         std::vector<std::unique_ptr<Module>> modules;
         std::vector<std::unique_ptr<ModulePartition>> modulePartitions;
         std::vector<std::unique_ptr<BuildTask>> buildTasks;
+        std::vector<std::unique_ptr<Toolchain>> toolchains;
         std::vector<Error> errors;
         std::vector<Warning> warnings;
         std::filesystem::path projectRoot;

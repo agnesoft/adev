@@ -6,6 +6,7 @@ export import : project_scanner;
 export import : code_scanner;
 export import : dependency_scanner;
 export import : build_graph;
+export import : toolchain_scanner;
 #else
 // clang-format off
 export import <astl.hpp>;
@@ -21,6 +22,7 @@ import<rapidjson.hpp>;
 #include "warning.cpp"
 #include "build_task.cpp"
 #include "build_cache_index.cpp"
+#include "toolchain.cpp"
 #include "override.cpp"
 #include "build_cache.cpp"
 #include "project_scanner.cpp"
@@ -29,5 +31,6 @@ import<rapidjson.hpp>;
 #include "code_scanner.cpp"
 #include "dependency_scanner.cpp"
 #include "build_graph.cpp"
+#include "toolchain_scanner.cpp"
 // clang-format on
 #endif
