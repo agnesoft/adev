@@ -3,6 +3,7 @@ export module abuild : build_cache;
 export import : error;
 export import : warning;
 export import : toolchain;
+export import : sdk;
 export import : build_cache_index;
 export import : abuild_override;
 #endif
