@@ -1,21 +1,6 @@
-module;
-
-#ifdef _MSC_VER
-#    include <typeinfo>
-#endif
-
 export module atest;
 
-#ifdef _MSC_VER
-#    pragma warning(push)
-#    pragma warning(disable : 5106)
-#endif
-
 export import "astl.hpp";
-
-#ifdef _MSC_VER
-#    pragma warning(pop)
-#endif
 
 #ifdef _MSC_VER
 export import : expect;
@@ -104,10 +89,6 @@ auto test(const char *name, auto (*testBody)()->void, const std::source_location
 export template<typename T = int>
 auto suite(const char *name, auto (*suiteBody)()->void, const std::source_location &sourceLocation = std::source_location::current()) noexcept -> int
 {
-#ifdef _MSC_VER
-    using ::type_info;
-#endif
-
     try
     {
         try

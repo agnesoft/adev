@@ -1,4 +1,4 @@
-#ifdef _MSC_VER
+#ifdef _WIN32
 export module acore : process;
 
 import : acore_common;
@@ -32,7 +32,7 @@ public:
         mArguments{std::move(arguments)},
         mWorkingDirectory{std::move(workingDirectory)}
     {
-#ifdef _MSC_VER
+#ifdef _WIN32
         WindowsProcess process{mCommand, mArguments, mWorkingDirectory};
 #else
         ProcessUnix process{&mCommand, &mArguments, mWorkingDirectory};

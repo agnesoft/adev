@@ -7,5 +7,10 @@ namespace abuild
 {
 export struct SDK
 {
+    std::string name;
+    std::string toolchain;
+    std::filesystem::path includePath;
+    std::filesystem::path interfacePath;
+    std::filesystem::path libPath;
 };
 }

@@ -11,9 +11,14 @@ public:
     explicit SDKScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
+        detectWindowsSDK();
     }
 
 private:
+    auto detectWindowsSDK() -> void
+    {
+    }
+
     BuildCache &mBuildCache;
 };
 }

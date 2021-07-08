@@ -74,6 +74,11 @@ public:
         return partition;
     }
 
+    auto addSDK(SDK sdk) -> void
+    {
+        mData.sdks.push_back(std::move(sdk));
+    }
+
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> Source *
     {
         Project *proj = getProject(projectName);
@@ -163,6 +168,11 @@ public:
         return mData.projects;
     }
 
+    [[nodiscard]] auto sdks() const noexcept -> const std::vector<SDK> &
+    {
+        return mData.sdks;
+    }
+
     [[nodiscard]] auto settings() const noexcept -> const Settings &
     {
         return mData.settings;
@@ -218,6 +228,7 @@ private:
         std::vector<std::unique_ptr<Toolchain>> toolchains;
         std::vector<Error> errors;
         std::vector<Warning> warnings;
+        std::vector<SDK> sdks;
         std::filesystem::path projectRoot;
         Settings settings;
         Override dataOverride;

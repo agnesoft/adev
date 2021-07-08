@@ -40,7 +40,6 @@ cd ..
 REM acore
 mkdir acore
 cd acore
-cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\acore_common.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\commandline_option.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\commandline.cpp"
 cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /internalPartition "%PROJECTS_ROOT%\acore\process_windows.cpp"
@@ -49,7 +48,6 @@ cl.exe %CPP_FLAGS_OPTIMIZED% /c /Fo /interface /TP "%PROJECTS_ROOT%\acore\acore.
 lib.exe /NOLOGO ^
         /OUT:acore.lib ^
         acore.obj ^
-        acore_common.obj ^
         commandline.obj ^
         commandline_option.obj ^
         process.obj ^

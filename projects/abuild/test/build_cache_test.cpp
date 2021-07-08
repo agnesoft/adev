@@ -13,7 +13,7 @@ static const auto testSuite = suite("abuild::BuildCache", [] {
         expect(std::is_copy_constructible_v<abuild::BuildCache>).toBe(false);
 
         // clang-format off
-#if defined(_MSC_VER)
+#ifdef _WIN32
         bool isNothrowMoveConstructible = false;
 #else
         bool isNothrowMoveConstructible = true;
