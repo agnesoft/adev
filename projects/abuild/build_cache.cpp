@@ -74,9 +74,11 @@ public:
         return partition;
     }
 
-    auto addSDK(SDK sdk) -> void
+    auto addSDK(SDK sdk) -> SDK *
     {
-        mData.sdks.push_back(std::move(sdk));
+        SDK *kit = mData.sdks.emplace_back(std::make_unique<SDK>(std::move(sdk))).get();
+
+        return kit;
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> Source *
@@ -168,7 +170,7 @@ public:
         return mData.projects;
     }
 
-    [[nodiscard]] auto sdks() const noexcept -> const std::vector<SDK> &
+    [[nodiscard]] auto sdks() const noexcept -> const std::vector<std::unique_ptr<SDK>> &
     {
         return mData.sdks;
     }
@@ -219,16 +221,16 @@ public:
 private:
     struct Data
     {
-        std::vector<std::unique_ptr<Project>> projects;
-        std::vector<std::unique_ptr<Source>> sources;
+        std::vector<std::unique_ptr<BuildTask>> buildTasks;
         std::vector<std::unique_ptr<Header>> headers;
         std::vector<std::unique_ptr<Module>> modules;
         std::vector<std::unique_ptr<ModulePartition>> modulePartitions;
-        std::vector<std::unique_ptr<BuildTask>> buildTasks;
+        std::vector<std::unique_ptr<Project>> projects;
+        std::vector<std::unique_ptr<Source>> sources;
+        std::vector<std::unique_ptr<SDK>> sdks;
         std::vector<std::unique_ptr<Toolchain>> toolchains;
         std::vector<Error> errors;
         std::vector<Warning> warnings;
-        std::vector<SDK> sdks;
         std::filesystem::path projectRoot;
         Settings settings;
         Override dataOverride;
