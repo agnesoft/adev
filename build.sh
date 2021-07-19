@@ -125,6 +125,8 @@ cd abuild_test
          "$PROJECTS_ROOT/abuild/test/toolchain_scanner_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/override_test.cpp" \
          "$PROJECTS_ROOT/abuild/test/override_settings_test.cpp" \
+         "$PROJECTS_ROOT/abuild/test/sdk_test.cpp" \
+         "$PROJECTS_ROOT/abuild/test/sdk_scanner_test.cpp" \
          "$BUILD_ROOT/acore/acore.obj" \
          "$BUILD_ROOT/abuild/abuild.obj" \
          "$BUILD_ROOT/atest/atest.obj" \

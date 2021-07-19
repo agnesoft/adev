@@ -11,7 +11,7 @@ public:
     explicit ToolchainScanner(BuildCache &cache) :
         mBuildCache{cache}
     {
-#ifdef _MSC_VER
+#ifdef _WIN32
         detectMSVC();
         detectClangWindows();
 #else

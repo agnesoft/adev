@@ -3,6 +3,7 @@ export module abuild : build_cache;
 export import : error;
 export import : warning;
 export import : toolchain;
+export import : sdk;
 export import : build_cache_index;
 export import : abuild_override;
 #endif
@@ -71,6 +72,13 @@ public:
         partition->mod = mod;
         mIndex.addModulePartitionFile(source, partition);
         return partition;
+    }
+
+    auto addSDK(SDK sdk) -> SDK *
+    {
+        SDK *kit = mData.sdks.emplace_back(std::make_unique<SDK>(std::move(sdk))).get();
+
+        return kit;
     }
 
     auto addSource(const std::filesystem::path &path, const std::string &projectName) -> Source *
@@ -162,6 +170,11 @@ public:
         return mData.projects;
     }
 
+    [[nodiscard]] auto sdks() const noexcept -> const std::vector<std::unique_ptr<SDK>> &
+    {
+        return mData.sdks;
+    }
+
     [[nodiscard]] auto settings() const noexcept -> const Settings &
     {
         return mData.settings;
@@ -208,12 +221,13 @@ public:
 private:
     struct Data
     {
-        std::vector<std::unique_ptr<Project>> projects;
-        std::vector<std::unique_ptr<Source>> sources;
+        std::vector<std::unique_ptr<BuildTask>> buildTasks;
         std::vector<std::unique_ptr<Header>> headers;
         std::vector<std::unique_ptr<Module>> modules;
         std::vector<std::unique_ptr<ModulePartition>> modulePartitions;
-        std::vector<std::unique_ptr<BuildTask>> buildTasks;
+        std::vector<std::unique_ptr<Project>> projects;
+        std::vector<std::unique_ptr<Source>> sources;
+        std::vector<std::unique_ptr<SDK>> sdks;
         std::vector<std::unique_ptr<Toolchain>> toolchains;
         std::vector<Error> errors;
         std::vector<Warning> warnings;

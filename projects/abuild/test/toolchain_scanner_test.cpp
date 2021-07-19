@@ -71,9 +71,11 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
                                             {"LLVM/bin/lld.exe", ""},
                                             {"LLVM/bin/llvm-ar.exe", ""},
 #else
-                                                    {"LLVM/bin/clang++", ""},
-                                                    {"LLVM/bin/lld", ""},
-                                                    {"LLVM/bin/llvm-ar", ""},
+                                                    // clang-format off
+                                            {"LLVM/bin/clang++", ""},
+                                            {"LLVM/bin/lld", ""},
+                                            {"LLVM/bin/llvm-ar", ""},
+        // clang-format on
 #endif
                                             {"LLVM/lib/clang/12/include/emmintrin.h", ""},
                                             {"LLVM/lib/clang/12/lib/linux/somelib.lib", ""}}};
@@ -88,9 +90,11 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "LLVM/bin/lld.exe");
         expect(cache.toolchains()[0]->archiver).toBe(testProject.projectRoot() / "LLVM/bin/llvm-ar.exe");
 #else
-                expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "LLVM/bin/clang++");
-                expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "LLVM/bin/lld");
-                expect(cache.toolchains()[0]->archiver).toBe(testProject.projectRoot() / "LLVM/bin/llvm-ar");
+                // clang-format off
+        expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "LLVM/bin/clang++");
+        expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "LLVM/bin/lld");
+        expect(cache.toolchains()[0]->archiver).toBe(testProject.projectRoot() / "LLVM/bin/llvm-ar");
+        // clang-format on
 #endif
         expect(cache.toolchains()[0]->compilerFlags).toBe(std::unordered_set<std::string>{"-std=c++20", "-fmodules", "-Wall", "-Wextra", "-pedantic", "-c", "-x c++"});
         expect(cache.toolchains()[0]->linkerFlags).toBe(std::unordered_set<std::string>{});
@@ -106,9 +110,11 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
 #ifdef _WIN32
                                             {"LLVM/bin/clang++-12.exe", ""},
 #else
-                                                    {"LLVM/bin/clang++-12", ""},
-                                                    {"LLVM/bin/ld", ""},
-                                                    {"LLVM/bin/ar", ""},
+                                                    // clang-format off
+                                            {"LLVM/bin/clang++-12", ""},
+                                            {"LLVM/bin/ld", ""},
+                                            {"LLVM/bin/ar", ""},
+        // clang-format on
 #endif
                                             {"LLVM/lib/clang/12/include/emmintrin.h", ""},
                                             {"LLVM/lib/clang/12/lib/linux/somelib.lib", ""}}};
@@ -123,9 +129,11 @@ static const auto testSuite = suite("abuild::ToolchainScanner", [] {
         expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "LLVM/bin/ld");
         expect(cache.toolchains()[0]->archiver).toBe(testProject.projectRoot() / "LLVM/bin/ar");
 #else
-                expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "LLVM/bin/clang++-12");
-                expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "LLVM/bin/ld");
-                expect(cache.toolchains()[0]->archiver).toBe(testProject.projectRoot() / "LLVM/bin/ar");
+                // clang-format off
+        expect(cache.toolchains()[0]->compiler).toBe(testProject.projectRoot() / "LLVM/bin/clang++-12");
+        expect(cache.toolchains()[0]->linker).toBe(testProject.projectRoot() / "LLVM/bin/ld");
+        expect(cache.toolchains()[0]->archiver).toBe(testProject.projectRoot() / "LLVM/bin/ar");
+        // clang-format on
 #endif
         expect(cache.toolchains()[0]->compilerFlags).toBe(std::unordered_set<std::string>{"-std=c++20", "-fmodules", "-Wall", "-Wextra", "-pedantic", "-c", "-x c++"});
         expect(cache.toolchains()[0]->linkerFlags).toBe(std::unordered_set<std::string>{});
