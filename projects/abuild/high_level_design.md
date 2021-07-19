@@ -18,7 +18,7 @@
 
 ## Problem
 
-Building C++ is difficult.
+C++ build model is very simple but building C++ is very difficult.
 
 There are only two steps to translating C++ sources into binary - compilation and linking. The compilation step takes a single source file (called [translation unit](<https://en.wikipedia.org/wiki/Translation_unit_(programming)>)) and compiles it into a single binary object file. A collection of these object files is then "linked" together into a final binary - either executable (application), dynamic library (to be loaded during runtime) or a static library (to be linked in during compile time). Compiler toolchains implement exactly this build model.
 
@@ -28,7 +28,7 @@ The C++ build model has the following main challenges:
 
 2. It is possible to enable/disable sections of the code using preprocessor. Compilation of every translation unit is entirely independent so even though the headers are "shared" they may be perceived differently in different translation units. Produced binary object files might therefore have a different notion of the symbols from the header file than others even though the code was "the same".
 
-3. Different compiler settings can be used to compile each and every translation unit. This means that the produced binary object files can be incompatible with each other on the binary level due to differing settings. These are called [ABI (Application Binary Interface)](https://en.wikipedia.org/wiki/Application_binary_interface) breaks and include for example calling conventions, name mangling, exception settings etc. The linker has only very limited ways of detecting these incompatibilities and thus might produce crashing binary that is very hard to debug. The only way to guarantee the binary compatibility is to use the very same compiler settings for all translation units that are to be linked together into a final binary.
+3. Different compiler settings can be used to compile each and every translation unit. This means that the produced binary object files can be incompatible with each other on the binary level due to differing settings. These are called [ABI (Application Binary Interface)](https://en.wikipedia.org/wiki/Application_binary_interface) breaks and include for example calling conventions, name mangling, exception settings etc. The linker has only very limited ways of detecting these incompatibilities and thus might produce crashing binary that is very hard to debug. The only way to guarantee the binary compatibility is to use the very same compiler settings for all translation units that are to be linked together into a final binary including third party libraries (including STL).
 
 4. Dependencies are specified multiple times. Once in the code when we include a header or import a module. Then during compilation when we need to supply locations of the headers and module interfaces. And finally during linking we need to supply the libraries (or other object files) that contain the symbols used via these headers and modules.
 
@@ -36,13 +36,13 @@ Authoring calls to the compiler for every source file and then the linker call f
 
 ## Requirements
 
-The solution to the difficulty of building C++ is to have a build system that:
+The solution to the problem of building C++ is to have a build system that:
 
 -   Provides compiler toolchain settings consistency.
 -   Provides automatic dependency resolution.
 -   Allows targeting multiple toolchains and platforms.
 -   Allows different configurations.
--   Allow building without project configuration.
+-   Allow building without build files (project configuration).
 -   Is transparent in what and how it does things.
 -   Is written in C++.
 -   Can bootstrap itself.
@@ -52,7 +52,7 @@ The solution to the difficulty of building C++ is to have a build system that:
 
 There are many C++ build systems. They generally fall into two categories - imperative or declarative. The former expects the user to specify what & how to build. Their complexity is generally the same as that of using the compiler toolchain directly. The examples are [Make](<https://en.wikipedia.org/wiki/Make_(software)>) (gmake, nmake etc.) or [Ninja](<https://en.wikipedia.org/wiki/Ninja_(build_system)>). Their primary usage is to be produced by a build generator.
 
-Build generators are special kind of build systems that does not use the compiler toolchain directly but rather produces a build in terms of other actual build systems, often the imperative ones such as Make or Ninja. They abstract away the compiler toolchain complexity by leveraging other build systems for actual building. The drawback is that the complexity is actually higher and the build become rather opaque and might seem arbitrary as there are two extra layers between the programmer and the compiler. The examples of build generators are [CMake](https://en.wikipedia.org/wiki/CMake) or [Meson](<https://en.wikipedia.org/wiki/Meson_(software)>).
+Build generators are special kind of build systems that does not use the compiler toolchain directly but rather produces a build in terms of other actual build systems, often the imperative ones such as Make or Ninja. They abstract away the compiler toolchain complexity by leveraging other build systems for actual building. The drawback is that the complexity is actually higher and the build become rather opaque and might seem arbitrary as there are two extra layers between the programmer and the toolchain. The examples of build generators are [CMake](https://en.wikipedia.org/wiki/CMake) or [Meson](<https://en.wikipedia.org/wiki/Meson_(software)>).
 
 The declarative build systems organize translation units (and headers) into projects that typically correspond to the desired outputs (applications, libraries). The dependencies are then set manually between the individual projects. The build itself is orchestrated using generalized "rules" provided by the build system and applied to the project's source files. Optionally user can customize the rules to a certain degree. Examples of declarative build systems are [Bazel](<https://en.wikipedia.org/wiki/Bazel_(software)>), [build2](https://build2.org/) or [boost.build (b2)](https://boostorg.github.io/build/).
 
@@ -65,7 +65,7 @@ The declarative build systems organize translation units (and headers) into proj
 
 ## ABuild
 
-The **Agnesoft Build** or **ABuild** is a C++ build system. It provides fully automatic project detection including dependencies based on source inspection. The goal is to be able to run without any configuration of any kind by adhering to a well-defined project structure instead. By invoking `abuild` in a project root directory it shall detect all targets, their dependencies and build them using sensible defaults for an available compiler toolchain.
+The **Agnesoft Build** or **ABuild** is a C++ build system. It provides fully automatic project detection including dependencies based on source inspection. The goal is to be able to run without any configuration of any kind by adhering to a well-defined project structure and clear rules instead. By invoking `abuild` in a project root directory it shall detect all targets, their dependencies and build them using sensible defaults for an available (and also detected) compiler toolchain.
 
 Usage example:
 
@@ -75,23 +75,35 @@ Default behavior
 abuild
 ```
 
-Overriding configuration on the command line
+### Toolchain Scanner
 
-```
-abuild "{ 'Toolchain': { 'name': 'clang' } }"
-```
-
-### Environment Scanner
-
-The environment scanner will attempt to find the compiler toolchain in its typical location on the current host and to verify that it is able to use it to produce a binary. The locations should be configurable (see [Configuration File](#configuration-file)) but it should not be required when everything is installed in standard paths. The main supported compilers are:
+The toolchain scanner will attempt to find compiler toolchains in their typical locations on the current host. The locations shall be configurable (see [Configuration File](#configuration-file)) but it should not be required when everything is installed in standard paths. The main supported compilers are:
 
 -   MSVC (Windows)
 -   GCC (Linux)
 -   Clang (Windows, Linux, Unix)
 
-The environment scanner should perform a basic check that the compiler found actually works and give an error if either no compiler could be found or if it does not appear to work (tested by compiling a basic program).
+Automatically detected or manually added toolchains shall be output in the [Build Cache](#build-cache).
 
-The output of this step should be entries in the [Build Cache](#build-cache) with the detected information (paths, default flags etc.).
+Information required for each toolchain:
+
+- Name
+- Type (MSVC, GCC, Clang)
+- Compiler
+- Linker
+- Archiver
+
+### SDK Scanner
+
+Software development kit (SDK) is third party project often distributed in binary form. The sdk scanner will attempt to find SDKs on the current host. For example a compiler intrinsics in form of headers & libraries are an SDK. Similarly STL implementations, Windows SDK or Qt are well known third party packages with known structure and default install location.
+
+Each SDK should be indexed so that it can be looked up by header or module.
+
+Information required for each SDK:
+
+- Name
+- List of headers
+- Map of modules (name : interface file)
 
 ### Project Scanner
 
