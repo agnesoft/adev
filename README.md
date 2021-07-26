@@ -12,13 +12,13 @@ Central development repository.
 
 ## Projects
 
-| Name                                      | Path                                     | Description                                              | Links                                       |
-| ----------------------------------------- | ---------------------------------------- | -------------------------------------------------------- | ------------------------------------------- |
-| [ACore](projects/acore/README.md)         | [projects/acore](projects/acore)         | C++ library that provides generic functionality.         | [HLD](projects/acore/high_level_design.md)  |
-| [ABuild](projects/abuild/README.md)       | [projects/abuild](projects/abuild)       | C++ build system.                                        | [HLD](projects/abuild/high_level_design.md) |
-| [ATest](projects/atest/README.md)         | [projects/atest](projects/atest)         | C++ testing framework.                                   | [HLD](projects/atest/high_level_design.md)  |
-| [ASTL](projects/astl/README.md)           | [projects/astl](projects/astl)           | C++ Standard Template Library (STL) header unit wrapper. | [HLD](projects/astl/high_level_design.md)   |
-| [RapidJSON](projects/rapidjson/README.md) | [projects/rapidjson](projects/rapidjson) | C++ JSON parser and generator.                           | [License](projects/rapidjson/license)       |
+| Name                                      | Path                                     | Description                                              | Links                                                     |
+| ----------------------------------------- | ---------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------- |
+| [ACore](projects/acore/README.md)         | [projects/acore](projects/acore)         | C++ library that provides generic functionality.         | [HLD](projects/acore/high_level_design.md)                |
+| [ABuild](projects/abuild/README.md)       | [projects/abuild](projects/abuild)       | C++ build system.                                        | [HLD](projects/abuild/documentation/high_level_design.md) |
+| [ATest](projects/atest/README.md)         | [projects/atest](projects/atest)         | C++ testing framework.                                   | [HLD](projects/atest/high_level_design.md)                |
+| [ASTL](projects/astl/README.md)           | [projects/astl](projects/astl)           | C++ Standard Template Library (STL) header unit wrapper. | [HLD](projects/astl/high_level_design.md)                 |
+| [RapidJSON](projects/rapidjson/README.md) | [projects/rapidjson](projects/rapidjson) | C++ JSON parser and generator.                           | [License](projects/rapidjson/license)                     |
 
 ## Build
 
