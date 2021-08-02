@@ -9,18 +9,29 @@
 -   [Requirements](#requirements)
 -   [ABuild](#abuild)
     -   [Usage](#usage)
-    -   [Command Line](#command-line)
-    -   [Toolchain Scanner](#toolchain-scanner)
-    -   [Package Scanner](#package-scanner)
-    -   [Project Scanner](#project-scanner)
-    -   [Translation Unit Analyzer](#translation-unit-analyzer)
-    -   [Dependency Resolver](#dependency-resolver)
-    -   [Build Cache](#build-cache)
-    -   [Configuration](#configuration)
-    -   [Build](#build)
-    -   [Custom Commands](#custom-commands)
-    -   [Build Installation](#build-installation)
-    -   [Bootstrapping](#bootstrapping)
+        -   [Command Line](#command-line)
+        -   [Bootstrapping](#bootstrapping)
+    -   [Components](#components)
+        -   [Build Cache](#build-cache)
+            -   [Override](#override)
+        -   [Project Scanner](#project-scanner)
+            -   [Project](#project)
+            -   [Source Files](#source-files)
+        -   [Package Scanner](#package-scanner)
+            -   [Package](#package)
+        -   [Toolchain Scanner](#toolchain-scanner)
+            -   [Toolchain](#toolchain)
+            -   [Configuration](#configuration)
+        -   [Code Scanner](#code-scanner)
+            -   [Dependencies](#dependencies)
+            -   [Defines](#defines)
+            -   [Modules](#modules)
+        -   [Dependency Scanner](#dependency-scanner)
+        -   [Build Graph](#build-graph)
+            -   [Build Tasks](#build-tasks)
+            -   [Artifacts](#artifacts)
+        -   [Custom Commands](#custom-commands)
+        -   [Builder](#builder)
 
 ## Overview
 
@@ -125,18 +136,113 @@ abuild [options]
 By default no arguments or options are necessary and the `abuild` will build all projects using the default toolchain (see below) for the given host and it will target the same host. The default configuration is `release`:
 
 -   Configuration: `release`
--   Windows: `MSVC` (`Clang`)
--   Linux: `GCC` (`Clang`)
--   macOS: `Clang`
+-   Windows: MSVC (Clang)
+-   Linux: GCC (Clang)
+-   macOS: Clang
 
-### Command Line
+#### Command Line
 
 -   `--toolchain=<name> -t=<name>` selects by partially matching a toolchain for use to build (e.g. `-t=clang-11`).
 -   `--configuration=<name> -c=<name>` selects a configuration. Available options: `release`, `debug` (e.g. `-c=debug`).
 -   `--project=<name> -p=<name>` selects a subset of projects to be built. Accepts wildcard `*` (e.g. `-p=some_project`, `-p=*_test`).
 -   `--file=<path> -f=<path>` compiles only selected file including its dependencies such as modules it uses (e.g. `-f=/path/to/source.cpp`).
 
-### Toolchain Scanner
+#### Bootstrapping
+
+Bootstrapping is done for known hard-coded compiler toolchains. These are used directly using OS specific native shell script (bash/cmd) to build `abuild` first. Built `abuild` will be able to build itself again if desired or be directly used as described.
+
+### Components
+
+#### Flow
+
+```
+Project Scanner -> Code Scanner -> Dependency Scanner -> Build Graph -> Builder -> Artifacts
+Package Scanner ------^------------------^   ^                ^            ^
+Toolchain Scanner ---------------------------^----------------^------------^
+```
+
+#### Build Cache
+
+All the information detected and used by the `abuild` will be recorded in a build cache through which it can be accessed by other components. The build cache will also build internal indexes for faster lookup. It will be saved to a single JSON file at the end of the build and loaded from it on startup. Each component should be able to verify and either update or discard the information in the cache.
+
+The default file name is `.abuild` and it is created in a directory `build`.
+
+##### Override
+
+By default, no configuration of any kind shall be required. Sensible defaults will be used for building. Optionally a configuration file and/or command line arguments can be used to override the defaults and to achieve greater control over the build process. The configuration file has the same syntax and structure as the build cache and is applied over it after each automatic step. It is therefore possible to override (but also break) any part of the build process.
+
+The configuration file must be in the root of the working directory with the suffix `.abuild`.
+
+#### Project Scanner
+
+The project scanner will detect all source and all headers starting from the current working directory. They will be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysis (e.g. `abuild/main.cpp` -> executable called `abuild`).
+
+Rules for file detection:
+
+-   Source: `\.c(pp|xx|c)$/i`.
+-   Header: `\.h(|pp|xx)$/i`.
+-   Module interface: `\.(i|m)(xx|pp)$/i`.
+
+Rules for project detection:
+
+-   Any directory containing at least one of the C++ files described above is a project including the root directory.
+-   The `^src$/i`, `^include$/i` are considered subdirectories of their respective parent project.
+-   The `<parent>/include/<project>` is considered a subdirectory of a project if `<parent>` is equal to `<project>`.
+-   The `^test$/i` will produce an independent project called `<parent><delimiter>test`. The delimiter should be configurable (`_` should be a default).
+-   If there are multiple regular directories in the hierarchy the project name will be concatenated `<parent dir1>.<parent dir2>.<project>`.
+
+Rules for project types:
+
+-   Project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
+-   Project containing any source is a **static  library**.
+-   Project containing only header files is a header only library.
+-   Project fulfilling custom rules for dynamic library is a **dynamic library**. There are no default rules for dynamic libraries.
+
+##### Project
+
+-   Name
+-   Type (`executable`/`static library`/`dynamic library`)
+-   Headers (list of files)
+-   Sources (list of files)
+-   Modules (list of [modules](#modules))
+
+Projects are output to the [build cache](#build-cache) and looked up by name.
+
+##### Source Files
+
+-   Path
+-   Type: `source`/`header`
+-   [Project](#project)
+-   Last change timestamp
+-   Checksum
+-   [Dependencies](#dependencies)
+
+Files are output to the [build cache](#build-cache) and looked up by path by partial path matching (looking for best match of a relative path to the absolute path of an existing file).
+
+#### Package Scanner
+
+The package scanner attempts to find third party packages in their typical default locations on the current host and will scan their content. The supported packages are:
+
+-   Compiler intrinsic
+-   STL
+-   C standard library
+-   Windows SDK
+-   Qt
+-   Linux system headers & libraries
+
+##### Package
+
+-   Name
+-   Version in format `major[.minor[.patch[.build]]]`
+-   [Toolchain](#toolchain)
+-   [Configuration](#configuration)
+-   [Headers](#source-files)
+-   [Modules](#modules) (map of module names against compiled module interface files)
+-   Libraries (list of binary library files: \*.lib)
+
+Packages are output to the [build cache](#build-cache) and looked up by either a header or a module name and the toolchain.
+
+#### Toolchain Scanner
 
 The toolchain scanner attempts to find compiler toolchains in their typical/default locations on the current host. The main supported compilers are:
 
@@ -144,7 +250,7 @@ The toolchain scanner attempts to find compiler toolchains in their typical/defa
 -   Clang (Windows, Linux, macOS)
 -   GCC (Linux)
 
-Information required for each toolchain:
+##### Toolchain
 
 -   Name (family-version-target_architecture-full_version)
     -   family: `msvc`/`clang`/`gcc`
@@ -160,104 +266,119 @@ Information required for each toolchain:
     -   Major version (e.g. `19`)
     -   Minor version (e.g. `29`)
     -   Build version (e.g. `30037`)
-    -   Preprocessor defines (e.g. `_WIN32=1`, `_MSC_VER=1930`, `__clang__`)
-    -   Compiler flags (e.g. `/nologo`, `/std:c++20`, `/EHsc`)
-    -   Linker flags (e.g. `/NOLOGO`)
-    -   Archiver flags (e.g. `/NOLOGO`)
+-   [Configurations]
 
-Toolchains are output to the [build cache](#build-cache). Toolchains already in the cache are checked whether they exist on startup. Toolchains can be also addded manually via [configuration file](#configuration). The lookup is done by partial name matching. For example if there are two toolchains `clang-11` and `clang-10` then requesting simply `clang` will yield the highest version of that compiler: `clang-11`.
+Toolchains are output to the [build cache](#build-cache). Toolchains already in the cache are checked whether they exist on startup. Toolchains can be also addded manually via [configuration file](#override). The lookup is done by partial name matching. For example if there are two toolchains `clang-11` and `clang-10` then requesting simply `clang` will yield the highest version of that compiler: `clang-11`.
 
-### Package Scanner
+##### Configuration
 
-The package scanner attempts to find third party packages in their typical default locations on the current host and will scan their content. The supported packages are:
+-   Name (e.g. `debug`, `release`)
+-   Preprocessor defines (e.g. `_WIN32=1`, `_MSC_VER=1930`, `__clang__`)
+-   Compiler flags (e.g. `/nologo`, `/std:c++20`, `/EHsc`)
+-   Linker flags (e.g. `/NOLOGO`)
+-   Archiver flags (e.g. `/NOLOGO`)
 
--   Compiler intrinsic
--   STL
--   C standard library
--   Windows SDK
--   Qt
--   Linux system headers & libraries
+#### Code Scanner
 
-Information required for each package:
+The code scanner will perform code analysis and preprocessing of each source and header of all projects and all packages.
+
+For project files it will extract `#include` and `#define` directives and `[export] import`, `export module` and `[export] import module` tokens.
+
+For packages it will extract `#include`, `#define` and `export module` directives. Since macros (defines) cannot leak via importing header units or modules they do not need to be extracted for packages.
+
+If a token is conditional (e.g. surrounded with `ifdef`) then the condition is recorded as well with the token.
+
+##### Dependencies
+
+-   Value (of `import`/`include`)
+-   Type: `include`/`import`
+-   [File](#source-files)
+-   Visibility (`public`/`private`)
+-   Condition (e.g. MSVC > 1900)
+    -   Name
+    -   Value
+    -   Operation
+
+Dependencies are saved for each file within a project or a package.
+
+##### Defines
+
+-   Name (value after `define`)
+-   Value
+-   Condition (e.g. MSVC > 1900)
+    -   Name
+    -   Value
+    -   Operation
+
+Defines are saved for each file within a project or a package.
+
+##### Modules
+
+-   Name (value of `[export] module`)
+-   [File](#source-files)
+-   [Project](#project)/[Package](#package)
+-   Visibility (`public`/`private`)
+-   Condition (e.g. `ifdef MSVC`)
+-   Partitions:
+    -   Name (value of `[export] import :`)
+    -   [File](#source-files)
+    -   Visibility (`public`/`private`)
+    -   Condition (e.g. `#ifdef MSVC`)
+
+Found modules will be output to the [build cache](#build-cache) and looked up by name.
+
+#### Dependency Scanner
+
+The dependency scanner will attempt to find dependencies of each file from each project and package. The toolchain and configuration must be selected at this point. The dependency scanner will evaluate conditions of each dependency using the `defines` from the toolchain configuration, user ([override](#override)) and upstream dependencies that are always evaluated first (in case of includes). Evaluating conditions may result in a dependency being skipped. A package dependency must have a matching toolchain ABI and configuration (not necessarily the same but compatible). It may happen that a package is not used even if it is detected if there is no matching ABI or configuration version of it (e.g. `MinGW` toolchain with `MSVC` package).
+
+The priority for the lookup for project files:
+
+1. Project of the file
+2. Other projects
+3. Packages
+
+The priority for the lookup for package files:
+
+1. Package of the file
+2. Other packages
+
+The found dependencies will be included in the [dependencies](#dependencies) and [modules](#modules) discovered by the [Code Scanner](#code-scanner).
+
+#### Build Graph
+
+The build graph translates the dependencies detected by the [Dependency Scanner](#dependency-scanner) into build tasks for a given toolchain. It will create tasks for building source files, header units and modules and create link tasks. It will also "concatenate" include dependencies into their final compile tasks. The result of a build task is an [artefact](#artifacts).
+
+##### Build Tasks
+
+-   Type: `compile`/`link`
+-   Flags (toolchain & user defined)
+-   [File](#source-files)
+-   [Artefact](#artifacts)
+
+The build tasks are output to [build cache](#build-cache) and looked up by memory address.
+
+#### Artifacts
+
+-   Path (`<build directory>/<toolchain>/<configuration>/<relative path to source/project>/*`)
+-   [Build Task](#build-task)
+-   Last change timestamp
+
+#### Custom Commands
+
+An arbitrary task that can be run at any point of the process. It can execute arbitrary commands such as generating sources or install binaries. It should allow view to the build cache with ability to retrieve information and use it in the command.
 
 -   Name
--   Version in format `major[.minor[.patch[.build]]]`
--   [ABI](#toolchain-scanner)
--   Headers (list of files)
--   Modules (list of compiled module interface files)
--   Libraries (list of binary libraries)
+-   When: `first`/`before build`/`after build`
+-   Command (shell command)
+-   Inputs
+    -   Path
+    -   Last change timestamp
+-   Outputs
+    -   Path
+    -   Last change timestamps
 
-### Project Scanner
+#### Builder
 
-The project scanner will detect all translation units and all headers starting from the current working directory. The translation units will be analyzed for includes and imports. They will then be divided into `projects` based on the directories they are in. The projects will represent a binary output that will be inferred based on the file analysis (e.g. `abuild/main.cpp` -> executable called `abuild`).
+The Builder executes build tasks by checking their output artifacts against the inputs comparing their timestamps and checksum. If a file in the dependency graph of a given artefact is newer and its checksum has changed the artefact would be incrementally rebuilt (only changed dependencies and their dependents). Similarly if a task's flags has changed it would also trigger rebuild of the artefact.
 
-Rules for file detection:
-
--   Translation unit: `\.c(pp|xx|c)$/i`.
--   Header unit: `\.h(|pp|xx)$/i`.
--   Module interface unit: `\.(i|m)(xx|pp)$/i`.
-
-Rules for project detection:
-
--   Any directory containing at least one of the C++ files described above is a project including the root directory.
--   The `^src$/i`, `^include$/i` are considered subdirectories of their respective parent project.
--   The `<parent>/include/<project>` is considered a subdirectory of a project if `<parent>` is equal to `<project>`.
--   The `^test$/i` will produce an independent project called `<parent>test`.
--   If a project contains another project its name will be concatenated as `<parent>.<project>`.
-
-Rules for project types:
-
--   Project containing `^main\.c(c|pp|xx)$/i` is an **executable**.
--   Project containing any translation unit is a **static  library**.
--   Project containing only header files is a header only library (no build).
--   Project fulfilling custom rules for dynamic library is a **dynamic library**.
-
-The output of the project scanner should be the list of translation units and the list of projects.
-
-### Translation Unit Analyzer
-
-The translation unit analyzer will perform basic analysis of each of the translation unit, header and module interface. It will extract primarily `#include`, `export module` and `import module` directives and augment the information about each translation unit with it. The LLVM Clang should be used for performing this analysis.
-
-### Dependency Resolver
-
-The dependency resolver will try to find each of the included file (in case of headers) or imported module (in case of modules) and establish dependencies between the translation units. Standard library headers shall be found within the STL used for building. Third-party dependencies will be looked for in the well-known locations (e.g. `/usr/lib` on Unix systems).
-
-The dependencies between the units will be recorded in the information about each translation unit.
-
-### Build Cache
-
-All the information detected and used by the `abuild` will be recorded in a single build cache file. The file will be a JSON file with the following sections:
-
--   **Rules**: rules used for detecting toolchains and projects.
--   **Toolchains**: list of detected C++ compiler toolchains along with information needed to invoke them including STL library (or libraries) found. Default configuration settings should be provided. Default configurations are:
-        -  `release` (default): full optimization for speed, 
-        -  `debug`: no optimization, debugging symbols enabled
-        -  Common settings: exceptions enabled, RTTI enabled, C++20 enabled
--   **Files**: list of C++ files detected with meta information from the analysis and dependency resolving.
--   **Projects**: list of detected projects, their type and collection of files they contain.
-
-The build cache file will be produced in the root of the build directory.
-
-Optionally a build commands JSON file containing actual commands issued to a compiler toolchain can be produced from the build cache as well to the root of the build directory.
-
-### Configuration
-
-By default, no configuration of any kind shall be required. Sensible defaults will be used for building. Optionally a configuration file and/or command line arguments can be used to override these defaults and to achieve greater control over the build process. The configuration file has the same syntax and structure as the build cache and is applied over it. It is therefore possible to override any part of the build cache thus adding new custom configurations, resolving undetected dependencies, applying additional or different compiler flags down to the file level etc.
-
-The configuration file must be in the root of the working directory with the suffix `.abuild`.
-
-### Build
-
-The build is done based on the dependency graph produced from the build cache in the "shadow" directory (same structure as the project itself) named by the toolchain and the configuration being built. The translation units will be built in parallel. A project should be linked as soon as all its translation units (and their dependencies) are built. All built dynamic libraries and executables shall be placed in `<build directory>/bin`.
-
-### Custom Commands
-
-Before and after each build step (compilation, linking) as well as before and after the entire build there can be custom command(s) specified to be run. For example to generate source files, support COMs etc.
-
-### Build Installation
-
-By default, no installation is done. It can be enabled and customized.
-
-### Bootstrapping
-
-Bootstrapping is done for known hard-coded compiler toolchains. These are used directly using OS specific native shell script (bash/cmd) to build `abuild` first. Built `abuild` will be able to build itself again if desired or be directly used as described.
+The artifacts are built into a "shadow" `<build directory>` (`build` by default) directory in the same structure as the project itself (`<build directory>/<toolchain>/<configuration>`). The tasks would be executed with maximum parallelism. All built static libraries, dynamic libraries and executables shall be placed in `<build directory>/<toolchain>/<configuration>/bin`.
