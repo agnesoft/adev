@@ -1,7 +1,7 @@
 # High Level Design
 
 -   [Overview](#overview)
--   [Context](#context)
+-   [Problem](#problem)
     -   [Build Files](#build-files)
     -   [Preprocessor](#preprocessor)
     -   [ABI](#abi)
@@ -37,11 +37,11 @@
 
 The **Agnesoft Build** (**ABuild** or **abuild**) is a fully automatic C++ build system. It automatically detects and builds projects from C++ source files. By invoking `abuild` in a project root directory it detects all targets and their dependencies and build them using sensible defaults and an available (and also detected) compiler toolchain.
 
-## Context
+## Problem
 
 ### Build files
 
-All existing build systems require creation and maintenance of build files that describe what and how should be built. This information is duplicated however as it is usually already expressed in the source files themselves in form of source code organization and in the code itself.
+All existing build systems require creation and maintenance of build files that describe what should be built (often also how). This information is however duplicated as it is usually already expressed in the source files themselves in form of source code organization and in the code itself.
 
 Consider:
 
@@ -53,11 +53,13 @@ int main() { std::cout << "Hello, World!\n"; }
 
 A file called `main.cpp` indicates it is a C++ source file (customary `.cpp` extension) and the resulting binary is to be an executable (customary `main` name). It is placed in a directory `MyApp` that indicates a name of the binary. The source file includes `<iostream>` which is a known STL header. In conclusion the author of this project clearly wants to build an executable called `MyApp` from the source file `main.cpp` that depends on STL.
 
-And yet every existing C++ build system requires another file - a build file - that will repeat exactly this information that is already there in order to work and to produce correct output. This means double maintenance and leads to divergence of the code and the build files over time (e.g. stale/unnecessary dependencies). Furthermore it accommodates ambiguous and obscure code. There is no reason to use the `.cpp` extension or `main` as a main source file for executables, nor is it needed to name the containing directory after the binary being built. Most projects do this but plenty do not and even the most diligent will introduce subtle diversities (e.g. directory `MyServerApp` actually building executable called `MyServer`).
+And yet every existing C++ build system requires another file - a build file - that will repeat exactly this information that is already there in order to work and to produce correct output. This means double maintenance and leads to divergence of the code and the build files over time (e.g. stale/unnecessary dependencies).
+
+Furthermore it accommodates ambiguous and obscure code. There is no reason to use the `.cpp` extension or `main` as a main source file for executables, nor is it needed to name the containing directory after the binary being built. Most projects do this but plenty do not and even the most diligent will introduce subtle diversities (e.g. directory `MyServerApp` actually building executable called `MyServer`).
 
 ### Preprocessor
 
-Another reason for build files is the preprocessor. The C++ preprocessor is unique in that a simple and arbitrary argument passed to the compiler can completely alter the code. From the compiler perspective the source files are incomplete "templates" that become real source files only after being preprocessed. While preprocessor is mostly used for including headers and thus sharing (kind of) information between source files, it can also be used to enable/disable code and to alter its meaning. That being said the preprocessor is necessary in C++ and it is mostly used reasonably.
+Another reason for build files is the preprocessor. The C++ preprocessor is unique in that a simple and arbitrary argument passed to the compiler can completely change the code. From the compiler perspective the source files are incomplete "templates" that become real source files only after being preprocessed. While preprocessor is mostly used for including headers and thus sharing (kind of) information between source files, it can also be used to enable/disable code and to alter its meaning. That being said the preprocessor is necessary in C++ and it is mostly used reasonably.
 
 Consider:
 
@@ -71,39 +73,44 @@ Consider:
 
 The dependency on `windows.h` (Windows SDK specific header) is conditional on `_WIN32` preprocessor define. The `_WIN32` is always defined when compiling for any Windows platform. Otherwise a dependency on POSIX threading header `pthread.h` is used when compiling for any other platform such as UNIX. Existing build systems deem code inspection a non-starter and thus cannot detect this at all. They rely on the user to tell them what preprocessor directives they are using for which configuration and what dependencies should the code be linked against for each of them. Then again the information has already been written by the user in the code though. They used a well known preprocessor define and they are depending on well known headers. It is clear that when a toolchain targeting Windows would be used (and thus `_WIN32` would be defined) the code should be linked against the Windows SDK and not against `pthread`. Conversely when a UNIX like system would be the target, the `_WIN32` would not be defined and the `pthread` should be used instead of Windows SDK.
 
+Similar to build files the information given to the build system can easily diverge from the code when the above code is changed such as by removing a dependency on Windows SDK. If the build file is not changed by removing the dependency there as well the build will still pass but there would now be a dead unused dependency that could slow down the build, make it more fragile and less understandable.
+
 ### ABI
 
 Last but not least of the concerns for C++ build automation is application binary interface or [ABI](https://en.wikipedia.org/wiki/Application_binary_interface). The C++ has unstable ABI and mixing binaries with different ABIs can be disastrous. The ABI is primarily determined by the compiler (it is typically not possible to mix C++ binaries from different compilers) and its version. Some compilers such as MSVC provide limited backwards compatibility (using older binaries from new ones). Another influence on ABI are compiler settings that should generally be consistent across all source files and certainly between binaries that are to be linked together or used during runtime together.
 
-Build systems do mostly a good job in enforcing the compiler settings and preserving ABIs across built binaries. But it is also usually very easy to apply different settings down to the individual source file level. In theory everything should be built uniformly including all third party dependencies (that includes STL!). That is however not very practical (although some companies such as Google do so).
+This particular requirement of using compatible (i.e. mostly the same) compiler settings is even enforced when using C++20 modules. In theory everything should be built uniformly including all third party dependencies (that includes `STL`!). That is however not very practical in the real world although some companies such as Google actually do so.
+
+Build systems generally do a good job in enforcing the compiler settings and preserving ABIs across built binaries. However they also make it very easy to apply different settings for each project or even down to the individual source file level. While common it ranges from relatively harmless difference in warning levels to extremely dangerous mixing of optimization levels and other settings directly influencing memory layout, calling conventions and thus ABI.
 
 ### Existing Solutions
 
-There are many C++ build systems. They generally fall into two categories - imperative or declarative. The former expects the user to specify what & how to build. Their complexity is generally the same as that of using the compiler toolchain directly. The examples are [Make](<https://en.wikipedia.org/wiki/Make_(software)>) (`gmake`, `nmake` etc.) or [Ninja](<https://en.wikipedia.org/wiki/Ninja_(build_system)>). They are rarely used directly but are often produced by build generators.
+There are many C++ build systems. They generally fall into two categories - imperative and declarative. The former expects the user to specify what & how to build. Their complexity is generally the same as that of using the compiler toolchain directly. The examples are [Make](<https://en.wikipedia.org/wiki/Make_(software)>) (`gmake`, `nmake` etc.) or [Ninja](<https://en.wikipedia.org/wiki/Ninja_(build_system)>). They are rarely used directly nowadays but are often produced by build generators.
 
 Build generators are special kind of build systems that do not use the compiler toolchain directly but rather produce a build files in terms of other actual build system, often the imperative ones such as `Make` or `Ninja`. They abstract away the compiler toolchain complexity by leveraging other build systems for actual building. The drawback is that the build becomes rather opaque and might seem arbitrary at times as there are two extra layers between the programmer and the compiler toolchain. The examples of build generators are [CMake](https://en.wikipedia.org/wiki/CMake) or [Meson](<https://en.wikipedia.org/wiki/Meson_(software)>).
 
 The declarative build systems organize translation units (and headers) into projects that typically correspond to the desired outputs (applications, libraries). The dependencies are then set manually between the individual projects. The build itself is orchestrated using generalized "rules" provided by the build system and applied to the project's source files. The user can customize the rules to a certain degree. Examples of declarative build systems are [Bazel](<https://en.wikipedia.org/wiki/Bazel_(software)>), [build2](https://build2.org/) or [boost.build (b2)](https://boostorg.github.io/build/).
 
-There are attempts at creating a fully automatic build system that can in fact detect everything on its own and thus greatly simplifying the C++ build automation. Unfortunately there is no comprehensive and complete solution yet. An example of fully automatic build system is [Evoke](https://github.com/dascandy/evoke/tree/master).
+There are attempts at creating a fully automatic build system. The goal is ti detect everything on its own and thus greatly simplify the C++ build automation. Unfortunately there is no comprehensive and complete solution yet. An example of fully automatic build system is [Evoke](https://github.com/dascandy/evoke/tree/master).
 
-With the advent of C++20 existing build systems struggle to provide support for features such as modules. C++20 modules significantly change the way C++ is built. Without real code inspection it is extremely difficult to provide support for them. The compiler toolchain themselves so far do not provide facilities that would let build systems know about available modules, module partitions etc. No build system so far provides even manual support for them except for [MSBuild](https://github.com/dotnet/msbuild) that is Windows and MSVC specific build system.
+With the advent of C++20 existing build systems struggle to provide support for features such as modules. C++20 modules significantly change the way C++ is built. Without real code inspection it is extremely difficult to provide support for them. The compiler toolchain themselves so far do not provide facilities that would let build systems know about available modules, module partitions etc. No build system so far provides even manual support for them except for [MSBuild](https://github.com/dotnet/msbuild) that is Windows and MSVC specific build system, and [build2](https://build2.org/) that only supports experimental GCC implementation of modules.
 
 ## Requirements
 
-Goals:
+A C++ build system that (goals):
 
--   Builds [C++](https://en.wikipedia.org/wiki/C%2B%2B) and is written in [C++](https://en.wikipedia.org/wiki/C%2B%2B).
--   Detects available compiler toolchains ([MSVC](https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B), [Clang](https://en.wikipedia.org/wiki/Clang), [GCC](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)).
--   Detects available third party packages on the system ([STL](https://en.wikipedia.org/wiki/Standard_Template_Library), [Windows SDK](https://en.wikipedia.org/wiki/Microsoft_Windows_SDK), [Qt](<https://en.wikipedia.org/wiki/Qt_(software)>) etc.).
+-   Builds [C++](https://en.wikipedia.org/wiki/C%2B%2B)
+-   Is written in [C++](https://en.wikipedia.org/wiki/C%2B%2B).
 -   Detects projects to be built from the source file organization on the file system.
+-   Detects available third party packages on the system ([STL](https://en.wikipedia.org/wiki/Standard_Template_Library), [Windows SDK](https://en.wikipedia.org/wiki/Microsoft_Windows_SDK), [Qt](<https://en.wikipedia.org/wiki/Qt_(software)>) etc.).
+-   Detects available compiler toolchains ([MSVC](https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B), [Clang](https://en.wikipedia.org/wiki/Clang), [GCC](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)).
 -   Detects both internal and external dependencies from code inspection observing preprocessor directives.
 -   Allows building without any configuration or build files.
 -   Enforces uniform compiler toolchain settings across all source files.
 -   Allows overriding the detected values and compiler toolchain settings via an optional configuration file down to the file level.
 -   Allows building for multiple architectures ([x86](https://en.wikipedia.org/wiki/X86), [x64](https://en.wikipedia.org/wiki/X86-64), [ARM](https://en.wikipedia.org/wiki/ARM_architecture)).
 -   Allows building for multiple platforms ([Windows](https://en.wikipedia.org/wiki/Microsoft_Windows), [macOS](https://en.wikipedia.org/wiki/MacOS), [Linux](https://en.wikipedia.org/wiki/Linux), [Android](<https://en.wikipedia.org/wiki/Android_(operating_system)>)).
--   Allows building with different preset configurations (debug, release).
+-   Allows building with different configurations (debug, release).
 -   Allows inspection of the build commands.
 -   Supports incremental build.
 -   Supports parallel build.
