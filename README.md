@@ -1,14 +1,6 @@
 # ADev
 
-Central development repository.
-
--   [Projects](#projects)
--   [Build](#build)
-    -   [MSVC](#msvc)
-    -   [clang](#clang)
--   [Tools](#tools)
-    -   [clang-format](#clang-format)
-    -   [clang-tidy](#clang-tidy)
+Agnesoft development repository.
 
 ## Projects
 
@@ -19,6 +11,13 @@ Central development repository.
 | [ATest](projects/atest/README.md)         | [projects/atest](projects/atest)         | C++ testing framework.                                   | [HLD](projects/atest/high_level_design.md)  |
 | [ASTL](projects/astl/README.md)           | [projects/astl](projects/astl)           | C++ Standard Template Library (STL) header unit wrapper. | [HLD](projects/astl/high_level_design.md)   |
 | [RapidJSON](projects/rapidjson/README.md) | [projects/rapidjson](projects/rapidjson) | C++ JSON parser and generator.                           | [License](projects/rapidjson/license)       |
+
+-   [Build](#build)
+    -   [MSVC](#msvc)
+    -   [clang](#clang)
+-   [Tools](#tools)
+    -   [clang-format](#clang-format)
+    -   [clang-tidy](#clang-tidy)
 
 ## Build
 
