@@ -16,7 +16,7 @@ If you have an idea for an enhancement or new feature please [open new issue](ht
 
 ## 4. Open a PR
 
-If you have written an enhancement, bugfix or new feature already in your fork and you want to contribute it back upstream please open a PR! Please observe `adev` [style guide](style_guide.md).
+If you have written an enhancement, bugfix or new feature already in your fork and you want to contribute it back upstream please open a PR! Please observe `adev` [style guide](STYLE_GUIDE.md).
 
 ## 5. Become a contributor
 
