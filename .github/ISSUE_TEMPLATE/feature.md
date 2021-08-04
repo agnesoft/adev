@@ -1,7 +1,7 @@
 ---
 name: feature
-about: Feature template
-title: "[project] Issue title"
+about: Crate a feature issue
+title: "[project] Feature summary"
 labels: feature
 assignees: michaelvlach
 
