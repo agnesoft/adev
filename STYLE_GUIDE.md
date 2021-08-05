@@ -6,17 +6,40 @@
 - [C++](#c)
   - [Formatting](#formatting)
   - [C++ Version](#c-version)
+  - [Language Extensions](#language-extensions)
   - [Naming](#naming)
   - [Headers](#headers)
   - [Sources](#sources)
+  - [Preprocessor](#preprocessor)
+  - [Memory Management](#memory-management)
+  - [Modules](#modules)
   - [Namespaces](#namespaces)
+  - [Classes](#classes)
+  - [Structs](#structs)
+  - [Initialization](#initialization)
   - [Enumerators](#enumerators)
-  - [Comments](#comments)
-  - [Documentation](#documentation)
-  - [Globals](#globals)
-  - [Statics](#statics)
+  - [Aliases](#aliases)
   - [Functions](#functions)
-  
+  - [Virtual](#virtual)
+  - [Lambdas](#lambdas)
+  - [Templates](#templates)
+  - [Exceptions](#exceptions)
+  - [Run Time Type Information (RTTI)](#run-time-type-information)
+  - [Global Variables](#global-variables)
+  - [Static Variables](#static-variables)
+  - [Preincrement vs Postincrement](#preincrement-vs-postincrement)
+  - [Integer Types](#integer-types)
+  - [Literals](#literals)
+  - [Casts](#casts)
+  - [const](#const)
+  - [constexpr](#constexpr)
+  - [inline](#inline)
+  - [noexcept](#noexcept)
+  - [nullptr](#nullptr)
+  - [sizeof](#sizeof)
+  - [auto](#auto)
+  - [Comments](#comments)
+  - [Documentation](#documentation)  
 
 ## General Rules
 
@@ -62,14 +85,15 @@ The prefix in brackets identifers at a glance what project or component the give
 
 - Optimize for the reader of the code: the code will be read many more times than it is written.
 - Don't be clever: any code that contains clever or peculiar tricks will be surprising to the reader which, in all likelihood, will be you two months from now.
+- What is not covered by the style guide is generally fine to use/do.
 
 ### Formatting
 
-Use `clang-format`.
+- use `clang-format`
 
 ### C++ Version
 
-[C++20](https://en.cppreference.com/w/cpp/20).
+- [C++20](https://en.cppreference.com/w/cpp/20)
 
 ### Naming
 
