@@ -25,7 +25,7 @@
     -   [Aliases](#aliases)
     -   [Functions](#functions)
     -   [Lambdas](#lambdas)
-    -   [Templates & Concepts](#templates-concepts)
+    -   [Templates & Concepts](#templates--concepts)
     -   [Exceptions](#exceptions)
     -   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
     -   [Global Variables](#global-variables)
