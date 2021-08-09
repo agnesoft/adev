@@ -299,8 +299,8 @@ If you must use an include:
 
 ### Ternary
 
--  avoid ternary operator, prefer full `if/else` instead
--  use ternary for simplest of cases such as one line functions with very clear logic
+-   avoid ternary operator, prefer full `if/else` instead
+-   use ternary for simplest of cases such as one line functions with very clear logic
 
 ### `this`
 
@@ -333,7 +333,7 @@ If you must use an include:
 
 ### `noexcept`
 
--   use when the entire callchain of the function is noexcept
+-   use when the entire call chain of the function is noexcept
 -   avoid use of `noexcept` constraints
 
 ### `nullptr`
