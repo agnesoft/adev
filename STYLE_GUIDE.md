@@ -5,17 +5,16 @@
     -   [Project & File Names](#project--file-names)
     -   [Issue Titles, Branch Names, Pull Request Titles & Commit Messages](#issue-titles-branch-names-pull-request-titles--merge-commit-messages)
 -   [C++](#c)
-    -   [Version](#c-version)
+    -   [Version](#version)
     -   [Language Extensions](#language-extensions)
     -   [Formatting](#formatting)
     -   [Naming](#naming)
-    -   [Scoping](#scoping)
-    -   [This](#this)
-    -   [Includes](#includes)
-    -   [Imports](#imports)
     -   [Headers](#headers)
     -   [Sources](#sources)
     -   [Modules](#modules)
+    -   [Scoping](#scoping)
+    -   [Includes](#includes)
+    -   [Imports](#imports)
     -   [Preprocessor](#preprocessor)
     -   [Namespaces](#namespaces)
     -   [Classes](#classes)
@@ -25,18 +24,19 @@
     -   [Memory Management](#memory-management)
     -   [Aliases](#aliases)
     -   [Functions](#functions)
-    -   [Virtual](#virtual)
     -   [Lambdas](#lambdas)
     -   [Templates](#templates)
     -   [Exceptions](#exceptions)
-    -   [Run Time Type Information (RTTI)](#run-time-type-information)
+    -   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
     -   [Global Variables](#global-variables)
     -   [Static Variables](#static-variables)
     -   [Preincrement vs Postincrement](#preincrement-vs-postincrement)
     -   [Integer Types](#integer-types)
     -   [Casts](#casts)
+    -   [this](#this)
     -   [const](#const)
     -   [constexpr](#constexpr)
+    -   [virtual](#virtual)
     -   [inline](#inline)
     -   [noexcept](#noexcept)
     -   [nullptr](#nullptr)
@@ -128,32 +128,6 @@ Use regular `snake_case` for class member variables as well and use `this->` to 
 
 ---
 
-### Scoping
-
--   always use `{}` even for statements with single statement (e.g. `if (true) { foo(); }`)
--   avoid use of arbitrary scoping (`e.g. void foo() { { fizz(); } buzz(); }`), make a function or lambda instead
-
-### This
-
--   always use `this->` when calling member functions (methods)
--   always use `this->` when accessing member variables
-
-### Includes
-
--   do not use `#include`, use [import](#imports) instead
-
-If you must use an include:
-
--   include with `""` only headers that can be located by the relative path from the current file, i.e. files in the same directory
--   include with `<>` headers from all other sources (other projects, system headers etc.)
--   disambiguate the include if possible with a path prefix (e.g. `projectX/header.h` instead of just `header.h`)
--   use `clang-format` for ordering
-
-### Imports
-
--   import with `""` only header units that can be located by the relative path from the current file, i.e. files in the same directory
--   import with `<>` header units from all other sources (other projects, system headers etc.)
-
 ### Headers
 
 -   do not use or create header files, use [imports](#imports) and [modules](#modules) instead
@@ -179,6 +153,28 @@ If you must create a header file:
 -   split modules into interface and module partitions
 -   define each module partition in its own file
 -   keep module partitions small, i.e. one class per partition
+
+
+### Scoping
+
+-   always use `{}` even for statements with single statement (e.g. `if (true) { foo(); }`)
+-   avoid use of arbitrary scoping (`e.g. void foo() { { fizz(); } buzz(); }`), make a function or lambda instead
+
+### Includes
+
+-   do not use `#include`, use [import](#imports) instead
+
+If you must use an include:
+
+-   include with `""` only headers that can be located by the relative path from the current file, i.e. files in the same directory
+-   include with `<>` headers from all other sources (other projects, system headers etc.)
+-   disambiguate the include if possible with a path prefix (e.g. `projectX/header.h` instead of just `header.h`)
+-   use `clang-format` for ordering
+
+### Imports
+
+-   import with `""` only header units that can be located by the relative path from the current file, i.e. files in the same directory
+-   import with `<>` header units from all other sources (other projects, system headers etc.)
 
 ### Preprocessor
 
@@ -244,11 +240,6 @@ If you must create a header file:
 -   use custom `struct` to pass in more than 4 parameters
 -   prefer pointers to references for mutable arguments
 
-### Virtual
-
--   avoid runtime polymorphism
--   use compile time alternatives such as [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
-
 ### Lambdas
 
 -   avoid lambdas that escape current scope
@@ -301,6 +292,11 @@ If you must create a header file:
 -   never use C-cast, i.e. `(int)var`
 -   use `reinterpret_cast` only if you know your use case is not undefined behavior
 
+### `this`
+
+-   always use `this->` when calling member functions (methods)
+-   always use `this->` when accessing member variables
+
 ### `const`
 
 -   always be const correct
@@ -309,6 +305,13 @@ If you must create a header file:
 ### `constexpr`
 
 -   use as much as possible
+
+### Virtual
+
+-   avoid runtime polymorphism
+-   use compile time alternatives such as [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
+-   always use `override`
+-   never put `virtual` and `override` on the same function
 
 ### `inline`
 
