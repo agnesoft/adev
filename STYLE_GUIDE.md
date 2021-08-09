@@ -25,7 +25,7 @@
     -   [Aliases](#aliases)
     -   [Functions](#functions)
     -   [Lambdas](#lambdas)
-    -   [Templates](#templates)
+    -   [Templates & Concepts](#templates-concepts)
     -   [Exceptions](#exceptions)
     -   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
     -   [Global Variables](#global-variables)
@@ -33,9 +33,12 @@
     -   [Preincrement vs Postincrement](#preincrement-vs-postincrement)
     -   [Integer Types](#integer-types)
     -   [Casts](#casts)
+    -   [Literals](#literals)
+    -   [Ternary](#ternary)
     -   [this](#this)
     -   [const](#const)
     -   [constexpr](#constexpr)
+    -   [consteval](#consteval)
     -   [virtual](#virtual)
     -   [inline](#inline)
     -   [noexcept](#noexcept)
@@ -64,14 +67,14 @@
 
 ### Issue Titles, Branch Names, Pull Request Titles & Merge Commit Messages
 
--   always use `[project]` prefix to identify the work (use multiple if the work affects multiple, e.g. `[project1][proeject2]`)
+-   always use `[project]` prefix to identify the work (use multiple if the work affects multiple, e.g. `[project1][project2]`)
 -   always include issue number in branch name, PR title and commit message, e.g. `#111`, `(#111)`
--   always start with a noun such as `add`, `remove`, `update`, `refactor` (capitalization is optional)
+-   always start with a noun such as `Add`, `Remove`, `Update`, `Refactor` (capitalization is useful to distinguish it from the project affiliation)
 -   always match all four: issue title, branch name, pull request title & merge commit message
 
 **Examples**
 
-_issue:_ `[devops] add style guide`
+_issue:_ `[devops] Add style guide`
 
 _branch:_ `devops-Add-style-guide-#111`
 
@@ -81,15 +84,11 @@ _merge commit:_ `[devops] Add style guide #111 (#112)`
 
 ---
 
-**NOTE1**
+**NOTE 1**
 
 Git does not allow branches starting with `[` so remove the square brackets from the branch name.
 
----
-
----
-
-**Note2**
+**NOTE 2**
 
 GitHub reformats issue titles, PR titles and commit messages (especially when there is only one commit in a branch). Double check these before saving or committing.
 
@@ -135,10 +134,10 @@ Use regular `snake_case` for class member variables as well and use `this->` to 
 If you must create a header file:
 
 -   use `*.hpp` extension to distinguish the header from C header (C++ headers are rarely compilable in C)
--   use preprocessor include guard `ifndef/define/endif` rather than non-standard `pragma once`
+-   use preprocessor include guard `#ifndef/#define/#endif` rather than non-standard `pragma once`
 -   the include guard define should have format `PROJECT_HEADER_HPP` (e.g. `atest/expect.hpp` -> `ATEST_EXPECT_HPP`)
--   prefer forward declarations over includes for symbols that are only used internally in the source file and move the includes into the source file
--   prefer includes over forward declarations for symbols used in public API (e.g. `#include <string> ... void foo(const std::string &str);`) so that the user of the header does not need to guess what else is needed to use it
+-   never forward declare symbols used in public API (e.g. `#include <string> ... void foo(const std::string &str);`) so that the user of the header does not need to guess what else is needed to use the header
+-   forward declare symbols used internally and move the includes into the source file
 
 ### Sources
 
@@ -149,11 +148,10 @@ If you must create a header file:
 ### Modules
 
 -   the module name should be the project name (e.g. `atest` -> `export module atest`)
--   avoid the use of global module fragment
+-   avoid the use of global module fragment and includes in general, import them as header units instead
 -   split modules into interface and module partitions
 -   define each module partition in its own file
 -   keep module partitions small, i.e. one class per partition
-
 
 ### Scoping
 
@@ -175,6 +173,7 @@ If you must use an include:
 
 -   import with `""` only header units that can be located by the relative path from the current file, i.e. files in the same directory
 -   import with `<>` header units from all other sources (other projects, system headers etc.)
+-   disambiguate the imports of header units if possible with a path prefix (e.g. `projectX/header.h` instead of just `header.h`)
 
 ### Preprocessor
 
@@ -193,9 +192,9 @@ If you must use an include:
 ### Classes
 
 -   do the initialization in constructor (no two phase initialization) and throw an [exception](#exceptions) in case of an error
--   single parameter constructors must be declared explicit
--   no implicit conversions
--   always declare member variables private and use accessor functions
+-   single parameter constructors must be declared `explicit`
+-   no implicit conversions, mark conversion operators `explicit`
+-   always declare member variables private and use accessor methods
 -   follow the rule of 0 or rule of 5
 -   avoid multiple inheritance
 -   never inherit virtually
@@ -213,8 +212,8 @@ If you must use an include:
 
 -   use `=` for scalar types (e.g. `int i = 10;`)
 -   use aggregate initialization `{}` for all other types (e.g. `MyClass my_class{"hello"};`)
--   use designated initializers for structs (e.g. `S s{.member1 = 1, .member = "value"};`)
--   never use `()` for initialization unless necessary (e.g. certain `std::string` constructor)
+-   use designated initializers for structs (e.g. `S s{.member1 = 1, .member2 = "value"};`)
+-   never use `()` for initialization unless necessary (e.g. certain `std::string` constructors)
 
 ### Memory Management
 
@@ -222,35 +221,36 @@ If you must use an include:
 -   use smart pointers and prefer `std::unique_ptr`
 -   avoid use of `std::shared_ptr` unless it is necessary
 -   never manage memory manually, i.e. use naked `new` and `delete`
+-   never manage raw arrays on the heap (`new[]`, `delete[]`), use `std::array` instead
 -   never use `malloc/free` unless a third party API requires it
 
 ### Aliases
 
 -   never use `typedef`, use `using` instead
--   do not use type aliases for regular types (e.g. `using MyList = std::vector<int>`), always spell out the type for clarity
--   use aliasing for complicated template types such as custom iterators (e.g. `using iterator = MyTemplatedIterator<ValueType, ConstValueType, SomeFlag>`)
--   use aliasing to satisfy type traits such as having a `value_type`
+-   avoid type aliasing: do not use type aliases for regular types (e.g. `using MyList = std::vector<int>`), always spell out the type for clarity
+-   use type aliasing for complicated template types such as custom iterators (e.g. `using iterator = MyTemplatedIterator<ValueType, ConstValueType, SomeFlag>`)
+-   use type aliasing to satisfy type traits, e.g. `using value_type = ...`
 
 ### Functions
 
--   ~ 4 lines of code per function
--   split your code into more well known functions
--   max 4 arguments
+-   ~ 4 lines of code per function (split your code into more well named functions)
+-   prefer 1 to 2 arguments, max 4 individual arguments
+-   use custom `struct` to pass in more than 4 arguments
 -   do not use default arguments, use overloads instead
--   use custom `struct` to pass in more than 4 parameters
--   prefer pointers to references for mutable arguments
+-   prefer return values over output arguments
 
 ### Lambdas
 
 -   avoid lambdas that escape current scope
 -   avoid captures if possible
 -   prefer `&` capture for local lambdas
--   prefer `=` capture for lambdas that escapes current scope
--   do not use capture list to rename variables
+-   prefer `=` capture for lambdas that escape current scope
+-   do not use capture list solely to rename variables
 
-### Templates
+### Templates & Concepts
 
--   never use SFINAE, use `concepts` (`requires`) instead
+-   use `concepts` (`requires`) instead
+-   never use SFINAE, use `concepts` instead
 
 ### Exceptions
 
@@ -272,8 +272,8 @@ If you must use an include:
 
 -   avoid using global static variables including as class members
 -   never use mutable global static variables
--   only use global static variables that are const, cannot throw during initialization (e.g. a type is trivial) and that do not use each other
--   prefer static variables in methods that ensure the initialization on first use
+-   only use global static variables that are const and that cannot throw during initialization (e.g. a type is trivial) and that do not use other static variables in their initialization
+-   prefer static variables in functions that ensure the initialization on first use
 
 ### Preincrement vs Postincrement
 
@@ -281,16 +281,26 @@ If you must use an include:
 
 ### Integer Types
 
--   use fixed length integers in public APIs
+-   use fixed length integer types in public APIs
 -   use `int` only in internal code
 -   avoid unsigned integer types in loops
 -   avoid comparing signed and unsigned integers and avoid casting in such cases, use `cmp_*` family of STL functions instead
 
 ### Casts
 
--   never use `const_cast`
 -   never use C-cast, i.e. `(int)var`
--   use `reinterpret_cast` only if you know your use case is not undefined behavior
+-   never use `const_cast`
+-   use `reinterpret_cast` only if you know your use case is not [undefined behavior](https://en.cppreference.com/w/cpp/language/reinterpret_cast)
+
+### Literals
+
+-   use digit separators for long values (e.g. `1'000'000`)
+-   prefer specifying the type via a literal in case of possible ambiguity (e.g. `auto v = 5.0f`)
+
+### Ternary
+
+-  avoid ternary operator, prefer full `if/else` instead
+-  use ternary for simplest of cases such as one line functions with very clear logic
 
 ### `this`
 
@@ -306,7 +316,11 @@ If you must use an include:
 
 -   use as much as possible
 
-### Virtual
+### `consteval`
+
+-   always use for purely compile time calculations to avoid leaking them to runtime via `constexpr`
+
+### `virtual`
 
 -   avoid runtime polymorphism
 -   use compile time alternatives such as [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
@@ -319,25 +333,25 @@ If you must use an include:
 
 ### `noexcept`
 
--   use as much as possible
--   do not use `noexcept` constraints
+-   use when the entire callchain of the function is noexcept
+-   avoid use of `noexcept` constraints
 
 ### `nullptr`
 
 -   always use `nullptr`
 -   never use `NULL`
--   never use `0`
+-   never use `0` as a pointer value
 
 ### `sizeof`
 
--   prefer the variable as argument, not the type
+-   prefer the variable as argument (not the type)
 
 ### `auto`
 
 -   almost never auto
 -   use auto when necessary such as with lambdas (e.g. `auto l = [] {};`)
 -   use auto when the assignment expression denotes explicitly the type already (e.g. `auto i = static_cast<int>(var);`)
--   use auto when the type explicit type would obfuscate the code such as when using iterators in loops (e.g. `for (auto it = v.begin(); it != v.end(); ++it) {}`)
+-   use auto when the explicit type would obfuscate the code such as when using iterators in loops (e.g. `for (auto it = v.begin(); it != v.end(); ++it) {}`)
 
 ### `friend`
 
@@ -346,15 +360,16 @@ If you must use an include:
 
 ### Comments
 
--   do not use comments unless you are documenting an entity
+-   avoid commenting code unless you are [documenting](#documentation) it
 -   refactor and create a named functions instead of commenting
 -   if you must use a comment prefer `//` over `/* */`
 
 ### Documentation
 
--   always document externally visible public and protected symbols (i.e. exported or header declared classes, functions, structs, enums etc.)
+-   always document externally visible public and protected symbols (i.e. exported or header declared classes, methods, functions, structs, member variables, enums etc.)
 -   use Doxygen style `//!` comments for in-code documentation in front of the symbol (i.e. function, class, member variable)
 -   never document private code
 -   add brief summary when documenting classes (e.g. `\brief The X provides something`)
 -   focus on `what` a documented entity does rather than on `how` or `why` it does it
--   always include examples of usage
+-   always mention assumptions (e.g. about arguments), side effects and results (e.g. return value)
+-   include examples of usage
