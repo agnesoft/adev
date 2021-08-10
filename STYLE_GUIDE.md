@@ -22,12 +22,14 @@
     -   [Enumerators](#enumerators)
     -   [Initialization](#initialization)
     -   [Memory Management](#memory-management)
+    -   [Multithreading](#multithreading)
     -   [Aliases](#aliases)
     -   [Functions](#functions)
     -   [Lambdas](#lambdas)
     -   [Templates & Concepts](#templates--concepts)
     -   [Exceptions](#exceptions)
     -   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
+    -   [Local Variables](#local-variables)
     -   [Global Variables](#global-variables)
     -   [Static Variables](#static-variables)
     -   [Preincrement vs Postincrement](#preincrement-vs-postincrement)
@@ -195,13 +197,17 @@ If you must use an include:
 -   single parameter constructors must be declared `explicit`
 -   no implicit conversions, mark conversion operators `explicit`
 -   always declare member variables private and use accessor methods
+-   be mindful of padding when ordering member variables
 -   follow the rule of 0 or rule of 5
 -   avoid multiple inheritance
+-   prefer composition to inheritance
 -   never inherit virtually
 
 ### Structs
 
 -   no member functions
+-   be mindful of padding when ordering member variables
+-   prefer custom structs over `std::pair` and `std::tuple`
 
 ### Enumerators
 
@@ -223,6 +229,12 @@ If you must use an include:
 -   never manage memory manually, i.e. use naked `new` and `delete`
 -   never manage raw arrays on the heap (`new[]`, `delete[]`), use `std::array` instead
 -   never use `malloc/free` unless a third party API requires it
+
+### Multithreading
+
+-   avoid multithreading if possible
+-   avoid using locks if possible, consider using [coroutines](https://en.cppreference.com/w/cpp/language/coroutines)
+-   prefer highest possible level of abstraction (e.g. atomics, coroutines) to low level multithreading primitives (e.g. mutex)
 
 ### Aliases
 
@@ -261,6 +273,13 @@ If you must use an include:
 
 -   always enabled
 
+### Local Variables
+
+-   declare variables close to their first use
+-   declare variables with narrowest scope possible
+-   declare varitables [const](#const) or [constexpr](#constexpr) correct
+-   consider using conditional and loop initializers for variables bound only to that scope (e.g. `if (int i = foo(); i == 1) {}`, `while (int i = 0; i < 10) { ++i; }`
+
 ### Global Variables
 
 -   avoid using global variables
@@ -283,6 +302,7 @@ If you must use an include:
 
 -   use fixed length integer types in public APIs
 -   use `int` only in internal code
+-   prefer signed integer types
 -   avoid unsigned integer types in loops
 -   avoid comparing signed and unsigned integers and avoid casting in such cases, use `cmp_*` family of STL functions instead
 
@@ -294,6 +314,7 @@ If you must use an include:
 
 ### Literals
 
+-   do not use user defined literals
 -   use digit separators for long values (e.g. `1'000'000`)
 -   prefer specifying the type via a literal in case of possible ambiguity (e.g. `auto v = 5.0f`)
 
@@ -326,6 +347,7 @@ If you must use an include:
 -   use compile time alternatives such as [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 -   always use `override`
 -   never put `virtual` and `override` on the same function
+-   never change accessor of the function you are overriding (e.g. `private` -> `public`)
 
 ### `inline`
 
