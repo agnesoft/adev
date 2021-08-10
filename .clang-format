@@ -60,7 +60,19 @@ DerivePointerAlignment: false
 DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: false
-IncludeBlocks: Preserve
+IncludeBlocks: Regroup
+IncludeIsMainRegex: '"pch'
+IncludeCategories:
+  - Regex:           '"pch'
+    Priority:        0
+  - Regex:           '"'
+    Priority:        2
+  - Regex:           '<[a-zA-Z].*/'
+    Priority:        3
+  - Regex:           '<[a-zA-Z]'
+    Priority:        4
+  - Regex:           '<'
+    Priority:        5
 IndentCaseLabels: false
 IndentCaseBlocks: false
 IndentGotoLabels: false
