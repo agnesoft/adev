@@ -105,8 +105,8 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   private headers should be placed with the source files
 -   every project should have a `test/` directory with a test application
 -   projects can have sub-projects (they should be rare) placed directly in the parent project's directory (e.g. `projects/abuild/preprocessor`)
--   every project must have a `readme.md`
--   every project must have a `design.md` (and should start with it)
+-   every project must have a [design.md](#design) (and should start with it)
+-   every project must have a [readme.md](#readme)
 
 ### Project Design
 
@@ -115,12 +115,12 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   the purpose of the design is to provide guidance during implementation and when the project code is being investigated in the future
 -   every design must have 4 sections:
     -   **problem**: what is the project trying to solve?
-    -   **requirements**: what are the features the project must have to solve the problem?
+    -   **requirements**: what are the features the project should have?
     -   **existing solutions**: why the existing solutions do not meet the requirements?
     -   **design**: how do we solve the problem and meet the requirements?
 -   design should focus on high level overview - overall architecture, description of flows, components, usage etc.
 -   keep it alive - design does not need to be perfect, it will diverge as the implementation evolves
-    -   **always update or delete sections that are not correct or relevant**
+    -   **always update or delete sections that are not correct or relevant anymore**
 
 ### Project Readme
 
@@ -199,7 +199,7 @@ If you must create a header file:
 -   split modules into interface and module partitions
 -   define each module partition in its own file
 -   keep module partitions small, i.e. one class per partition
--   export only what is part of the public API, you do not have to export transitively unless the transitive symbol is part of the API as well (as opposed to be just used by the API), e.g. `class C; export C foo();` is fine because C cannot be instantiated outside of the module and can be used only via the exported API, i.e. function `foo`
+-   export only what is part of the public API, you do not have to export transitively unless the transitive symbol is part of the API as well (as opposed to just be used by the API), e.g. `class C; export C foo();` is fine because C cannot be instantiated outside of the module and can be used only via the exported API, i.e. function `foo`
 -   avoid exporting entire namespaces
 
 ### Scoping
