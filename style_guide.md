@@ -4,6 +4,9 @@
     -   [Ground Rules](#ground-rules)
     -   [Project & File Names](#project--file-names)
     -   [Issue Titles, Branch Names, Pull Request Titles & Commit Messages](#issue-titles-branch-names-pull-request-titles--merge-commit-messages)
+    -   [Project Structure](#project-structure)
+    -   [Project Design](#project-design)
+    -   [Project Readme](#project-readme)
 -   [C++](#c)
     -   [Version](#version)
     -   [Language Extensions](#language-extensions)
@@ -71,8 +74,9 @@
 
 -   always use `[project]` prefix to identify the work (use multiple if the work affects multiple, e.g. `[project1][project2]`)
 -   always include issue number in branch name, PR title and commit message, e.g. `#111`, `(#111)`
--   always start with a noun such as `Add`, `Remove`, `Update`, `Refactor` (capitalization is useful to distinguish it from the project affiliation)
+-   always start with a noun such as `Add`, `Remove`, `Update`, `Refactor`, `Fix` (capitalization is useful to distinguish it from the project affiliation)
 -   always match all four: issue title, branch name, pull request title & merge commit message
+-   use `Fix` verb for bug issues/branches/PRs/merge commit messages
 
 **Examples**
 
@@ -93,6 +97,48 @@ Git does not allow branches starting with `[` so remove the square brackets from
 **NOTE 2**
 
 GitHub reformats issue titles, PR titles and commit messages (especially when there is only one commit in a branch). Double check these before saving or committing.
+
+### Project Structure
+
+-   all projects are located under `projects/` directory
+-   sources should be placed directly in the project directory
+-   public headers ([if headers are used](#headers)) should be placed in `include/<project name>` directory within the project directory so that they can be included without ambiguity as `<project name>/<header>.hpp`
+-   private headers should be placed with the source files
+-   every project should have a `test/` directory with a test application
+-   projects can have sub-projects (they should be rare) placed directly in the parent project's directory (e.g. `projects/abuild/preprocessor`)
+-   every project must have a [design.md](#design) (and should start with it)
+-   every project must have a [readme.md](#readme)
+
+### Project Design
+
+-   use markdown
+-   always provide table of contents
+-   the purpose of the design is to provide guidance during implementation and when the project code is being investigated in the future
+-   every design must have 4 sections:
+    -   **problem**: what is the project trying to solve?
+    -   **requirements**: what are the features the project should have?
+    -   **existing solutions**: why the existing solutions do not meet the requirements?
+    -   **design**: how do we solve the problem and meet the requirements?
+-   design should focus on high level overview - overall architecture, description of flows, components, usage etc.
+-   keep it alive - design does not need to be perfect, it will diverge as the implementation evolves
+    -   **always update or delete sections that are not correct or relevant anymore**
+
+### Project Readme
+
+-   use markdown
+-   always provide table of contents
+-   the purpose of the readme is to provide quick overview of the project
+    -   what the project does
+    -   how is the project used
+-   every readme must have 3 sections:
+    -   **overview**: what the project does/provides and what are its features
+    -   **prerequisites**: what are the prerequisites & dependencies of using the project
+    -   **usage**: steps to start using the project with examples, e.g.
+        1. add build dependency to `myproject`
+        2. add `import myproject;` in your code
+        3. call `myproject::foo()` to do X
+        4. call `myproject::bar()` to do Y
+-   add additional sections and information as you deem fit such as `Known Issues`
 
 ---
 
@@ -143,17 +189,19 @@ If you must create a header file:
 
 ### Sources
 
--   use `*.cpp` extension for regular source files
--   use `*.ixx` for module interfaces
+-   use `*.cpp` extension for source files
 -   name the files according to their content, ideally after the class/module/partition they define (e.g. `class MyClass` -> `myclass.cpp`, `export module atest` -> `atest.ixx`)
 
 ### Modules
 
 -   the module name should be the project name (e.g. `atest` -> `export module atest`)
+-   only one module interface per project
 -   avoid the use of global module fragment and includes in general, import them as header units instead
 -   split modules into interface and module partitions
 -   define each module partition in its own file
 -   keep module partitions small, i.e. one class per partition
+-   export only what is part of the public API, you do not have to export transitively unless the transitive symbol is part of the API as well (as opposed to just be used by the API), e.g. `class C; export C foo();` is fine because C cannot be instantiated outside of the module and can be used only via the exported API, i.e. function `foo`
+-   avoid exporting entire namespaces
 
 ### Scoping
 
