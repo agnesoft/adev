@@ -74,8 +74,9 @@
 
 -   always use `[project]` prefix to identify the work (use multiple if the work affects multiple, e.g. `[project1][project2]`)
 -   always include issue number in branch name, PR title and commit message, e.g. `#111`, `(#111)`
--   always start with a noun such as `Add`, `Remove`, `Update`, `Refactor` (capitalization is useful to distinguish it from the project affiliation)
+-   always start with a noun such as `Add`, `Remove`, `Update`, `Refactor`, `Fix` (capitalization is useful to distinguish it from the project affiliation)
 -   always match all four: issue title, branch name, pull request title & merge commit message
+-   use `Fix` verb for bug issues/branches/PRs/merge commit messages
 
 **Examples**
 
