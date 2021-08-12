@@ -37,7 +37,8 @@ function buildProject () {
     if test -f "$BUILD_SH"; then
         runBuildScript $BUILD_SH $1
     else
-        prrintError "ERROR: Project '$1' does not exist."
+        echo ""
+        printError "ERROR: Project '$1' does not exist."
         echo "
 Available projects:"
         listProjects
@@ -53,8 +54,6 @@ function runBuildScript () {
     if test $STATUS -ne 0; then
         printError "ERROR: Building project '$2' ($1) failed: $STATUS"
         exit 1
-    else
-        printOK "done"
     fi
 }
 
