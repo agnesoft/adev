@@ -5,7 +5,6 @@
     -   [Project & File Names](#project--file-names)
     -   [Issue Titles, Branch Names, Pull Request Titles & Commit Messages](#issue-titles-branch-names-pull-request-titles--merge-commit-messages)
     -   [Project Structure](#project-structure)
-    -   [Project Design](#project-design)
     -   [Project Readme](#project-readme)
 -   [C++](#c)
     -   [Version](#version)
@@ -109,20 +108,6 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   every project must have a [design.md](#design) (and should start with it)
 -   every project must have a [readme.md](#readme)
 
-### Project Design
-
--   use markdown
--   always provide table of contents
--   the purpose of the design is to provide guidance during implementation and when the project code is being investigated in the future
--   every design must have 4 sections:
-    -   **problem**: what is the project trying to solve?
-    -   **requirements**: what are the features the project should have?
-    -   **existing solutions**: why the existing solutions do not meet the requirements?
-    -   **design**: how do we solve the problem and meet the requirements?
--   design should focus on high level overview - overall architecture, description of flows, components, usage etc.
--   keep it alive - design does not need to be perfect, it will diverge as the implementation evolves
-    -   **always update or delete sections that are not correct or relevant anymore**
-
 ### Project Readme
 
 -   use markdown
@@ -130,7 +115,7 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   the purpose of the readme is to provide quick overview of the project
     -   what the project does
     -   how is the project used
--   every readme must have 3 sections:
+-   every readme must have at lest 3 sections:
     -   **overview**: what the project does/provides and what are its features
     -   **prerequisites**: what are the prerequisites & dependencies of using the project
     -   **usage**: steps to start using the project with examples, e.g.
