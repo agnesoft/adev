@@ -4,7 +4,7 @@ PROJECT_DIR="projects/atest"
 BUILD_DIR="$BUILD_ROOT/atest"
 
 MSVC="
-mkdir \"$BUILD_DIR/test\"
+if not exist \"$BUILD_DIR/test\" mkdir \"$BUILD_DIR/test\" >nul
 cl.exe $MSVC_COMPILER_FLAGS /interface /ifcOutput\"$BUILD_DIR/atest.ifc\" /Fo\"$BUILD_DIR/atest.obj\" \"$PROJECT_DIR/atest.cpp\"
 lib.exe /NOLOGO ^
         /OUT:\"$BUILD_DIR/atest.lib\" ^
