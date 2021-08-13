@@ -9,7 +9,7 @@ function buildWindows () {
     detectMSVCEnvScript
     local BUILD_SCRIPT="@echo off
 call \"${MSVC_ENV_SCRIPT}\" >nul
-mkdir \"$BIN_DIR\" >nul
+if not exist \"$BIN_DIR\" mkdir \"$BIN_DIR\" >nul
 $1"
     echo "$BUILD_SCRIPT" > build.bat
     cmd //c build.bat
