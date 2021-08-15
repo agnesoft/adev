@@ -49,7 +49,7 @@ Available projects:"
 }
 
 function runBuildScript () {
-    echo "Building project '$2'..."
+    echo "Building '$2' ($TOOLCHAIN)"
     eval "$1 $TOOLCHAIN"
     STATUS=$?
 
