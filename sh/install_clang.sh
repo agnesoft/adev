@@ -7,5 +7,4 @@ elif isWindows; then
 else
     sudo apt-get update -y
     sudo apt-get install -y clang++-12
-    sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-12 1
 fi
