@@ -4,8 +4,12 @@ STATUS=0
 TOOLCHAIN=$1
 BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
+
 if isWindows; then
     EXECUTABLE_SUFFIX=".exe"
+elif test $TOOLCHAIN == "msvc"; then
+    printError "ERROR: toolchain 'msvc' is only available on Windows"
+    exit 1
 fi
 
 MSVC_COMPILER_FLAGS="/nologo /std:c++20 /EHsc /O2 /W4 /WX"
@@ -28,7 +32,8 @@ function build () {
 function buildClang () {
     local BUILD_SCRIPT="mkdir -p \"$BIN_DIR\"
 $1"
-eval "$BUILD_SCRIPT"
+    eval "$BUILD_SCRIPT"
+    STATUS=$?
 }
 
 function buildMSVC () {
@@ -41,7 +46,6 @@ $1"
     cmd //c build.bat
     STATUS=$?
     rm build.bat
-    return $STATUS
 }
 
 function detectMSVCEnvScript () {
