@@ -1,7 +1,9 @@
 source ./sh/common.sh
 
-PARAM=$1
+ACTION=
+PROJECT=
 PROJECT_NAME_FROM_SCRIPT_PATTERN=".*build_(.*)\.sh"
+TOOLCHAIN=
 
 function detectProjects () {
     PROJECTS_SCRIPTS=$(find . -name "build_*.sh" -type f)
@@ -32,13 +34,13 @@ function buildAll () {
 }
 
 function buildProject () {
-    local BUILD_SH="./sh/build_$1.sh"
+    local BUILD_SH="./sh/build_$PROJECT.sh"
 
     if test -f "$BUILD_SH"; then
-        runBuildScript $BUILD_SH $1
+        runBuildScript $BUILD_SH $PROJECT
     else
         echo ""
-        printError "ERROR: Project '$1' does not exist."
+        printError "ERROR: Project '$PROJECT' does not exist."
         echo "
 Available projects:"
         listProjects
@@ -48,7 +50,7 @@ Available projects:"
 
 function runBuildScript () {
     echo "Building project '$2'..."
-    eval $1
+    eval "$1 $TOOLCHAIN"
     STATUS=$?
 
     if test $STATUS -ne 0; then
@@ -57,10 +59,36 @@ function runBuildScript () {
     fi
 }
 
-if test "$PARAM" == "list"; then
+function setProperties () {
+    if test "$1" == "list"; then
+        ACTION="list"
+    elif test "$1" == "clang" || test "$1" == "msvc"; then
+        ACTION="buildAll"
+        TOOLCHAIN=$1
+    elif test "$2" == "clang" || test "$2" == "msvc"; then
+        ACTION="buildProject"
+        PROJECT=$1
+        TOOLCHAIN=$2
+    else
+        ACTION="buildAll"
+
+        if isWindows; then
+            TOOLCHAIN="msvc"
+        else
+            TOOLCHAIN="clang"
+        fi
+    fi
+}
+
+setProperties $1 $2
+
+if test "$ACTION" == "list"; then
     listProjects
-elif test "$PARAM" == ""; then
+elif test "$ACTION" == "buildAll"; then
     buildAll
+elif test "$ACTION" == "buildProject"; then
+    buildProject
 else
-    buildProject $PARAM
+    printError "ERROR: unknown action '$ACTION'"
+    exit 1
 fi
