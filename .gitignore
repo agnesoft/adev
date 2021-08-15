@@ -12,3 +12,6 @@
 
 #JS
 node_modules/
+
+#adev
+/build/
