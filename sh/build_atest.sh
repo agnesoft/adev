@@ -1,4 +1,4 @@
-source "sh/common_build.sh" $1
+source "sh/common_build.sh"
 
 PROJECT_DIR="projects/atest"
 BUILD_DIR="$BUILD_ROOT/atest"
@@ -29,4 +29,4 @@ clang++ $CLANG_COMPILER_AND_LINKER_FLAGS \
         \"$BUILD_DIR/atest.obj\"
 "
 
-build
+build $1
