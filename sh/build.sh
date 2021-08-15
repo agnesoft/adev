@@ -49,7 +49,7 @@ Available projects:"
 }
 
 function runBuildScript () {
-    echo "Building project '$2'..."
+    echo "Building '$2' ($TOOLCHAIN)..."
     eval "$1 $TOOLCHAIN"
     STATUS=$?
 
@@ -77,6 +77,11 @@ function setProperties () {
         else
             TOOLCHAIN="clang"
         fi
+    fi
+
+    if ! isWindows && test "$TOOLCHAIN" == "msvc"; then
+        printError "ERROR: toolchain 'msvc' is only available on Windows"
+        exit 1
     fi
 }
 

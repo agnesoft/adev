@@ -40,7 +40,7 @@ function runInstallScript () {
     STATUS=$?
 
     if test $STATUS -ne 0; then
-        printError "ERROR: Installing packagee '$2' ($1) failed: $STATUS"
+        printError "ERROR: Installing package '$2' ($1) failed: $STATUS"
         exit 1
     fi
 }
