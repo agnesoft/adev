@@ -1,4 +1,4 @@
-source "sh/common_build.sh"
+source "sh/common_build.sh" $1
 
 PROJECT_DIR="projects/atest"
 BUILD_DIR="$BUILD_ROOT/atest"
@@ -19,14 +19,15 @@ cl.exe $MSVC_COMPILER_FLAGS ^
 
 CLANG="
 mkdir -p \"$BUILD_DIR\"
-clang++ $CLANG_COMPILER_FLAGS -Xclang -emit-module-interface -o \"$BUILD_DIR/atest.pcm\" -c \"$PROJECT_DIR/atest.cpp\"
-clang++ $CLANG_COMPILER_FLAGS -o \"$BUILD_DIR/atest.obj\" -c \"$PROJECT_DIR/atest.cpp\"
+$CLANG $CLANG_COMPILER_FLAGS -Xclang -emit-module-interface -o \"$BUILD_DIR/atest.pcm\" -c \"$PROJECT_DIR/atest.cpp\"
+$CLANG $CLANG_COMPILER_FLAGS -o \"$BUILD_DIR/atest.obj\" -c \"$PROJECT_DIR/atest.cpp\"
 
-clang++ $CLANG_COMPILER_AND_LINKER_FLAGS \
+$CLANG $CLANG_COMPILER_AND_LINKER_FLAGS \
         -fprebuilt-module-path=\"$BUILD_DIR\" \
         -o \"$BIN_DIR/atest_test$EXECUTABLE_SUFFIX\" \
         \"$PROJECT_DIR/test/main.cpp\" \
         \"$BUILD_DIR/atest.obj\"
 "
 
-build $1
+build
+

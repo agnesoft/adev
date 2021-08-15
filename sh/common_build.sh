@@ -1,17 +1,24 @@
 source ./sh/common.sh
 
 STATUS=0
-TOOLCHAIN=
+TOOLCHAIN=$1
 BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
+EXECUTABLE_SUFFIX=
+CLANG=
 
 MSVC_COMPILER_FLAGS="/nologo /std:c++20 /EHsc /O2 /W4 /WX"
 CLANG_COMPILER_FLAGS="-std=c++20 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -fmodules -fimplicit-module-maps"
 CLANG_COMPILER_AND_LINKER_FLAGS="$CLANG_COMPILER_FLAGS"
 
-function build () {
-    detectBuildProperties $1
+if isWindows; then
+    EXECUTABLE_SUFFIX=".exe"
+    CLANG="clang++"
+else
+    CLANG="clang++-12"
+fi
 
+function build () {
     if test "$TOOLCHAIN" == "msvc"; then
         buildMSVC "$MSVC"
     elif test "$TOOLCHAIN" == "clang"; then
@@ -41,14 +48,6 @@ $1"
     cmd //c build.bat
     STATUS=$?
     rm build.bat
-}
-
-function detectBuildProperties () {
-    TOOLCHAIN=$1
-
-    if isWindows; then
-        EXECUTABLE_SUFFIX=".exe"
-    fi
 }
 
 function detectMSVCEnvScript () {
