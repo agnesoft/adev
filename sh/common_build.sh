@@ -48,9 +48,6 @@ function detectBuildProperties () {
 
     if isWindows; then
         EXECUTABLE_SUFFIX=".exe"
-    elif test $TOOLCHAIN == "msvc"; then
-        printError "ERROR: toolchain 'msvc' is only available on Windows"
-        exit 1
     fi
 }
 

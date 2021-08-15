@@ -78,6 +78,11 @@ function setProperties () {
             TOOLCHAIN="clang"
         fi
     fi
+
+    if ! isWindows && test "$TOOLCHAIN" == "msvc"; then
+        printError "ERROR: toolchain 'msvc' is only available on Windows"
+        exit 1
+    fi
 }
 
 setProperties $1 $2
