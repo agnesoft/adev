@@ -1,11 +1,37 @@
 source ./sh/common.sh
 
 STATUS=0
-BUILD_ROOT=build
+TOOLCHAIN=$1
+BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
-MSVC_COMPILER_FLAGS="/nologo /c /std:c++20 /TP /EHsc /O2 /W4 /WX"
+if isWindows; then
+    EXECUTABLE_SUFFIX=".exe"
+fi
 
-function buildWindows () {
+MSVC_COMPILER_FLAGS="/nologo /std:c++20 /EHsc /O2 /W4 /WX"
+CLANG_COMPILER_FLAGS="-std=c++20 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -fmodules -fimplicit-module-maps"
+CLANG_COMPILER_AND_LINKER_FLAGS="$CLANG_COMPILER_FLAGS"
+
+function build () {
+    if test "$TOOLCHAIN" == "msvc"; then
+        buildMSVC "$MSVC"
+    elif test "$TOOLCHAIN" == "clang"; then
+        buildClang "$CLANG"
+    else
+        printError "ERROR: Unknown toolchain '$TOOLCHAIN'"
+        $STATUS=1
+    fi
+
+    exit $STATUS
+}
+
+function buildClang () {
+    local BUILD_SCRIPT="mkdir -p \"$BIN_DIR\"
+$1"
+eval "$BUILD_SCRIPT"
+}
+
+function buildMSVC () {
     detectMSVCEnvScript
     local BUILD_SCRIPT="@echo off
 call \"${MSVC_ENV_SCRIPT}\" >nul
