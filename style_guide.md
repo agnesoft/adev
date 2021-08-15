@@ -175,7 +175,7 @@ If you must create a header file:
 ### Sources
 
 -   use `*.cpp` extension for source files
--   name the files according to their content, ideally after the class/module/partition they define (e.g. `class MyClass` -> `myclass.cpp`, `export module atest` -> `atest.ixx`)
+-   name the files according to their content, ideally after the class/module/partition they define (e.g. `class MyClass` -> `myclass.cpp`, `export module atest` -> `atest.cpp`)
 
 ### Modules
 
