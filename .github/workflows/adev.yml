@@ -1,0 +1,29 @@
+name: adev
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: ${{ matrix.config.platform }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              os: windows-latest,
+              platform: windows-msvc2019-x64,
+            }
+          - {
+              os: ubuntu-latest,
+              platform: linux-clang12-x64,
+            }
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        shell: bash
+        run: ./adev.sh build
