@@ -8,7 +8,7 @@ Agnesoft central development repository.
 
 | Name                              | Path                               | Description            |
 | --------------------------------- | ---------------------------------- | ---------------------- |
-| [atest](projects/atest/readme.md) | [projects/atest/](projects/acore/) | C++ testing framework. |
+| [atest](projects/atest/readme.md) | [projects/atest/](/projects/atest/) | C++ testing framework. |
 
 ## Prerequisites
 
