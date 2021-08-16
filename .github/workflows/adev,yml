@@ -6,7 +6,8 @@ on:
   pull_request:
     branches: [main]
 
-build:
+jobs:
+  build:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
     strategy:
