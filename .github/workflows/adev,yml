@@ -1,0 +1,37 @@
+name: ADev
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows MSVC 2019 x64",
+              os: windows-latest,
+              toolchain: msvc
+              platform: windows-msvc2019-x64,
+            }
+          - {
+              name: "Linux Clang 12 x64",
+              os: ubuntu-latest,
+              toolchain: clang,
+              platform: linux-clang12-x64,
+            }
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        shell: bash
+        run: ./adev.sh build
+      - name: artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: adev-${{ matrix.config.platform }}
+          path: build/${{ matrix.config.toolchain }}/bin/
