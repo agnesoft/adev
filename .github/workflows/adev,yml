@@ -1,4 +1,4 @@
-name: ADev
+name: adev
 
 on:
   push:
