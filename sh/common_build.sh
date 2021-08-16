@@ -7,7 +7,7 @@ BIN_DIR="$BUILD_ROOT/bin"
 EXECUTABLE_SUFFIX=
 CLANG=
 
-MSVC_COMPILER_FLAGS="/nologo /std:c++20 /EHsc /O2 /W4 /WX"
+MSVC_COMPILER_FLAGS="/nologo /std:c++latest /EHsc /O2 /W4 /WX"
 CLANG_COMPILER_FLAGS="-std=c++20 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -fmodules -fimplicit-module-maps"
 CLANG_COMPILER_AND_LINKER_FLAGS="$CLANG_COMPILER_FLAGS"
 
