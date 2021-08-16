@@ -16,7 +16,7 @@ build:
           - {
               name: "Windows MSVC 2019 x64",
               os: windows-latest,
-              toolchain: msvc
+              toolchain: msvc,
               platform: windows-msvc2019-x64,
             }
           - {
