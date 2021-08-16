@@ -10,11 +10,11 @@ lib.exe /NOLOGO ^
         /OUT:\"$BUILD_DIR/atest.lib\" ^
         $BUILD_DIR/atest.obj
 
-cl.exe $MSVC_COMPILER_FLAGS ^
-       /ifcSearchDir\"$BUILD_DIR\" ^
-       /Fe\"$BIN_DIR/atest_test.exe\" ^
-       \"$PROJECT_DIR/test/main.cpp\" ^
-       \"$BUILD_DIR/atest.lib\"
+cl.exe $MSVC_COMPILER_FLAGS /Fo\"$BUILD_DIR/test/main.obj\" /c \"$PROJECT_DIR/test/main.cpp\"
+link.exe /NOLOGO ^
+         /OUT:\"$BIN_DIR/atest_test.exe\" ^
+         \"$BUILD_DIR/test/main.obj\" ^
+         \"$BUILD_DIR/atest.lib\"
 "
 
 CLANG="
