@@ -7,6 +7,15 @@ on:
     branches: [main]
 
 jobs:
+  formatting:
+    name: formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: format
+        shell: bash
+        run: ./adev.sh format
+
   build:
     name: ${{ matrix.config.platform }}
     runs-on: ${{ matrix.config.os }}
