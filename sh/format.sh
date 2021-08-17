@@ -12,7 +12,10 @@ do
     $CLANG_FORMAT -i $file
 done
 
-if [[ $(git status --short) != "" ]]; then
+MODIFIED=$(git status --short)
+
+if [[ "$MODIFIED" != "" ]]; then
+    echo "$MODIFIED"
     exit 1
 else
     exit 0
