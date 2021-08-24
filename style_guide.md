@@ -350,15 +350,15 @@ If you must use an include:
 -   _types_: CamelCase (e.g. `class MyClass`, `struct Iterator`, `typename T`)
 -   _enums_: CamelCase (e.g. `enum class MyEnum { EnumValue };`)
 -   _macros_: SCREAMING_SNAKE_CASE (e.g. `#define MY_MACRO 3`)
--   _functions_: mixedCase (e.g. `foo()`, `myBar()`)
--   _variables_: snake_case (e.g. `int my_var`, `std::string some_doc`)
+-   _functions_: snake_case (e.g. `foo()`, `my_bar()`)
+-   _variables_: mixedCase (e.g. `int var`, `std::string someDoc`)
 -   _constants_: SCREAMING_SNAKE_CASE (e.g. `const int MY_CONSTANT = 3`)
 
 ---
 
 **NOTE**
 
-Use regular `snake_case` for class member variables as well and use `this->` to disambiguate them from other variables.
+Use `mixedCase` for member variables as well and use `this->` to disambiguate them from other variables.
 
 ---
 
@@ -425,7 +425,7 @@ Use regular `snake_case` for class member variables as well and use `this->` to 
 ### Templates & Concepts
 
 -   use `concepts` (`requires`) instead
--   never use SFINAE, use `concepts` instead
+-   never use [SFINAE](https://en.wikipedia.org/wiki/Substitution_failure_is_not_an_error), use `concepts` instead
 
 ### Ternary
 
