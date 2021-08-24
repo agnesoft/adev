@@ -32,6 +32,7 @@
     -   [Exceptions](#exceptions)
     -   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
     -   [Local Variables](#local-variables)
+    -   [Member Variables](#member-variables)
     -   [Global Variables](#global-variables)
     -   [Static Variables](#static-variables)
     -   [Preincrement vs Postincrement](#preincrement-vs-postincrement)
@@ -283,6 +284,9 @@ If you must use an include:
 -   use custom `struct` to pass in more than 4 arguments
 -   do not use default arguments, use overloads instead
 -   prefer return values over output arguments
+-   always fully qualify free function calls, e.g. `::ns::foo();`
+-   always qualify static function calls, e.g. `MyClass::bar();`
+-   always use `this->` when calling non-static member function, e.g. `this->foo();`
 
 ### Lambdas
 
@@ -313,12 +317,19 @@ If you must use an include:
 -   declare varitables [const](#const) or [constexpr](#constexpr) correct
 -   consider using conditional and loop initializers for variables bound only to that scope (e.g. `if (int i = foo(); i == 1) {}`, `while (int i = 0; i < 10) { ++i; }`
 
+### Member Variables
+
+-   always declare member variables `private` in classes
+-   always declare member variables `public` in structs
+-   always use `this->` when accessing member variables
+
 ### Global Variables
 
 -   avoid using global variables
 -   never use mutable global variables
 -   only use const global variables that cannot throw during initialization (e.g. a type is trivial)
 -   always place them in a namespace
+-   always fully qualify them when using them, e.g. `::ns::my_var;`
 
 ### Static Variables
 
@@ -326,6 +337,7 @@ If you must use an include:
 -   never use mutable global static variables
 -   only use global static variables that are const and that cannot throw during initialization (e.g. a type is trivial) and that do not use other static variables in their initialization
 -   prefer static variables in functions that ensure the initialization on first use
+-   always qualify them when using them, e.g. `MyClass:my_var;`
 
 ### Preincrement vs Postincrement
 
