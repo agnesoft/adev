@@ -425,7 +425,7 @@ Use `mixedCase` for member variables as well and use `this->` to disambiguate th
 ### Templates & Concepts
 
 -   use `concepts` (`requires`) instead
--   never use SFINAE, use `concepts` instead
+-   never use [SFINAE](https://en.wikipedia.org/wiki/Substitution_failure_is_not_an_error), use `concepts` instead
 
 ### Ternary
 
