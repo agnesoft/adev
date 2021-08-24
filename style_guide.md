@@ -352,7 +352,7 @@ If you must use an include:
 -   _macros_: SCREAMING_SNAKE_CASE (e.g. `#define MY_MACRO 3`)
 -   _functions_: mixedCase (e.g. `foo()`, `myBar()`)
 -   _variables_: snake_case (e.g. `int my_var`, `std::string some_doc`)
--   _constants_: SCREAMING_SNAKE_CASE (e.g. `int MY_CONSTANT = 3`)
+-   _constants_: SCREAMING_SNAKE_CASE (e.g. `const int MY_CONSTANT = 3`)
 
 ---
 
