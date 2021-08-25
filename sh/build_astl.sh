@@ -48,4 +48,4 @@ ar r \"$PCM_DIR/astl.lib\" \
      \"$BUILD_DIR/astl.obj\"
 "
 
-build "atest"
+build "astl"
