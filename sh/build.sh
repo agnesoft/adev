@@ -56,6 +56,12 @@ Available projects:"
     fi
 }
 
+function installPrerequisites () {
+    if isLinux; then
+        sudo apt-get install libc++-12-dev
+    fi
+}
+
 function runBuildScript () {
     eval "$1 $TOOLCHAIN"
     STATUS=$?
@@ -93,6 +99,7 @@ function setProperties () {
 }
 
 setProperties $1 $2
+installPrerequisites
 
 if test "$ACTION" == "list"; then
     listProjects
