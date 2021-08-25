@@ -22,6 +22,10 @@ function listProjects () {
 }
 
 function buildAll () {
+    echo "Projects: all"
+    echo "Toolchain: $TOOLCHAIN"
+    echo ""
+
     detectProjects
 
     for SCRIPT in $PROJECTS_SCRIPTS
@@ -34,6 +38,10 @@ function buildAll () {
 }
 
 function buildProject () {
+    echo "Projects: $PROJECT"
+    echo "Toolchain: $TOOLCHAIN"
+    echo ""
+
     local BUILD_SH="./sh/build_$PROJECT.sh"
 
     if test -f "$BUILD_SH"; then
@@ -49,7 +57,6 @@ Available projects:"
 }
 
 function runBuildScript () {
-    echo "Building '$2' ($TOOLCHAIN)..."
     eval "$1 $TOOLCHAIN"
     STATUS=$?
 
@@ -62,16 +69,16 @@ function runBuildScript () {
 function setProperties () {
     if test "$1" == "list"; then
         ACTION="list"
-    elif test "$1" == "clang" || test "$1" == "msvc"; then
+    elif test "$1" == "clang" || test "$1" == "msvc" || test "$1" == ""; then
         ACTION="buildAll"
         TOOLCHAIN=$1
-    elif test "$2" == "clang" || test "$2" == "msvc"; then
+    elif test "$2" == "clang" || test "$2" == "msvc" || test "$2" == ""; then
         ACTION="buildProject"
         PROJECT=$1
         TOOLCHAIN=$2
-    else
-        ACTION="buildAll"
+    fi
 
+    if test "$TOOLCHAIN" == ""; then
         if isWindows; then
             TOOLCHAIN="msvc"
         else
