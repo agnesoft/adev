@@ -31,7 +31,8 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Werror \
                       -fmodules \
                       -fimplicit-module-maps \
-                      -stdlib=libc++"
+                      -nostdinc++ \
+                      -I/usr/lib/llvm-12/include/c++/v1"
 CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
                              -L/usr/lib/llvm-12/lib \
                              -lc++ \
