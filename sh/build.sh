@@ -59,7 +59,7 @@ Available projects:"
 function installPrerequisites () {
     if isLinux; then
         sudo apt-get update -y
-        sudo apt-get install -y libc++-12-dev
+        sudo apt-get install -y libc++-12-dev libc++abi-12-dev libc++abi1-12
     fi
 }
 
