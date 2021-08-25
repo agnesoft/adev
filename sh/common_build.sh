@@ -4,12 +4,25 @@ STATUS=0
 TOOLCHAIN=$1
 BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
+IFC_DIR="$BUILD_ROOT/ifc"
 EXECUTABLE_SUFFIX=
 CLANG=
 
-MSVC_COMPILER_FLAGS="/nologo /std:c++latest /EHsc /O2 /W4 /WX"
-CLANG_COMPILER_FLAGS="-std=c++20 -Wall -Wextra -pedantic -Wno-missing-field-initializers -Werror -fmodules -fimplicit-module-maps"
-CLANG_COMPILER_AND_LINKER_FLAGS="$CLANG_COMPILER_FLAGS"
+MSVC_COMPILER_FLAGS="/nologo ^
+                     /std:c++latest ^
+                     /EHsc ^
+                     /O2 ^
+                     /W4 ^
+                     /WX ^
+                     /ifcSearchDir \"$IFC_DIR\""
+CLANG_COMPILER_FLAGS="-std=c++20 \
+                      -Wall \
+                      -Wextra \
+                      -pedantic \
+                      -Wno-missing-field-initializers \
+                      -Werror \
+                      -fmodules \
+                      -fimplicit-module-maps"
 
 if isWindows; then
     EXECUTABLE_SUFFIX=".exe"
@@ -19,6 +32,8 @@ else
 fi
 
 function build () {
+    echo "*** $1 ***"
+
     if test "$TOOLCHAIN" == "msvc"; then
         buildMSVC "$MSVC"
     elif test "$TOOLCHAIN" == "clang"; then
@@ -67,7 +82,7 @@ function detectMSVCEnvScript () {
             return
         fi
 
-        printError "ERROR: Visual Studio environemnt script not found."
+        printError "ERROR: Visual Studio environment script not found."
         exit 1
     fi
 }
