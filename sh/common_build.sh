@@ -30,11 +30,9 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Wno-missing-field-initializers \
                       -Werror \
                       -fmodules \
-                      -stdlib=libc++ \
-                      -fimplicit-module-maps"
-CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
-                             -lc++ \
-                             -lpthread"
+                      -fimplicit-module-maps \
+                      -stdlib=libc++"
+CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS"
 
 function build () {
     echo "*** $1 ***"
