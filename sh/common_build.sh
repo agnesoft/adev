@@ -31,9 +31,10 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Werror \
                       -fmodules \
                       -stdlib=libc++ \
-                      -lc++ \
-                      -lpthread \
                       -fimplicit-module-maps"
+CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
+                             -lc++ \
+                             -lpthread"
 
 function build () {
     echo "*** $1 ***"
