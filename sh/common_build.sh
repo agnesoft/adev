@@ -32,7 +32,11 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -fmodules \
                       -fimplicit-module-maps \
                       -stdlib=libc++"
-CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS"
+CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
+                             -L/usr/lib/llvm-12/lib \
+                             -lc++ \
+                             -Wl,-rpath,/usr/lib/llvm-12/lib \
+                             -lpthread"
 
 function build () {
     echo "*** $1 ***"
