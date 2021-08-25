@@ -56,13 +56,6 @@ Available projects:"
     fi
 }
 
-function installPrerequisites () {
-    if isLinux; then
-        sudo apt-get update -y
-        sudo apt-get install -y libc++-12-dev libc++abi-12-dev libc++abi1-12
-    fi
-}
-
 function runBuildScript () {
     eval "$1 $TOOLCHAIN"
     STATUS=$?
@@ -100,7 +93,6 @@ function setProperties () {
 }
 
 setProperties $1 $2
-installPrerequisites
 
 if test "$ACTION" == "list"; then
     listProjects
