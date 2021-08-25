@@ -1,0 +1,4 @@
+module astl_hpp {
+    header "astl.hpp"
+    export *
+}
