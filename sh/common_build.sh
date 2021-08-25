@@ -5,8 +5,16 @@ TOOLCHAIN=$1
 BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
 IFC_DIR="$BUILD_ROOT/ifc"
+PCM_DIR="$BUILD_ROOT/pcm"
 EXECUTABLE_SUFFIX=
 CLANG=
+
+if isWindows; then
+    EXECUTABLE_SUFFIX=".exe"
+    CLANG="clang++"
+else
+    CLANG="clang++-12"
+fi
 
 MSVC_COMPILER_FLAGS="/nologo ^
                      /std:c++latest ^
@@ -22,14 +30,10 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Wno-missing-field-initializers \
                       -Werror \
                       -fmodules \
-                      -fimplicit-module-maps"
-
-if isWindows; then
-    EXECUTABLE_SUFFIX=".exe"
-    CLANG="clang++"
-else
-    CLANG="clang++-12"
-fi
+                      -fimplicit-module-maps \
+                      -stdlib=libc++"
+CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
+                             -lpthread"
 
 function build () {
     echo "*** $1 ***"

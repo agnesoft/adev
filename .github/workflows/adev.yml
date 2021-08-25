@@ -8,31 +8,21 @@ on:
 
 jobs:
   formatting:
-    name: formatting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: format
-        shell: bash
-        run: ./adev.sh format
+      - run: ./adev.sh format
 
-  build:
-    name: ${{ matrix.config.platform }}
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {
-              os: windows-latest,
-              platform: windows-msvc2019-x64,
-            }
-          - {
-              os: ubuntu-latest,
-              platform: linux-clang12-x64,
-            }
+  windows_msvc2019_x64:
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - name: build
-        shell: bash
+      - shell: bash
         run: ./adev.sh build
+
+  linux_clang12_x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh install clang
+      - run: ./adev.sh build
