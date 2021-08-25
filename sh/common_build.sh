@@ -30,6 +30,7 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Wno-missing-field-initializers \
                       -Werror \
                       -fmodules \
+                      -stdlib=libc++ \
                       -fimplicit-module-maps"
 
 function build () {

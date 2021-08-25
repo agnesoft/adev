@@ -44,8 +44,8 @@ $CLANG $CLANG_COMPILER_FLAGS \
        -o \"$BUILD_DIR/astl.obj\" \
        -c \"$PROJECT_DIR/astl.cpp\"
 
-ar \"$PCM_DIR/astl.lib\" \
-   \"$BUILD_DIR/astl.obj\"
+ar r \"$PCM_DIR/astl.lib\" \
+     \"$BUILD_DIR/astl.obj\"
 "
 
 build "atest"
