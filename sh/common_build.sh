@@ -31,6 +31,8 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Werror \
                       -fmodules \
                       -stdlib=libc++ \
+                      -lc++ \
+                      -lpthread \
                       -fimplicit-module-maps"
 
 function build () {
