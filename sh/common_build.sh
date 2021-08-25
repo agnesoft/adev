@@ -31,13 +31,8 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Werror \
                       -fmodules \
                       -fimplicit-module-maps \
-                      -nostdinc++ \
-                      -nostdlib++ \
-                      -isystem /usr/lib/llvm-12/include/c++/v1"
+                      -stdlib=libc++"
 CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
-                             -L/usr/lib/llvm-12/lib \
-                             -Wl,-rpath,/usr/lib/llvm-12/lib \
-                             -lc++ \
                              -lpthread"
 
 function build () {
