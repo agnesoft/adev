@@ -31,7 +31,7 @@ ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/atest.obj\"
 
 $GCC $GCC_COMPILER_FLAGS \
-     -o \"$BIN_DIR/atest_test \
+     -o \"$BIN_DIR/atest_test\" \
      \"$PROJECT_DIR/test/main.cpp\" \
      \"$CMI_DIR/atest.lib\" \
      \"$CMI_DIR/astl.lib\"
