@@ -26,7 +26,14 @@ mkdir -p \"$CMI_DIR\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -x c++-header \
-     \"$PROJECT_DIR/astl.cpp\"
+     \"$PROJECT_DIR/astl.hpp\"
+
+$GCC $GCC_COMPILER_FLAGS \
+     -o \"$BUILD_DIR/astl.obj\" \
+     -c \"$PROJECT_DIR/astl.cpp\"
+
+ar r \"$CMI_DIR/astl.lib\" \
+     \"$BUILD_DIR/astl.obj\"
 "
 
 MSVC_BUILD="
