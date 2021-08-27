@@ -42,7 +42,7 @@ if not exist \"$IFC_DIR\" mkdir \"$IFC_DIR\" >nul
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /exportHeader ^
-       /ifcOutput \"$BUILD_DIR/astl.hpp.ifc\" ^
+       /ifcOutput \"$IFC_DIR/astl.hpp.ifc\" ^
        /Fo\"$BUILD_DIR/astl.hpp.obj\" ^
        /c ^
        /TP ^
@@ -50,8 +50,6 @@ cl.exe $MSVC_COMPILER_FLAGS ^
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
-       /ifcSearchDir \"$BUILD_DIR\" ^
-       /headerUnit \"projects/astl/astl.hpp=$BUILD_DIR/astl.hpp.ifc\" ^
        /ifcOutput \"$IFC_DIR/astl.ifc\" ^
        /Fo\"$BUILD_DIR/astl.obj\" ^
        /c ^

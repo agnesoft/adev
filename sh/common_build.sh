@@ -41,7 +41,8 @@ MSVC_COMPILER_FLAGS="/nologo ^
                      /O2 ^
                      /W4 ^
                      /WX ^
-                     /ifcSearchDir \"$IFC_DIR\""
+                     /ifcSearchDir \"$IFC_DIR\" ^
+                     /headerUnit \"projects/astl/astl.hpp=$IFC_DIR/astl.hpp.ifc\""
 
 function build () {
     echo "*** $1 ***"
