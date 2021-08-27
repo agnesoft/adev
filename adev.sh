@@ -15,6 +15,7 @@ function printHelp () {
 
 Toolchains:
   clang
+  gcc (Linux only)
   msvc (Windows only)"
 
     echo "$help"

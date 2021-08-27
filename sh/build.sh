@@ -69,10 +69,10 @@ function runBuildScript () {
 function setProperties () {
     if test "$1" == "list"; then
         ACTION="list"
-    elif test "$1" == "clang" || test "$1" == "msvc" || test "$1" == ""; then
+    elif test "$1" == "clang" || test "$1" == "msvc" || test "$1" == "gcc" || test "$1" == ""; then
         ACTION="buildAll"
         TOOLCHAIN=$1
-    elif test "$2" == "clang" || test "$2" == "msvc" || test "$2" == ""; then
+    elif test "$2" == "clang" || test "$2" == "msvc" || test "$2" == "gcc" || test "$2" == ""; then
         ACTION="buildProject"
         PROJECT=$1
         TOOLCHAIN=$2
@@ -82,12 +82,17 @@ function setProperties () {
         if isWindows; then
             TOOLCHAIN="msvc"
         else
-            TOOLCHAIN="clang"
+            TOOLCHAIN="gcc"
         fi
     fi
 
     if ! isWindows && test "$TOOLCHAIN" == "msvc"; then
         printError "ERROR: toolchain 'msvc' is only available on Windows"
+        exit 1
+    fi
+
+    if ! isLinux && test "$TOOLCHAIN" == "gcc"; then
+        printError "ERROR: toolchain 'gcc' is only available on Linux"
         exit 1
     fi
 }

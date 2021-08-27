@@ -3,7 +3,7 @@ source "sh/common_build.sh" $1
 PROJECT_DIR="projects/atest"
 BUILD_DIR="$BUILD_ROOT/atest"
 
-MSVC="
+MSVC_BUILD="
 if not exist \"$BUILD_DIR/test\" mkdir \"$BUILD_DIR/test\" >nul
 cl.exe $MSVC_COMPILER_FLAGS /interface /ifcOutput\"$BUILD_DIR/atest.ifc\" /Fo\"$BUILD_DIR/atest.obj\" /c \"$PROJECT_DIR/atest.cpp\"
 lib.exe /NOLOGO ^
@@ -17,7 +17,7 @@ link.exe /NOLOGO ^
          \"$BUILD_DIR/atest.lib\"
 "
 
-CLANG="
+CLANG_BUILD="
 mkdir -p \"$BUILD_DIR\"
 $CLANG $CLANG_COMPILER_FLAGS -Xclang -emit-module-interface -o \"$BUILD_DIR/atest.pcm\" -c \"$PROJECT_DIR/atest.cpp\"
 $CLANG $CLANG_COMPILER_FLAGS -o \"$BUILD_DIR/atest.obj\" -c \"$PROJECT_DIR/atest.cpp\"
