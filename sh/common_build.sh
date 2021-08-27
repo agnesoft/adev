@@ -24,7 +24,8 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -Wno-missing-field-initializers \
                       -fmodules \
                       -fimplicit-module-maps \
-                      -stdlib=libc++"
+                      -stdlib=libc++ \
+                      -fprebuilt-module-path=$PCM_DIR"
 
 CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
                              -lpthread"
