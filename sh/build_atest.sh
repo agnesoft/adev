@@ -5,11 +5,16 @@ BUILD_DIR="$BUILD_ROOT/atest"
 
 CLANG_BUILD="
 mkdir -p \"$BUILD_DIR\"
-$CLANG $CLANG_COMPILER_FLAGS -Xclang -emit-module-interface -o \"$BUILD_DIR/atest.pcm\" -c \"$PROJECT_DIR/atest.cpp\"
-$CLANG $CLANG_COMPILER_FLAGS -o \"$BUILD_DIR/atest.obj\" -c \"$PROJECT_DIR/atest.cpp\"
+$CLANG $CLANG_COMPILER_FLAGS \
+       -Xclang -emit-module-interface \
+       -o \"$PCM_DIR/atest.pcm\" \
+       -c \"$PROJECT_DIR/atest.cpp\"
+
+$CLANG $CLANG_COMPILER_FLAGS \
+       -o \"$BUILD_DIR/atest.obj\" \
+       -c \"$PROJECT_DIR/atest.cpp\"
 
 $CLANG $CLANG_COMPILER_LINKER_FLAGS \
-        -fprebuilt-module-path=\"$BUILD_DIR\" \
         -o \"$BIN_DIR/atest_test$EXECUTABLE_SUFFIX\" \
         \"$PROJECT_DIR/test/main.cpp\" \
         \"$BUILD_DIR/atest.obj\"
@@ -24,6 +29,12 @@ $GCC $GCC_COMPILER_FLAGS \
 
 ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/atest.obj\"
+
+$GCC $GCC_COMPILER_FLAGS \
+     -o \"$BIN_DIR/atest_test \
+     \"$PROJECT_DIR/test/main.cpp\" \
+     \"$CMI_DIR/atest.lib\" \
+     \"$CMI_DIR/astl.lib\"
 "
 
 MSVC_BUILD="
