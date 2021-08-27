@@ -25,7 +25,8 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -fmodules \
                       -fimplicit-module-maps \
                       -stdlib=libc++ \
-                      -fprebuilt-module-path=$PCM_DIR"
+                      -fprebuilt-module-path=$PCM_DIR \
+                      -fmodule-map-file=projects/astl/module.modulemap"
 
 CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
                              -lpthread"
