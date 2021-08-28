@@ -46,7 +46,7 @@ private:
 
 namespace std
 {
-export class source_location : public atest::source_location_impl<source_location>
+export class source_location : public astl::source_location_impl<source_location>
 {
 };
 }
