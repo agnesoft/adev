@@ -7,7 +7,7 @@ namespace astl
 {
 //! The `source_location_impl<T>` is a placeholder
 //! implementation of C++20 std::source_location.
-template<typename T>
+export template<typename T>
 class source_location_impl
 {
 public:
