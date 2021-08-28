@@ -6,8 +6,8 @@ Agnesoft central development repository.
 
 ## Projects
 
-| Name                              | Path                               | Description            |
-| --------------------------------- | ---------------------------------- | ---------------------- |
+| Name                              | Path                                | Description            |
+| --------------------------------- | ----------------------------------- | ---------------------- |
 | [atest](projects/atest/readme.md) | [projects/atest/](/projects/atest/) | C++ testing framework. |
 
 ## Prerequisites
@@ -21,6 +21,10 @@ Agnesoft central development repository.
 -   LLVM
 
 ### Linux
+
+-   GCC 11
+
+\- or -
 
 -   Clang 12
 

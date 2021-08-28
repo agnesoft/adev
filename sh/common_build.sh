@@ -6,15 +6,36 @@ BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
 IFC_DIR="$BUILD_ROOT/ifc"
 PCM_DIR="$BUILD_ROOT/pcm"
-EXECUTABLE_SUFFIX=
-CLANG=
+CMI_DIR="$BUILD_ROOT/cmi"
 
 if isWindows; then
     EXECUTABLE_SUFFIX=".exe"
     CLANG="clang++"
 else
     CLANG="clang++-12"
+    GCC="g++-11"
 fi
+
+CLANG_COMPILER_FLAGS="-std=c++20 \
+                      -Wall \
+                      -Wextra \
+                      -Werror \
+                      -pedantic \
+                      -Wno-missing-field-initializers \
+                      -fmodules \
+                      -fimplicit-module-maps \
+                      -stdlib=libc++ \
+                      -fprebuilt-module-path=$PCM_DIR \
+                      -fmodule-map-file=projects/astl/module.modulemap"
+
+CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
+                             -lpthread"
+
+GCC_COMPILER_FLAGS="-std=c++20 \
+                    -Wall \
+                    -Werror \
+                    -pedantic-errors \
+                    -fmodules-ts"
 
 MSVC_COMPILER_FLAGS="/nologo ^
                      /std:c++latest ^
@@ -22,26 +43,18 @@ MSVC_COMPILER_FLAGS="/nologo ^
                      /O2 ^
                      /W4 ^
                      /WX ^
-                     /ifcSearchDir \"$IFC_DIR\""
-CLANG_COMPILER_FLAGS="-std=c++20 \
-                      -Wall \
-                      -Wextra \
-                      -pedantic \
-                      -Wno-missing-field-initializers \
-                      -Werror \
-                      -fmodules \
-                      -fimplicit-module-maps \
-                      -stdlib=libc++"
-CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
-                             -lpthread"
+                     /ifcSearchDir \"$IFC_DIR\" ^
+                     /headerUnit \"projects/astl/astl.hpp=$IFC_DIR/astl.hpp.ifc\""
 
 function build () {
     echo "*** $1 ***"
 
     if test "$TOOLCHAIN" == "msvc"; then
-        buildMSVC "$MSVC"
+        buildMSVC "$MSVC_BUILD"
     elif test "$TOOLCHAIN" == "clang"; then
-        buildClang "$CLANG"
+        buildClang "$CLANG_BUILD"
+    elif test "$TOOLCHAIN" == "gcc"; then
+        buildGCC "$GCC_BUILD"
     else
         printError "ERROR: Unknown toolchain '$TOOLCHAIN'"
         $STATUS=1
@@ -51,6 +64,13 @@ function build () {
 }
 
 function buildClang () {
+    local BUILD_SCRIPT="mkdir -p \"$BIN_DIR\"
+$1"
+    eval "$BUILD_SCRIPT"
+    STATUS=$?
+}
+
+function buildGCC () {
     local BUILD_SCRIPT="mkdir -p \"$BIN_DIR\"
 $1"
     eval "$BUILD_SCRIPT"

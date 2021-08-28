@@ -9,6 +9,7 @@
 *.ifc
 *.pcm
 *.pch
+/gcm.cache/
 
 #JS
 node_modules/
