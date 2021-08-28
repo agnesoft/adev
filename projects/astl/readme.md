@@ -40,8 +40,8 @@ The header unit from `astl.hpp` is created automatically as part of compiling th
 ### GCC
 
 ```
-g++ /std=c++20 -fmodules-ts -x c++-header astl.hpp #builds the header unit from astl.hpp
-g++ /std=c++20 -fmodules-ts -c astl.cpp #builds the precompiled module & object file
+g++ /std=c++20 -fmodules-ts -x c++-header astl.hpp
+g++ /std=c++20 -fmodules-ts -c astl.cpp
 ```
 
 The header unit must be compiled first, then the module interface. The object file is produced automatically. There is no separate object file for the header unit with GCC. When used the module interface should be picked up automatically as GCC uses `gcm.cache` for all compiled modules and header units and looks there for precompiled modules and header units. The object file must be linked in manually.
