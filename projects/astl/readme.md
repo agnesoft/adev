@@ -1,5 +1,11 @@
 # astl
 
+-   [Overview](#overview)
+-   [Prerequisites](#prerequisites)
+-   [Usage](#usage)
+-   [Build](#build)
+-   [std::source_location](#stdsource_location)
+
 ## Overview
 
 The `astl` module is the convenience wrapper around all legacy C++ Standard Template Library (STL) headers. It effectively turns STL into a single module to be imported. By doing this it avoids the hassle of converting individual headers into header units. It also avoids clashes of multiply defined symbols that arise when using individual header units from STL.
@@ -8,6 +14,14 @@ The `astl` module is the convenience wrapper around all legacy C++ Standard Temp
 
 -   C++ compiler
 -   STL for the selected compiler
+
+## Usage
+
+```
+import astl;
+
+std::cout << "Hello, World!\n";
+```
 
 ## Build
 
@@ -34,14 +48,6 @@ Each compiler will produce an object file and a precompiled module file with the
 The object file needs to be linked manually to your executable just like any other library when the module is imported.
 
 NOTE: MSVC requires the header unit to be specified transitively, i.e. it does not get embedded into the `astl` module. Therefore you need `/headerUnit` option mapping the `astl.hpp` to its `ifc` file for every usage of `astl` with MSVC.
-
-## Usage
-
-```
-import astl;
-
-std::cout << "Hello, World!\n";
-```
 
 ## std::source_location
 
