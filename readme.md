@@ -6,9 +6,10 @@ Agnesoft central development repository.
 
 ## Projects
 
-| Name                              | Path                                | Description            |
-| --------------------------------- | ----------------------------------- | ---------------------- |
-| [atest](projects/atest/readme.md) | [projects/atest/](/projects/atest/) | C++ testing framework. |
+| Name                              | Path                                | Description                                   |
+| --------------------------------- | ----------------------------------- | --------------------------------------------- |
+| [atest](projects/atest/readme.md) | [projects/atest/](/projects/atest/) | C++ testing framework.                        |
+| [astl](projects/astl/readme.md)   | [projects/astl/](/projects/astl/)   | c++ standard template library module wrapper. |
 
 ## Prerequisites
 
