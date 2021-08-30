@@ -23,12 +23,15 @@ $CLANG $CLANG_COMPILER_LINKER_FLAGS \
 GCC_BUILD="
 mkdir -p \"$BUILD_DIR\"
 
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/failed_assertion.obj\" -c \"$PROJECT_DIR/failed_assertion.cpp\"
+
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/atest.obj\" \
      -c \"$PROJECT_DIR/atest.cpp\"
 
 ar r \"$CMI_DIR/atest.lib\" \
-     \"$BUILD_DIR/atest.obj\"
+     \"$BUILD_DIR/atest.obj\" \
+     \"$BUILD_DIR/failed_assertion.obj\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BIN_DIR/atest_test\" \
