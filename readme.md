@@ -17,15 +17,7 @@ Agnesoft central development repository.
 
 -   MSVC 2019 (16.10+)
 
-\- or -
-
--   LLVM
-
 ### Linux
-
--   GCC 11
-
-\- or -
 
 -   Clang 12
 
