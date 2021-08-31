@@ -25,6 +25,7 @@ mkdir -p \"$BUILD_DIR\"
 
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/failed_assertion.obj\" -c \"$PROJECT_DIR/failed_assertion.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/failure.obj\" -c \"$PROJECT_DIR/failure.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/test.obj\" -c \"$PROJECT_DIR/test.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/atest.obj\" \
@@ -33,7 +34,8 @@ $GCC $GCC_COMPILER_FLAGS \
 ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/atest.obj\" \
      \"$BUILD_DIR/failed_assertion.obj\" \
-     \"$BUILD_DIR/failure.obj\"
+     \"$BUILD_DIR/failure.obj\" \
+     \"$BUILD_DIR/test.obj\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BIN_DIR/atest_test\" \
