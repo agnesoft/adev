@@ -22,6 +22,7 @@ jobs:
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh install gcc
