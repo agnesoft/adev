@@ -25,6 +25,7 @@ mkdir -p \"$BUILD_DIR\"
 
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/failed_assertion.obj\" -c \"$PROJECT_DIR/failed_assertion.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/failure.obj\" -c \"$PROJECT_DIR/failure.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/test.obj\" -c \"$PROJECT_DIR/test.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/atest.obj\" \
@@ -33,7 +34,8 @@ $GCC $GCC_COMPILER_FLAGS \
 ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/atest.obj\" \
      \"$BUILD_DIR/failed_assertion.obj\" \
-     \"$BUILD_DIR/failure.obj\"
+     \"$BUILD_DIR/failure.obj\" \
+     \"$BUILD_DIR/test.obj\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BIN_DIR/atest_test\" \
@@ -47,6 +49,7 @@ if not exist \"$BUILD_DIR/test\" mkdir \"$BUILD_DIR/test\" >nul
 
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-failed_assertion.ifc\" /Fo\"$BUILD_DIR/atest-failed_assertion.obj\" /c /TP \"$PROJECT_DIR/failed_assertion.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-failure.ifc\" /Fo\"$BUILD_DIR/atest-failure.obj\" /c /TP \"$PROJECT_DIR/failure.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-test.ifc\" /Fo\"$BUILD_DIR/atest-test.obj\" /c /TP \"$PROJECT_DIR/test.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
@@ -59,7 +62,8 @@ lib.exe /NOLOGO ^
         /OUT:\"$IFC_DIR/atest.lib\" ^
         \"$BUILD_DIR/atest.obj\" ^
         \"$BUILD_DIR/atest-failed_assertion.obj\" ^
-        \"$BUILD_DIR/atest-failure.obj\"
+        \"$BUILD_DIR/atest-failure.obj\" ^
+        \"$BUILD_DIR/atest-test.obj\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /Fo\"$BUILD_DIR/test/main.obj\" ^
