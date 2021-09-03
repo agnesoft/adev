@@ -3,8 +3,7 @@ export module atest;
 export import astl;
 
 #ifndef __clang__
-import : failed_assertion;
-import : global_tests;
+import : expect_base;
 #else
 // clang-format off
 #include "failed_assertion.cpp"
@@ -12,5 +11,6 @@ import : global_tests;
 #include "test.cpp"
 #include "test_suite.cpp"
 #include "global_tests.cpp"
+#include "expect_base.cpp"
 // clang-format on
 #endif
