@@ -3,8 +3,7 @@ export module atest;
 export import astl;
 
 #ifndef __clang__
-import : stringify;
-import : expect_base;
+import : expect_to_match;
 #else
 // clang-format off
 #include "stringify.cpp"
@@ -14,5 +13,6 @@ import : expect_base;
 #include "test_suite.cpp"
 #include "global_tests.cpp"
 #include "expect_base.cpp"
+#include "expect_to_match.cpp"
 // clang-format on
 #endif
