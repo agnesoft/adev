@@ -50,7 +50,7 @@ enum class ExceptionValidationPolicy
 //! comparison the `ValueT` must either be
 //! std::string or be convertible to std::string.
 template<typename ExpressionT, typename ExceptionT, typename ValueT, ExceptionValidationPolicy validationPolicy, ExpectationType expectationType, FailurePolicy failurePolicy>
-requires std::invocable<T>
+requires std::invocable<ExpressionT>
 class ExpectToThrow : public ExpectBase<ExpressionT, expectationType, failurePolicy>
 {
 public:
