@@ -2,6 +2,21 @@
 module atest : expect_to_throw;
 import : stringify;
 import : expect_base;
+#else
+namespace std
+{
+template<class _From, class _To>
+concept convertible_to =
+  is_convertible_v<_From, _To> &&
+  requires (add_rvalue_reference_t<_From> (&__f)()) {
+    static_cast<_To>(__f());
+  };
+
+template<class _Fn, class... _Args>
+concept invocable = requires(_Fn&& __fn, _Args&&... __args) {
+  _VSTD::invoke(_VSTD::forward<_Fn>(__fn), _VSTD::forward<_Args>(__args)...); // not required to be equality preserving
+};
+}
 #endif
 
 namespace atest

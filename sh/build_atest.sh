@@ -100,4 +100,5 @@ link.exe /NOLOGO ^
          \"$IFC_DIR/astl.lib\"
 "
 
+sh/build_astl.sh $1
 build "atest"
