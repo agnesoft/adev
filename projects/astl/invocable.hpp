@@ -7,13 +7,13 @@
 
 namespace std
 {
-template<class F, class... Args>
-concept invocable = requires(F &&f, Args &&...args)
+export template<class F, class... Args>
+concept invocable = requires(F && f, Args &&...args)
 {
     std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
 };
 
-template<class _Fn, class... _Args>
+export template<class _Fn, class... _Args>
 concept regular_invocable = invocable<_Fn, _Args...>;
 }
 

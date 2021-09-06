@@ -31,6 +31,7 @@ $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/test_suite.obj\" -c \"$PROJECT_DIR/test
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/global_tests.obj\" -c \"$PROJECT_DIR/global_tests.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_base.obj\" -c \"$PROJECT_DIR/expect_base.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_to_match.obj\" -c \"$PROJECT_DIR/expect_to_match.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_to_throw.obj\" -c \"$PROJECT_DIR/expect_to_throw.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/atest.obj\" \
@@ -45,7 +46,8 @@ ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/test_suite.obj\" \
      \"$BUILD_DIR/global_tests.obj\" \
      \"$BUILD_DIR/expect_base.obj\" \
-     \"$BUILD_DIR/expect_to_match.obj\"
+     \"$BUILD_DIR/expect_to_match.obj\" \
+     \"$BUILD_DIR/expect_to_throw.obj\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BIN_DIR/atest_test\" \
@@ -65,6 +67,7 @@ cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifc
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-global_tests.ifc\" /Fo\"$BUILD_DIR/atest-global_tests.obj\" /c /TP \"$PROJECT_DIR/global_tests.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_base.ifc\" /Fo\"$BUILD_DIR/atest-expect_base.obj\" /c /TP \"$PROJECT_DIR/expect_base.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_to_match.ifc\" /Fo\"$BUILD_DIR/atest-expect_to_match.obj\" /c /TP \"$PROJECT_DIR/expect_to_match.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_to_throw.ifc\" /Fo\"$BUILD_DIR/atest-expect_to_throw.obj\" /c /TP \"$PROJECT_DIR/expect_to_throw.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
@@ -83,7 +86,8 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/atest-test_suite.obj\" ^
         \"$BUILD_DIR/atest-global_tests.obj\" ^
         \"$BUILD_DIR/atest-expect_base.obj\" ^
-        \"$BUILD_DIR/atest-expect_to_match.obj\"
+        \"$BUILD_DIR/atest-expect_to_match.obj\" ^
+        \"$BUILD_DIR/atest-expect_to_throw.obj\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /Fo\"$BUILD_DIR/test/main.obj\" ^
@@ -96,4 +100,5 @@ link.exe /NOLOGO ^
          \"$IFC_DIR/astl.lib\"
 "
 
+sh/build_astl.sh $1
 build "atest"
