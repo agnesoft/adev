@@ -1,8 +1,8 @@
 #ifndef __clang__
-module atest : expect;
-import : expect_to_match;
-import : expect_to_throw;
-import : matcher;
+export module atest : expect;
+export import : expect_to_match;
+export import : expect_to_throw;
+export import : matcher;
 #endif
 
 namespace atest

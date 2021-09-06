@@ -1,6 +1,6 @@
 #ifndef __clang__
-module atest : stringify;
-import astl;
+export module atest : stringify;
+export import astl;
 #endif
 
 namespace atest
@@ -23,7 +23,7 @@ concept Iterable = requires(const T &type)
 };
 
 //! Streaming operator for `std::pair`.
-template<typename T1, typename T2>
+export template<typename T1, typename T2>
 auto operator<<(std::ostream &stream, const std::pair<T1, T2> &value) -> std::ostream &
 {
     return stream << '{' << value.first << ", " << value.second << '}';
@@ -39,7 +39,7 @@ auto operator<<(std::ostream &stream, const std::pair<T1, T2> &value) -> std::os
 //! Examples: `std::vector<int>{1, 2, 3}` will
 //! become "{1, 2, 3}"
 //!
-template<typename T>
+export template<typename T>
 requires(!Stringifiable<T> && Iterable<T>) auto operator<<(std::ostream &stream, const T &container) -> std::ostream &
 {
     stream << '{';
