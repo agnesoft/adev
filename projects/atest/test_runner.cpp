@@ -60,27 +60,16 @@ public:
     //! failures.
     [[nodiscard]] auto run() -> int
     {
-        Tests &tests = TestRunner::sort_test_suites();
-        this->printer.begin_run(Reporter::generate_stats(tests.suites));
+        TestRunner::sort_global_test_suites();
+        this->printer.begin_run(Reporter::generate_stats(::atest::global_tests().suites));
         this->run_test_suites();
 
-        const auto report = Reporter::generate_report(tests.suites);
-        this->printer.end_run(report, tests.suites);
+        const auto report = Reporter::generate_report(::atest::global_tests().suites);
+        this->printer.end_run(report, ::atest::global_tests().suites);
         return static_cast<int>(report.failures);
     }
 
 private:
-    static auto sort_test_suites() -> Tests &
-    {
-        Tests &tests = ::atest::global_tests();
-        std::sort(++tests.suites.begin(),
-                  tests.suites.end(),
-                  [](const TestSuite &left, const TestSuite &right) {
-                      return std::string{left.sourceLocation.file_name()} < std::string{right.sourceLocation.file_name()};
-                  });
-        return tests;
-    }
-
     auto run_test(Test &test) -> void
     {
         ::atest::global_tests().currentTest = &test;
@@ -141,6 +130,16 @@ private:
         {
             this->run_test_suite(testSuite);
         }
+    }
+
+    static auto sort_global_test_suites() -> void
+    {
+        GlobalTests &tests = ::atest::global_tests();
+        std::sort(++tests.suites.begin(),
+                  tests.suites.end(),
+                  [](const TestSuite &left, const TestSuite &right) {
+                      return std::string{left.sourceLocation.file_name()} < std::string{right.sourceLocation.file_name()};
+                  });
     }
 
     Printer printer;
