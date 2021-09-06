@@ -35,6 +35,8 @@ $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_to_throw.obj\" -c \"$PROJECT_DIR
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/matcher_base.obj\" -c \"$PROJECT_DIR/matcher_base.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/matcher.obj\" -c \"$PROJECT_DIR/matcher.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/printer.obj\" -c \"$PROJECT_DIR/printer.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/report.obj\" -c \"$PROJECT_DIR/report.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/reporter.obj\" -c \"$PROJECT_DIR/reporter.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/atest.obj\" \
@@ -53,6 +55,8 @@ ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/expect_to_throw.obj\" \
      \"$BUILD_DIR/matcher_base.obj\" \
      \"$BUILD_DIR/matcher.obj\" \
+     \"$BUILD_DIR/report.obj\" \
+     \"$BUILD_DIR/reporter.obj\"
      \"$BUILD_DIR/printer.obj\"
 
 $GCC $GCC_COMPILER_FLAGS \
@@ -76,6 +80,8 @@ cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifc
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_to_throw.ifc\" /Fo\"$BUILD_DIR/atest-expect_to_throw.obj\" /c /TP \"$PROJECT_DIR/expect_to_throw.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-matcher_base.ifc\" /Fo\"$BUILD_DIR/atest-matcher_base.obj\" /c /TP \"$PROJECT_DIR/matcher_base.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-matcher.ifc\" /Fo\"$BUILD_DIR/atest-matcher.obj\" /c /TP \"$PROJECT_DIR/matcher.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-report.ifc\" /Fo\"$BUILD_DIR/atest-report.obj\" /c /TP \"$PROJECT_DIR/report.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-reporter.ifc\" /Fo\"$BUILD_DIR/atest-reporter.obj\" /c /TP \"$PROJECT_DIR/reporter.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-printer.ifc\" /Fo\"$BUILD_DIR/atest-printer.obj\" /c /TP \"$PROJECT_DIR/printer.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
@@ -99,6 +105,8 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/atest-expect_to_throw.obj\" ^
         \"$BUILD_DIR/atest-matcher_base.obj\" ^
         \"$BUILD_DIR/atest-matcher.obj\" ^
+        \"$BUILD_DIR/atest-report.obj\" ^
+        \"$BUILD_DIR/atest-reporter.obj\" ^
         \"$BUILD_DIR/atest-printer.obj\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
