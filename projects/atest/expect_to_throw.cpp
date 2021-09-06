@@ -2,7 +2,7 @@
 module atest : expect_to_throw;
 import : stringify;
 import : expect_base;
-#else
+#endif
 
 namespace atest
 {
