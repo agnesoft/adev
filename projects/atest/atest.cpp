@@ -5,6 +5,7 @@ export import astl;
 #ifndef __clang__
 import : expect_to_match;
 import : expect_to_throw;
+import : matcher_base;
 #else
 // clang-format off
 #include "stringify.cpp"
@@ -16,5 +17,6 @@ import : expect_to_throw;
 #include "expect_base.cpp"
 #include "expect_to_match.cpp"
 #include "expect_to_throw.cpp"
+#include "matcher_base.cpp"
 // clang-format on
 #endif
