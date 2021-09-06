@@ -16,6 +16,12 @@ $CLANG $CLANG_COMPILER_FLAGS \
 
 $CLANG $CLANG_COMPILER_LINKER_FLAGS \
         -o \"$BIN_DIR/atest_test$EXECUTABLE_SUFFIX\" \
+        \"$PROJECT_DIR/test/assert_test.cpp\" \
+        \"$PROJECT_DIR/test/bad_test_suite.cpp\" \
+        \"$PROJECT_DIR/test/expect_to_be_test.cpp\" \
+        \"$PROJECT_DIR/test/expect_to_match_test.cpp\" \
+        \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" \
+        \"$PROJECT_DIR/test/printer_test.cpp\" \
         \"$PROJECT_DIR/test/main.cpp\" \
         \"$BUILD_DIR/atest.obj\"
 "
@@ -65,6 +71,12 @@ ar r \"$CMI_DIR/atest.lib\" \
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BIN_DIR/atest_test\" \
+     \"$PROJECT_DIR/test/assert_test.cpp\" \
+     \"$PROJECT_DIR/test/bad_test_suite.cpp\" \
+     \"$PROJECT_DIR/test/expect_to_be_test.cpp\" \
+     \"$PROJECT_DIR/test/expect_to_match_test.cpp\" \
+     \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" \
+     \"$PROJECT_DIR/test/printer_test.cpp\" \
      \"$PROJECT_DIR/test/main.cpp\" \
      \"$CMI_DIR/atest.lib\" \
      \"$CMI_DIR/astl.lib\"
@@ -119,14 +131,16 @@ lib.exe /NOLOGO ^
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /ifcSearchDir \"$BUILD_DIR\" ^
-       /Fo\"$BUILD_DIR/test/main.obj\" ^
-       /c \"$PROJECT_DIR/test/main.cpp\"
-
-link.exe /NOLOGO ^
-         /OUT:\"$BIN_DIR/atest_test.exe\" ^
-         \"$BUILD_DIR/test/main.obj\" ^
-         \"$IFC_DIR/atest.lib\" ^
-         \"$IFC_DIR/astl.lib\"
+       /Fe\"$BIN_DIR/atest_test.exe\" ^
+       \"$PROJECT_DIR/test/assert_test.cpp\" ^
+       \"$PROJECT_DIR/test/bad_test_suite.cpp\" ^
+       \"$PROJECT_DIR/test/expect_to_be_test.cpp\" ^
+       \"$PROJECT_DIR/test/expect_to_match_test.cpp\" ^
+       \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" ^
+       \"$PROJECT_DIR/test/printer_test.cpp\" ^
+       \"$PROJECT_DIR/test/main.cpp\" ^
+       \"$IFC_DIR/atest.lib\" ^
+       \"$IFC_DIR/astl.lib\"
 "
 
 sh/build_astl.sh $1
