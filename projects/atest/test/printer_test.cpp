@@ -25,26 +25,26 @@ auto operator<<(std::ostream &stream, const S &value) -> std::ostream &
 
 static const auto s = suite("Printer", [] { //NOLINT(cert-err58-cpp)
     test("Print custom type", [] {
-        expect_fail(S{1}).toBe(S{2});
+        expect_fail(S{1}).to_be(S{2});
     });
 
     test("Print container", [] {
-        expect_fail(std::vector<int>{1, 2, 3}).toBe(std::vector<int>{3, 2, 1});
+        expect_fail(std::vector<int>{1, 2, 3}).to_be(std::vector<int>{3, 2, 1});
     });
 
     test("Print container (INTENTIONAL FAILURE)", [] {
-        expect(std::vector<int>{1, 2, 3}).toBe(std::vector<int>{3, 2, 1});
+        expect(std::vector<int>{1, 2, 3}).to_be(std::vector<int>{3, 2, 1});
     });
 
     test("Print container of custom type", [] {
-        expect_fail(std::vector<S>{{1}, {2}, {3}}).toBe(std::vector<S>{{3}, {2}, {1}});
+        expect_fail(std::vector<S>{{1}, {2}, {3}}).to_be(std::vector<S>{{3}, {2}, {1}});
     });
 
     test("Print container of custom type (INTENTIONAL FAILURE)", [] {
-        expect(std::vector<S>{{1}, {2}, {3}}).toBe(std::vector<S>{{3}, {2}, {1}});
+        expect(std::vector<S>{{1}, {2}, {3}}).to_be(std::vector<S>{{3}, {2}, {1}});
     });
 
     test("Print std::pair (INTENTIONAL FAILURE)", [] {
-        expect(std::pair<int, int>{1, 2}).toBe(std::pair<int, int>{2, 1});
+        expect(std::pair<int, int>{1, 2}).to_be(std::pair<int, int>{2, 1});
     });
 });

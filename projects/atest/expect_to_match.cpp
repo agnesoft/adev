@@ -20,7 +20,7 @@ namespace atest
 //! a match the `MatcherT` will be further queried
 //! for details using the interface of
 //! atest::MatcherBase.
-template<typename ExpressionT, typename ValueT, typename MatcherT, ExpectationType expectationType, FailurePolicy failurePolicy>
+export template<typename ExpressionT, typename ValueT, typename MatcherT, ExpectationType expectationType, FailurePolicy failurePolicy>
 class ExpectToMatch : public ExpectBase<ExpressionT, expectationType, failurePolicy>
 {
 public:
@@ -63,7 +63,7 @@ private:
     auto match() -> void
     {
         const auto left = evaluate_expression();
-        const MatcherT matcher;
+        MatcherT matcher;
 
         if (matcher(left, this->value))
         {

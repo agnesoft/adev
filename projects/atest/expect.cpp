@@ -17,7 +17,7 @@ namespace atest
 //! `ExpressionT` such as having certain
 //! comparison operator, streaming operator or
 //! being a callable.
-template<typename ExpressionT, ExpectationType expectationType, FailurePolicy failurePolicy>
+export template<typename ExpressionT, ExpectationType expectationType, FailurePolicy failurePolicy>
 class Expect
 {
 public:
