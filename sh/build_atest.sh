@@ -29,11 +29,12 @@ $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/failure.obj\" -c \"$PROJECT_DIR/failure
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/test.obj\" -c \"$PROJECT_DIR/test.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/test_suite.obj\" -c \"$PROJECT_DIR/test_suite.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/global_tests.obj\" -c \"$PROJECT_DIR/global_tests.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/matcher_base.obj\" -c \"$PROJECT_DIR/matcher_base.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/matcher.obj\" -c \"$PROJECT_DIR/matcher.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_base.obj\" -c \"$PROJECT_DIR/expect_base.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_to_match.obj\" -c \"$PROJECT_DIR/expect_to_match.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect_to_throw.obj\" -c \"$PROJECT_DIR/expect_to_throw.cpp\"
-$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/matcher_base.obj\" -c \"$PROJECT_DIR/matcher_base.cpp\"
-$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/matcher.obj\" -c \"$PROJECT_DIR/matcher.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/expect.obj\" -c \"$PROJECT_DIR/expect.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/printer.obj\" -c \"$PROJECT_DIR/printer.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/report.obj\" -c \"$PROJECT_DIR/report.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/reporter.obj\" -c \"$PROJECT_DIR/reporter.cpp\"
@@ -51,11 +52,12 @@ ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/test.obj\" \
      \"$BUILD_DIR/test_suite.obj\" \
      \"$BUILD_DIR/global_tests.obj\" \
+     \"$BUILD_DIR/matcher_base.obj\" \
+     \"$BUILD_DIR/matcher.obj\" \
      \"$BUILD_DIR/expect_base.obj\" \
      \"$BUILD_DIR/expect_to_match.obj\" \
      \"$BUILD_DIR/expect_to_throw.obj\" \
-     \"$BUILD_DIR/matcher_base.obj\" \
-     \"$BUILD_DIR/matcher.obj\" \
+     \"$BUILD_DIR/expect.obj\" \
      \"$BUILD_DIR/report.obj\" \
      \"$BUILD_DIR/reporter.obj\" \
      \"$BUILD_DIR/printer.obj\" \
@@ -77,11 +79,12 @@ cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifc
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-test.ifc\" /Fo\"$BUILD_DIR/atest-test.obj\" /c /TP \"$PROJECT_DIR/test.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-test_suite.ifc\" /Fo\"$BUILD_DIR/atest-test_suite.obj\" /c /TP \"$PROJECT_DIR/test_suite.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-global_tests.ifc\" /Fo\"$BUILD_DIR/atest-global_tests.obj\" /c /TP \"$PROJECT_DIR/global_tests.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-matcher_base.ifc\" /Fo\"$BUILD_DIR/atest-matcher_base.obj\" /c /TP \"$PROJECT_DIR/matcher_base.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-matcher.ifc\" /Fo\"$BUILD_DIR/atest-matcher.obj\" /c /TP \"$PROJECT_DIR/matcher.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_base.ifc\" /Fo\"$BUILD_DIR/atest-expect_base.obj\" /c /TP \"$PROJECT_DIR/expect_base.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_to_match.ifc\" /Fo\"$BUILD_DIR/atest-expect_to_match.obj\" /c /TP \"$PROJECT_DIR/expect_to_match.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect_to_throw.ifc\" /Fo\"$BUILD_DIR/atest-expect_to_throw.obj\" /c /TP \"$PROJECT_DIR/expect_to_throw.cpp\"
-cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-matcher_base.ifc\" /Fo\"$BUILD_DIR/atest-matcher_base.obj\" /c /TP \"$PROJECT_DIR/matcher_base.cpp\"
-cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-matcher.ifc\" /Fo\"$BUILD_DIR/atest-matcher.obj\" /c /TP \"$PROJECT_DIR/matcher.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-expect.ifc\" /Fo\"$BUILD_DIR/atest-expect.obj\" /c /TP \"$PROJECT_DIR/expect.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-report.ifc\" /Fo\"$BUILD_DIR/atest-report.obj\" /c /TP \"$PROJECT_DIR/report.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-reporter.ifc\" /Fo\"$BUILD_DIR/atest-reporter.obj\" /c /TP \"$PROJECT_DIR/reporter.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-printer.ifc\" /Fo\"$BUILD_DIR/atest-printer.obj\" /c /TP \"$PROJECT_DIR/printer.cpp\"
@@ -103,11 +106,12 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/atest-test.obj\" ^
         \"$BUILD_DIR/atest-test_suite.obj\" ^
         \"$BUILD_DIR/atest-global_tests.obj\" ^
+        \"$BUILD_DIR/atest-matcher_base.obj\" ^
+        \"$BUILD_DIR/atest-matcher.obj\" ^
         \"$BUILD_DIR/atest-expect_base.obj\" ^
         \"$BUILD_DIR/atest-expect_to_match.obj\" ^
         \"$BUILD_DIR/atest-expect_to_throw.obj\" ^
-        \"$BUILD_DIR/atest-matcher_base.obj\" ^
-        \"$BUILD_DIR/atest-matcher.obj\" ^
+        \"$BUILD_DIR/atest-expect.obj\" ^
         \"$BUILD_DIR/atest-report.obj\" ^
         \"$BUILD_DIR/atest-reporter.obj\" ^
         \"$BUILD_DIR/atest-printer.obj\" ^
