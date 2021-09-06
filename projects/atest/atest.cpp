@@ -95,7 +95,7 @@ auto test(const char *name,
           auto (*body)()->void,
           const std::source_location &sourceLocation = std::source_location::current()) -> void
 {
-    ::atest::global_tests()->currentTestSuite->tests.emplace_back(Test{name, body, sourceLocation});
+    ::atest::global_tests().currentTestSuite->tests.emplace_back(Test{name, body, sourceLocation});
 }
 
 //! Registers the test suite under `name`. The suite's
@@ -114,10 +114,10 @@ auto suite(const char *name,
     {
         try
         {
-            GlobalTests *tests = ::atest::global_tests();
-            tests->currentTestSuite = &tests->suites.emplace_back(TestSuite{name, sourceLocation});
+            GlobalTests &tests = ::atest::global_tests();
+            tests.currentTestSuite = &tests.suites.emplace_back(TestSuite{name, sourceLocation});
             body();
-            tests->currentTestSuite = &tests->suites.front();
+            tests.currentTestSuite = &tests.suites.front();
             return 0;
         }
         catch (const std::exception &exception)
