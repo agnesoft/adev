@@ -23,6 +23,6 @@ import : printer;
 #include "matcher.cpp"
 #include "report.cpp"
 #include "reporter.cpp"
-#include "pritner.cpp"
+#include "printer.cpp"
 // clang-format on
 #endif
