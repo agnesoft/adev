@@ -7,9 +7,9 @@ import : matcher;
 
 namespace atest
 {
-//! \brief The `Expect<ExpressionT, ExpectationType,
-//! FailurePolicy>` provides the builder for the test
-//! expectation or assertion.
+//! \brief The `Expect<ExpressionT,
+//! ExpectationType, FailurePolicy>` provides the
+//! builder for the test expectation or assertion.
 //!
 //! The class will take any value expression or
 //! callable `ExpressionT`. Concrete expectation
