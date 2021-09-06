@@ -7,6 +7,7 @@ import : expect_to_match;
 import : expect_to_throw;
 import : matcher;
 import : reporter;
+import : printer;
 #else
 // clang-format off
 #include "stringify.cpp"
@@ -22,5 +23,6 @@ import : reporter;
 #include "matcher.cpp"
 #include "report.cpp"
 #include "reporter.cpp"
+#include "printer.cpp"
 // clang-format on
 #endif
