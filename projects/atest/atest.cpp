@@ -4,9 +4,7 @@ export import astl;
 
 #ifndef __clang__
 export import : test_runner;
-import : expect_to_match;
-import : expect_to_throw;
-import : matcher;
+import : expect;
 #else
 // clang-format off
 #include "stringify.cpp"
@@ -15,11 +13,12 @@ import : matcher;
 #include "test.cpp"
 #include "test_suite.cpp"
 #include "global_tests.cpp"
+#include "matcher_base.cpp"
+#include "matcher.cpp"
 #include "expect_base.cpp"
 #include "expect_to_match.cpp"
 #include "expect_to_throw.cpp"
-#include "matcher_base.cpp"
-#include "matcher.cpp"
+#include "expect.cpp"
 #include "report.cpp"
 #include "reporter.cpp"
 #include "printer.cpp"
