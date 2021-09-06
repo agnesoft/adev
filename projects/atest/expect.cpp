@@ -1,4 +1,4 @@
-#ifdef __clang__
+#ifndef __clang__
 module atest : expect;
 import : expect_to_match;
 import : expect_to_throw;
@@ -7,8 +7,8 @@ import : matcher;
 
 namespace atest
 {
-//! \brief The `Expect<ExpressionT, Assert,
-//! ExpectFail>` provides the builder for the test
+//! \brief The `Expect<ExpressionT, ExpectationType,
+//! FailurePolicy>` provides the builder for the test
 //! expectation or assertion.
 //!
 //! The class will take any value expression or
