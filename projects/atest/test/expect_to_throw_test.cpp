@@ -1,11 +1,11 @@
 import atest;
 
-using atest::assert_;
-using atest::assert_fail;
-using atest::expect;
-using atest::expect_fail;
-using atest::suite;
-using atest::test;
+using ::atest::assert_;
+using ::atest::assert_fail;
+using ::atest::expect;
+using ::atest::expect_fail;
+using ::atest::suite;
+using ::atest::test;
 
 static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     test("Exception types match", [] {
@@ -53,14 +53,14 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception value match: int", [] {
-        expect([] { throw 1; }).toThrow(1);
+        expect([] { throw 1; }).to_throw(1);
     });
 
     test("Exception value match: std::string", [] {
-        expect([] { throw std::string{"Exception text"}; }).toThrow(std::string{"Exception text"});
+        expect([] { throw std::string{"Exception text"}; }).to_throw(std::string{"Exception text"});
     });
 
     test("Exception value match: const char*", [] {
-        expect([] { throw std::string{"Exception text"}; }).toThrow<std::string>("Exception text");
+        expect([] { throw std::string{"Exception text"}; }).to_throw<std::string>("Exception text");
     });
 });

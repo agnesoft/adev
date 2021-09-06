@@ -1,7 +1,7 @@
 import atest;
 
-using atest::suite;
-using atest::test;
+using ::atest::suite;
+using ::atest::test;
 
 static const auto s1 = suite("Bad test suite that throws an int (INTENTIONAL FAILURE)", [] { //NOLINT(cert-err58-cpp)
     throw 1;
