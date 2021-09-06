@@ -6,6 +6,7 @@ export import astl;
 import : expect_to_match;
 import : expect_to_throw;
 import : matcher;
+import : printer;
 #else
 // clang-format off
 #include "stringify.cpp"
@@ -19,5 +20,6 @@ import : matcher;
 #include "expect_to_throw.cpp"
 #include "matcher_base.cpp"
 #include "matcher.cpp"
+#include "pritner.cpp"
 // clang-format on
 #endif
