@@ -114,6 +114,7 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/atest-test_runner.obj\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
+       /ifcSearchDir \"$BUILD_DIR\" ^
        /Fo\"$BUILD_DIR/test/main.obj\" ^
        /c \"$PROJECT_DIR/test/main.cpp\"
 
