@@ -19,5 +19,6 @@ import : matcher;
 #include "expect_to_throw.cpp"
 #include "matcher_base.cpp"
 #include "matcher.cpp"
+#include "report.cpp"
 // clang-format on
 #endif
