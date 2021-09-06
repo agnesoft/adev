@@ -3,11 +3,10 @@ export module atest;
 export import astl;
 
 #ifndef __clang__
+export import : test_runner;
 import : expect_to_match;
 import : expect_to_throw;
 import : matcher;
-import : reporter;
-import : printer;
 #else
 // clang-format off
 #include "stringify.cpp"
@@ -24,5 +23,6 @@ import : printer;
 #include "report.cpp"
 #include "reporter.cpp"
 #include "printer.cpp"
+#include "test_runner.cpp"
 // clang-format on
 #endif
