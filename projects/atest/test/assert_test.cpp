@@ -14,7 +14,7 @@ static const auto s = suite("assert()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("assert stops the test throwing (INTENTIONAL FAILURE)", [] {
-        assert_([] {}).template to_throw<int>();
+        assert_([] {}).to_throw<int>();
         expect(1).to_be(2);
     });
 
@@ -23,6 +23,6 @@ static const auto s = suite("assert()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("assert_fail().toThrow()", [] {
-        assert_fail([] {}).template to_throw<int>();
+        assert_fail([] {}).to_throw<int>();
     });
 });
