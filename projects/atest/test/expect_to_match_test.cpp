@@ -33,14 +33,14 @@ public:
 
 static const auto s = suite("Expect::toMatch()", [] { //NOLINT(cert-err58-cpp)
     test("Custom matcher", [] {
-        expect(1).template to_match<MyMatcher>(2);
-        expect_fail(1).template to_match<MyMatcher>(1);
-        expect_fail(1).template to_match<MyMatcher>(0);
+        expect(1).to_match<MyMatcher>(2);
+        expect_fail(1).to_match<MyMatcher>(1);
+        expect_fail(1).to_match<MyMatcher>(0);
     });
 
     test("Custom matcher (INTENTIONAL FAILURE)", [] {
-        expect_fail(1).template to_match<MyMatcher>(2);
-        expect(1).template to_match<MyMatcher>(1);
-        expect(1).template to_match<MyMatcher>(0);
+        expect_fail(1).to_match<MyMatcher>(2);
+        expect(1).to_match<MyMatcher>(1);
+        expect(1).to_match<MyMatcher>(0);
     });
 });
