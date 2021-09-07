@@ -7,11 +7,11 @@ CLANG_BUILD="
 mkdir -p \"$BUILD_DIR\"
 $CLANG $CLANG_COMPILER_FLAGS \
        -Xclang -emit-module-interface \
-       -o \"$PCM_DIR/atest.pcm\" \
+       -o \"$PROJECT_DIR/atest.pcm\" \
        -c \"$PROJECT_DIR/atest.cpp\"
 
 $CLANG $CLANG_COMPILER_FLAGS \
-       -o \"$BUILD_DIR/atest.obj\" \
+       -o \"$PROJECT_DIR/atest.obj\" \
        -c \"$PROJECT_DIR/atest.cpp\"
 
 $CLANG $CLANG_COMPILER_LINKER_FLAGS \
@@ -105,12 +105,12 @@ cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifc
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
        /ifcSearchDir \"$BUILD_DIR\" ^
-       /ifcOutput\"$IFC_DIR/atest.ifc\" ^
+       /ifcOutput\"$BUILD_DIR/atest.ifc\" ^
        /Fo\"$BUILD_DIR/atest.obj\" ^
        /c \"$PROJECT_DIR/atest.cpp\"
 
 lib.exe /NOLOGO ^
-        /OUT:\"$IFC_DIR/atest.lib\" ^
+        /OUT:\"$BUILD_DIR/atest.lib\" ^
         \"$BUILD_DIR/atest.obj\" ^
         \"$BUILD_DIR/atest-stringify.obj\" ^
         \"$BUILD_DIR/atest-failed_assertion.obj\" ^
@@ -139,8 +139,8 @@ cl.exe $MSVC_COMPILER_FLAGS ^
        \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" ^
        \"$PROJECT_DIR/test/printer_test.cpp\" ^
        \"$PROJECT_DIR/test/main.cpp\" ^
-       \"$IFC_DIR/atest.lib\" ^
-       \"$IFC_DIR/astl.lib\"
+       \"$BUILD_DIR/atest.lib\" ^
+       \"$BUILD_ROOT/astl/astl.lib\"
 "
 
 sh/build_astl.sh $1
