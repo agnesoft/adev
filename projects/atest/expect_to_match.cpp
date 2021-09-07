@@ -43,7 +43,7 @@ public:
     {
         try
         {
-            this->match();
+            this->match(evaluate_expression());
         }
         catch ([[maybe_unused]] const FailedAssertion &exception)
         {
@@ -60,21 +60,6 @@ public:
     }
 
 private:
-    auto match() -> void
-    {
-        const auto left = evaluate_expression();
-        MatcherT matcher;
-
-        if (matcher(left, this->value))
-        {
-            this->handle_success();
-        }
-        else
-        {
-            this->handle_failure(Failure{matcher.describe(), matcher.expected(left, this->value), matcher.actual(left, this->value)});
-        }
-    }
-
     [[nodiscard]] auto evaluate_expression() const -> auto
     {
         if constexpr (std::is_invocable<ExpressionT>::value)
@@ -84,6 +69,20 @@ private:
         else
         {
             return this->expression();
+        }
+    }
+
+    auto match(const auto &left) -> void
+    {
+        MatcherT matcher;
+
+        if (matcher(left, this->value))
+        {
+            this->handle_success();
+        }
+        else
+        {
+            this->handle_failure(Failure{matcher.describe(), matcher.expected(left, this->value), matcher.actual(left, this->value)});
         }
     }
 
