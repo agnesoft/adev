@@ -5,6 +5,7 @@ BUILD_DIR="$BUILD_ROOT/atest"
 
 CLANG_BUILD="
 mkdir -p \"$BUILD_DIR\"
+
 $CLANG $CLANG_COMPILER_FLAGS \
        -Xclang -emit-module-interface \
        -o \"$BUILD_DIR/atest.pcm\" \
@@ -13,18 +14,6 @@ $CLANG $CLANG_COMPILER_FLAGS \
 $CLANG $CLANG_COMPILER_FLAGS \
        -o \"$BUILD_DIR/atest.obj\" \
        -c \"$PROJECT_DIR/atest.cpp\"
-
-$CLANG $CLANG_COMPILER_LINKER_FLAGS \
-       -fprebuilt-module-path=\"$BUILD_DIR\" \
-       -o \"$BIN_DIR/atest_test$EXECUTABLE_SUFFIX\" \
-       \"$PROJECT_DIR/test/assert_test.cpp\" \
-       \"$PROJECT_DIR/test/bad_test_suite.cpp\" \
-       \"$PROJECT_DIR/test/expect_to_be_test.cpp\" \
-       \"$PROJECT_DIR/test/expect_to_match_test.cpp\" \
-       \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" \
-       \"$PROJECT_DIR/test/printer_test.cpp\" \
-       \"$PROJECT_DIR/test/main.cpp\" \
-       \"$BUILD_DIR/atest.obj\"
 "
 
 GCC_BUILD="
@@ -69,22 +58,10 @@ ar r \"$CMI_DIR/atest.lib\" \
      \"$BUILD_DIR/reporter.obj\" \
      \"$BUILD_DIR/printer.obj\" \
      \"$BUILD_DIR/test_runner.obj\"
-
-$GCC $GCC_COMPILER_FLAGS \
-     -o \"$BIN_DIR/atest_test\" \
-     \"$PROJECT_DIR/test/assert_test.cpp\" \
-     \"$PROJECT_DIR/test/bad_test_suite.cpp\" \
-     \"$PROJECT_DIR/test/expect_to_be_test.cpp\" \
-     \"$PROJECT_DIR/test/expect_to_match_test.cpp\" \
-     \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" \
-     \"$PROJECT_DIR/test/printer_test.cpp\" \
-     \"$PROJECT_DIR/test/main.cpp\" \
-     \"$CMI_DIR/atest.lib\" \
-     \"$CMI_DIR/astl.lib\"
 "
 
 MSVC_BUILD="
-if not exist \"$BUILD_DIR/test\" mkdir \"$BUILD_DIR/test\" >nul
+if not exist \"$BUILD_DIR\" mkdir \"$BUILD_DIR\" >nul
 
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-stringify.ifc\" /Fo\"$BUILD_DIR/atest-stringify.obj\" /c /TP \"$PROJECT_DIR/stringify.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-failed_assertion.ifc\" /Fo\"$BUILD_DIR/atest-failed_assertion.obj\" /c /TP \"$PROJECT_DIR/failed_assertion.cpp\"
@@ -129,19 +106,6 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/atest-reporter.obj\" ^
         \"$BUILD_DIR/atest-printer.obj\" ^
         \"$BUILD_DIR/atest-test_runner.obj\"
-
-cl.exe $MSVC_COMPILER_FLAGS ^
-       /ifcSearchDir \"$BUILD_DIR\" ^
-       /Fe\"$BIN_DIR/atest_test.exe\" ^
-       \"$PROJECT_DIR/test/assert_test.cpp\" ^
-       \"$PROJECT_DIR/test/bad_test_suite.cpp\" ^
-       \"$PROJECT_DIR/test/expect_to_be_test.cpp\" ^
-       \"$PROJECT_DIR/test/expect_to_match_test.cpp\" ^
-       \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" ^
-       \"$PROJECT_DIR/test/printer_test.cpp\" ^
-       \"$PROJECT_DIR/test/main.cpp\" ^
-       \"$BUILD_DIR/atest.lib\" ^
-       \"$BUILD_ROOT/astl/astl.lib\"
 "
 
 sh/build_astl.sh $1
