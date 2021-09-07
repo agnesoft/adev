@@ -1,6 +1,6 @@
 #ifndef __clang__
 export module atest : matcher_base;
-import : stringify;
+export import : stringify;
 #endif
 
 namespace atest

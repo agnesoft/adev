@@ -4,7 +4,7 @@ export import astl;
 
 #ifndef __clang__
 export import : test_runner;
-import : expect;
+export import : expect;
 #else
 // clang-format off
 #include "stringify.cpp"

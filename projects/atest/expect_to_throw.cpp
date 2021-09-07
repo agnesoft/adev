@@ -1,7 +1,7 @@
 #ifndef __clang__
-module atest : expect_to_throw;
-import : stringify;
+export module atest : expect_to_throw;
 import : expect_base;
+import : stringify;
 #endif
 
 namespace atest
@@ -49,7 +49,7 @@ enum class ExceptionValidationPolicy
 //! the exception object itself. For that
 //! comparison the `ValueT` must either be
 //! std::string or be convertible to std::string.
-template<typename ExpressionT, typename ExceptionT, typename ValueT, ExceptionValidationPolicy validationPolicy, ExpectationType expectationType, FailurePolicy failurePolicy>
+export template<typename ExpressionT, typename ExceptionT, typename ValueT, ExceptionValidationPolicy validationPolicy, ExpectationType expectationType, FailurePolicy failurePolicy>
 requires std::invocable<ExpressionT>
 class ExpectToThrow : public ExpectBase<ExpressionT, expectationType, failurePolicy>
 {
@@ -68,7 +68,7 @@ public:
     //! or optionally with different value all
     //! fail the expectation.
     ExpectToThrow(const ExpressionT &expression, const ValueT &value, const std::source_location &sourceLocation) :
-        ExpectBase<ValueT, expectationType, failurePolicy>{expression, sourceLocation},
+        ExpectBase<ExpressionT, expectationType, failurePolicy>{expression, sourceLocation},
         value{value}
     {
         try
@@ -91,7 +91,7 @@ public:
     }
 
 private:
-    auto do_validate_exception_Value(const ExceptionT &exception) -> void
+    auto do_validate_exception_value(const ExceptionT &exception) -> void
     {
         if (this->match_exception_value(exception))
         {
@@ -143,7 +143,7 @@ private:
         }
     }
 
-    auto validate_exception(ExceptionT &exception) -> void
+    auto validate_exception(const ExceptionT &exception) -> void
     {
         if (typeid(ExceptionT) == typeid(exception))
         {
@@ -155,7 +155,7 @@ private:
         }
     }
 
-    auto validate_exception_value(ExceptionT &exception) -> void
+    auto validate_exception_value(const ExceptionT &exception) -> void
     {
         if constexpr (validationPolicy == ExceptionValidationPolicy::Value)
         {
