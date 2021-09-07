@@ -4,9 +4,6 @@ STATUS=0
 TOOLCHAIN=$1
 BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
-IFC_DIR="$BUILD_ROOT/ifc"
-PCM_DIR="$BUILD_ROOT/pcm"
-CMI_DIR="$BUILD_ROOT/cmi"
 
 if isWindows; then
     EXECUTABLE_SUFFIX=".exe"
@@ -25,7 +22,7 @@ CLANG_COMPILER_FLAGS="-std=c++20 \
                       -fmodules \
                       -fimplicit-module-maps \
                       -stdlib=libc++ \
-                      -fprebuilt-module-path=$PCM_DIR \
+                      -fprebuilt-module-path=\"$BUILD_ROOT/astl\" \
                       -fmodule-map-file=projects/astl/module.modulemap"
 
 CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
@@ -43,8 +40,8 @@ MSVC_COMPILER_FLAGS="/nologo ^
                      /O2 ^
                      /W4 ^
                      /WX ^
-                     /ifcSearchDir \"$IFC_DIR\" ^
-                     /headerUnit \"projects/astl/astl.hpp=$IFC_DIR/astl.hpp.ifc\""
+                     /ifcSearchDir \"$BUILD_ROOT/astl\" ^
+                     /headerUnit \"projects/astl/astl.hpp=$BUILD_ROOT/astl/astl.hpp.ifc\""
 
 function build () {
     echo "*** $1 ***"
