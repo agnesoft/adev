@@ -14,18 +14,6 @@ $CLANG $CLANG_COMPILER_FLAGS \
 $CLANG $CLANG_COMPILER_FLAGS \
        -o \"$BUILD_DIR/atest.obj\" \
        -c \"$PROJECT_DIR/atest.cpp\"
-
-$CLANG $CLANG_COMPILER_LINKER_FLAGS \
-       -fprebuilt-module-path=\"$BUILD_DIR\" \
-       -o \"$BIN_DIR/atest_test$EXECUTABLE_SUFFIX\" \
-       \"$PROJECT_DIR/test/assert_test.cpp\" \
-       \"$PROJECT_DIR/test/bad_test_suite.cpp\" \
-       \"$PROJECT_DIR/test/expect_to_be_test.cpp\" \
-       \"$PROJECT_DIR/test/expect_to_match_test.cpp\" \
-       \"$PROJECT_DIR/test/expect_to_throw_test.cpp\" \
-       \"$PROJECT_DIR/test/printer_test.cpp\" \
-       \"$PROJECT_DIR/test/main.cpp\" \
-       \"$BUILD_DIR/atest.obj\"
 "
 
 GCC_BUILD="
