@@ -56,6 +56,12 @@ Available projects:"
     fi
 }
 
+function removeDoneFiles () {
+    if test -d "build/$TOOLCHAIN/"; then
+        find build/$TOOLCHAIN/ -name "*.done" -type f -delete
+    fi
+}
+
 function runBuildScript () {
     eval "$1 $TOOLCHAIN"
     STATUS=$?
@@ -98,6 +104,7 @@ function setProperties () {
 }
 
 setProperties $1 $2
+removeDoneFiles
 
 if test "$ACTION" == "list"; then
     listProjects
