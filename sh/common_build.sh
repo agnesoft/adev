@@ -44,6 +44,10 @@ MSVC_COMPILER_FLAGS="/nologo ^
                      /headerUnit \"projects/astl/astl.hpp=$BUILD_ROOT/astl/astl.hpp.ifc\""
 
 function build () {
+    if test -f "$BUILD_ROOT/$1.done"; then
+        exit $STATUS
+    fi
+    
     echo "*** $1 ***"
 
     if test "$TOOLCHAIN" == "msvc"; then
@@ -55,6 +59,10 @@ function build () {
     else
         printError "ERROR: Unknown toolchain '$TOOLCHAIN'"
         $STATUS=1
+    fi
+
+    if test $STATUS == 0; then
+        touch "$BUILD_ROOT/$1.done"
     fi
 
     exit $STATUS
