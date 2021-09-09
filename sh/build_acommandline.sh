@@ -26,7 +26,7 @@ $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/acommandline.obj\" \
      -c \"$PROJECT_DIR/acommandline.cpp\"
 
-ar r \"$CMI_DIR/acommandline.lib\" \
+ar r \"$BUILD_DIR/acommandline.lib\" \
      \"$BUILD_DIR/acommandline.obj\" \
      \"$BUILD_DIR/command_line.obj\" \
      \"$BUILD_DIR/command_line_option.obj\"
