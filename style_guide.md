@@ -68,8 +68,9 @@
 
 -   snake_case
     -   use only lower case alphanumeric characters (`a-z0-9`)
-    -   spaces are replaced with underscore (`_`)
+    -   no spaces or `_` instead of space
     -   name must not start with a number
+    -   consider starting the project name with `a` prefix (that stands for `adev`, `Agnesoft` or an indefinite article) to distinguish the name from similar/common words
 
 ### Issue Titles, Branch Names, Pull Request Titles & Merge Commit Messages
 
