@@ -66,7 +66,7 @@
 
 ### Project & File Names
 
--   snake_case
+-   lowercase or snake_case
     -   use only lower case alphanumeric characters (`a-z0-9`)
     -   no spaces or `_` instead of space
     -   name must not start with a number
