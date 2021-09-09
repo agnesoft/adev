@@ -5,4 +5,7 @@ export import : command_line_option;
 
 namespace acommandline
 {
+export class CommandLine
+{
+};
 }
