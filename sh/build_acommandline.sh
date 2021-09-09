@@ -35,8 +35,8 @@ ar r \"$CMI_DIR/acommandline.lib\" \
 MSVC_BUILD="
 if not exist \"$BUILD_DIR\" mkdir \"$BUILD_DIR\" >nul
 
-cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-command_line_option.ifc\" /Fo\"$BUILD_DIR/atest-command_line_option.obj\" /c /TP \"$PROJECT_DIR/command_line_option.cpp\"
-cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/atest-command_line.ifc\" /Fo\"$BUILD_DIR/atest-command_line.obj\" /c /TP \"$PROJECT_DIR/command_line.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-command_line_option.ifc\" /Fo\"$BUILD_DIR/acommandline-command_line_option.obj\" /c /TP \"$PROJECT_DIR/command_line_option.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-command_line.ifc\" /Fo\"$BUILD_DIR/acommandline-command_line.obj\" /c /TP \"$PROJECT_DIR/command_line.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
@@ -48,8 +48,8 @@ cl.exe $MSVC_COMPILER_FLAGS ^
 lib.exe /NOLOGO ^
         /OUT:\"$BUILD_DIR/acommandline.lib\" ^
         \"$BUILD_DIR/acommandline.obj\" ^
-        \"$BUILD_DIR/atest-command_line_option.obj\" ^
-        \"$BUILD_DIR/atest-command_line.obj\"
+        \"$BUILD_DIR/acommandline-command_line_option.obj\" ^
+        \"$BUILD_DIR/acommandline-command_line.obj\"
 "
 
 sh/build_astl.sh $1
