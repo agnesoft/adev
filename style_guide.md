@@ -2,7 +2,8 @@
 
 -   [General Rules](#general-rules)
     -   [Ground Rules](#ground-rules)
-    -   [Project & File Names](#project--file-names)
+    -   [Project Names](#project-names)
+    -   [File Names](#file-names)
     -   [Issue Titles, Branch Names, Pull Request Titles & Commit Messages](#issue-titles-branch-names-pull-request-titles--merge-commit-messages)
     -   [Project Structure](#project-structure)
     -   [Project Readme](#project-readme)
@@ -64,13 +65,21 @@
 -   what is not covered by the style guide is generally fine to use/do
 -   if in doubt: ask
 
-### Project & File Names
+### Project Names
 
--   lowercase or snake_case
+-   lowercase
     -   use only lower case alphanumeric characters (`a-z0-9`)
-    -   no spaces or `_` instead of space
+    -   no spaces
     -   name must not start with a number
-    -   consider starting the project name with `a` prefix (that stands for `adev`, `Agnesoft` or an indefinite article) to distinguish the name from similar/common words
+-   consider starting the project name with a letter `a` as prefix (that stands for `adev`, `Agnesoft` or an indefinite article) to distinguish the name from similar/common words
+
+### File Names
+
+-   snake_case
+    -   use only lower case alphanumeric characters (`a-z0-9`)
+    -   `_` instead of space
+    -   name must not start with a number
+-   file names that should follow project name (i.e. module/project interface) follows [project name rules](#project-names)
 
 ### Issue Titles, Branch Names, Pull Request Titles & Merge Commit Messages
 
@@ -346,8 +355,8 @@ If you must use an include:
 
 ### Naming
 
--   _modules_: dot.case (e.g. `my.module`, `adev.commandline`)
--   _namespaces_: snake_case (e.g. `namespace ns`, `namespace my_ns`)
+-   _modules_: lowercase (e.g. `mymodule`, `acommandline`)
+-   _namespaces_: lowercase (e.g. `namespace ns`, `namespace myns`)
 -   _types_: CamelCase (e.g. `class MyClass`, `struct Iterator`, `typename T`)
 -   _enums_: CamelCase (e.g. `enum class MyEnum { EnumValue };`)
 -   _macros_: SCREAMING_SNAKE_CASE (e.g. `#define MY_MACRO 3`)
