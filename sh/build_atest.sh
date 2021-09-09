@@ -40,7 +40,7 @@ $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/atest.obj\" \
      -c \"$PROJECT_DIR/atest.cpp\"
 
-ar r \"$CMI_DIR/atest.lib\" \
+ar r \"$BUILD_DIR/atest.lib\" \
      \"$BUILD_DIR/atest.obj\" \
      \"$BUILD_DIR/stringify.obj\" \
      \"$BUILD_DIR/failed_assertion.obj\" \
