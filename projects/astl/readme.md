@@ -7,7 +7,7 @@
     -   [Clang](#clang)
     -   [GCC](#gcc)
     -   [MSVC](#msvc)
--   [std::source_location](#stdsource_location)
+-   [libc++](#libc)
 
 ## Overview
 
@@ -55,6 +55,6 @@ cl.exe /std:c++20 /interface /headerUnit "astl.hpp=astl.hpp.ifc" /c astl.cpp
 
 The header unit must be compiled first and the command will also produce the object file for it. MSVC requires explicit mapping between headers and header units with `/headerUnit` on every invocation of the compiler. This requirement is transitive so you need the `/headerUnit` mapping when using the `astl` as well. When used you might also need `/ifcSearchDir` pointing to the directory with the produced `astl.ifc` module interface. Both object files - for the `astl.ifc` module interface and the `astl.hpp.ifc` header unit must be linked in manually.
 
-## std::source_location
+## libc++
 
-The `libc++` used by clang does not yet implement the `source_location` standard header. If that header is not available `astl` will use its own implementation.
+The `libc++` used by clang does not yet implement the `source_location` standard header and most `concepts` (in latest release version as of 09/09/2021). If those are not that available `astl` will use its own implementation.
