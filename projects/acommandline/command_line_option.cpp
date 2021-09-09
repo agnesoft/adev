@@ -5,4 +5,7 @@ export import astl;
 
 namespace acommandline
 {
+export class CommandLineOption
+{
+};
 }
