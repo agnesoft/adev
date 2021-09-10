@@ -91,7 +91,7 @@ private:
         }
     }
 
-    auto handle_set_option_failure([[maybe_unused]] std::exception &error, const std::string &value) const -> void
+    auto handle_set_option_failure([[maybe_unused]] const std::exception &error, const std::string &value) const -> void
     {
         if (!this->is_positional())
         {
@@ -168,11 +168,11 @@ private:
             std::visit(valueSetter, this->data().boundValue);
             return true;
         }
-        catch ([[maybe_unused]] std::runtime_error &error)
+        catch ([[maybe_unused]] const std::runtime_error &error)
         {
             throw;
         }
-        catch (std::exception &error)
+        catch (const std::exception &error)
         {
             this->handle_set_option_failure(error, value);
         }
