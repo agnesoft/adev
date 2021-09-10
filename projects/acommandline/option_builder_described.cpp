@@ -16,17 +16,6 @@ public:
     }
 
 private:
-    auto bind(BoundValue value) -> void
-    {
-        const auto validator = [&](auto &&boundValue) {
-            using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
-            this->validate_default_type_compatibility<BoundT>();
-        };
-
-        std::visit(validator, value);
-        this->data().boundValue = std::move(value);
-    }
-
     template<typename T>
     auto validate_default_type_compatibility() const
     {
@@ -40,6 +29,17 @@ private:
         };
 
         std::visit(validator, this->data().defaultValue);
+    }
+
+    auto bind(BoundValue value) -> void
+    {
+        const auto validator = [&](auto &&boundValue) {
+            using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
+            this->validate_default_type_compatibility<BoundT>();
+        };
+
+        std::visit(validator, value);
+        this->data().boundValue = std::move(value);
     }
 };
 }
