@@ -28,6 +28,7 @@ $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder_named.obj\" -c \"$PROJEC
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder.obj\" -c \"$PROJECT_DIR/option_builder.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_matcher.obj\" -c \"$PROJECT_DIR/option_matcher.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_setter.obj\" -c \"$PROJECT_DIR/option_setter.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/command_line.obj\" -c \"$PROJECT_DIR/command_line.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/acommandline.obj\" \
@@ -43,7 +44,8 @@ ar r \"$BUILD_DIR/acommandline.lib\" \
      \"$BUILD_DIR/option_builder_named.obj\" \
      \"$BUILD_DIR/option_builder.obj\" \
      \"$BUILD_DIR/option_matcher.obj\" \
-     \"$BUILD_DIR/option_setter.obj\"
+     \"$BUILD_DIR/option_setter.obj\" \
+     \"$BUILD_DIR/command_line.obj\"
 "
 
 MSVC_BUILD="
@@ -58,6 +60,7 @@ cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifc
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_builder.ifc\" /Fo\"$BUILD_DIR/acommandline-option_builder.obj\" /c /TP \"$PROJECT_DIR/option_builder.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_matcher.ifc\" /Fo\"$BUILD_DIR/acommandline-option_matcher.obj\" /c /TP \"$PROJECT_DIR/option_matcher.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_setter.ifc\" /Fo\"$BUILD_DIR/acommandline-option_setter.obj\" /c /TP \"$PROJECT_DIR/option_setter.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-command_line.ifc\" /Fo\"$BUILD_DIR/acommandline-command_line.obj\" /c /TP \"$PROJECT_DIR/command_line.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
@@ -77,7 +80,8 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/acommandline-option_builder_named.obj\" ^
         \"$BUILD_DIR/acommandline-option_builder.obj\" ^
         \"$BUILD_DIR/acommandline-option_matcher.obj\" ^
-        \"$BUILD_DIR/acommandline-option_setter.obj\"
+        \"$BUILD_DIR/acommandline-option_setter.obj\" ^
+        \"$BUILD_DIR/acommandline-command_line.obj\"
 "
 
 sh/build_astl.sh $1
