@@ -1,13 +1,15 @@
 #ifndef __clang__
 module acommandline : option_setter;
-import : option_base;
+import : option_builder_base;
 #endif
 
 namespace acommandline
 {
-class OptionSetter : private OptionBase
+class OptionSetter : private OptionBuilderBase
 {
 public:
+    using OptionBuilderBase::OptionBuilderBase;
+
     auto default_bound_value() const -> void
     {
         const auto valueSetter = [&](auto &&boundVal) {
