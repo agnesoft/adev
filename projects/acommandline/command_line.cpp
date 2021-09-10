@@ -33,7 +33,7 @@ public:
             this->parse_arguments(argc, argv);
             this->parse();
         }
-        catch (std::exception &error)
+        catch (const std::exception &error)
         {
             this->print_parsing_error(error);
             throw;
