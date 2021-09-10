@@ -19,8 +19,7 @@ $CLANG $CLANG_COMPILER_FLAGS \
 GCC_BUILD="
 mkdir -p \"$BUILD_DIR\"
 
-$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/command_line_option.obj\" -c \"$PROJECT_DIR/command_line_option.cpp\"
-$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/command_line.obj\" -c \"$PROJECT_DIR/command_line.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_data.obj\" -c \"$PROJECT_DIR/option_data.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/acommandline.obj\" \
@@ -28,15 +27,13 @@ $GCC $GCC_COMPILER_FLAGS \
 
 ar r \"$BUILD_DIR/acommandline.lib\" \
      \"$BUILD_DIR/acommandline.obj\" \
-     \"$BUILD_DIR/command_line.obj\" \
-     \"$BUILD_DIR/command_line_option.obj\"
+     \"$BUILD_DIR/option_data.obj\"
 "
 
 MSVC_BUILD="
 if not exist \"$BUILD_DIR\" mkdir \"$BUILD_DIR\" >nul
 
-cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-command_line_option.ifc\" /Fo\"$BUILD_DIR/acommandline-command_line_option.obj\" /c /TP \"$PROJECT_DIR/command_line_option.cpp\"
-cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-command_line.ifc\" /Fo\"$BUILD_DIR/acommandline-command_line.obj\" /c /TP \"$PROJECT_DIR/command_line.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_data.ifc\" /Fo\"$BUILD_DIR/acommandline-option_data.obj\" /c /TP \"$PROJECT_DIR/option_data.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
@@ -48,8 +45,7 @@ cl.exe $MSVC_COMPILER_FLAGS ^
 lib.exe /NOLOGO ^
         /OUT:\"$BUILD_DIR/acommandline.lib\" ^
         \"$BUILD_DIR/acommandline.obj\" ^
-        \"$BUILD_DIR/acommandline-command_line_option.obj\" ^
-        \"$BUILD_DIR/acommandline-command_line.obj\"
+        \"$BUILD_DIR/acommandline-option_data.obj\"
 "
 
 sh/build_astl.sh $1
