@@ -18,7 +18,7 @@ public:
 
     [[nodiscard]] auto positional() noexcept -> OptionBuilderValue
     {
-        this->option().longName = "[positional]";
+        this->data().longName = "[positional]";
         return OptionBuilderValue{this->data()};
     }
 
