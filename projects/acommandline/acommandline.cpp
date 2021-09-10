@@ -3,10 +3,9 @@ export module acommandline;
 export import astl;
 
 #ifndef __clang__
-export import : command_line;
+import : option_data;
 #else
 // clang-format off
-#include "command_line.cpp"
-#include "command_line_option.cpp"
+#include "option_data.cpp"
 // clang-format on
 #endif
