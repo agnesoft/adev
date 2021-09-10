@@ -51,31 +51,31 @@ private:
 
     [[nodiscard]] static constexpr auto is_repeated(const OptionData &option) -> bool
     {
-        return std::holds_alternative<std::vector<std::int64_t> *>(this->bound_value())
-            || std::holds_alternative<std::vector<double> *>(this->bound_value())
-            || std::holds_alternative<std::vector<std::string> *>(this->bound_value());
+        return std::holds_alternative<std::vector<std::int64_t> *>(option.boundValue)
+            || std::holds_alternative<std::vector<double> *>(option.boundValue)
+            || std::holds_alternative<std::vector<std::string> *>(option.boundValue);
     }
 
-    [[nodiscard]] auto match_argument(std::vector<std::string>::const_iterator *arg) const -> void
+    auto match_argument(std::vector<std::string>::const_iterator *argument) -> void
     {
         for (OptionData &option : this->options)
         {
             if (!option.matched || CommandLine::is_repeated(option))
             {
-                if (option.matched = OptionMatcher{option}.match(arg))
+                if (OptionMatcher{option}.match(argument)
+                    && OptionSetter{option}.set_value(argument, this->arguments.cend()))
                 {
-                    OptionSetter{option}.set_value(arg, this->arguments.cend());
-                    return true;
+                    option.matched = true;
                 }
             }
         }
 
-        throw std::runtime_error{std::string{"Unknown option '"} + *arg + "'."};
+        throw std::runtime_error{std::string{"Unknown option '"} + **argument + "'."};
     }
 
-    [[nodiscard]] auto match_arguments() const -> void
+    auto match_arguments() -> void
     {
-        for (auto argument = this->arguments.cbegin(); arg != this->arguments.cend();)
+        for (auto argument = this->arguments.cbegin(); argument != this->arguments.cend();)
         {
             this->match_argument(&argument);
         }
@@ -123,14 +123,14 @@ private:
         this->appName = std::filesystem::path{this->cmd}.stem().string();
     }
 
-    auto print_parsing_error(const std::exception &e) -> void
+    auto print_parsing_error([[maybe_unused]] const std::exception &e) -> void
     {
         //TODO
     }
 
     auto validate_options() -> void
     {
-        for (const OptionData &option : this->options)
+        for (OptionData &option : this->options)
         {
             if (!option.matched)
             {
