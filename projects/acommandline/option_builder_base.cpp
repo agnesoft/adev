@@ -8,7 +8,7 @@ namespace acommandline
 class OptionBuilderBase
 {
 public:
-    explicit OptionBase(OptionData &data) noexcept :
+    explicit OptionBuilderBase(OptionData &data) noexcept :
         optionData{data}
     {
     }
@@ -26,7 +26,7 @@ protected:
         };
 
         return longName.size() > 1
-            && OptionBase::is_short_name(longName[0])
+            && OptionBuilderBase::is_short_name(longName[0])
             && std::find_if(++longName.begin() + 1, longName.end(), isNotAlphanumeric) == longName.end();
     }
 
