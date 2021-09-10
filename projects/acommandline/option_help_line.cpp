@@ -5,6 +5,25 @@ import : option_data;
 
 namespace acommandline
 {
+template<typename T>
+auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std::ostringstream &
+{
+    stream << "[";
+
+    for (const T &value : vector)
+    {
+        stream << value;
+
+        if (&vector.back() != &value)
+        {
+            stream << ", ";
+        }
+    }
+
+    stream << "]";
+    return stream;
+}
+
 class OptionHelpLine
 {
 public:
@@ -15,7 +34,7 @@ public:
     {
     }
 
-    [[nodiscard]] auto option() const noexcept -> const OptionData *
+    [[nodiscard]] auto option() const noexcept -> const OptionData &
     {
         return this->opt;
     }
