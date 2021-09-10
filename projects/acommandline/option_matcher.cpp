@@ -20,7 +20,7 @@ private:
     {
         const std::string optionName = OptionMatcher::do_extract_long_name(argument);
 
-        if (OptionBase::is_long_name(optionName))
+        if (OptionBuilderBase::is_long_name(optionName))
         {
             return optionName;
         }
@@ -69,19 +69,19 @@ private:
         }
     }
 
-    [[nodiscard]] static auto has_long_name(const std::string &argument) const -> bool
+    [[nodiscard]] static auto has_long_name(const std::string &argument) noexcept -> bool
     {
         return argument.size() > 3
             && argument[0] == '-'
-            && argument[1] == '-'
+            && argument[1] == '-';
     }
 
-    [[nodiscard]] static auto has_short_name(const std::string &argument) const -> bool
+    [[nodiscard]] static auto has_short_name(const std::string &argument) -> bool
     {
         return argument.size() >= 2
             && argument[0] == '-'
-            && OptionBase::is_short_name(static_cast<unsigned char>(argument[1]))
-            && (argument.size() == 2 || argument[2] == '=')
+            && OptionBuilderBase::is_short_name(static_cast<unsigned char>(argument[1]))
+            && (argument.size() == 2 || argument[2] == '=');
     }
 
     [[nodiscard]] auto match_option(const std::string &name) const noexcept -> bool
