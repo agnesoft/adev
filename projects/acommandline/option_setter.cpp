@@ -42,7 +42,7 @@ public:
     }
 
 private:
-    auto advance_argument_iterator(std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> void
+    auto advance_argument_iterator(std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> void
     {
         if (++(*argument) == end)
         {
@@ -87,11 +87,11 @@ private:
         }
         else
         {
-            return this->extract_named_value(argument);
+            return OptionSetter::extract_named_value(argument);
         }
     }
 
-    auto handle_set_option_failure([[maybe_unused]] std::exception &e) -> void
+    auto handle_set_option_failure([[maybe_unused]] std::exception &error, const std::string &value) const -> void
     {
         if (!this->is_positional())
         {
@@ -131,7 +131,7 @@ private:
 
             if constexpr (std::is_same_v<BoundT, std::monostate>)
             {
-                throw std::runtime_error{std::string{"Bind value undefined for option '"} + this->long_name() + "'."};
+                throw std::runtime_error{std::string{"Bind value undefined for option '"} + this->data().longName + "'."};
             }
             else if constexpr (std::is_same_v<BoundT, bool>)
             {
@@ -147,7 +147,7 @@ private:
             }
             else if constexpr (std::is_same_v<BoundT, std::string>)
             {
-                *boundValue = OptionMatcher::unquote(value);
+                *boundValue = OptionSetter::unquote(value);
             }
             else if constexpr (std::is_same_v<BoundT, std::vector<std::int64_t>>)
             {
@@ -159,7 +159,7 @@ private:
             }
             else if constexpr (std::is_same_v<BoundT, std::vector<std::string>>)
             {
-                (*boundValue).emplace_back(OptionMatcher::unquote(value));
+                (*boundValue).emplace_back(OptionSetter::unquote(value));
             }
         };
 
@@ -168,13 +168,13 @@ private:
             std::visit(valueSetter, this->data().boundValue);
             return true;
         }
-        catch ([[maybe_unused]] std::runtime_error &e)
+        catch ([[maybe_unused]] std::runtime_error &error)
         {
             throw;
         }
-        catch (std::exception &e)
+        catch (std::exception &error)
         {
-            this->handle_set_option_failure(e);
+            this->handle_set_option_failure(error, value);
         }
 
         return false;
@@ -187,7 +187,7 @@ private:
 
     [[nodiscard]] static auto unquote(const std::string &value) -> std::string
     {
-        if (OptionMatcher::is_quoted(value))
+        if (OptionSetter::is_quoted(value))
         {
             return std::string{value.begin() + 1, value.end() - 1};
         }
