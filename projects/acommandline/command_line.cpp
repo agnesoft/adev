@@ -3,6 +3,7 @@ export module acommandline : command_line;
 import : option_builder;
 import : option_matcher;
 import : option_setter;
+import : printer;
 #endif
 
 namespace acommandline
@@ -10,6 +11,16 @@ namespace acommandline
 export class CommandLine
 {
 public:
+    CommandLine() :
+        CommandLine(std::cout)
+    {
+    }
+
+    explicit CommandLine(std::ostream &stream) :
+        printer{stream}
+    {
+    }
+
     [[nodiscard]] auto application_name() const noexcept -> const std::string &
     {
         return this->appName;
@@ -49,6 +60,16 @@ private:
         }
     }
 
+    [[nodiscard]] auto help_requested() const -> bool
+    {
+        const std::vector<std::string> helpNames = {"-?"};
+        return std::find_first_of(this->arguments.cbegin(),
+                                  this->arguments.cend(),
+                                  helpNames.cbegin(),
+                                  helpNames.cend())
+            != this->arguments.cend();
+    }
+
     [[nodiscard]] static constexpr auto is_repeated(const OptionData &option) -> bool
     {
         return std::holds_alternative<std::vector<std::int64_t> *>(option.boundValue)
@@ -83,16 +104,16 @@ private:
 
     auto parse() -> void
     {
-        // if (this->help_requested())
-        // {
-        //     this->print_help();
-        // }
-        // else
-        // {
-        this->clear_matches();
-        this->match_arguments();
-        this->validate_options();
-        // }
+        if (this->help_requested())
+        {
+            this->printer.print_help(this->appName, this->options);
+        }
+        else
+        {
+            this->clear_matches();
+            this->match_arguments();
+            this->validate_options();
+        }
     }
 
     [[nodiscard]] static auto parse_argument(const char *const *argv, int index) -> std::string
@@ -123,9 +144,10 @@ private:
         this->appName = std::filesystem::path{this->cmd}.stem().string();
     }
 
-    auto print_parsing_error([[maybe_unused]] const std::exception &e) -> void
+    auto print_parsing_error(const std::exception &e) -> void
     {
-        //TODO
+        this->printer.print_parsing_error(error);
+        this->printer.print_help_hint();
     }
 
     auto validate_options() -> void
@@ -148,5 +170,6 @@ private:
     std::string appName;
     std::vector<std::string> arguments;
     std::vector<OptionData> options;
+    Printer printer;
 };
 }
