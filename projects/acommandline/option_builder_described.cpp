@@ -5,7 +5,7 @@ import : option_builder_base;
 
 namespace acommandline
 {
-class OptionBuilderDescribed : protected OptionBuilderBase
+class OptionBuilderDescribed : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;
