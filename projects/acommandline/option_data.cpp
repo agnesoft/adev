@@ -30,6 +30,7 @@ struct OptionData
     DefaultValue defaultValue;
     BoundValue boundValue;
     bool required = false;
+    bool matched = false;
     char shortName = {};
 };
 }
