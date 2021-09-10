@@ -144,7 +144,7 @@ private:
         this->appName = std::filesystem::path{this->cmd}.stem().string();
     }
 
-    auto print_parsing_error(const std::exception &e) -> void
+    auto print_parsing_error(const std::exception &error) -> void
     {
         this->printer.print_parsing_error(error);
         this->printer.print_help_hint();
