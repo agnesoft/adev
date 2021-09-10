@@ -3,7 +3,7 @@ export module acommandline;
 export import astl;
 
 #ifndef __clang__
-import : option_builder_named;
+import : option_builder;
 #else
 // clang-format off
 #include "option_data.cpp"
@@ -12,5 +12,6 @@ import : option_builder_named;
 #include "option_builder_defined.cpp"
 #include "option_builder_value.cpp"
 #include "option_builder_named.cpp"
+#include "option_builder.cpp"
 // clang-format on
 #endif
