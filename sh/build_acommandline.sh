@@ -24,6 +24,7 @@ $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder_base.obj\" -c \"$PROJECT
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder_described.obj\" -c \"$PROJECT_DIR/option_builder_described.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder_defined.obj\" -c \"$PROJECT_DIR/option_builder_defined.cpp\"
 $GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder_value.obj\" -c \"$PROJECT_DIR/option_builder_value.cpp\"
+$GCC $GCC_COMPILER_FLAGS -o \"$BUILD_DIR/option_builder_named.obj\" -c \"$PROJECT_DIR/option_builder_named.cpp\"
 
 $GCC $GCC_COMPILER_FLAGS \
      -o \"$BUILD_DIR/acommandline.obj\" \
@@ -35,7 +36,8 @@ ar r \"$BUILD_DIR/acommandline.lib\" \
      \"$BUILD_DIR/option_builder_base.obj\" \
      \"$BUILD_DIR/option_builder_described.obj\" \
      \"$BUILD_DIR/option_builder_defined.obj\" \
-     \"$BUILD_DIR/option_builder_value.obj\"
+     \"$BUILD_DIR/option_builder_value.obj\" \
+     \"$BUILD_DIR/option_builder_named.obj\"
 "
 
 MSVC_BUILD="
@@ -46,6 +48,7 @@ cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifc
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_builder_described.ifc\" /Fo\"$BUILD_DIR/acommandline-option_builder_described.obj\" /c /TP \"$PROJECT_DIR/option_builder_described.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_builder_defined.ifc\" /Fo\"$BUILD_DIR/acommandline-option_builder_defined.obj\" /c /TP \"$PROJECT_DIR/option_builder_defined.cpp\"
 cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_builder_value.ifc\" /Fo\"$BUILD_DIR/acommandline-option_builder_value.obj\" /c /TP \"$PROJECT_DIR/option_builder_value.cpp\"
+cl.exe $MSVC_COMPILER_FLAGS /internalPartition /ifcSearchDir \"$BUILD_DIR\" /ifcOutput\"$BUILD_DIR/acommandline-option_builder_named.ifc\" /Fo\"$BUILD_DIR/acommandline-option_builder_named.obj\" /c /TP \"$PROJECT_DIR/option_builder_named.cpp\"
 
 cl.exe $MSVC_COMPILER_FLAGS ^
        /interface ^
@@ -61,7 +64,8 @@ lib.exe /NOLOGO ^
         \"$BUILD_DIR/acommandline-option_builder_base.obj\" ^
         \"$BUILD_DIR/acommandline-option_builder_described.obj\" ^
         \"$BUILD_DIR/acommandline-option_builder_defined.obj\" ^
-        \"$BUILD_DIR/acommandline-option_builder_value.obj\"
+        \"$BUILD_DIR/acommandline-option_builder_value.obj\" ^
+        \"$BUILD_DIR/acommandline-option_builder_named.obj\"
 "
 
 sh/build_astl.sh $1
