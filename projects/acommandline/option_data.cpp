@@ -5,8 +5,6 @@ import astl;
 
 namespace acommandline
 {
-//! A variant holding a default value to be
-//! bound if an option is not matched.
 using DefaultValue = std::variant<std::monostate,
                                   bool,
                                   std::int64_t,
@@ -16,8 +14,6 @@ using DefaultValue = std::variant<std::monostate,
                                   std::vector<double>,
                                   std::vector<std::string>>;
 
-//! A variant holding a pointer to the bound
-//! value.
 using BoundValue = std::variant<std::monostate,
                                 bool *,
                                 std::int64_t *,
