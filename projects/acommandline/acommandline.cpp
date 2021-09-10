@@ -15,6 +15,8 @@ export import : command_line;
 #include "option_builder.cpp"
 #include "option_matcher.cpp"
 #include "option_setter.cpp"
+#include "option_help_line.cpp"
+#include "printer.cpp"
 #include "command_line.cpp"
 // clang-format on
 #endif
