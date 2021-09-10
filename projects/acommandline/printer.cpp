@@ -21,7 +21,7 @@ public:
 
     auto print_help_hint() -> void
     {
-        this->stream << "Use -? to list the command line options.\n"
+        this->stream << "Use -? to list the command line options.\n";
     }
 
     auto print_parsing_error(const std::exception &error) -> void
@@ -62,7 +62,7 @@ private:
         return width;
     }
 
-    [[nodiscard]] static auto option_help_lines(const std::vector<OptionData> &options) -> void
+    [[nodiscard]] static auto option_help_lines(const std::vector<OptionData> &options) -> std::vector<OptionHelpLine>
     {
         std::vector<OptionHelpLine> helpLines;
 
@@ -95,20 +95,20 @@ private:
                      << "Prints this help.\n";
     }
 
-    auto printOption(const OptionHelpLine &line, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_option(const OptionHelpLine &line, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         this->stream << "    ";
         this->stream << std::left << std::setw(nameWidth) << line.name();
         this->stream << std::setw(attributesWidth) << line.attributes() << line.option().description << '\n';
     }
 
-    auto print_optional(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_optional(const std::vector<OptionHelpLine> &helpLines, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         this->stream << "  Optional:\n";
 
-        for (const OptionHelpLine &line : options)
+        for (const OptionHelpLine &line : helpLines)
         {
-            if (!line.option().required && !line.option().longName == "[positional]")
+            if (!line.option().required && !(line.option().longName == "[positional]"))
             {
                 this->print_option(line, nameWidth, attributesWidth);
             }
@@ -120,16 +120,16 @@ private:
         const std::size_t nameWidth = this->count_name_width(helpLines) + 5;
         const std::size_t attributesWidth = this->count_attributes_width(helpLines) + 5;
         this->print_help_option(nameWidth, attributesWidth);
-        this->print_required(options, nameWidth, attributesWidth);
-        this->print_optional(options, nameWidth, attributesWidth);
-        this->print_positional(options, nameWidth, attributesWidth);
+        this->print_required(helpLines, nameWidth, attributesWidth);
+        this->print_optional(helpLines, nameWidth, attributesWidth);
+        this->print_positional(helpLines, nameWidth, attributesWidth);
     }
 
-    auto print_positional(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_positional(const std::vector<OptionHelpLine> &helpLines, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         this->stream << "  Positional:\n";
 
-        for (const OptionHelpLine &line : options)
+        for (const OptionHelpLine &line : helpLines)
         {
             if (line.option().longName == "[positional]")
             {
@@ -138,11 +138,11 @@ private:
         }
     }
 
-    auto print_required(const std::vector<OptionHelpLine> &options, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_required(const std::vector<OptionHelpLine> &helpLines, std::size_t nameWidth, std::size_t attributesWidth) -> void
     {
         this->stream << "  Required:\n";
 
-        for (const OptionHelpLine &line : options)
+        for (const OptionHelpLine &line : helpLines)
         {
             if (line.option().required)
             {
