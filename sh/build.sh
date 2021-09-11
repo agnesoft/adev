@@ -9,6 +9,17 @@ function detectProjects () {
     PROJECTS_SCRIPTS=$(find . -name "build_*.sh" -type f)
 }
 
+function detectDoxygen () {
+    if isAvailable "doxygen"; then
+        DOXYGEN="doxygen"
+    else
+        printError "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install-doxygen'."
+        exit 1
+    fi
+
+    echo "Doxygen $(doxygen --version)"
+}
+
 function listProjects () {
     detectProjects
 
@@ -19,6 +30,18 @@ function listProjects () {
             echo "  ${BASH_REMATCH[1]}"
         fi
     done
+}
+
+function buildDocs () {
+    detectDoxygen
+    echo "Generating documentation..."
+    $DOXYGEN adev.doxyfile
+    if test $? -ne 0; then
+        printError "ERROR: Building documentation failed."
+        exit 1
+    else
+        printOK "Documentation OK"
+    fi
 }
 
 function buildAll () {
@@ -75,6 +98,8 @@ function runBuildScript () {
 function setProperties () {
     if test "$1" == "list"; then
         ACTION="list"
+    elif test "$1" == "docs"; then
+        ACTION="docs"
     elif test "$1" == "clang" || test "$1" == "msvc" || test "$1" == "gcc" || test "$1" == ""; then
         ACTION="buildAll"
         TOOLCHAIN=$1
@@ -108,6 +133,8 @@ removeDoneFiles
 
 if test "$ACTION" == "list"; then
     listProjects
+elif test "$ACTION" == "docs"; then
+    buildDocs
 elif test "$ACTION" == "buildAll"; then
     buildAll
 elif test "$ACTION" == "buildProject"; then
