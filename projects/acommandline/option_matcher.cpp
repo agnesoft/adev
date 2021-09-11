@@ -1,18 +1,16 @@
 #ifndef __clang__
 module acommandline : option_matcher;
-import : option_builder_base;
+import : option;
 #endif
 
 namespace acommandline
 {
-class OptionMatcher : private OptionBuilderBase
+class OptionMatcher
 {
 public:
-    using OptionBuilderBase::OptionBuilderBase;
-
-    [[nodiscard]] auto match(std::vector<std::string>::const_iterator *argument) const -> bool
+    [[nodiscard]] static auto match(const Option &option, std::vector<std::string>::const_iterator *argument) const -> bool
     {
-        return this->match_option(this->extract_name(**argument));
+        return OptionMatcher::match_option(OptionMatcher::extract_name(**argument));
     }
 
 private:
@@ -20,7 +18,7 @@ private:
     {
         const std::string optionName = OptionMatcher::do_extract_long_name(argument);
 
-        if (OptionBuilderBase::is_long_name(optionName))
+        if (::acommandline::is_long_name(optionName))
         {
             return optionName;
         }
@@ -80,15 +78,15 @@ private:
     {
         return argument.size() >= 2
             && argument[0] == '-'
-            && OptionBuilderBase::is_short_name(static_cast<unsigned char>(argument[1]))
+            && ::acommandline::is_short_name(static_cast<unsigned char>(argument[1]))
             && (argument.size() == 2 || argument[2] == '=');
     }
 
-    [[nodiscard]] auto match_option(const std::string &name) const noexcept -> bool
+    [[nodiscard]] static auto match_option(const Option &option, const std::string &name) const noexcept -> bool
     {
-        return name == this->data().longName
-            || (name.size() == 1 && name[0] == this->data().shortName)
-            || (name.empty() && this->is_positional());
+        return name == option.longName
+            || (name.size() == 1 && name[0] == option.shortName)
+            || (name.empty() && ::acommandline::is_positional(optional));
     }
 };
 }

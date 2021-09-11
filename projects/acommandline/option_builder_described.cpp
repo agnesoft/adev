@@ -24,11 +24,11 @@ private:
 
             if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
             {
-                throw std::runtime_error{std::string{"The option '"} + this->data().longName + "''s default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
+                throw std::runtime_error{std::string{"The option '"} + this->option().longName + "''s default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
             }
         };
 
-        std::visit(validator, this->data().defaultValue);
+        std::visit(validator, this->option().defaultValue);
     }
 
     auto bind(BoundValue value) -> void
@@ -39,7 +39,7 @@ private:
         };
 
         std::visit(validator, value);
-        this->data().boundValue = std::move(value);
+        this->option().boundValue = std::move(value);
     }
 };
 }

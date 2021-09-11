@@ -12,20 +12,20 @@ public:
 
     [[nodiscard]] auto default_value(DefaultValue value) noexcept -> OptionBuilderDefined
     {
-        this->data().defaultValue = std::move(value);
-        return OptionBuilderDefined{this->data()};
+        this->option().defaultValue = std::move(value);
+        return OptionBuilderDefined{this->option()};
     }
 
     [[nodiscard]] auto description(std::string desc) noexcept -> OptionBuilderDescribed
     {
-        this->data().description = std::move(desc);
-        return OptionBuilderDescribed{this->data()};
+        this->option().description = std::move(desc);
+        return OptionBuilderDescribed{this->option()};
     }
 
     [[nodiscard]] auto required() noexcept -> OptionBuilderDefined
     {
-        this->data().required = true;
-        return OptionBuilderDefined{this->data()};
+        this->option().required = true;
+        return OptionBuilderDefined{this->option()};
     }
 };
 }

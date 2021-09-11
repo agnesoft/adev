@@ -1,6 +1,6 @@
 #ifndef __clang__
 module acommandline : option_help_line;
-import : option_data;
+import : option;
 #endif
 
 namespace acommandline
@@ -29,8 +29,8 @@ class OptionHelpLine
 public:
     explicit OptionHelpLine(const OptionData &option) :
         opt{option},
-        optionName{this->get_name()},
-        optionAttributes(this->get_attributes())
+        optionName{OptionHelpLine::name(option)},
+        optionAttributes(OptionHelpLine::attributes(option))
     {
     }
 
@@ -39,18 +39,18 @@ public:
         return this->opt;
     }
 
-    [[nodiscard]] auto name() const -> const std::string &
+    [[nodiscard]] auto name() const noexcept -> const std::string &
     {
         return this->optionName;
     }
 
-    [[nodiscard]] auto attributes() const -> const std::string &
+    [[nodiscard]] auto attributes() const noexcept -> const std::string &
     {
         return this->optionAttributes;
     }
 
 private:
-    [[nodiscard]] auto bound_value_as_string() const -> std::string
+    [[nodiscard]] static auto bound_value_as_string(const Option &option) const -> std::string
     {
         std::stringstream stream;
         const auto stringify = [&](auto &&value) {
@@ -90,11 +90,11 @@ private:
             }
         };
 
-        std::visit(stringify, this->opt.boundValue);
+        std::visit(stringify, option.boundValue);
         return stream.str();
     }
 
-    [[nodiscard]] auto default_value_as_string() const -> std::string
+    [[nodiscard]] static auto default_value_as_string(const Option &option) const -> std::string
     {
         std::ostringstream stream;
 
@@ -111,45 +111,35 @@ private:
             }
         };
 
-        std::visit(stringify, this->opt.defaultValue);
+        std::visit(stringify, option.defaultValue);
         return stream.str();
     }
 
-    [[nodiscard]] auto get_name() const -> std::string
+    [[nodiscard]] static auto get_attributes(const Option &option) const -> std::string
     {
-        if (this->is_positional())
+        if (::acommandline::is_defaulted(option))
         {
-            return "[positional]";
-        }
-
-        if (this->opt.shortName == char{})
-        {
-            return "--" + this->opt.longName;
-        }
-
-        return std::string{"-"} + this->opt.shortName + ", --" + this->opt.longName;
-    }
-
-    [[nodiscard]] auto get_attributes() const -> std::string
-    {
-        if (this->is_defaulted())
-        {
-            return '[' + this->bound_value_as_string() + '=' + this->default_value_as_string() + ']';
+            return '[' + OptionHelpLine::bound_value_as_string(option) + '=' + OptionHelpLine::default_value_as_string(option) + ']';
         }
         else
         {
-            return '[' + this->bound_value_as_string() + ']';
+            return '[' + OptionHelpLine::bound_value_as_string(option) + ']';
         }
     }
 
-    [[nodiscard]] auto is_defaulted() const noexcept -> bool
+    [[nodiscard]] static auto name(const Option &option) const -> std::string
     {
-        return !std::holds_alternative<std::monostate>(this->opt.defaultValue);
-    }
+        if (::acommandline::is_positional(option))
+        {
+            return ::acommandline::POSITIONAL_LONG_NAME;
+        }
 
-    [[nodiscard]] auto is_positional() const noexcept -> bool
-    {
-        return this->opt.longName == "[positional]";
+        if (option.shortName == char{})
+        {
+            return "--" + option.longName;
+        }
+
+        return std::string{"-"} + option.shortName + ", --" + option.longName;
     }
 
     const OptionData &opt;

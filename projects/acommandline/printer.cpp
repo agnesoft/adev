@@ -117,8 +117,8 @@ private:
 
     auto print_options(const std::vector<OptionHelpLine> &helpLines) -> void
     {
-        const std::size_t nameWidth = this->count_name_width(helpLines) + 5;
-        const std::size_t attributesWidth = this->count_attributes_width(helpLines) + 5;
+        const std::size_t nameWidth = Printer::count_name_width(helpLines) + 5;
+        const std::size_t attributesWidth = Printer::count_attributes_width(helpLines) + 5;
         this->print_help_option(nameWidth, attributesWidth);
         this->print_required(helpLines, nameWidth, attributesWidth);
         this->print_optional(helpLines, nameWidth, attributesWidth);

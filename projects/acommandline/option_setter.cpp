@@ -1,36 +1,34 @@
 #ifndef __clang__
 module acommandline : option_setter;
-import : option_builder_base;
+import : option;
 #endif
 
 namespace acommandline
 {
-class OptionSetter : private OptionBuilderBase
+class OptionSetter
 {
 public:
-    using OptionBuilderBase::OptionBuilderBase;
-
-    auto default_bound_value() const -> void
+    static auto default_bound_value(Option &option) const -> void
     {
         const auto valueSetter = [&](auto &&boundVal) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundVal)>>;
 
             if constexpr (!std::is_same_v<BoundT, std::monostate>)
             {
-                this->set_bound_value_to_default<BoundT>(boundVal);
+                OptionSetter::set_bound_value_to_default<BoundT>(boundVal);
             }
             else
             {
-                throw std::runtime_error{std::string{"The option "} + this->data().longName + " is missing a bound value."};
+                throw std::runtime_error{std::string{"The option "} + option.longName + " is missing a bound value."};
             }
         };
 
-        std::visit(valueSetter, this->data().boundValue);
+        std::visit(valueSetter, option.boundValue);
     }
 
-    [[nodiscard]] auto set_value(std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> bool
+    [[nodiscard]] static auto set_value(Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> bool
     {
-        if (this->set_value(this->extract_value(argument, end)))
+        if (OptionSetter::set_value(option, OptionSetter::extract_value(option, argument, end)))
         {
             ++(*argument);
             return true;
@@ -42,11 +40,11 @@ public:
     }
 
 private:
-    auto advance_argument_iterator(std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> void
+    static auto advance_argument_iterator(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> void
     {
         if (++(*argument) == end)
         {
-            throw std::runtime_error{std::string{"Missing value for option '"} + this->data().longName + "'."};
+            throw std::runtime_error{std::string{"Missing value for option '"} + option.longName + "'."};
         }
     }
 
@@ -64,13 +62,13 @@ private:
         }
     }
 
-    [[nodiscard]] auto extract_value(std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> std::string
+    [[nodiscard]] static auto extract_value(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> std::string
     {
-        std::string value = this->extract_value(**argument);
+        const std::string value = OptionSetter::extract_value(option, **argument);
 
-        if (!this->has_value(value))
+        if (!OptionSetter::has_value(option, value))
         {
-            this->advance_argument_iterator(argument, end);
+            OptionSetter::advance_argument_iterator(option, argument, end);
             return **argument;
         }
         else
@@ -79,9 +77,9 @@ private:
         }
     }
 
-    [[nodiscard]] auto extract_value(const std::string &argument) const -> std::string
+    [[nodiscard]] static auto extract_value(const Option &option, const std::string &argument) const -> std::string
     {
-        if (this->is_positional())
+        if (::acommandline::is_positional(option))
         {
             return argument;
         }
@@ -91,26 +89,26 @@ private:
         }
     }
 
-    auto handle_set_option_failure([[maybe_unused]] const std::exception &error, const std::string &value) const -> void
+    static auto handle_set_option_failure(const Option &option, [[maybe_unused]] const std::exception &error, const std::string &value) const -> void
     {
-        if (!this->is_positional())
+        if (!::acommandline::is_positional(option))
         {
             const auto throwError = [&](auto &&boundValue) {
                 using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
-                throw std::runtime_error{std::string{"Failed to set option '"} + this->data().longName + "' (" + typeid(BoundT).name() + ") from value '" + value + "'."};
+                throw std::runtime_error{std::string{"Failed to set option '"} + option.longName + "' (" + typeid(BoundT).name() + ") from value '" + value + "'."};
             };
 
-            std::visit(throwError, this->data().boundValue);
+            std::visit(throwError, option.boundValue);
         }
     }
 
-    [[nodiscard]] auto has_value(const std::string &value) const -> bool
+    [[nodiscard]] static auto has_value(const Option &option, const std::string &value) const -> bool
     {
-        return !value.empty() || this->is_switch();
+        return !value.empty() || ::acommandline::is_switch(option);
     }
 
     template<typename T>
-    auto set_bound_value_to_default(T *boundVal) const -> void
+    static auto set_bound_value_to_default(Option &option, T *boundVal) const -> void
     {
         const auto valueSetter = [&](auto &&defaultValue) {
             using DefaultT = std::decay_t<decltype(defaultValue)>;
@@ -121,17 +119,17 @@ private:
             }
         };
 
-        std::visit(valueSetter, this->data().defaultValue);
+        std::visit(valueSetter, option.defaultValue);
     }
 
-    [[nodiscard]] auto set_value(const std::string &value) const -> bool
+    [[nodiscard]] static auto set_value(Option &value, const std::string &value) const -> bool
     {
         const auto valueSetter = [&](auto &&boundValue) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
             if constexpr (std::is_same_v<BoundT, std::monostate>)
             {
-                throw std::runtime_error{std::string{"Bind value undefined for option '"} + this->data().longName + "'."};
+                throw std::runtime_error{std::string{"Bind value undefined for option '"} + option.longName + "'."};
             }
             else if constexpr (std::is_same_v<BoundT, bool>)
             {
@@ -165,7 +163,7 @@ private:
 
         try
         {
-            std::visit(valueSetter, this->data().boundValue);
+            std::visit(valueSetter, option.boundValue);
             return true;
         }
         catch ([[maybe_unused]] const std::runtime_error &error)
@@ -174,7 +172,7 @@ private:
         }
         catch (const std::exception &error)
         {
-            this->handle_set_option_failure(error, value);
+            OptionSetter::handle_set_option_failure(option, error, value);
         }
 
         return false;

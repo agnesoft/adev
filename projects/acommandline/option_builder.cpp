@@ -13,24 +13,24 @@ public:
     [[nodiscard]] auto long_name(std::string name) -> OptionBuilderNamed
     {
         this->set_long_name(std::move(name));
-        return OptionBuilderNamed{this->data()};
+        return OptionBuilderNamed{this->option()};
     }
 
     [[nodiscard]] auto positional() noexcept -> OptionBuilderValue
     {
-        this->data().longName = "[positional]";
-        return OptionBuilderValue{this->data()};
+        this->option().longName = ::acommandline::POSITIONAL_LONG_NAME;
+        return OptionBuilderValue{this->option()};
     }
 
 private:
     auto set_long_name(std::string name) -> void
     {
-        if (!OptionBuilderBase::is_long_name(name))
+        if (!::acommandline::is_long_name(name))
         {
             throw std::runtime_error{std::string{"'"} + name + "' is not a valid option long name ([a-zA-Z][a-zA-Z\\d]+)."};
         }
 
-        this->data().longName = std::move(name);
+        this->option().longName = std::move(name);
     }
 };
 }

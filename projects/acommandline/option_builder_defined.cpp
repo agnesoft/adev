@@ -12,8 +12,8 @@ public:
 
     [[nodiscard]] auto description(std::string description) noexcept -> OptionBuilderDescribed
     {
-        this->data().description = std::move(description);
-        return OptionBuilderDescribed{this->data()};
+        this->option().description = std::move(description);
+        return OptionBuilderDescribed{this->option()};
     }
 };
 }
