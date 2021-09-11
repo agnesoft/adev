@@ -13,7 +13,7 @@ public:
     {
     }
 
-    auto print_help(const std::string appName, const std::vector<OptionData> &options) -> void
+    auto print_help(const std::string appName, const std::vector<Option> &options) -> void
     {
         this->print_help_header(appName);
         this->print_options(Printer::option_help_lines(options));
@@ -62,11 +62,11 @@ private:
         return width;
     }
 
-    [[nodiscard]] static auto option_help_lines(const std::vector<OptionData> &options) -> std::vector<OptionHelpLine>
+    [[nodiscard]] static auto option_help_lines(const std::vector<Option> &options) -> std::vector<OptionHelpLine>
     {
         std::vector<OptionHelpLine> helpLines;
 
-        for (const OptionData &option : options)
+        for (const Option &option : options)
         {
             helpLines.emplace_back(OptionHelpLine{option});
         }
@@ -117,8 +117,8 @@ private:
 
     auto print_options(const std::vector<OptionHelpLine> &helpLines) -> void
     {
-        const std::size_t nameWidth = this->count_name_width(helpLines) + 5;
-        const std::size_t attributesWidth = this->count_attributes_width(helpLines) + 5;
+        const std::size_t nameWidth = Printer::count_name_width(helpLines) + 5;
+        const std::size_t attributesWidth = Printer::count_attributes_width(helpLines) + 5;
         this->print_help_option(nameWidth, attributesWidth);
         this->print_required(helpLines, nameWidth, attributesWidth);
         this->print_optional(helpLines, nameWidth, attributesWidth);

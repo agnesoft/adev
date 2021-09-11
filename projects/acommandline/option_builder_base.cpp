@@ -1,6 +1,6 @@
 #ifndef __clang__
 module acommandline : option_builder_base;
-import : option_data;
+import : option;
 #endif
 
 namespace acommandline
@@ -8,49 +8,23 @@ namespace acommandline
 class OptionBuilderBase
 {
 public:
-    explicit OptionBuilderBase(OptionData &data) noexcept :
+    explicit OptionBuilderBase(Option &data) noexcept :
         optionData{data}
     {
     }
 
 protected:
-    [[nodiscard]] auto data() const noexcept -> OptionData &
+    [[nodiscard]] auto option() noexcept -> Option &
     {
         return this->optionData;
     }
 
-    [[nodiscard]] static auto is_long_name(const std::string &longName) -> bool
+    [[nodiscard]] auto option() const noexcept -> const Option &
     {
-        const auto isNotAlphanumeric = [](char c) {
-            return std::isalnum(c) == 0;
-        };
-
-        return longName.size() > 1
-            && OptionBuilderBase::is_short_name(longName[0])
-            && std::find_if(++longName.begin() + 1, longName.end(), isNotAlphanumeric) == longName.end();
-    }
-
-    [[nodiscard]] constexpr auto is_defaulted() const noexcept -> bool
-    {
-        return !std::holds_alternative<std::monostate>(this->optionData.defaultValue);
-    }
-
-    [[nodiscard]] auto is_positional() const noexcept -> bool
-    {
-        return this->optionData.longName == "[positional]";
-    }
-
-    [[nodiscard]] static auto is_short_name(unsigned char shortName) noexcept -> bool
-    {
-        return std::isalpha(shortName) != 0;
-    }
-
-    [[nodiscard]] constexpr auto is_switch() const noexcept -> bool
-    {
-        return std::holds_alternative<bool *>(this->optionData.boundValue);
+        return this->optionData;
     }
 
 private:
-    OptionData &optionData;
+    Option &optionData;
 };
 }

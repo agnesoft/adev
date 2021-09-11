@@ -33,7 +33,7 @@ public:
 
     [[nodiscard]] auto option() -> OptionBuilder
     {
-        return OptionBuilder{this->options.emplace_back(OptionData{})};
+        return OptionBuilder{this->options.emplace_back(Option{})};
     }
 
     auto parse(int argc, const char *const *argv) -> void
@@ -54,7 +54,7 @@ public:
 private:
     auto clear_matches() -> void
     {
-        for (OptionData &option : this->options)
+        for (Option &option : this->options)
         {
             option.matched = false;
         }
@@ -69,22 +69,13 @@ private:
                                   helpNames.cend())
             != this->arguments.cend();
     }
-
-    [[nodiscard]] static constexpr auto is_repeated(const OptionData &option) -> bool
-    {
-        return std::holds_alternative<std::vector<std::int64_t> *>(option.boundValue)
-            || std::holds_alternative<std::vector<double> *>(option.boundValue)
-            || std::holds_alternative<std::vector<std::string> *>(option.boundValue);
-    }
-
     auto match_argument(std::vector<std::string>::const_iterator *argument) -> void
     {
-        for (OptionData &option : this->options)
+        for (Option &option : this->options)
         {
-            if (!option.matched || CommandLine::is_repeated(option))
+            if (!option.matched || ::acommandline::is_repeated(option))
             {
-                if (OptionMatcher{option}.match(argument)
-                    && OptionSetter{option}.set_value(argument, this->arguments.cend()))
+                if (OptionMatcher::match(option, argument) && OptionSetter::set_value(option, argument, this->arguments.cend()))
                 {
                     option.matched = true;
                 }
@@ -152,7 +143,7 @@ private:
 
     auto validate_options() -> void
     {
-        for (OptionData &option : this->options)
+        for (Option &option : this->options)
         {
             if (!option.matched)
             {
@@ -161,7 +152,7 @@ private:
                     throw std::runtime_error{std::string{"Option '"} + option.longName + "' was set as required but did not match any arguments."};
                 }
 
-                OptionSetter{option}.default_bound_value();
+                OptionSetter::default_bound_value(option);
             }
         }
     }
@@ -169,7 +160,7 @@ private:
     std::string cmd;
     std::string appName;
     std::vector<std::string> arguments;
-    std::vector<OptionData> options;
+    std::vector<Option> options;
     Printer printer;
 };
 }

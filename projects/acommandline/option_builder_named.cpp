@@ -13,18 +13,18 @@ public:
     [[nodiscard]] auto short_name(char shortName) -> OptionBuilderValue
     {
         this->set_short_name(shortName);
-        return OptionBuilderValue{this->data()};
+        return OptionBuilderValue{this->option()};
     }
 
 private:
     auto set_short_name(char name) -> void
     {
-        if (!OptionBuilderBase::is_short_name(name))
+        if (!::acommandline::is_short_name(name))
         {
             throw std::runtime_error{std::string{"'"} + name + "' is not a valid option short name ([a-zA-Z])."};
         }
 
-        this->data().shortName = name;
+        this->option().shortName = name;
     }
 };
 }
