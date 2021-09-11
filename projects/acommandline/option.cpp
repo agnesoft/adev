@@ -23,7 +23,7 @@ using BoundValue = std::variant<std::monostate,
                                 std::vector<double> *,
                                 std::vector<std::string> *>;
 
-constexpr static std ::string POSITIONAL_LONG_NAME = "[positional]";
+constexpr static char POSITIONAL_LONG_NAME[] = "[positional]";
 
 struct Option
 {
@@ -36,7 +36,7 @@ struct Option
     char shortName = {};
 };
 
-[[nodiscard]] auto is_short_name(unsigned char shortName) noexcept -> bool
+[[nodiscard]] auto is_short_name(unsigned char shortName) -> bool
 {
     return std::isalpha(shortName) != 0;
 }
@@ -52,14 +52,14 @@ struct Option
         && std::find_if(++name.begin() + 1, name.end(), isNotAlphanumeric) == name.end();
 }
 
-[[nodiscard]] constexpr auto is_repeated(const Option &option) -> bool
+[[nodiscard]] constexpr auto is_repeated(const Option &option) noexcept -> bool
 {
     return std::holds_alternative<std::vector<std::int64_t> *>(option.boundValue)
         || std::holds_alternative<std::vector<double> *>(option.boundValue)
         || std::holds_alternative<std::vector<std::string> *>(option.boundValue);
 }
 
-[[nodiscard]] auto is_positional(const Option &option) -> bool
+[[nodiscard]] auto is_positional(const Option &option) noexcept -> bool
 {
     return option.longName == POSITIONAL_LONG_NAME;
 }

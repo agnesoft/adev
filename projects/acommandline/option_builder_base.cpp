@@ -14,7 +14,7 @@ public:
     }
 
 protected:
-    [[nodiscard]] auto option() const noexcept -> Option &
+    [[nodiscard]] auto option() noexcept -> Option &
     {
         return this->optionData;
     }

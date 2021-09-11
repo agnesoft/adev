@@ -27,14 +27,14 @@ auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std
 class OptionHelpLine
 {
 public:
-    explicit OptionHelpLine(const OptionData &option) :
+    explicit OptionHelpLine(const Option &option) :
         opt{option},
         optionName{OptionHelpLine::name(option)},
         optionAttributes(OptionHelpLine::attributes(option))
     {
     }
 
-    [[nodiscard]] auto option() const noexcept -> const OptionData &
+    [[nodiscard]] auto option() const noexcept -> const Option &
     {
         return this->opt;
     }
@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto bound_value_as_string(const Option &option) const -> std::string
+    [[nodiscard]] static auto bound_value_as_string(const Option &option) -> std::string
     {
         std::stringstream stream;
         const auto stringify = [&](auto &&value) {
@@ -94,7 +94,7 @@ private:
         return stream.str();
     }
 
-    [[nodiscard]] static auto default_value_as_string(const Option &option) const -> std::string
+    [[nodiscard]] static auto default_value_as_string(const Option &option) -> std::string
     {
         std::ostringstream stream;
 
@@ -115,7 +115,7 @@ private:
         return stream.str();
     }
 
-    [[nodiscard]] static auto get_attributes(const Option &option) const -> std::string
+    [[nodiscard]] static auto attributes(const Option &option) -> std::string
     {
         if (::acommandline::is_defaulted(option))
         {
@@ -127,7 +127,7 @@ private:
         }
     }
 
-    [[nodiscard]] static auto name(const Option &option) const -> std::string
+    [[nodiscard]] static auto name(const Option &option) -> std::string
     {
         if (::acommandline::is_positional(option))
         {
@@ -142,7 +142,7 @@ private:
         return std::string{"-"} + option.shortName + ", --" + option.longName;
     }
 
-    const OptionData &opt;
+    const Option &opt;
     std::string optionName;
     std::string optionAttributes;
 };

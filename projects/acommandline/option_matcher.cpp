@@ -8,9 +8,9 @@ namespace acommandline
 class OptionMatcher
 {
 public:
-    [[nodiscard]] static auto match(const Option &option, std::vector<std::string>::const_iterator *argument) const -> bool
+    [[nodiscard]] static auto match(const Option &option, std::vector<std::string>::const_iterator *argument) -> bool
     {
-        return OptionMatcher::match_option(OptionMatcher::extract_name(**argument));
+        return OptionMatcher::match_option(option, OptionMatcher::extract_name(**argument));
     }
 
 private:
@@ -82,11 +82,11 @@ private:
             && (argument.size() == 2 || argument[2] == '=');
     }
 
-    [[nodiscard]] static auto match_option(const Option &option, const std::string &name) const noexcept -> bool
+    [[nodiscard]] static auto match_option(const Option &option, const std::string &name) noexcept -> bool
     {
         return name == option.longName
             || (name.size() == 1 && name[0] == option.shortName)
-            || (name.empty() && ::acommandline::is_positional(optional));
+            || (name.empty() && ::acommandline::is_positional(option));
     }
 };
 }

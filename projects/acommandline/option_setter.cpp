@@ -8,14 +8,14 @@ namespace acommandline
 class OptionSetter
 {
 public:
-    static auto default_bound_value(Option &option) const -> void
+    static auto default_bound_value(Option &option) -> void
     {
         const auto valueSetter = [&](auto &&boundVal) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundVal)>>;
 
             if constexpr (!std::is_same_v<BoundT, std::monostate>)
             {
-                OptionSetter::set_bound_value_to_default<BoundT>(boundVal);
+                OptionSetter::set_bound_value_to_default<BoundT>(option, boundVal);
             }
             else
             {
@@ -26,7 +26,7 @@ public:
         std::visit(valueSetter, option.boundValue);
     }
 
-    [[nodiscard]] static auto set_value(Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> bool
+    [[nodiscard]] static auto set_value(Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> bool
     {
         if (OptionSetter::set_value(option, OptionSetter::extract_value(option, argument, end)))
         {
@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    static auto advance_argument_iterator(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> void
+    static auto advance_argument_iterator(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> void
     {
         if (++(*argument) == end)
         {
@@ -62,7 +62,7 @@ private:
         }
     }
 
-    [[nodiscard]] static auto extract_value(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) const -> std::string
+    [[nodiscard]] static auto extract_value(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> std::string
     {
         const std::string value = OptionSetter::extract_value(option, **argument);
 
@@ -77,7 +77,7 @@ private:
         }
     }
 
-    [[nodiscard]] static auto extract_value(const Option &option, const std::string &argument) const -> std::string
+    [[nodiscard]] static auto extract_value(const Option &option, const std::string &argument) -> std::string
     {
         if (::acommandline::is_positional(option))
         {
@@ -89,7 +89,7 @@ private:
         }
     }
 
-    static auto handle_set_option_failure(const Option &option, [[maybe_unused]] const std::exception &error, const std::string &value) const -> void
+    static auto handle_set_option_failure(const Option &option, [[maybe_unused]] const std::exception &error, const std::string &value) -> void
     {
         if (!::acommandline::is_positional(option))
         {
@@ -102,13 +102,13 @@ private:
         }
     }
 
-    [[nodiscard]] static auto has_value(const Option &option, const std::string &value) const -> bool
+    [[nodiscard]] static auto has_value(const Option &option, const std::string &value) -> bool
     {
         return !value.empty() || ::acommandline::is_switch(option);
     }
 
     template<typename T>
-    static auto set_bound_value_to_default(Option &option, T *boundVal) const -> void
+    static auto set_bound_value_to_default(Option &option, T *boundVal) -> void
     {
         const auto valueSetter = [&](auto &&defaultValue) {
             using DefaultT = std::decay_t<decltype(defaultValue)>;
@@ -122,7 +122,7 @@ private:
         std::visit(valueSetter, option.defaultValue);
     }
 
-    [[nodiscard]] static auto set_value(Option &value, const std::string &value) const -> bool
+    [[nodiscard]] static auto set_value(Option &option, const std::string &value) -> bool
     {
         const auto valueSetter = [&](auto &&boundValue) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
