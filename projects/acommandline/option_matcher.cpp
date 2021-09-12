@@ -5,6 +5,7 @@ import : option;
 
 namespace acommandline
 {
+//! \private
 class OptionMatcher
 {
 public:

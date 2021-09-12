@@ -5,6 +5,7 @@ import : option;
 
 namespace acommandline
 {
+//! \private
 class OptionBuilderBase
 {
 public:
@@ -14,11 +15,13 @@ public:
     }
 
 protected:
+    //! \private
     [[nodiscard]] auto option() noexcept -> Option &
     {
         return this->optionData;
     }
 
+    //! \private
     [[nodiscard]] auto option() const noexcept -> const Option &
     {
         return this->optionData;

@@ -25,6 +25,7 @@ using BoundValue = std::variant<std::monostate,
 
 constexpr static char POSITIONAL_LONG_NAME[] = "[positional]";
 
+//! \private
 struct Option
 {
     std::string longName;
