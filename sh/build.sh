@@ -13,7 +13,7 @@ function detectDoxygen () {
     if isAvailable "doxygen"; then
         DOXYGEN="doxygen"
     else
-        printError "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install-doxygen'."
+        printError "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install doxygen'."
         exit 1
     fi
 
