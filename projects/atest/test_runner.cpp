@@ -12,21 +12,21 @@ namespace atest
 //!
 //! The tests are created and registered using
 //! test() and suite() functions and eventually
-//! run by a `TestRunner`. The class takes
+//! run with TestRunner::run(). The class takes
 //! arguments from `main()` (currently unused) as
-//! well as the output stream (std::cout by
-//! default). The tests are run with run().
+//! well as an optional output stream (`std::cout`
+//! by default).
 export class TestRunner
 {
 public:
-    //! Constructs the object with main's
+    //! Constructs the object with `main()`'s
     //! arguments.
     TestRunner(int argc, char *argv[]) :
         TestRunner(argc, argv, std::cout)
     {
     }
 
-    //! Constructs the object with main's
+    //! Constructs the object with `main()`'s
     //! arguments and `stream`.
     TestRunner(int argc, char *argv[], std::ostream &stream) :
         printer{stream},
@@ -36,28 +36,26 @@ public:
     }
 
     //! Runs the tests. The test suites will be
-    //! run in alphabetical order of the files
-    //! they were declared in. If there are
-    //! multiple tests suites in a file they will
-    //! then be run in order of declaration. Tests
-    //! are always run in the order of
-    //! declaration. The global test suite is run
-    //! first. All test suites and tests are run
-    //! sequentially (no parallelization). While
-    //! the exceptions cannot be propagated from
-    //! the tests themselves the orchestration
-    //! code can still throw an exception in rare
+    //! run in alphabetical order. Tests are
+    //! always run in the order of declaration
+    //! within a test suite. The global test suite
+    //! is always run first. All test suites and
+    //! tests are run sequentially (no
+    //! parallelization). While the exceptions
+    //! cannot be propagated from the tests
+    //! themselves the orchestration code can
+    //! still throw an exception in rare
     //! circumstances (out of memory etc.).
     //!
     //! Returns number of failures. `0` if all
-    //! tests and expectations passed. Usually set
-    //! as a return value of `main()`. Note that
-    //! not only failed expectations are counted
-    //! as failures but also unknown/unexpected
-    //! exceptions are as well. I.e. it is
-    //! possible to have all expectations passing
-    //! but still getting non-0 amount of
-    //! failures.
+    //! tests and expectations passed. You would
+    //! typically set it as a return value of
+    //! `main()`. Note that not only failed
+    //! expectations are counted as failures but
+    //! also unknown/unexpected exceptions are as
+    //! well. I.e. it is possible to have all
+    //! expectations passing but still getting
+    //! non-0 amount of failures.
     [[nodiscard]] auto run() -> int
     {
         TestRunner::sort_global_test_suites();

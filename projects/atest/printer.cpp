@@ -7,8 +7,7 @@ import : stringify;
 
 namespace atest
 {
-//! Color codes for ANSI console foreground
-//! colors.
+//! \private
 struct Color
 {
     static constexpr char GRAY[] = "\033[1;30m";
@@ -18,38 +17,26 @@ struct Color
     static constexpr char YELLOW[] = "\033[1;33m";
 };
 
-//! The `Printer` class formats output to a
-//! `std::ostream`.
-//!
-//! It converts raw test data into human readable
-//! formatted output.
+//! \private
 class Printer
 {
 public:
-    //! Constructs the object with `stream`.
     explicit Printer(std::ostream &stream) noexcept :
         stream{stream}
     {
     }
 
-    //! Outputs the heading of the test run: the
-    //! number of tests and test suites that are
-    //! being run.
     auto begin_run(const Report &report) -> void
     {
         this->stream << "Running " << report.tests << " tests from " << report.testSuites << " test suites...\n"
                      << Printer::separator() << "\n";
     }
 
-    //! This method prints nothing but increases
-    //! the indentation level.
     auto begin_test([[maybe_unused]] const Test &test) -> void
     {
         this->indentLevel++;
     }
 
-    //! Prints the name of the test suite
-    //! prepended with its source location.
     auto begin_test_suite(const TestSuite &testSuite) -> void
     {
         this->stream << "---\n";
@@ -63,13 +50,6 @@ public:
         this->indentLevel++;
     }
 
-    //! Prints the summary of the test run in semi
-    //! tabular form. The summary includes whether
-    //! the run passed or failed, its total
-    //! duration, number of tests
-    //! run/passed/failed and number of
-    //! expectations (assertions)
-    //! run/passed/failed.
     auto end_run(const Report &report, const std::vector<TestSuite> &testSuites) -> void
     {
         const int width = static_cast<int>(std::to_string(std::max(report.tests, report.expectations)).size());
@@ -92,10 +72,6 @@ public:
                      << report.failedExpectations << " failed\n";
     }
 
-    //! Prints the information about just
-    //! concluded test: whether it passed, its
-    //! source location, name and duration. It
-    //! also decreases the indent level.
     auto end_test(const Test &test) -> void
     {
         this->print_test_result(test);
@@ -103,8 +79,6 @@ public:
         this->indentLevel--;
     }
 
-    //! Prints and empty line and decreases the
-    //! indent level.
     auto end_test_suite([[maybe_unused]] const TestSuite &testSuite) -> void
     {
         this->stream << '\n';

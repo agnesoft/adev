@@ -5,16 +5,12 @@ export import astl;
 
 namespace atest
 {
-//! Concept that is `true` if `T` can be streamed
-//! into `std::ostringstream`.
 template<typename T>
 concept Stringifiable = requires(const T &type)
 {
     {std::ostringstream{} << type};
 };
 
-//! Concept that is `true` if `T` has `begin()`
-//! and `end()` methods.
 template<typename T>
 concept Iterable = requires(const T &type)
 {

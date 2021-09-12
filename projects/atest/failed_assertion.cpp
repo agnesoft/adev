@@ -4,8 +4,7 @@ module atest : failed_assertion;
 
 namespace atest
 {
-//! Exception type to indicate an assertion
-//! failed.
+//! \private
 struct FailedAssertion
 {
 };

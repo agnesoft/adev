@@ -6,9 +6,9 @@ import : stringify;
 
 namespace atest
 {
-//! \brief The `ExpectToMatch<ExpressionT, ValueT,
-//! MatcherT, ExpectationType, FailurePolicy>` provides
-//! generic value matching expectation.
+//! The ExpectToMatch<ExpressionT, ValueT,
+//! MatcherT, ExpectationType, ResultHandlingPolicy>
+//! provides generic value matching expectation.
 //!
 //! The type `ExpressionT` can be either a value
 //! or a callable. If the value is a callable it
@@ -16,29 +16,30 @@ namespace atest
 //! place. No exceptions are propagated from the
 //! call. The `MatcherT`'s `operator()` is used to
 //! perform the actual matching. If there is the
-//! match the expectation passes. If there is not
-//! a match the `MatcherT` will be further queried
-//! for details using the interface of
-//! atest::MatcherBase.
-export template<typename ExpressionT, typename ValueT, typename MatcherT, ExpectationType expectationType, FailurePolicy failurePolicy>
-class ExpectToMatch : public ExpectBase<ExpressionT, expectationType, failurePolicy>
+//! match the expectation passes (observing the
+//! ResultHandlingPolicy). If there is not a match the
+//! `MatcherT` will be further queried for details
+//! using the static method interface of the
+//! MatcherBase class.
+export template<typename ExpressionT, typename ValueT, typename MatcherT, ExpectationType expectationType, ResultHandlingPolicy resultHandlingPolicy>
+class ExpectToMatch : public ExpectBase<ExpressionT, expectationType, resultHandlingPolicy>
 {
 public:
     //! Constructs the object with the
-    //! `expression`, `value` and
-    //! `sourceLocation` a and runs the matching.
-    //! If `ExpressionT` is a callable type it
-    //! will first be called and only its result
-    //! will be compared against value `ValueT`.
-    //! No exceptions are propagated from such
-    //! call. The matching is done by calling the
+    //! `expression`, `value` and `sourceLocation`
+    //! and runs the matching. If the
+    //! `ExpressionT` is a callable type it will
+    //! first be called and only its result will
+    //! be compared against value `ValueT`. No
+    //! exceptions are propagated from such call.
+    //! The matching is done by calling the
     //! `MatcherT::operator()`. If the match fails
     //! `MatcherT` instance will be queried for
     //! the details regarding the match and
     //! provided with the values to use for
     //! stringification of the error output.
     ExpectToMatch(const ExpressionT &expression, const ValueT &value, const std::source_location &sourceLocation) :
-        ExpectBase<ExpressionT, expectationType, failurePolicy>{expression, sourceLocation},
+        ExpectBase<ExpressionT, expectationType, resultHandlingPolicy>{expression, sourceLocation},
         value{value}
     {
         try

@@ -5,7 +5,7 @@ import astl;
 
 namespace atest
 {
-//! Test failure and its details.
+//! \private
 struct Failure
 {
     std::string what;

@@ -5,7 +5,7 @@ import : failure;
 
 namespace atest
 {
-//! Test details and results.
+//! \private
 struct Test
 {
     std::string name;

@@ -38,7 +38,7 @@ export template<typename ExpressionT>
                            const std::source_location &sourceLocation = std::source_location::current()) noexcept
     -> Expect<ExpressionT,
               ExpectationType::Assertion,
-              FailurePolicy::FailOnFailure>
+              ResultHandlingPolicy::Normal>
 {
     return {expression, sourceLocation};
 }
@@ -52,7 +52,7 @@ export template<typename ExpressionT>
                                const std::source_location &sourceLocation = std::source_location::current()) noexcept
     -> Expect<ExpressionT,
               ExpectationType::Assertion,
-              FailurePolicy::PassOnFailure>
+              ResultHandlingPolicy::Reverse>
 {
     return {expression, sourceLocation};
 }
@@ -65,7 +65,7 @@ export template<typename ExpressionT>
                           const std::source_location &sourceLocation = std::source_location::current()) noexcept
     -> Expect<ExpressionT,
               ExpectationType::Expectation,
-              FailurePolicy::FailOnFailure>
+              ResultHandlingPolicy::Normal>
 {
     return {expression, sourceLocation};
 }
@@ -78,7 +78,7 @@ export template<typename ExpressionT>
                                const std::source_location &sourceLocation = std::source_location::current()) noexcept
     -> Expect<ExpressionT,
               ExpectationType::Expectation,
-              FailurePolicy::PassOnFailure>
+              ResultHandlingPolicy::Reverse>
 {
     return {expression, sourceLocation};
 }
