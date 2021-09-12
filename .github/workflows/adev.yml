@@ -28,6 +28,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: ./adev.sh install clang
       - run: ./adev.sh build clang
+      - run: ./adev.sh test clang
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
@@ -36,6 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: ./adev.sh install gcc
       - run: ./adev.sh build gcc
+      - run: ./adev.sh test gcc
 
   windows_msvc2019_x64:
     runs-on: windows-latest
@@ -43,3 +45,5 @@ jobs:
       - uses: actions/checkout@v2
       - shell: bash
         run: ./adev.sh build msvc
+      - shell: bash
+        run: ./adev.sh test msvc
