@@ -8,13 +8,15 @@ on:
 
 jobs:
   documentation:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: sh adev.sh install doxygen
-      - run: |
-             refreshenv
-             sh adev.sh build docs
+      - shell: bash
+        run: ./adev.sh install doxygen
+      - shell: bash
+        run: echo $PATH
+      - shell: bash
+        run: ./adev.sh build docs
 
   formatting:
     runs-on: ubuntu-latest
