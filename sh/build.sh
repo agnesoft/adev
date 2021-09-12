@@ -35,6 +35,7 @@ function listProjects () {
 function buildDocs () {
     detectDoxygen
     echo "Generating documentation..."
+    mkdir -p "build/"
     $DOXYGEN adev.doxyfile
     if test $? -ne 0; then
         printError "ERROR: Building documentation failed."
