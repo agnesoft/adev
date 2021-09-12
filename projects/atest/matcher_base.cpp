@@ -5,15 +5,16 @@ export import : stringify;
 
 namespace atest
 {
-//! The `MatcherBase` is the base class for
-//! matchers to be supplied to Expect::toMatch()
-//! call.
+//! The `MatcherBase` is the base class for atest
+//! matchers. Matchers are typically used as
+//! template arguments of the
+//! Expect::to_match() method.
 export class MatcherBase
 {
 public:
     //! Returns the description of the operation
     //! the matcher performs.
-    [[nodiscard]] static auto describe() -> std::string
+    [[nodiscard]] auto describe() const -> std::string
     {
         return "Values do not match.";
     }

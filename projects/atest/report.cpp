@@ -5,7 +5,7 @@ import astl;
 
 namespace atest
 {
-//! Aggregate results of the test run.
+//! \private
 struct Report
 {
     size_t testSuites = 0;

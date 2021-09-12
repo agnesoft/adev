@@ -5,8 +5,9 @@ import : matcher_base;
 
 namespace atest
 {
-//! The concrete implementation of the Matcher
-//! that uses `operator==`.
+//! The Matcher class is the implementation of an
+//! atest matcher. It uses `operator==` to match
+//! the values.
 export class Matcher : public MatcherBase
 {
 public:

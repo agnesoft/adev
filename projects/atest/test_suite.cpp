@@ -5,7 +5,7 @@ import : test;
 
 namespace atest
 {
-//! Test suite and its tests.
+//! \private
 struct TestSuite
 {
     std::string name;

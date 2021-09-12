@@ -14,24 +14,17 @@ enum class ExpectationType
 };
 
 //! \private
-enum class FailurePolicy
+enum class ResultHandlingPolicy
 {
-    PassOnFailure,
-    FailOnFailure
+    Normal,
+    Reverse
 };
 
-//! \brief The `ExpectBase<ExpressionT, ExpectationType,
-//! FailurePolicy>` is the base class for all
-//! expecations.
-//!
-//! The class provides basic functionality such as
-//! source location, holding the `ExpressionT`,
-//! error handling, result reversal and assertions.
-template<typename ExpressionT, ExpectationType expectationType, FailurePolicy failurePolicy>
+//! \private
+template<typename ExpressionT, ExpectationType expectationType, ResultHandlingPolicy resultHandlingPolicy>
 class ExpectBase
 {
 public:
-    //! Constructs the object.
     explicit ExpectBase(const ExpressionT &expression, const std::source_location &sourceLocation) noexcept :
         expressionT{expression},
         sourceLocation{sourceLocation}
@@ -40,39 +33,35 @@ public:
     }
 
 protected:
-    //! Returns the expression.
+    //! \private
     [[nodiscard]] auto expression() const noexcept -> const ExpressionT &
     {
         return this->expressionT;
     }
 
-    //! Fails the expectation. If `ExpectFail` is
-    //! `true` the failure will be converted to a
-    //! success.
+    //! \private
     auto handle_failure(Failure &&failure) -> void
     {
-        if constexpr (failurePolicy == FailurePolicy::FailOnFailure)
+        if constexpr (resultHandlingPolicy == ResultHandlingPolicy::Normal)
         {
             this->fail(std::move(failure));
         }
     }
 
-    //! Passes the expectation. If `ExpectFail` is
-    //! `true` the failure will be converted to a
-    //! failure.
+    //! \private
     auto handle_success() -> void
     {
-        if constexpr (failurePolicy == FailurePolicy::PassOnFailure)
+        if constexpr (resultHandlingPolicy == ResultHandlingPolicy::Reverse)
         {
             this->fail(Failure{"Expected a failure but the expectation passed."});
         }
     }
 
-    //! Fails the expectation and records the
-    //! failure to the currently running test.
+    //! \private
+    //!
     //! Only call this method if you want to fail
-    //! the expectation regardless of `ExpectFail`
-    //! value.
+    //! the expectation and bypass the
+    //! `resultHandlingPolicy` value.
     auto fail(Failure &&failure) -> void
     {
         failure.sourceLocation = this->sourceLocation;

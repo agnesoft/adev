@@ -7,35 +7,34 @@ export import : matcher;
 
 namespace atest
 {
-//! \brief The `Expect<ExpressionT,
-//! ExpectationType, FailurePolicy>` provides the
-//! builder for the test expectation or assertion.
+//! The Expect<ExpressionT, ExpectationType,
+//! ResultHandlingPolicy> provides the builder for the
+//! test expectation or assertion.
 //!
-//! The class will take any value expression or
-//! callable `ExpressionT`. Concrete expectation
-//! types may impose further requirements on
-//! `ExpressionT` such as having certain
-//! comparison operator, streaming operator or
-//! being a callable.
-export template<typename ExpressionT, ExpectationType expectationType, FailurePolicy failurePolicy>
+//! The class will take any `ExpressionT` that is
+//! value or a callable. Selected expectation may
+//! impose further requirements on `ExpressionT`
+//! such as having certain comparison operator,
+//! streaming operator or being a callable.
+export template<typename ExpressionT, ExpectationType expectationType, ResultHandlingPolicy resultHandlingPolicy>
 class Expect
 {
 public:
-    //! Constructs the object.
+    //! Constructor.
     Expect(const ExpressionT &expression, const std::source_location &sourceLocation) noexcept :
         expression{expression},
         sourceLocation{sourceLocation}
     {
     }
 
-    //! Creates the matcher expectation with a
-    //! default Matcher that uses `operator==`.
+    //! Creates the value matcher expectation with
+    //! a default Matcher that uses `operator==`.
     template<typename ValueT>
     auto to_be(const ValueT &value) -> ExpectToMatch<ExpressionT,
                                                      ValueT,
                                                      Matcher,
                                                      expectationType,
-                                                     failurePolicy>
+                                                     resultHandlingPolicy>
     {
         return {this->expression, value, this->sourceLocation};
     }
@@ -47,7 +46,7 @@ public:
                                                         ValueT,
                                                         MatcherT,
                                                         expectationType,
-                                                        failurePolicy>
+                                                        resultHandlingPolicy>
     {
         return {this->expression, value, this->sourceLocation};
     }
@@ -62,7 +61,7 @@ public:
                                      const char *,
                                      ExceptionValidationPolicy::TypeOnly,
                                      expectationType,
-                                     failurePolicy>
+                                     resultHandlingPolicy>
     {
         return {this->expression, "", this->sourceLocation};
     }
@@ -78,7 +77,7 @@ public:
                                                                 ExceptionT,
                                                                 ExceptionValidationPolicy::Value,
                                                                 expectationType,
-                                                                failurePolicy>
+                                                                resultHandlingPolicy>
     {
         return {this->expression, exception, this->sourceLocation};
     }
@@ -96,7 +95,7 @@ public:
                                                         ValueT,
                                                         ExceptionValidationPolicy::Value,
                                                         expectationType,
-                                                        failurePolicy>
+                                                        resultHandlingPolicy>
     {
         return {this->expression, value, this->sourceLocation};
     }

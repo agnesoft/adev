@@ -6,9 +6,6 @@ import : stringify;
 
 namespace atest
 {
-//! Concept that is `true` if `T` has method
-//! `what()` that returns a value such that it can
-//! be converted to `std::string`.
 template<typename T>
 concept HasWhat = requires(const T &type)
 {
@@ -24,51 +21,47 @@ enum class ExceptionValidationPolicy
     Value
 };
 
-//! \brief The `ExpectToThrow<ExpressionT,
-//! ExceptionT, ValueT, ExceptionValidationPolicy,
-//! ExpectationType, FailurePolicy>` provides
-//! exception related expectation.
+//! The ExpectToThrow<ExpressionT, ExceptionT,
+//! ValueT, ExceptionValidationPolicy,
+//! ExpectationType, ResultHandlingPolicy>
+//! provides exception related expectation.
 //!
 //! The type `ExpressionT` must be an
 //! `std::invocable` type. Type `ExceptionT` is
 //! the type of the exception. Type `ValueT` is
 //! the value against which the exception of type
-//! `ExceptionT` will be matched if
-//! `ValidateValue` is set to `true`. If the
-//! `ValidateValue` argument is set to `false` no
-//! matching of the caught value beside `typeid`
-//! matching will be performed.
+//! `ExceptionT` will be optionally matched. The
+//! types are always matched using `typeid`.
 //!
 //! The type `ValueT` does not necessarily have to
 //! be of the same type as `ExceptionT` but there
 //! must be an `operator==` that takes both the
 //! exception and `ValueT` values. Additionally if
-//! the exception `ExceptionT` satisfies `HasWhat`
-//! concept the value `ValueT` will be matched
-//! against the `ExceptionT::what()` rather than
-//! the exception object itself. For that
-//! comparison the `ValueT` must either be
-//! std::string or be convertible to std::string.
-export template<typename ExpressionT, typename ExceptionT, typename ValueT, ExceptionValidationPolicy validationPolicy, ExpectationType expectationType, FailurePolicy failurePolicy>
+//! the exception `ExceptionT` has `what()` method
+//! that returns a type convertible to
+//! `std::string` the value `ValueT` will be
+//! matched against the `ExceptionT::what()`
+//! rather than the exception object itself.
+export template<typename ExpressionT, typename ExceptionT, typename ValueT, ExceptionValidationPolicy validationPolicy, ExpectationType expectationType, ResultHandlingPolicy resultHandlingPolicy>
 requires std::invocable<ExpressionT>
-class ExpectToThrow : public ExpectBase<ExpressionT, expectationType, failurePolicy>
+class ExpectToThrow : public ExpectBase<ExpressionT, expectationType, resultHandlingPolicy>
 {
 public:
-    using ExpectBase<ExpressionT, expectationType, failurePolicy>::ExpectBase;
+    using ExpectBase<ExpressionT, expectationType, resultHandlingPolicy>::ExpectBase;
 
     //! Constructs the object taking the reference
     //! to `expression`, `value` and
     //! `sourceLocation`. Invokes `ExpressionT`
     //! expecting the exception of type
     //! `ExceptionT`. If an exception is thrown it
-    //! will be validated against type and
-    //! optionally against `value`.  Not throwing
-    //! any exception, throwing unknown exception,
-    //! throwin an exception of a different type
-    //! or optionally with different value all
-    //! fail the expectation.
+    //! will be validated against the type and
+    //! optionally the value. Not throwing any
+    //! exception, throwing unknown exception,
+    //! throwing an exception of a different type
+    //! or with a different value all fail the
+    //! expectation.
     ExpectToThrow(const ExpressionT &expression, const ValueT &value, const std::source_location &sourceLocation) :
-        ExpectBase<ExpressionT, expectationType, failurePolicy>{expression, sourceLocation},
+        ExpectBase<ExpressionT, expectationType, resultHandlingPolicy>{expression, sourceLocation},
         value{value}
     {
         try

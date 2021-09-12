@@ -5,8 +5,7 @@ import : test_suite;
 
 namespace atest
 {
-//! Collection of test suites and currently run
-//! test suite and test.
+//! \private
 struct GlobalTests
 {
     std::vector<TestSuite> suites = {TestSuite{"Global"}};
@@ -14,8 +13,7 @@ struct GlobalTests
     Test *currentTest = nullptr;
 };
 
-//! Returns the global GlobalTests object for
-//! registering test suites and to run them.
+//! \private
 [[nodiscard]] auto global_tests() -> GlobalTests &
 {
     static GlobalTests tests;
