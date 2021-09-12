@@ -7,6 +7,15 @@ on:
     branches: [main]
 
 jobs:
+  documentation:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash
+        run: ./adev.sh install doxygen
+      - shell: bash
+        run: ./adev.sh build docs
+
   formatting:
     runs-on: ubuntu-latest
     steps:

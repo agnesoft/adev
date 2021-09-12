@@ -12,12 +12,14 @@ function detectProjects () {
 function detectDoxygen () {
     if isAvailable "doxygen"; then
         DOXYGEN="doxygen"
+    elif isWindows && test -f "C:/Program Files/doxygen/bin/doxygen.exe"; then
+        DOXYGEN="C:/Program Files/doxygen/bin/doxygen.exe"
     else
         printError "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install doxygen'."
         exit 1
     fi
 
-    echo "Doxygen $(doxygen --version)"
+    echo "Doxygen $("$DOXYGEN" --version)"
 }
 
 function listProjects () {
@@ -35,7 +37,8 @@ function listProjects () {
 function buildDocs () {
     detectDoxygen
     echo "Generating documentation..."
-    $DOXYGEN adev.doxyfile
+    mkdir -p "build/"
+    "$DOXYGEN" adev.doxyfile
     if test $? -ne 0; then
         printError "ERROR: Building documentation failed."
         exit 1
