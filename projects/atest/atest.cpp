@@ -98,9 +98,9 @@ auto test(const char *name,
     ::atest::global_tests().currentTestSuite->tests.emplace_back(Test{name, body, sourceLocation});
 }
 
-//! Registers the test suite under `name`. The suite's
-//! `body` will be run immediately. Any
-//! test() called inside will register the test to
+//! Registers the test suite under `name`. The
+//! suite's `body` will be run immediately. Any
+//! test() call inside will register the test to
 //! the suite. The suite() calls cannot be nested.
 //! This function will never throw. It returns 0
 //! on success, 1 otherwise. The call site source
