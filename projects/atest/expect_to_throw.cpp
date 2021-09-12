@@ -6,6 +6,7 @@ import : stringify;
 
 namespace atest
 {
+//! \private
 template<typename T>
 concept HasWhat = requires(const T &type)
 {
