@@ -5,11 +5,21 @@ import : option_builder_base;
 
 namespace acommandline
 {
+//! The OptionBuilderDescribed class represents
+//! the final step in defining a command line
+//! option.
 class OptionBuilderDescribed : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;
 
+    //! Binds the option to `value`. When an
+    //! argument matches the option during parsing
+    //! its value will be saved to `value`. If the
+    //! `value` is a vector of values the parsed
+    //! value will be appended. If the option has
+    //! default value set the type of `value` must
+    //! be compatible with it.
     auto bind_to(BoundValue value) -> void
     {
         this->bind(std::move(value));

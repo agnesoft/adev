@@ -5,6 +5,7 @@ import : option_help_line;
 
 namespace acommandline
 {
+//! \private
 class Printer
 {
 public:

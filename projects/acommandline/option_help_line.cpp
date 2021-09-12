@@ -24,6 +24,7 @@ auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std
     return stream;
 }
 
+//! \private
 class OptionHelpLine
 {
 public:

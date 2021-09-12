@@ -5,14 +5,19 @@ import : option_builder_value;
 
 namespace acommandline
 {
+//! The OptionBuilderNamed continues building a
+//! named command line option.
 class OptionBuilderNamed : public OptionBuilderValue
 {
 public:
     using OptionBuilderValue::OptionBuilderValue;
 
-    [[nodiscard]] auto short_name(char shortName) -> OptionBuilderValue
+    //! Sets the short name of the option to `name`. The `name` must:
+    //!
+    //! - be a lower or upper case letter
+    [[nodiscard]] auto short_name(char name) -> OptionBuilderValue
     {
-        this->set_short_name(shortName);
+        this->set_short_name(name);
         return OptionBuilderValue{this->option()};
     }
 

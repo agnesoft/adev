@@ -5,11 +5,17 @@ import : option_builder_described;
 
 namespace acommandline
 {
+//! The OptionBuilderDefined class represents a
+//! mandatory step in defining the command line
+//! option description.
 class OptionBuilderDefined : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;
 
+    //! Sets the option description to
+    //! `description`. Setting a description is
+    //! mandatory but it can be empty.
     [[nodiscard]] auto description(std::string description) noexcept -> OptionBuilderDescribed
     {
         this->option().description = std::move(description);
