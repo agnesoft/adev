@@ -11,11 +11,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - shell: bash
-        run: ./adev.sh install doxygen
-      - run: refreshenv
-      - shell: bash
-        run: ./adev.sh build docs
+      - run: sh adev.sh install doxygen
+      - run: sh adev.sh build docs
 
   formatting:
     runs-on: ubuntu-latest
