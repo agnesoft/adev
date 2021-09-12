@@ -12,8 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: sh adev.sh install doxygen
-      - run: refreshenv
-      - run: sh adev.sh build docs
+      - run: |
+             refreshenv
+             sh adev.sh build docs
 
   formatting:
     runs-on: ubuntu-latest
