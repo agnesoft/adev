@@ -14,8 +14,6 @@ jobs:
       - shell: bash
         run: ./adev.sh install doxygen
       - shell: bash
-        run: echo $PATH
-      - shell: bash
         run: ./adev.sh build docs
 
   formatting:
