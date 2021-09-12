@@ -5,12 +5,14 @@ export import astl;
 
 namespace atest
 {
+//! \private
 template<typename T>
 concept Stringifiable = requires(const T &type)
 {
     {std::ostringstream{} << type};
 };
 
+//! \private
 template<typename T>
 concept Iterable = requires(const T &type)
 {
