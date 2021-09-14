@@ -1,7 +1,5 @@
 import atest;
 
-using ::atest::assert_;
-using ::atest::assert_fail;
 using ::atest::expect;
 using ::atest::expect_fail;
 using ::atest::suite;
@@ -21,7 +19,7 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception types mismatch: throw int", [] {
-        expect_fail([] { throw 1; }).to_throw<std::exception>();
+        expect_fail([] { throw 1; }).to_throw<std::exception>(); //NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception text match", [] {
@@ -37,7 +35,7 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception text mismatch (INTENTIONAL FAILURE)", [] {
-        expect([] { throw std::string{"error"}; }).to_throw<std::string>("different error");
+        expect([] { throw std::string{"error"}; }).to_throw<std::string>("different error"); //NOLINT(hicpp-exception-baseclass)
     });
 
     test("No exception thrown", [] {
@@ -49,18 +47,18 @@ static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception types match: int", [] {
-        expect([] { throw 1; }).to_throw<int>();
+        expect([] { throw 1; }).to_throw<int>(); //NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception value match: int", [] {
-        expect([] { throw 1; }).to_throw(1);
+        expect([] { throw 1; }).to_throw(1); //NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception value match: std::string", [] {
-        expect([] { throw std::string{"Exception text"}; }).to_throw(std::string{"Exception text"});
+        expect([] { throw std::string{"Exception text"}; }).to_throw(std::string{"Exception text"}); //NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception value match: const char*", [] {
-        expect([] { throw std::string{"Exception text"}; }).to_throw<std::string>("Exception text");
+        expect([] { throw std::string{"Exception text"}; }).to_throw<std::string>("Exception text"); //NOLINT(hicpp-exception-baseclass)
     });
 });

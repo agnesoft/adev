@@ -1,7 +1,5 @@
 import atest;
 
-using ::atest::assert_;
-using ::atest::assert_fail;
 using ::atest::expect;
 using ::atest::expect_fail;
 using ::atest::suite;
@@ -37,6 +35,6 @@ static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Callable is expected to fail but throws an int (INTENTIONAL FAILURE)", [] {
-        expect_fail([]() -> int { throw 1; }).to_be(1);
+        expect_fail([]() -> int { throw 1; }).to_be(1); //NOLINT(hicpp-exception-baseclass)
     });
 });
