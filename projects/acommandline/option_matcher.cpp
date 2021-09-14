@@ -17,30 +17,26 @@ public:
 private:
     [[nodiscard]] static auto extract_long_name(const std::string &argument) -> std::string
     {
-        const std::string optionName = OptionMatcher::do_extract_long_name(argument);
+        std::string optionName = OptionMatcher::do_extract_long_name(argument);
 
         if (::acommandline::is_long_name(optionName))
         {
             return optionName;
         }
-        else
-        {
-            return {};
-        }
+
+        return {};
     }
 
     [[nodiscard]] static auto extract_name(const std::string &argument) -> std::string
     {
-        const std::string optionName = OptionMatcher::extract_short_name(argument);
+        std::string optionName = OptionMatcher::extract_short_name(argument);
 
         if (optionName.empty())
         {
             return OptionMatcher::extract_long_name(argument);
         }
-        else
-        {
-            return optionName;
-        }
+
+        return optionName;
     }
 
     [[nodiscard]] static auto extract_short_name(const std::string &argument) -> std::string
@@ -49,10 +45,8 @@ private:
         {
             return argument.substr(1, 1);
         }
-        else
-        {
-            return {};
-        }
+
+        return {};
     }
 
     [[nodiscard]] static auto do_extract_long_name(const std::string &argument) -> std::string
@@ -62,10 +56,8 @@ private:
             const auto pos = argument.find('=', 3);
             return argument.substr(2, pos - 2);
         }
-        else
-        {
-            return {};
-        }
+
+        return {};
     }
 
     [[nodiscard]] static auto has_long_name(const std::string &argument) noexcept -> bool

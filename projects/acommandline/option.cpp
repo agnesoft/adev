@@ -23,7 +23,7 @@ using BoundValue = std::variant<std::monostate,
                                 std::vector<double> *,
                                 std::vector<std::string> *>;
 
-constexpr static char POSITIONAL_LONG_NAME[] = "[positional]";
+static constexpr const char *const POSITIONAL_LONG_NAME = "[positional]";
 
 //! \private
 struct Option
