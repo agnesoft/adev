@@ -60,7 +60,7 @@ requires(!Stringifiable<T> && Iterable<T>) auto operator<<(std::ostream &stream,
 template<typename T, typename... Values>
 auto stringify_impl(std::stringstream &stream, const T &value, const Values &...values) -> void
 {
-    stream << value;
+    stream << value; //NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
     if constexpr (sizeof...(Values) > 0)
     {

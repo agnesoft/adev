@@ -7,22 +7,22 @@ export import : test_runner;
 export import : expect;
 #else
 // clang-format off
-#include "stringify.cpp"
-#include "failed_assertion.cpp"
-#include "failure.cpp"
-#include "test.cpp"
-#include "test_suite.cpp"
-#include "global_tests.cpp"
-#include "matcher_base.cpp"
-#include "matcher.cpp"
-#include "expect_base.cpp"
-#include "expect_to_match.cpp"
-#include "expect_to_throw.cpp"
-#include "expect.cpp"
-#include "report.cpp"
-#include "reporter.cpp"
-#include "printer.cpp"
-#include "test_runner.cpp"
+#include "stringify.cpp" //NOLINT(bugprone-suspicious-include)
+#include "failed_assertion.cpp" //NOLINT(bugprone-suspicious-include)
+#include "failure.cpp" //NOLINT(bugprone-suspicious-include)
+#include "test.cpp" //NOLINT(bugprone-suspicious-include)
+#include "test_suite.cpp" //NOLINT(bugprone-suspicious-include)
+#include "global_tests.cpp" //NOLINT(bugprone-suspicious-include)
+#include "matcher_base.cpp" //NOLINT(bugprone-suspicious-include)
+#include "matcher.cpp" //NOLINT(bugprone-suspicious-include)
+#include "expect_base.cpp" //NOLINT(bugprone-suspicious-include)
+#include "expect_to_match.cpp" //NOLINT(bugprone-suspicious-include)
+#include "expect_to_throw.cpp" //NOLINT(bugprone-suspicious-include)
+#include "expect.cpp" //NOLINT(bugprone-suspicious-include)
+#include "report.cpp" //NOLINT(bugprone-suspicious-include)
+#include "reporter.cpp" //NOLINT(bugprone-suspicious-include)
+#include "printer.cpp" //NOLINT(bugprone-suspicious-include)
+#include "test_runner.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on
 #endif
 
