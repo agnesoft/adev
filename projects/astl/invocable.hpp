@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace std
+namespace std //NOLINT(cert-dcl58-cpp)
 {
 export template<class F, class... Args>
 concept invocable = requires(F && f, Args &&...args)
@@ -13,8 +13,8 @@ concept invocable = requires(F && f, Args &&...args)
     std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
 };
 
-export template<class _Fn, class... _Args>
-concept regular_invocable = invocable<_Fn, _Args...>;
+export template<class Fn, class... Args>
+concept regular_invocable = invocable<Fn, Args...>;
 }
 
 #endif

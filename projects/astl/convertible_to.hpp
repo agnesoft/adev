@@ -3,12 +3,12 @@
 
 #include <type_traits>
 
-namespace std
+namespace std //NOLINT(cert-dcl58-cpp)
 {
-export template<class _From, class _To>
-concept convertible_to = is_convertible_v<_From, _To> && requires(add_rvalue_reference_t<_From>(&__f)())
+export template<class From, class To>
+concept convertible_to = is_convertible_v<From, To> && requires(add_rvalue_reference_t<From>(&f)())
 {
-    static_cast<_To>(__f());
+    static_cast<To>(f());
 };
 }
 
