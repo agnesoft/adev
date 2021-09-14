@@ -66,10 +66,8 @@ private:
         {
             return testSuites.size() - 1;
         }
-        else
-        {
-            return testSuites.size();
-        }
+
+        return testSuites.size();
     }
 };
 }

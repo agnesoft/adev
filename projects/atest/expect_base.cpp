@@ -70,7 +70,7 @@ protected:
 
         if constexpr (expectationType == ExpectationType::Assertion)
         {
-            throw FailedAssertion{};
+            throw FailedAssertion{}; //NOLINT(hicpp-exception-baseclass)
         }
     }
 

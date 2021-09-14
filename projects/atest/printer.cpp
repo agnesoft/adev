@@ -10,11 +10,11 @@ namespace atest
 //! \private
 struct Color
 {
-    static constexpr char GRAY[] = "\033[1;30m";
-    static constexpr char GREEN[] = "\033[1;32m";
-    static constexpr char RED[] = "\033[1;31m";
-    static constexpr char RESET[] = "\033[0m";
-    static constexpr char YELLOW[] = "\033[1;33m";
+    static constexpr const char *const GRAY = "\033[1;30m";
+    static constexpr const char *const GREEN = "\033[1;32m";
+    static constexpr const char *const RED = "\033[1;31m";
+    static constexpr const char *const RESET = "\033[0m";
+    static constexpr const char *const YELLOW = "\033[1;33m";
 };
 
 //! \private

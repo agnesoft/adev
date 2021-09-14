@@ -14,7 +14,7 @@ export class MatcherBase
 public:
     //! Returns the description of the operation
     //! the matcher performs.
-    [[nodiscard]] auto describe() const -> std::string
+    [[nodiscard]] static auto describe() -> std::string
     {
         return "Values do not match.";
     }
@@ -22,7 +22,7 @@ public:
     //! Returns the expected value. The default
     //! implementation returns stringified `left`.
     template<typename LeftValueT, typename RightValueT>
-    [[nodiscard]] auto expected([[maybe_unused]] const LeftValueT &left, const RightValueT &right) const -> std::string
+    [[nodiscard]] static auto expected([[maybe_unused]] const LeftValueT &left, const RightValueT &right) -> std::string
     {
         return ::atest::stringify(right);
     }
@@ -31,7 +31,7 @@ public:
     //! default implementation returns stringified
     //! `right`.
     template<typename LeftValueT, typename RightValueT>
-    [[nodiscard]] auto actual(const LeftValueT &left, [[maybe_unused]] const RightValueT &right) const -> std::string
+    [[nodiscard]] static auto actual(const LeftValueT &left, [[maybe_unused]] const RightValueT &right) -> std::string
     {
         return ::atest::stringify(left);
     }

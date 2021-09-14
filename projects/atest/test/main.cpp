@@ -1,8 +1,10 @@
 import atest;
 
+using ::atest::test;
+
 auto main(int argc, char *argv[]) -> int
 {
-    ::atest::test("Global test", [] {
+    test("Global test", [] {
     });
 
     constexpr int EXPECTED_FAILURES = 16;
@@ -12,8 +14,6 @@ auto main(int argc, char *argv[]) -> int
     {
         return 0;
     }
-    else
-    {
-        return failures;
-    }
+
+    return failures;
 }

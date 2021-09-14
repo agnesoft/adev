@@ -21,14 +21,14 @@ export class TestRunner
 public:
     //! Constructs the object with `main()`'s
     //! arguments.
-    TestRunner(int argc, char *argv[]) :
+    TestRunner(int argc, char **argv) :
         TestRunner(argc, argv, std::cout)
     {
     }
 
     //! Constructs the object with `main()`'s
     //! arguments and `stream`.
-    TestRunner(int argc, char *argv[], std::ostream &stream) :
+    TestRunner(int argc, char **argv, std::ostream &stream) :
         printer{stream},
         argc{argc},
         argv{argv}
