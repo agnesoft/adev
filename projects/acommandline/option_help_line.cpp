@@ -122,10 +122,8 @@ private:
         {
             return '[' + OptionHelpLine::bound_value_as_string(option) + '=' + OptionHelpLine::default_value_as_string(option) + ']';
         }
-        else
-        {
-            return '[' + OptionHelpLine::bound_value_as_string(option) + ']';
-        }
+
+        return '[' + OptionHelpLine::bound_value_as_string(option) + ']';
     }
 
     [[nodiscard]] static auto name(const Option &option) -> std::string

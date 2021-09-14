@@ -14,7 +14,7 @@ public:
     {
     }
 
-    auto print_help(const std::string appName, const std::vector<Option> &options) -> void
+    auto print_help(const std::string &appName, const std::vector<Option> &options) -> void
     {
         this->print_help_header(appName);
         this->print_options(Printer::option_help_lines(options));
@@ -31,7 +31,7 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto count_name_width(const std::vector<OptionHelpLine> &helpLines) -> std::size_t
+    [[nodiscard]] static auto count_name_width(const std::vector<OptionHelpLine> &helpLines) -> int
     {
         constexpr std::size_t minimumWidth = 10;
         std::size_t width = minimumWidth;
@@ -44,10 +44,10 @@ private:
             }
         }
 
-        return width;
+        return static_cast<int>(width);
     }
 
-    [[nodiscard]] static auto count_attributes_width(const std::vector<OptionHelpLine> &helpLines) -> std::size_t
+    [[nodiscard]] static auto count_attributes_width(const std::vector<OptionHelpLine> &helpLines) -> int
     {
         constexpr std::size_t minimumWidth = 10;
         std::size_t width = minimumWidth;
@@ -60,12 +60,13 @@ private:
             }
         }
 
-        return width;
+        return static_cast<int>(width);
     }
 
     [[nodiscard]] static auto option_help_lines(const std::vector<Option> &options) -> std::vector<OptionHelpLine>
     {
         std::vector<OptionHelpLine> helpLines;
+        helpLines.reserve(options.size());
 
         for (const Option &option : options)
         {
@@ -90,20 +91,20 @@ private:
         this->stream << "Options:" << '\n';
     }
 
-    auto print_help_option(std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_help_option(int nameWidth, int attributesWidth) -> void
     {
         this->stream << "    " << std::left << std::setw(nameWidth) << "-?" << std::setw(attributesWidth) << "[switch]"
                      << "Prints this help.\n";
     }
 
-    auto print_option(const OptionHelpLine &line, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_option(const OptionHelpLine &line, int nameWidth, int attributesWidth) -> void
     {
         this->stream << "    ";
         this->stream << std::left << std::setw(nameWidth) << line.name();
         this->stream << std::setw(attributesWidth) << line.attributes() << line.option().description << '\n';
     }
 
-    auto print_optional(const std::vector<OptionHelpLine> &helpLines, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_optional(const std::vector<OptionHelpLine> &helpLines, int nameWidth, int attributesWidth) -> void
     {
         this->stream << "  Optional:\n";
 
@@ -118,15 +119,15 @@ private:
 
     auto print_options(const std::vector<OptionHelpLine> &helpLines) -> void
     {
-        const std::size_t nameWidth = Printer::count_name_width(helpLines) + 5;
-        const std::size_t attributesWidth = Printer::count_attributes_width(helpLines) + 5;
+        const int nameWidth = Printer::count_name_width(helpLines) + 5;
+        const int attributesWidth = Printer::count_attributes_width(helpLines) + 5;
         this->print_help_option(nameWidth, attributesWidth);
         this->print_required(helpLines, nameWidth, attributesWidth);
         this->print_optional(helpLines, nameWidth, attributesWidth);
         this->print_positional(helpLines, nameWidth, attributesWidth);
     }
 
-    auto print_positional(const std::vector<OptionHelpLine> &helpLines, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_positional(const std::vector<OptionHelpLine> &helpLines, int nameWidth, int attributesWidth) -> void
     {
         this->stream << "  Positional:\n";
 
@@ -139,7 +140,7 @@ private:
         }
     }
 
-    auto print_required(const std::vector<OptionHelpLine> &helpLines, std::size_t nameWidth, std::size_t attributesWidth) -> void
+    auto print_required(const std::vector<OptionHelpLine> &helpLines, int nameWidth, int attributesWidth) -> void
     {
         this->stream << "  Required:\n";
 

@@ -34,10 +34,8 @@ public:
             ++(*argument);
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
 private:
@@ -57,25 +55,21 @@ private:
         {
             return argument.substr(pos + 1);
         }
-        else
-        {
-            return {};
-        }
+
+        return {};
     }
 
     [[nodiscard]] static auto extract_value(const Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> std::string
     {
-        const std::string value = OptionSetter::extract_value(option, **argument);
+        std::string value = OptionSetter::extract_value(option, **argument);
 
         if (!OptionSetter::has_value(option, value))
         {
             OptionSetter::advance_argument_iterator(option, argument, end);
             return **argument;
         }
-        else
-        {
-            return value;
-        }
+
+        return value;
     }
 
     [[nodiscard]] static auto extract_value(const Option &option, const std::string &argument) -> std::string
@@ -84,10 +78,8 @@ private:
         {
             return argument;
         }
-        else
-        {
-            return OptionSetter::extract_named_value(argument);
-        }
+
+        return OptionSetter::extract_named_value(argument);
     }
 
     static auto handle_set_option_failure(const Option &option, [[maybe_unused]] const std::exception &error, const std::string &value) -> void

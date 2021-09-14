@@ -22,7 +22,7 @@ public:
     //! be compatible with it.
     auto bind_to(BoundValue value) -> void
     {
-        this->bind(std::move(value));
+        this->bind(value);
     }
 
 private:
@@ -49,7 +49,7 @@ private:
         };
 
         std::visit(validator, value);
-        this->option().boundValue = std::move(value);
+        this->option().boundValue = value;
     }
 };
 }
