@@ -50,8 +50,3 @@ hicpp-signed-bitwise,
 '
 WarningsAsErrors: true
 FormatStyle: file
-CheckOptions:
-      - key: bugprone-suspicious-include.HeaderFileExtensions
-        value: 'cpp'
-      - key: bugprone-suspicious-include.ImplementationFileExtensions
-        value: ''
