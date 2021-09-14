@@ -4,7 +4,8 @@ PARAM=$2
 function printHelp () {
     help="Usage: ./adev.sh [ACTION] [PARAMS]
 
-./adev.sh analyse                        Run static analysis with clang-tidy.
+./adev.sh analyse                        Run static analysis on all projects with clang-tidy.
+./adev.sh analyse <project>              Run static analysis on <project> with clang-tidy.
 ./adev.sh build                          Build all projects with the default toolchain.
 ./adev.sh build <toolchain>              Build all projects with <toolchain>.
 ./adev.sh build <project>                Build <project>.
@@ -26,7 +27,7 @@ Toolchains:
 }
 
 if test "$ACTION" == "analyse"; then
-    sh/clang_tidy.sh
+    sh/clang_tidy.sh $PARAM
 elif test "$ACTION" == "build"; then
     sh/build.sh $PARAM $3
 elif test "$ACTION" == "format"; then

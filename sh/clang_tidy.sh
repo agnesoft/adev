@@ -14,5 +14,9 @@ function analyse_project () {
     done
 }
 
-analyse_project acommandline
-analyse_project atest
+if test "$1" == ""; then
+    analyse_project acommandline
+    analyse_project atest
+else
+    analyse_project $1
+fi
