@@ -15,5 +15,4 @@ function analyse_project () {
 }
 
 analyse_project acommandline
-analyse_project astl
 analyse_project atest
