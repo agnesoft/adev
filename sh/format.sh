@@ -1,4 +1,4 @@
-source ./sh/common.sh
+source "sh/common.sh"
 
 action=$1
 clangFormat=

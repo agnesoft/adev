@@ -1,80 +1,41 @@
-source ./sh/common.sh
+source "sh/common.sh"
 
-ACTION=
-PROJECT=
-PROJECT_NAME_FROM_SCRIPT_PATTERN=".*build_(.*)\.sh"
-TOOLCHAIN=
+readonly PROJECT_NAME_FROM_SCRIPT_PATTERN=".*build_(.*)\.sh"
 
-function detectProjects () {
-    PROJECTS_SCRIPTS=$(find . -name "build_*.sh" -type f)
-}
+action=
+project=
+toolchain=
 
-function detectDoxygen () {
-    if is_available "doxygen"; then
-        DOXYGEN="doxygen"
-    elif is_windows && test -f "C:/Program Files/doxygen/bin/doxygen.exe"; then
-        DOXYGEN="C:/Program Files/doxygen/bin/doxygen.exe"
-    else
-        print_error "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install doxygen'."
-        exit 1
-    fi
-
-    echo "Doxygen $("$DOXYGEN" --version)"
-}
-
-function listProjects () {
-    detectProjects
-
-    for SCRIPT in $PROJECTS_SCRIPTS
-    do
-        if [[ $SCRIPT =~ $PROJECT_NAME_FROM_SCRIPT_PATTERN ]]
-        then
+function list_projects() {
+    for script in sh/build_*.sh; do
+        if [[ "${script}" =~ sh/build_(.*)\.sh ]]; then
             echo "  ${BASH_REMATCH[1]}"
         fi
     done
 }
 
-function buildDocs () {
-    detectDoxygen
-    echo "Generating documentation..."
-    mkdir -p "build/"
-    "$DOXYGEN" adev.doxyfile
-    if test $? -ne 0; then
-        print_error "ERROR: Building documentation failed."
-        exit 1
-    else
-        print_ok "Documentation OK"
-    fi
-}
-
-function buildAll () {
-    echo "Projects: all"
-    echo "Toolchain: $TOOLCHAIN"
+function build_all () {
+    echo "Toolchain: $toolchain"
     echo ""
 
-    detectProjects
-
-    for SCRIPT in $PROJECTS_SCRIPTS
-    do
-        if [[ $SCRIPT =~ $PROJECT_NAME_FROM_SCRIPT_PATTERN ]]
-        then
-            runBuildScript $SCRIPT ${BASH_REMATCH[1]}
+    for script in sh/build_*.sh; do
+        if [[ "${script}" =~ sh/build_(.*)\.sh ]]; then
+            run_build_script $script ${BASH_REMATCH[1]}
         fi
     done
 }
 
-function buildProject () {
-    echo "Projects: $PROJECT"
-    echo "Toolchain: $TOOLCHAIN"
+function build_project () {
+    echo "Toolchain: $toolchain"
     echo ""
 
-    local BUILD_SH="./sh/build_$PROJECT.sh"
+    local buildScript="sh/build_$project.sh"
 
-    if test -f "$BUILD_SH"; then
-        runBuildScript $BUILD_SH $PROJECT
+    if [[ -f "${buildScript}" ]]; then
+        run_build_script $buildScript $project
     else
         echo ""
-        print_error "ERROR: Project '$PROJECT' does not exist."
+        print_error "ERROR: Project '$project' does not exist."
         echo "
 Available projects:"
         listProjects
@@ -82,67 +43,71 @@ Available projects:"
     fi
 }
 
-function removeDoneFiles () {
-    if test -d "build/$TOOLCHAIN/"; then
-        find build/$TOOLCHAIN/ -name "*.done" -type f -delete
+function remove_done_files () {
+    if [[ -d "build/$toolchain/" ]]; then
+        find build/$toolchain/ -name "*.done" -type f -delete
     fi
 }
 
-function runBuildScript () {
-    eval "$1 $TOOLCHAIN"
-    STATUS=$?
+function run_build_script () {
+    local buildScript="${1}"
+    local project="${2}"
+    local status=0
 
-    if test $STATUS -ne 0; then
-        print_error "ERROR: Building project '$2' ($1) failed: $STATUS"
+    "$buildScript $toolchain"
+    status=$?
+
+    if (( $status != 0 )); then
+        print_error "ERROR: Building project '${project}' (${project}) failed: ${status}"
         exit 1
     fi
 }
 
-function setProperties () {
-    if test "$1" == "list"; then
-        ACTION="list"
-    elif test "$1" == "docs"; then
-        ACTION="docs"
-    elif test "$1" == "clang" || test "$1" == "msvc" || test "$1" == "gcc" || test "$1" == ""; then
-        ACTION="buildAll"
-        TOOLCHAIN=$1
-    elif test "$2" == "clang" || test "$2" == "msvc" || test "$2" == "gcc" || test "$2" == ""; then
-        ACTION="buildProject"
-        PROJECT=$1
-        TOOLCHAIN=$2
+function set_properties () {
+    if [[ "${1}" == "list" ]]; then
+        action="list"
+    elif [[ "${1}" == "docs" ]]; then
+        action="docs"
+    elif [[ "${1}" == "clang" ]] || [[ "${1}" == "msvc" ]] || [[ "${1}" == "gcc" ]] || [[ "${1}" == "" ]]; then
+        action="buildAll"
+        toolchain=$1
+    elif [[ "${2}" == "clang" ]] || [[ "${2}" == "msvc" ]] || [[ "${2}" == "gcc" ]] || [[ "${2}" == "" ]]; then
+        action="buildProject"
+        project=$1
+        toolchain=$2
     fi
 
-    if test "$TOOLCHAIN" == ""; then
+    if [[ "${toolchain}" == "" ]]; then
         if is_windows; then
-            TOOLCHAIN="msvc"
+            toolchain="msvc"
         else
-            TOOLCHAIN="gcc"
+            toolchain="gcc"
         fi
     fi
 
-    if ! is_windows && test "$TOOLCHAIN" == "msvc"; then
+    if ! is_windows && [[ "${toolchain}" == "msvc" ]]; then
         print_error "ERROR: toolchain 'msvc' is only available on Windows"
         exit 1
     fi
 
-    if ! is_linux && test "$TOOLCHAIN" == "gcc"; then
+    if ! is_linux && [[ "$toolchain" == "gcc" ]]; then
         print_error "ERROR: toolchain 'gcc' is only available on Linux"
         exit 1
     fi
 }
 
-setProperties $1 $2
-removeDoneFiles
+set_properties $1 $2
+remove_done_files
 
-if test "$ACTION" == "list"; then
-    listProjects
-elif test "$ACTION" == "docs"; then
-    buildDocs
-elif test "$ACTION" == "buildAll"; then
-    buildAll
-elif test "$ACTION" == "buildProject"; then
-    buildProject
+if test "$action" == "list"; then
+    list_projects
+elif test "$action" == "docs"; then
+    sh/docs.sh
+elif test "$action" == "buildAll"; then
+    build_all
+elif test "$action" == "buildProject"; then
+    build_project
 else
-    print_error "ERROR: unknown action '$ACTION'"
+    print_error "ERROR: unknown action '${action}'"
     exit 1
 fi

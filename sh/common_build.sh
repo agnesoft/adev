@@ -1,117 +1,130 @@
-source ./sh/common.sh
+source "sh/common.sh"
 
-STATUS=0
-TOOLCHAIN=$1
-BUILD_ROOT="build/$TOOLCHAIN"
-BIN_DIR="$BUILD_ROOT/bin"
+status=0
+toolchain=$1
+buildRoot="build/${toolchain}"
+binDir="${buildRoot}/bin"
 
 if is_windows; then
-    EXECUTABLE_SUFFIX=".exe"
-    CLANG="clang++"
+    executableSuffix=".exe"
+    clang="clang++"
 else
-    CLANG="clang++-12"
-    GCC="g++-11"
+    clang="clang++-12"
+    gcc="g++-11"
 fi
 
-CLANG_COMPILER_FLAGS="-std=c++20 \
-                      -Wall \
-                      -Wextra \
-                      -Werror \
-                      -pedantic \
-                      -Wno-missing-field-initializers \
-                      -fmodules \
-                      -fimplicit-module-maps \
-                      -stdlib=libc++ \
-                      -fprebuilt-module-path=\"$BUILD_ROOT/astl\" \
-                      -fmodule-map-file=projects/astl/module.modulemap"
-
-CLANG_COMPILER_LINKER_FLAGS="$CLANG_COMPILER_FLAGS \
-                             -lpthread"
-
-GCC_COMPILER_FLAGS="-std=c++20 \
+clangCompilerFlags="-std=c++20 \
                     -Wall \
+                    -Wextra \
                     -Werror \
-                    -pedantic-errors \
-                    -fmodules-ts"
+                    -pedantic \
+                    -Wno-missing-field-initializers \
+                    -fmodules \
+                    -fimplicit-module-maps \
+                    -stdlib=libc++ \
+                    -fprebuilt-module-path=\"${buildRoot}/astl\" \
+                    -fmodule-map-file=projects/astl/module.modulemap"
 
-MSVC_COMPILER_FLAGS="/nologo ^
-                     /std:c++latest ^
-                     /EHsc ^
-                     /O2 ^
-                     /W4 ^
-                     /WX ^
-                     /ifcSearchDir \"$BUILD_ROOT/astl\" ^
-                     /headerUnit \"projects/astl/astl.hpp=$BUILD_ROOT/astl/astl.hpp.ifc\""
+clangCompilerLinkerFlags="${clangCompilerFlags} \
+                          -lpthread"
 
-function build () {
-    if test -f "$BUILD_ROOT/$1.done"; then
-        exit $STATUS
+gccCompilerFlags="-std=c++20 \
+                  -Wall \
+                  -Werror \
+                  -pedantic-errors \
+                  -fmodules-ts"
+
+msvcCompilerFlags="/nologo ^
+                   /std:c++latest ^
+                   /EHsc ^
+                   /O2 ^
+                   /W4 ^
+                   /WX ^
+                   /ifcSearchDir \"${buildRoot}/astl\" ^
+                   /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\""
+
+function build() {
+    if [[ "${buildRoot}/${project}.done" ]]; then
+        exit $status
     fi
     
-    echo "*** $1 ***"
+    echo "*** ${project} ***"
 
-    if test "$TOOLCHAIN" == "msvc"; then
-        buildMSVC "$MSVC_BUILD"
-    elif test "$TOOLCHAIN" == "clang"; then
-        buildClang "$CLANG_BUILD"
-    elif test "$TOOLCHAIN" == "gcc"; then
-        buildGCC "$GCC_BUILD"
+    if [[ "${toolchain}" == "clang" ]]; then
+        build_clang "${clangBuild}"
+    elif [[ "${toolchain}" == "gcc" ]]; then
+        build_gcc "${gccBuild}"
+    elif [[ "${toolchain}" == "msvc" ]]; then
+        build_msvc "${msvcBuild}"
     else
-        printError "ERROR: Unknown toolchain '$TOOLCHAIN'"
-        $STATUS=1
+        print_error "ERROR: Unknown toolchain '${toolchain}'"
+        status=1
     fi
 
-    if test $STATUS == 0; then
-        touch "$BUILD_ROOT/$1.done"
+    if (( $status == 0 )); then
+        touch "${buildRoot}/${project}.done"
     fi
 
-    exit $STATUS
+    exit $status
 }
 
-function buildClang () {
-    local BUILD_SCRIPT="mkdir -p \"$BIN_DIR\"
+function build_clang() {
+    local buildScript="
+mkdir -p \"${binDir}\"
+mkdir -p \"${buildDir}\"
 $1"
-    eval "$BUILD_SCRIPT"
-    STATUS=$?
+
+    "${buildScript}"
+    status=$?
 }
 
-function buildGCC () {
-    local BUILD_SCRIPT="mkdir -p \"$BIN_DIR\"
+function build_gcc() {
+    local buildScript="
+mkdir -p \"${binDir}\"
+mkdir -p \"${buildDir}\"
 $1"
-    eval "$BUILD_SCRIPT"
-    STATUS=$?
+
+    "${buildScript}"
+    status=$?
 }
 
-function buildMSVC () {
-    detectMSVCEnvScript
-    local BUILD_SCRIPT="@echo off
-call \"${MSVC_ENV_SCRIPT}\" >nul
-if not exist \"$BIN_DIR\" mkdir \"$BIN_DIR\" >nul
+function build_msvc() {
+    detect_msvc_env_script
+
+    local buildScript="
+@echo off
+call \"${msvcEnvScript}\" >nul
+if not exist \"${binDir}\" mkdir \"${binDir}\" >nul
+if not exist \"${buildDir}\" mkdir \"${buildDir}\" >nul
 $1"
-    echo "$BUILD_SCRIPT" > build.bat
+
+    echo "${buildScript}" > build.bat
     cmd //c build.bat
-    STATUS=$?
+    status=$?
     rm build.bat
 }
 
-function detectMSVCEnvScript () {
-    if ! test "$MSVC_ENV_SCRIPT"; then
-        MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-        if test -f "$MSVC_ENV_SCRIPT"; then
+function detect_msvc_env_script() {
+    if ! [[ "${msvcEnvScript}" == "" ]]; then
+        msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        
+        if [[ -f "${msvcEnvScript}" ]]; then
             return
         fi
         
-        MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
-        if test -f "$MSVC_ENV_SCRIPT"; then
+        msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
+        
+        if [[ -f "${msvcEnvScript}" ]]; then
             return
         fi
 
-        MSVC_ENV_SCRIPT="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
-        if test -f "$MSVC_ENV_SCRIPT"; then
+        msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
+        
+        if [[ -f "${msvcEnvScript}" ]]; then
             return
         fi
 
-        printError "ERROR: Visual Studio environment script not found."
+        print_error "ERROR: Visual Studio environment script not found."
         exit 1
     fi
 }

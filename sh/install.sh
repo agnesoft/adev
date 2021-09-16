@@ -1,4 +1,4 @@
-source ./sh/common.sh
+source "sh/common.sh"
 
 package=$1
 
@@ -13,7 +13,7 @@ function list_packages() {
 }
 
 function install_package() {
-    local installScript="./sh/install_${package}.sh"
+    local installScript="sh/install_${package}.sh"
 
     if [[ -f "$installScript" ]]; then
         echo "Installing package '$package'..."

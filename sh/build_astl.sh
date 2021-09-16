@@ -1,62 +1,57 @@
 source "sh/common_build.sh" $1
 
-PROJECT_DIR="projects/astl"
-BUILD_DIR="$BUILD_ROOT/astl"
+project="astl"
+projectDir="projects/$project"
+buildDir="$BUILD_ROOT/$project"
 
-CLANG_BUILD="
-mkdir -p \"$BUILD_DIR\"
-
-$CLANG $CLANG_COMPILER_FLAGS \
+clangBuild="
+$clang $clangCompilerFlags \
        -Xclang -emit-module-interface \
-       -o \"$BUILD_DIR/astl.pcm\" \
-       -c \"$PROJECT_DIR/astl.cpp\"
+       -o \"$buildDir/astl.pcm\" \
+       -c \"$projectDir/astl.cpp\"
 
-$CLANG $CLANG_COMPILER_FLAGS \
-       -o \"$BUILD_DIR/astl.obj\" \
-       -c \"$PROJECT_DIR/astl.cpp\"
+$clang $clangCompilerFlags \
+       -o \"$buildDir/astl.obj\" \
+       -c \"$projectDir/astl.cpp\"
 
-ar r \"$BUILD_DIR/astl.lib\" \
-     \"$BUILD_DIR/astl.obj\"
+ar r \"$buildDir/astl.lib\" \
+     \"$buildDir/astl.obj\"
 "
 
-GCC_BUILD="
-mkdir -p \"$BUILD_DIR\"
-
-$GCC $GCC_COMPILER_FLAGS \
+gccBuild="
+$gcc $gccCompilerFlags \
      -x c++-header \
-     \"$PROJECT_DIR/astl.hpp\"
+     \"$projectDir/astl.hpp\"
 
-$GCC $GCC_COMPILER_FLAGS \
-     -o \"$BUILD_DIR/astl.obj\" \
-     -c \"$PROJECT_DIR/astl.cpp\"
+$gcc $gccCompilerFlags \
+     -o \"$buildDir/astl.obj\" \
+     -c \"$projectDir/astl.cpp\"
 
-ar r \"$BUILD_DIR/astl.lib\" \
-     \"$BUILD_DIR/astl.obj\"
+ar r \"$buildDir/astl.lib\" \
+     \"$buildDir/astl.obj\"
 "
 
-MSVC_BUILD="
-if not exist \"$BUILD_DIR\" mkdir \"$BUILD_DIR\" >nul
-
-cl.exe $MSVC_COMPILER_FLAGS ^
+msvcBuild="
+cl.exe $msvcCompilerFlags ^
        /exportHeader ^
-       /ifcOutput \"$BUILD_DIR/astl.hpp.ifc\" ^
-       /Fo\"$BUILD_DIR/astl.hpp.obj\" ^
+       /ifcOutput \"$buildDir/astl.hpp.ifc\" ^
+       /Fo\"$buildDir/astl.hpp.obj\" ^
        /c ^
        /TP ^
-       \"$PROJECT_DIR/astl.hpp\"
+       \"$projectDir/astl.hpp\"
 
-cl.exe $MSVC_COMPILER_FLAGS ^
+cl.exe $msvcCompilerFlags ^
        /interface ^
-       /ifcOutput \"$BUILD_DIR/astl.ifc\" ^
-       /Fo\"$BUILD_DIR/astl.obj\" ^
+       /ifcOutput \"$buildDir/astl.ifc\" ^
+       /Fo\"$buildDir/astl.obj\" ^
        /c ^
        /TP ^
-       \"$PROJECT_DIR/astl.cpp\"
+       \"$projectDir/astl.cpp\"
 
 lib.exe /NOLOGO ^
-        /OUT:\"$BUILD_DIR/astl.lib\" ^
-        \"$BUILD_DIR/astl.hpp.obj\" ^
-        \"$BUILD_DIR/astl.obj\"
+        /OUT:\"$buildDir/astl.lib\" ^
+        \"$buildDir/astl.hpp.obj\" ^
+        \"$buildDir/astl.obj\"
 "
 
-build "astl"
+build
