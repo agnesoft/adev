@@ -53,9 +53,11 @@ function build() {
     mkdir -p "${buildDir}"
 
     if [[ "${toolchain}" == "clang" ]]; then
+        set -e
         build_clang
         status=$?
     elif [[ "${toolchain}" == "gcc" ]]; then
+        set -e
         build_gcc
         status=$?
     elif [[ "${toolchain}" == "msvc" ]]; then
