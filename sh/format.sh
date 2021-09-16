@@ -23,10 +23,10 @@ function check_source_formatting() {
     local replacements=$($clangFormat -output-replacements-xml $source | grep "<replacement ")
 
     if [[ "${replacements}" != "" ]]; then
-        print_error "[ ERROR ] $source"
+        print_error "[ FAILED ] $source"
         modified=$(( $modified + 1 ))
     else
-        print_ok "[ OK ] $source"
+        print_ok "[ PASSED ] $source"
     fi
 }
 
@@ -36,10 +36,10 @@ function check_formatting() {
     done
 
     if (( $modified != 0 )); then
-        print_error "ERROR: incorrectly formatted files"
+        print_error "Formatting checks FAILED"
         print_error "Run './adev.sh format' and commit the result"
     else
-        print_ok "Formatting OK"
+        print_ok "Formatting checks PASSED"
     fi
 
     exit $modified

@@ -42,7 +42,8 @@ function run_test() {
     local i=0
 
     for (( i=0; i < $times; i++ )); do
-        local log=$($test)
+        local log
+        log=$($test)
 
         if (( $? != 0 )); then
             result=1
@@ -53,9 +54,9 @@ function run_test() {
     done
 
     if (( $failures != 0 )); then
-        print_error "[ ERROR ] ${test} ($failures failed)"
+        print_error "[ FAILED ] ${test} (${failures} of ${times} runs failed)"
     else
-        print_ok "[ OK ] ${test} (${times} passed)"
+        print_ok "[ PASSED ] ${test} (${times} of ${times} runs passed)"
     fi
 
     result=$(( $result + $failures ))
@@ -72,9 +73,9 @@ function run_tests() {
     fi
 
     if (( $result != 0 )); then
-        print_error "ERROR: test run failed (see above for errors)"
+        print_error "Tests FAILED"
     else
-        print_ok "All tests passed."
+        print_ok "All tests PASSED"
     fi
 }
 

@@ -10,12 +10,12 @@ function detectProjects () {
 }
 
 function detectDoxygen () {
-    if isAvailable "doxygen"; then
+    if is_available "doxygen"; then
         DOXYGEN="doxygen"
-    elif isWindows && test -f "C:/Program Files/doxygen/bin/doxygen.exe"; then
+    elif is_windows && test -f "C:/Program Files/doxygen/bin/doxygen.exe"; then
         DOXYGEN="C:/Program Files/doxygen/bin/doxygen.exe"
     else
-        printError "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install doxygen'."
+        print_error "ERROR: 'doxygen' is not available. Try installing it with './adev.sh install doxygen'."
         exit 1
     fi
 
@@ -40,10 +40,10 @@ function buildDocs () {
     mkdir -p "build/"
     "$DOXYGEN" adev.doxyfile
     if test $? -ne 0; then
-        printError "ERROR: Building documentation failed."
+        print_error "ERROR: Building documentation failed."
         exit 1
     else
-        printOK "Documentation OK"
+        print_ok "Documentation OK"
     fi
 }
 
@@ -74,7 +74,7 @@ function buildProject () {
         runBuildScript $BUILD_SH $PROJECT
     else
         echo ""
-        printError "ERROR: Project '$PROJECT' does not exist."
+        print_error "ERROR: Project '$PROJECT' does not exist."
         echo "
 Available projects:"
         listProjects
@@ -93,7 +93,7 @@ function runBuildScript () {
     STATUS=$?
 
     if test $STATUS -ne 0; then
-        printError "ERROR: Building project '$2' ($1) failed: $STATUS"
+        print_error "ERROR: Building project '$2' ($1) failed: $STATUS"
         exit 1
     fi
 }
@@ -113,20 +113,20 @@ function setProperties () {
     fi
 
     if test "$TOOLCHAIN" == ""; then
-        if isWindows; then
+        if is_windows; then
             TOOLCHAIN="msvc"
         else
             TOOLCHAIN="gcc"
         fi
     fi
 
-    if ! isWindows && test "$TOOLCHAIN" == "msvc"; then
-        printError "ERROR: toolchain 'msvc' is only available on Windows"
+    if ! is_windows && test "$TOOLCHAIN" == "msvc"; then
+        print_error "ERROR: toolchain 'msvc' is only available on Windows"
         exit 1
     fi
 
-    if ! isLinux && test "$TOOLCHAIN" == "gcc"; then
-        printError "ERROR: toolchain 'gcc' is only available on Linux"
+    if ! is_linux && test "$TOOLCHAIN" == "gcc"; then
+        print_error "ERROR: toolchain 'gcc' is only available on Linux"
         exit 1
     fi
 }
@@ -143,6 +143,6 @@ elif test "$ACTION" == "buildAll"; then
 elif test "$ACTION" == "buildProject"; then
     buildProject
 else
-    printError "ERROR: unknown action '$ACTION'"
+    print_error "ERROR: unknown action '$ACTION'"
     exit 1
 fi

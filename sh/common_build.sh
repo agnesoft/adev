@@ -5,7 +5,7 @@ TOOLCHAIN=$1
 BUILD_ROOT="build/$TOOLCHAIN"
 BIN_DIR="$BUILD_ROOT/bin"
 
-if isWindows; then
+if is_windows; then
     EXECUTABLE_SUFFIX=".exe"
     CLANG="clang++"
 else
