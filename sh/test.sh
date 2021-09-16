@@ -1,68 +1,77 @@
 source ./sh/common.sh
 
-TOOLCHAIN=$1
+toolchain=
+times=
+extension=
+result=0
 
-function setProperties () {
-    if test "$TOOLCHAIN" == ""; then
-        if isWindows; then
-            TOOLCHAIN="msvc"
+function set_properties() {
+    if [[ "$1" == "clang" ]]; then
+        toolchain="clang"
+        times=$2
+    elif [[ "$1" == "gcc" ]]; then
+        toolchain="gcc"
+        times=$2
+    elif [[ "$1" == "msvc" ]]; then
+        toolchain="msvc"
+        times=$2
+    elif [[ "$1" == "" ]]; then
+        if is_windows; then
+            toolchain="msvc"
+        elif is_linux; then
+            toolchain="gcc"
         else
-            TOOLCHAIN="gcc"
+            toolchain="clang"
         fi
+
+        times=1
     fi
 
-    if ! isWindows && test "$TOOLCHAIN" == "msvc"; then
-        printError "ERROR: toolchain 'msvc' is only available on Windows"
-        exit 1
+    if [[ "$times" == "" ]]; then
+        times=1
     fi
 
-    if ! isLinux && test "$TOOLCHAIN" == "gcc"; then
-        printError "ERROR: toolchain 'gcc' is only available on Linux"
-        exit 1
+    if is_windows; then
+        extension=".exe"
     fi
 }
 
-function run_tests () {
-    echo "Running tests $1 times..."
-
-    local TESTS=$(find build/$TOOLCHAIN/bin -name "*_test" -o -name "*_test.exe" -type f)
-    local TEST_REPEAT=$1
-    local TEST_RUN_RESULT=0
-    local TEST_OK=0
+function run_test() {
+    local test=$1
+    local failures=0
     local i=0
-    local RETURN=0
 
-    for test in $TESTS;
-    do
-        TEST_OK=0
-        i=0
+    for (( i=0; i < $times; i++ )); do
+        local log=$($test)
 
-        while test "$i" -lt "$TEST_REPEAT";
-        do
-            i=$(($i + 1))
-            LOG=$($test)
-            RETURN=$?
-
-            if test $RETURN -ne 0; then
-                echo ""
-                echo ""
-                printError "ERROR: $test failed on run $i:"
-                echo "$LOG"
-                TEST_RUN_RESULT=1
-                TEST_OK=$(($TEST_OK + 1))
-                continue;
-            fi
-        done
-
-        if test $TEST_OK -ne 0; then
-            printError "ERROR: $test failed $TEST_OK times out of $TEST_REPEAT (see above for errors)"
-        else
-            printOK "$test OK"
+        if (( $? != 0 )); then
+            result=1
+            failures=$(( $failures + 1 ))
+            echo "${log}"
+            print_error "ERROR: ${test} failed on run ${i}:"
         fi
     done
 
-    exit $TEST_RUN_RESULT
+    if (( $failures != 0 )); then
+        print_error "[ ERROR ] ${test} ($failures failed)"
+    else
+        print_ok "[ OK ] ${test} (${times} passed)"
+    fi
+
+    result=$(( $result + $failures ))
 }
 
-setProperties
-run_tests 100
+function run_tests() {
+    local testDir="build/$toolchain/bin/"
+    echo "Running tests from '${testDir}'..."
+
+    if [[ -d "build/$toolchain/bin/" ]]; then
+        for test in build/$toolchain/bin/*_test$extnsion; do
+            run_test $test
+        done
+    fi
+}
+
+set_properties $1 $2
+run_tests
+exit $result
