@@ -26,5 +26,5 @@ function build_docs () {
     fi
 }
 
-detectDoxygen
+detect_doxygen
 build_docs
