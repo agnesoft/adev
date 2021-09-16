@@ -7,54 +7,8 @@
     -   [Issue Titles, Branch Names, Pull Request Titles & Commit Messages](#issue-titles-branch-names-pull-request-titles--merge-commit-messages)
     -   [Project Structure](#project-structure)
     -   [Project Readme](#project-readme)
+-   [Bash](#bash)
 -   [C++](#c)
-    -   [Aliases](#aliases)
-    -   [auto](#auto)
-    -   [Casts](#casts)
-    -   [Classes](#classes)
-    -   [Comments](#comments)
-    -   [const](#const)
-    -   [consteval](#consteval)
-    -   [constexpr](#constexpr)
-    -   [Documentation](#documentation)
-    -   [Enumerations](#enumerations)
-    -   [Exceptions](#exceptions)
-    -   [Formatting](#formatting)
-    -   [friend](#friend)
-    -   [Functions](#functions)
-    -   [Global Variables](#global-variables)
-    -   [Headers](#headers)
-    -   [Imports](#imports)
-    -   [Includes](#includes)
-    -   [Initialization](#initialization)
-    -   [inline](#inline)
-    -   [Integer Types](#integer-types)
-    -   [Lambdas](#lambdas)
-    -   [Language Extensions](#language-extensions)
-    -   [Literals](#literals)
-    -   [Local Variables](#local-variables)
-    -   [Member Variables](#member-variables)
-    -   [Memory Management](#memory-management)
-    -   [Modules](#modules)
-    -   [Multithreading](#multithreading)
-    -   [Namespaces](#namespaces)
-    -   [Naming](#naming)
-    -   [noexcept](#noexcept)
-    -   [nullptr](#nullptr)
-    -   [Preincrement vs Postincrement](#preincrement-vs-postincrement)
-    -   [Preprocessor](#preprocessor)
-    -   [References & Pointers](#references--pointers)
-    -   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
-    -   [Scoping](#scoping)
-    -   [sizeof](#sizeof)
-    -   [Sources](#sources)
-    -   [Static Variables](#static-variables)
-    -   [Structs](#structs)
-    -   [Templates & Concepts](#templates--concepts)
-    -   [Ternary](#ternary)
-    -   [this](#this)
-    -   [Version](#version)
-    -   [virtual](#virtual)
 
 ## General Rules
 
@@ -139,7 +93,140 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 
 ---
 
+## Bash
+
+-   [Array](#arrays)
+-   [Functions](#functions)
+-   [Block Statements](#block-statements)
+-   [Columns](#columns)
+-   [Comments](#comments)
+-   [Conditions](#conditions)
+-   [Command Substitution](#command-substitution)
+-   [Files](#files)
+-   [Indentation](#indentation)
+-   [Listing Files](#listing-files)
+-   [Quoting](#quoting)
+-   [Variables](#variables)
+
+### Arrays
+
+-   use `(...)` to declare an array
+
+### Block Statements
+
+-   `then` and `do` on the same line as `if` and `while`
+
+### Columns
+
+-   unlimited but keep it reasonable / logical
+
+### Comments
+
+-   avoid commenting code, use well named functions
+
+### Conditions
+
+-   use `[[...]]`
+-   use `((...))` and `$((...))` for mathematical constructs
+-   use `==` instead of `=` for equality
+-   do not use `[...]`
+-   do not use `test ...`
+-   do not use `[ $a -gt $b ]` for mathemitical constructs
+
+### Command Substitution
+
+-   use `$(...)`
+-   do not use `` `...` ``
+-   prefer `"${var}"` over `"$var"`
+
+### Files
+
+-   names according to [generic rules](#file-names)
+-   use `*.sh`
+-   make shell scripts executable unless they are libraries/imports only
+
+### Functions
+
+-   use `snake_case` for function names
+-   use `function` keyword
+-   all variables declared `local`
+-   start functions with saving arguments to named variables
+
+### Indentation
+
+-   only spaces
+-   4 spaces
+
+## Listing Files
+
+-   use builtin `glob` in loops
+-   do not parse `ls` or `find`
+
+## Quoting
+
+-   use `"..."` for all strings with variable substitution
+-   use `'...'` only to prevent variable substitution
+-   always quote variables if they could fail the syntax when empty
+
+### Variables
+
+-   use `camelCase` for variable names
+-   use `SCREAMING_SNAKE_CASE` for environment variables and constants
+-   do not use `let` or `declare`
+-   variables inside functions should be declared `local`
+-   variables that are not to be modified should be declared `readonly`
+
+---
+
 ## C++
+
+-   [Aliases](#aliases)
+-   [auto](#auto)
+-   [Casts](#casts)
+-   [Classes](#classes)
+-   [Comments](#comments-1)
+-   [const](#const)
+-   [consteval](#consteval)
+-   [constexpr](#constexpr)
+-   [Documentation](#documentation)
+-   [Enumerations](#enumerations)
+-   [Exceptions](#exceptions)
+-   [Formatting](#formatting)
+-   [friend](#friend)
+-   [Functions](#functions-1)
+-   [Global Variables](#global-variables)
+-   [Headers](#headers)
+-   [Imports](#imports)
+-   [Includes](#includes)
+-   [Initialization](#initialization)
+-   [inline](#inline)
+-   [Integer Types](#integer-types)
+-   [Lambdas](#lambdas)
+-   [Language Extensions](#language-extensions)
+-   [Literals](#literals)
+-   [Local Variables](#local-variables)
+-   [Member Variables](#member-variables)
+-   [Memory Management](#memory-management)
+-   [Modules](#modules)
+-   [Multithreading](#multithreading)
+-   [Namespaces](#namespaces)
+-   [Naming](#naming)
+-   [noexcept](#noexcept)
+-   [nullptr](#nullptr)
+-   [Preincrement vs Postincrement](#preincrement-vs-postincrement)
+-   [Preprocessor](#preprocessor)
+-   [References & Pointers](#references--pointers)
+-   [Run Time Type Information (RTTI)](#run-time-type-information-rtti)
+-   [Scoping](#scoping)
+-   [sizeof](#sizeof)
+-   [Sources](#sources)
+-   [Static Variables](#static-variables)
+-   [Structs](#structs)
+-   [Templates & Concepts](#templates--concepts)
+-   [Ternary](#ternary)
+-   [this](#this)
+-   [Version](#version)
+-   [virtual](#virtual)
 
 ### Aliases
 
