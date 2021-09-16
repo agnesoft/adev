@@ -1,6 +1,6 @@
 source "sh/common.sh"
 
-if isWindows; then
+if is_windows; then
     choco install -y llvm
 else
     sudo apt-get update -y

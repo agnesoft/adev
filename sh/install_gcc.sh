@@ -1,7 +1,7 @@
 source "sh/common.sh"
 
-if isWindows; then
-    printError "GCC is not available on Windows"
+if is_windows; then
+    print_error "GCC is not available on Windows"
     exit 1
 else
     sudo add-apt-repository -y 'deb http://mirrors.kernel.org/ubuntu hirsute main universe'

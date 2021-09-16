@@ -62,11 +62,11 @@ function run_test() {
 }
 
 function run_tests() {
-    local testDir="build/$toolchain/bin/"
+    local testDir="build/$toolchain/bin"
     echo "Running tests from '${testDir}'..."
 
-    if [[ -d "build/$toolchain/bin/" ]]; then
-        for test in build/$toolchain/bin/*_test$extnsion; do
+    if [[ -d "$testDir" ]]; then
+        for test in $testDir/*_test$extension; do
             run_test $test
         done
     fi
