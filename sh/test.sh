@@ -70,6 +70,12 @@ function run_tests() {
             run_test $test
         done
     fi
+
+    if (( $result != 0 )); then
+        print_error "ERROR: test run failed (see above for errors)"
+    else
+        print_ok "All tests passed."
+    fi
 }
 
 set_properties $1 $2
