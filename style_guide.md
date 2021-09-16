@@ -96,12 +96,13 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 ## Bash
 
 -   [Array](#arrays)
--   [Functions](#functions)
 -   [Block Statements](#block-statements)
 -   [Columns](#columns)
 -   [Comments](#comments)
 -   [Conditions](#conditions)
 -   [Command Substitution](#command-substitution)
+-   [eval](#eval)
+-   [Functions](#functions)
 -   [Files](#files)
 -   [Indentation](#indentation)
 -   [Listing Files](#listing-files)
@@ -138,6 +139,10 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   use `$(...)`
 -   do not use `` `...` ``
 -   prefer `"${var}"` over `"$var"`
+
+### `eval`
+
+-   do not use
 
 ### Files
 

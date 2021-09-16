@@ -54,11 +54,11 @@ function run_build_script () {
     local project="${2}"
     local status=0
 
-    "$buildScript $toolchain"
+    $buildScript $toolchain
     status=$?
 
     if (( $status != 0 )); then
-        print_error "ERROR: Building project '${project}' (${project}) failed: ${status}"
+        print_error "ERROR: Building project '${project}' (${buildScript}) failed: ${status}"
         exit 1
     fi
 }

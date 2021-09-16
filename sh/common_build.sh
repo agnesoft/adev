@@ -29,8 +29,7 @@ clangCompilerLinkerFlags="${clangCompilerFlags} \
                           -lpthread"
 
 gccCompilerFlags="-std=c++20 \
-                  -Wall \
-                  -Werror \
+                  -Wall -Werror \
                   -pedantic-errors \
                   -fmodules-ts"
 
@@ -44,16 +43,19 @@ msvcCompilerFlags="/nologo ^
                    /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\""
 
 function build() {
-    if [[ "${buildRoot}/${project}.done" ]]; then
+    if [[ -f "${buildRoot}/${project}.done" ]]; then
         exit $status
     fi
     
     echo "*** ${project} ***"
 
+    mkdir -p "${binDir}"
+    mkdir -p "${buildDir}"
+
     if [[ "${toolchain}" == "clang" ]]; then
-        build_clang "${clangBuild}"
+        build_clang
     elif [[ "${toolchain}" == "gcc" ]]; then
-        build_gcc "${gccBuild}"
+        build_gcc
     elif [[ "${toolchain}" == "msvc" ]]; then
         build_msvc "${msvcBuild}"
     else
@@ -68,34 +70,12 @@ function build() {
     exit $status
 }
 
-function build_clang() {
-    local buildScript="
-mkdir -p \"${binDir}\"
-mkdir -p \"${buildDir}\"
-$1"
-
-    "${buildScript}"
-    status=$?
-}
-
-function build_gcc() {
-    local buildScript="
-mkdir -p \"${binDir}\"
-mkdir -p \"${buildDir}\"
-$1"
-
-    "${buildScript}"
-    status=$?
-}
-
 function build_msvc() {
     detect_msvc_env_script
 
     local buildScript="
 @echo off
 call \"${msvcEnvScript}\" >nul
-if not exist \"${binDir}\" mkdir \"${binDir}\" >nul
-if not exist \"${buildDir}\" mkdir \"${buildDir}\" >nul
 $1"
 
     echo "${buildScript}" > build.bat
