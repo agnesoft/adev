@@ -1,6 +1,8 @@
 source ./sh/common.sh
 
+action=$1
 clangFormat=
+modified=0
 
 function detect_clang_format() {
     if is_windows; then
@@ -11,7 +13,36 @@ function detect_clang_format() {
 
     if ! is_available $clangFormat; then
         print_error "ERROR: ${clangFormat} is not available. Please install it with './adev.sh install clang-format'."
+    else
+        $clangFormat --version | head -n 1
     fi
+}
+
+function check_source_formatting() {
+    local source=$1
+    local replacements=$($clangFormat -output-replacements-xml $source | grep "<replacement ")
+
+    if [[ "${replacements}" != "" ]]; then
+        print_error "[ ERROR ] $source"
+        modified=$(( $modified + 1 ))
+    else
+        print_ok "[ OK ] $source"
+    fi
+}
+
+function check_formatting() {
+    for file in projects/**/*.{cpp,hpp}; do
+        check_source_formatting $file
+    done
+
+    if (( $modified != 0 )); then
+        print_error "ERROR: incorrectly formatted files"
+        print_error "Run './adev.sh format' and commit the result"
+    else
+        print_ok "Formatting OK"
+    fi
+
+    exit $modified
 }
 
 function format_source() {
@@ -24,12 +55,13 @@ function format_sources() {
         format_source $file
     done
 
-    if [[ "$(git status --short)" != "" ]]; then
-        exit 1
-    else
-        exit 0
-    fi
+    print_ok "done"
 }
 
 detect_clang_format
-format_sources
+
+if [[ "${action}" == "check" ]]; then
+    check_formatting
+else
+    format_sources
+fi

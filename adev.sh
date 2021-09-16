@@ -7,7 +7,7 @@ if [[ "${action}" == "analyse" ]]; then
 elif [[ "${action}" == "build" ]]; then
     sh/build.sh $arg1 $arg2
 elif [[ "${action}" == "format" ]]; then
-    sh/format.sh
+    sh/format.sh $arg1
 elif [[ "${action}" == "install" ]]; then
     sh/install.sh $arg1
 elif [[ "${action}" == "test" ]]; then
