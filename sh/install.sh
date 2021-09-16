@@ -2,7 +2,7 @@ source ./sh/common.sh
 
 package=$1
 
-function list_packages () {
+function list_packages() {
     echo "Available packages:"
 
     for script in sh/install_*.sh; do
@@ -12,7 +12,7 @@ function list_packages () {
     done
 }
 
-function install_package () {
+function install_package() {
     local installScript="./sh/install_${package}.sh"
 
     if [[ -f "$installScript" ]]; then
@@ -26,7 +26,7 @@ function install_package () {
     fi
 }
 
-function run_install_script () {
+function run_install_script() {
     local installScript=$1
     "${installScript[@]}"
     local status=$?

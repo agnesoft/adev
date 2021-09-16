@@ -6,7 +6,7 @@ echo "Usage: ./adev.sh [ACTION] [PARAMS]
 ./adev.sh build list                     List available projects.
 ./adev.sh build docs                     Build Doxygen documentation.
 ./adev.sh build <toolchain>              Build all projects with <toolchain>.
-./adev.sh build <project>                Build <project>.
+./adev.sh build <project>                Build <project> with default toolchain.
 ./adev.sh build <project> <toolchain>    Build <project> with <toolchain>.
 ./adev.sh format                         Formats source code with clang-format.
 ./adev.sh install list                   List available packages.
