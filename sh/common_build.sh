@@ -22,7 +22,7 @@ clangCompilerFlags="-std=c++20 \
                     -fmodules \
                     -fimplicit-module-maps \
                     -stdlib=libc++ \
-                    -fprebuilt-module-path=\"${buildRoot}/astl\" \
+                    -fprebuilt-module-path=${buildRoot}/astl \
                     -fmodule-map-file=projects/astl/module.modulemap"
 
 clangCompilerLinkerFlags="${clangCompilerFlags} \
@@ -54,8 +54,10 @@ function build() {
 
     if [[ "${toolchain}" == "clang" ]]; then
         build_clang
+        status=$?
     elif [[ "${toolchain}" == "gcc" ]]; then
         build_gcc
+        status=$?
     elif [[ "${toolchain}" == "msvc" ]]; then
         build_msvc "${msvcBuild}"
     else
@@ -66,8 +68,6 @@ function build() {
     if (( $status == 0 )); then
         touch "${buildRoot}/${project}.done"
     fi
-
-    exit $status
 }
 
 function build_msvc() {

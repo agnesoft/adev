@@ -5,13 +5,13 @@ projectDir="projects/${project}"
 buildDir="${buildRoot}/${project}"
 
 function build_clang() {
-     $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/astl.pcm" -c "${projectDir}/astl.cpp"
-     $clang $clangCompilerFlags -o "${buildDir}/astl.obj" -c "${projectDir}/astl.cpp"
+    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/astl.pcm" -c "${projectDir}/astl.cpp"
+    $clang $clangCompilerFlags -o "${buildDir}/astl.obj" -c "${projectDir}/astl.cpp"
 }
 
 function build_gcc() {
-     $gcc $gccCompilerFlags -x c++-header "${projectDir}/astl.hpp"
-     $gcc $gccCompilerFlags -o "${buildDir}/astl.obj" -c "${projectDir}/astl.cpp"
+    $gcc $gccCompilerFlags -x c++-header "${projectDir}/astl.hpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/astl.obj" -c "${projectDir}/astl.cpp"
 }
 
 msvcBuild="

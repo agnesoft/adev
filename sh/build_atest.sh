@@ -5,48 +5,48 @@ projectDir="projects/${project}"
 buildDir="${buildRoot}/${project}"
 
 function build_clang() {
-       $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/atest.pcm" -c "${projectDir}/atest.cpp"
-       $clang $clangCompilerFlags -o "${buildDir}/atest.obj" -c "${projectDir}/atest.cpp"
+    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/atest.pcm" -c "${projectDir}/atest.cpp"
+    $clang $clangCompilerFlags -o "${buildDir}/atest.obj" -c "${projectDir}/atest.cpp"
 }
 
 function build_gcc() {
-       $gcc $gccCompilerFlags -o "${buildDir}/stringify.obj"        -c "${projectDir}/stringify.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/failed_assertion.obj" -c "${projectDir}/failed_assertion.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/failure.obj"          -c "${projectDir}/failure.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/test.obj"             -c "${projectDir}/test.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/test_suite.obj"       -c "${projectDir}/test_suite.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/global_tests.obj"     -c "${projectDir}/global_tests.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/matcher_base.obj"     -c "${projectDir}/matcher_base.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/matcher.obj"          -c "${projectDir}/matcher.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/expect_base.obj"      -c "${projectDir}/expect_base.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/expect_to_match.obj"  -c "${projectDir}/expect_to_match.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/expect_to_throw.obj"  -c "${projectDir}/expect_to_throw.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/expect.obj"           -c "${projectDir}/expect.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/printer.obj"          -c "${projectDir}/printer.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/report.obj"           -c "${projectDir}/report.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/reporter.obj"         -c "${projectDir}/reporter.cpp"
-       $gcc $gccCompilerFlags -o "${buildDir}/test_runner.obj"      -c "${projectDir}/test_runner.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/stringify.obj"        -c "${projectDir}/stringify.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/failed_assertion.obj" -c "${projectDir}/failed_assertion.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/failure.obj"          -c "${projectDir}/failure.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/test.obj"             -c "${projectDir}/test.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/test_suite.obj"       -c "${projectDir}/test_suite.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/global_tests.obj"     -c "${projectDir}/global_tests.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/matcher_base.obj"     -c "${projectDir}/matcher_base.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/matcher.obj"          -c "${projectDir}/matcher.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/expect_base.obj"      -c "${projectDir}/expect_base.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/expect_to_match.obj"  -c "${projectDir}/expect_to_match.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/expect_to_throw.obj"  -c "${projectDir}/expect_to_throw.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/expect.obj"           -c "${projectDir}/expect.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/printer.obj"          -c "${projectDir}/printer.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/report.obj"           -c "${projectDir}/report.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/reporter.obj"         -c "${projectDir}/reporter.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/test_runner.obj"      -c "${projectDir}/test_runner.cpp"
 
-       $gcc $gccCompilerFlags -o "${buildDir}/atest.obj"            -c "${projectDir}/atest.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/atest.obj"            -c "${projectDir}/atest.cpp"
 
-       ar r "${buildDir}/atest.lib" \
-            "${buildDir}/atest.obj" \
-            "${buildDir}/stringify.obj" \
-            "${buildDir}/failed_assertion.obj" \
-            "${buildDir}/failure.obj" \
-            "${buildDir}/test.obj" \
-            "${buildDir}/test_suite.obj" \
-            "${buildDir}/global_tests.obj" \
-            "${buildDir}/matcher_base.obj" \
-            "${buildDir}/matcher.obj" \
-            "${buildDir}/expect_base.obj" \
-            "${buildDir}/expect_to_match.obj" \
-            "${buildDir}/expect_to_throw.obj" \
-            "${buildDir}/expect.obj" \
-            "${buildDir}/report.obj" \
-            "${buildDir}/reporter.obj" \
-            "${buildDir}/printer.obj" \
-            "${buildDir}/test_runner.obj"
+    ar r "${buildDir}/atest.lib" \
+         "${buildDir}/atest.obj" \
+         "${buildDir}/stringify.obj" \
+         "${buildDir}/failed_assertion.obj" \
+         "${buildDir}/failure.obj" \
+         "${buildDir}/test.obj" \
+         "${buildDir}/test_suite.obj" \
+         "${buildDir}/global_tests.obj" \
+         "${buildDir}/matcher_base.obj" \
+         "${buildDir}/matcher.obj" \
+         "${buildDir}/expect_base.obj" \
+         "${buildDir}/expect_to_match.obj" \
+         "${buildDir}/expect_to_throw.obj" \
+         "${buildDir}/expect.obj" \
+         "${buildDir}/report.obj" \
+         "${buildDir}/reporter.obj" \
+         "${buildDir}/printer.obj" \
+         "${buildDir}/test_runner.obj"
 }
 
 msvcBuild="
