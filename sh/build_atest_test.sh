@@ -1,56 +1,52 @@
 source "sh/common_build.sh" $1
 
-PROJECT_DIR="projects/atest/test"
-BUILD_DIR="$BUILD_ROOT/atest/test"
+project="atest_test"
+projectDir="projects/atest/test"
+buildDir="${buildRoot}/atest/test"
 
-CLANG_BUILD="
-mkdir -p \"$BUILD_DIR\"
+function build_clang() {
+    $clang $clangCompilerLinkerFlags \
+           -fprebuilt-module-path=${buildRoot}/atest \
+           -o "${binDir}/atest_test$executableSuffix" \
+           "${projectDir}/assert_test.cpp" \
+           "${projectDir}/bad_test_suite.cpp" \
+           "${projectDir}/expect_to_be_test.cpp" \
+           "${projectDir}/expect_to_match_test.cpp" \
+           "${projectDir}/expect_to_throw_test.cpp" \
+           "${projectDir}/printer_test.cpp" \
+           "${projectDir}/main.cpp" \
+           "${buildRoot}/atest/atest.obj" \
+           "${buildRoot}/astl/astl.obj"
+}
 
-$CLANG $CLANG_COMPILER_LINKER_FLAGS \
-       -fprebuilt-module-path=$BUILD_ROOT/atest \
-       -o \"$BIN_DIR/atest_test$EXECUTABLE_SUFFIX\" \
-       \"$PROJECT_DIR/assert_test.cpp\" \
-       \"$PROJECT_DIR/bad_test_suite.cpp\" \
-       \"$PROJECT_DIR/expect_to_be_test.cpp\" \
-       \"$PROJECT_DIR/expect_to_match_test.cpp\" \
-       \"$PROJECT_DIR/expect_to_throw_test.cpp\" \
-       \"$PROJECT_DIR/printer_test.cpp\" \
-       \"$PROJECT_DIR/main.cpp\" \
-       \"$BUILD_ROOT/atest/atest.obj\"
+function build_gcc() {
+    $gcc $gccCompilerFlags \
+         -o "${binDir}/atest_test" \
+         "${projectDir}/assert_test.cpp" \
+         "${projectDir}/bad_test_suite.cpp" \
+         "${projectDir}/expect_to_be_test.cpp" \
+         "${projectDir}/expect_to_match_test.cpp" \
+         "${projectDir}/expect_to_throw_test.cpp" \
+         "${projectDir}/printer_test.cpp" \
+         "${projectDir}/main.cpp" \
+         "${buildRoot}/atest/atest.lib" \
+         "${buildRoot}/astl/astl.obj"
+}
+
+buildMSVC="
+cl.exe ${msvcCompilerFlags} ^
+       /ifcSearchDir \"${buildRoot}/atest\" ^
+       /Fo\"$buildDir/\" ^
+       /Fe\"${binDir}/atest_test.exe\" ^
+       \"${projectDir}/assert_test.cpp\" ^
+       \"${projectDir}/bad_test_suite.cpp\" ^
+       \"${projectDir}/expect_to_be_test.cpp\" ^
+       \"${projectDir}/expect_to_match_test.cpp\" ^
+       \"${projectDir}/expect_to_throw_test.cpp\" ^
+       \"${projectDir}/printer_test.cpp\" ^
+       \"${projectDir}/main.cpp\" ^
+       \"${buildRoot}/atest/atest.lib\" ^
+       \"${buildRoot}/astl/astl.lib\" || exit 1
 "
-
-GCC_BUILD="
-mkdir -p \"$BUILD_DIR\"
-
-$GCC $GCC_COMPILER_FLAGS \
-     -o \"$BIN_DIR/atest_test\" \
-     \"$PROJECT_DIR/assert_test.cpp\" \
-     \"$PROJECT_DIR/bad_test_suite.cpp\" \
-     \"$PROJECT_DIR/expect_to_be_test.cpp\" \
-     \"$PROJECT_DIR/expect_to_match_test.cpp\" \
-     \"$PROJECT_DIR/expect_to_throw_test.cpp\" \
-     \"$PROJECT_DIR/printer_test.cpp\" \
-     \"$PROJECT_DIR/main.cpp\" \
-     \"$CMI_DIR/atest.lib\" \
-     \"$CMI_DIR/astl.lib\"
-"
-
-MSVC_BUILD="
-if not exist \"$BUILD_DIR\" mkdir \"$BUILD_DIR\" >nul
-
-cl.exe $MSVC_COMPILER_FLAGS ^
-       /ifcSearchDir \"$BUILD_ROOT/atest\" ^
-       /Fo\"$BUILD_DIR/\" ^
-       /Fe\"$BIN_DIR/atest_test.exe\" ^
-       \"$PROJECT_DIR/assert_test.cpp\" ^
-       \"$PROJECT_DIR/bad_test_suite.cpp\" ^
-       \"$PROJECT_DIR/expect_to_be_test.cpp\" ^
-       \"$PROJECT_DIR/expect_to_match_test.cpp\" ^
-       \"$PROJECT_DIR/expect_to_throw_test.cpp\" ^
-       \"$PROJECT_DIR/printer_test.cpp\" ^
-       \"$PROJECT_DIR/main.cpp\" ^
-       \"$BUILD_ROOT/atest/atest.lib\" ^
-       \"$BUILD_ROOT/astl/astl.lib\"
-"
-sh/build_atest.sh $1
-build "atest_test"
+sh/build_atest.sh $toolchain
+build

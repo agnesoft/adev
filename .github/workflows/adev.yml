@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh format
+      - run: ./adev.sh format check
 
   linux_clang12_x64:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: ./adev.sh install clang
       - run: ./adev.sh build clang
-      - run: ./adev.sh test clang
+      - run: ./adev.sh test clang 100
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: ./adev.sh install gcc
       - run: ./adev.sh build gcc
-      - run: ./adev.sh test gcc
+      - run: ./adev.sh test gcc 100
 
   windows_msvc2019_x64:
     runs-on: windows-latest
@@ -46,4 +46,4 @@ jobs:
       - shell: bash
         run: ./adev.sh build msvc
       - shell: bash
-        run: ./adev.sh test msvc
+        run: ./adev.sh test msvc 100

@@ -9,5 +9,15 @@ modernize-*,
 performance-*,
 readability-*
 '
-WarningsAsErrors: true
+WarningsAsErrors: '
+bugprone-*,
+cert-*,
+clang-analyzer-*,
+cppcoreguidelines-*,
+hicpp-*,
+misc-*,
+modernize-*,
+performance-*,
+readability-*
+'
 FormatStyle: file

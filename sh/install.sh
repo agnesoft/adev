@@ -1,52 +1,44 @@
-source ./sh/common.sh
+source "sh/common.sh"
 
-PARAM=$1
-PACKAGE_NAME_FROM_SCRIPT_PATTERN=".*install_(.*)\.sh"
+package=$1
 
-function detectPackages () {
-    PACKAGE_SCRIPTS=$(find . -name "install_*.sh" -type f)
-}
+function list_packages() {
+    echo "Available packages:"
 
-function installPackage () {
-    local INSTALL_SH="./sh/install_$1.sh"
-
-    if test -f "$INSTALL_SH"; then
-        runInstallScript $INSTALL_SH $1
-    else
-        echo ""
-        printError "ERROR: Package '$1' does not exist."
-        echo "
-Available packages:"
-        listPackages
-        exit 1;
-    fi
-}
-
-function listPackages () {
-    detectPackages
-
-    for SCRIPT in $PACKAGE_SCRIPTS
-    do
-        if [[ $SCRIPT =~ $PACKAGE_NAME_FROM_SCRIPT_PATTERN ]]
-        then
+    for script in sh/install_*.sh; do
+        if [[ "${script}" =~ sh/install_(.*)\.sh ]]; then
             echo "  ${BASH_REMATCH[1]}"
         fi
     done
 }
 
-function runInstallScript () {
-    echo "Installing package '$2'..."
-    eval $1
-    STATUS=$?
+function install_package() {
+    local installScript="sh/install_${package}.sh"
 
-    if test $STATUS -ne 0; then
-        printError "ERROR: Installing package '$2' ($1) failed: $STATUS"
+    if [[ -f "$installScript" ]]; then
+        echo "Installing package '$package'..."
+        run_install_script $installScript
+    else
+        print_error "ERROR: Package '$package' does not exist."
+        echo ""
+        list_packages
+        exit 1;
+    fi
+}
+
+function run_install_script() {
+    local installScript=$1
+    "${installScript[@]}"
+    local status=$?
+
+    if (( $? != 0 )); then
+        print_error "ERROR: Installing package '$package' ($1) failed: $STATUS"
         exit 1
     fi
 }
 
-if test "$PARAM" == "list"; then
-    listPackages
+if [[ "$package" == "list" ]]; then
+    list_packages
 else
-    installPackage $PARAM
+    install_package
 fi
