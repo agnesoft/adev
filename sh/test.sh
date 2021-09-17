@@ -49,7 +49,7 @@ function run_test() {
             result=1
             failures=$(( $failures + 1 ))
             echo "${log}"
-            print_error "ERROR: ${test} failed on run ${i}:"
+            print_error "ERROR: ${test} failed on run $(( $i + 1 )):"
         fi
     done
 
