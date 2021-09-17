@@ -33,13 +33,13 @@ gccCompilerFlags="-std=c++20 \
                   -pedantic-errors \
                   -fmodules-ts"
 
-msvcCompilerFlags="/nologo ^
-                   /std:c++latest ^
-                   /EHsc ^
-                   /O2 ^
-                   /W4 ^
-                   /WX ^
-                   /ifcSearchDir \"${buildRoot}/astl\" ^
+msvcCompilerFlags="/nologo \
+                   /std:c++latest \
+                   /EHsc \
+                   /O2 \
+                   /W4 \
+                   /WX \
+                   /ifcSearchDir \"${buildRoot}/astl\" \
                    /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\""
 
 function build() {
@@ -61,7 +61,7 @@ function build() {
         build_gcc
         status=$?
     elif [[ "${toolchain}" == "msvc" ]]; then
-        build_msvc "${msvcBuild}"
+        build_msvc
     else
         print_error "ERROR: Unknown toolchain '${toolchain}'"
         status=1
@@ -70,6 +70,8 @@ function build() {
     if (( $status == 0 )); then
         touch "${buildRoot}/${project}.done"
     fi
+
+    exit $status
 }
 
 function build_msvc() {
@@ -78,7 +80,7 @@ function build_msvc() {
     local buildScript="
 @echo off
 call \"${msvcEnvScript}\" >nul
-$1"
+${buildMSVC}"
 
     echo "${buildScript}" > build.bat
     cmd //c build.bat
@@ -87,7 +89,7 @@ $1"
 }
 
 function detect_msvc_env_script() {
-    if ! [[ "${msvcEnvScript}" == "" ]]; then
+    if [[ "${msvcEnvScript}" == "" ]]; then
         msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
         
         if [[ -f "${msvcEnvScript}" ]]; then

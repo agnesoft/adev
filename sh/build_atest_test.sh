@@ -33,7 +33,7 @@ function build_gcc() {
          "${buildRoot}/astl/astl.obj"
 }
 
-msvcBuild="
+buildMSVC="
 cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/atest\" ^
        /Fo\"$buildDir/\" ^
@@ -46,7 +46,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/printer_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
-       \"${buildRoot}/astl/astl.lib\"
+       \"${buildRoot}/astl/astl.lib\" || exit 1
 "
 sh/build_atest.sh $toolchain
 build

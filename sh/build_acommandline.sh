@@ -42,26 +42,26 @@ function build_gcc() {
          "${buildDir}/command_line.obj"
 }
 
-msvcBuild="
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option.ifc\"                   /Fo\"${buildDir}/acommandline-option.obj\"                   /c /TP \"${projectDir}/option.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_base.ifc\"      /Fo\"${buildDir}/acommandline-option_builder_base.obj\"      /c /TP \"${projectDir}/option_builder_base.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_described.ifc\" /Fo\"${buildDir}/acommandline-option_builder_described.obj\" /c /TP \"${projectDir}/option_builder_described.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_defined.ifc\"   /Fo\"${buildDir}/acommandline-option_builder_defined.obj\"   /c /TP \"${projectDir}/option_builder_defined.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_value.ifc\"     /Fo\"${buildDir}/acommandline-option_builder_value.obj\"     /c /TP \"${projectDir}/option_builder_value.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_named.ifc\"     /Fo\"${buildDir}/acommandline-option_builder_named.obj\"     /c /TP \"${projectDir}/option_builder_named.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder.ifc\"           /Fo\"${buildDir}/acommandline-option_builder.obj\"           /c /TP \"${projectDir}/option_builder.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_matcher.ifc\"           /Fo\"${buildDir}/acommandline-option_matcher.obj\"           /c /TP \"${projectDir}/option_matcher.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_setter.ifc\"            /Fo\"${buildDir}/acommandline-option_setter.obj\"            /c /TP \"${projectDir}/option_setter.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_help_line.ifc\"         /Fo\"${buildDir}/acommandline-option_help_line.obj\"         /c /TP \"${projectDir}/option_help_line.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-printer.ifc\"                  /Fo\"${buildDir}/acommandline-printer.obj\"                  /c /TP \"${projectDir}/printer.cpp\"
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-command_line.ifc\"             /Fo\"${buildDir}/acommandline-command_line.obj\"             /c /TP \"${projectDir}/command_line.cpp\"
+buildMSVC="
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option.ifc\"                   /Fo\"${buildDir}/acommandline-option.obj\"                   /c /TP \"${projectDir}/option.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_base.ifc\"      /Fo\"${buildDir}/acommandline-option_builder_base.obj\"      /c /TP \"${projectDir}/option_builder_base.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_described.ifc\" /Fo\"${buildDir}/acommandline-option_builder_described.obj\" /c /TP \"${projectDir}/option_builder_described.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_defined.ifc\"   /Fo\"${buildDir}/acommandline-option_builder_defined.obj\"   /c /TP \"${projectDir}/option_builder_defined.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_value.ifc\"     /Fo\"${buildDir}/acommandline-option_builder_value.obj\"     /c /TP \"${projectDir}/option_builder_value.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder_named.ifc\"     /Fo\"${buildDir}/acommandline-option_builder_named.obj\"     /c /TP \"${projectDir}/option_builder_named.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_builder.ifc\"           /Fo\"${buildDir}/acommandline-option_builder.obj\"           /c /TP \"${projectDir}/option_builder.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_matcher.ifc\"           /Fo\"${buildDir}/acommandline-option_matcher.obj\"           /c /TP \"${projectDir}/option_matcher.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_setter.ifc\"            /Fo\"${buildDir}/acommandline-option_setter.obj\"            /c /TP \"${projectDir}/option_setter.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-option_help_line.ifc\"         /Fo\"${buildDir}/acommandline-option_help_line.obj\"         /c /TP \"${projectDir}/option_help_line.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-printer.ifc\"                  /Fo\"${buildDir}/acommandline-printer.obj\"                  /c /TP \"${projectDir}/printer.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/acommandline-command_line.ifc\"             /Fo\"${buildDir}/acommandline-command_line.obj\"             /c /TP \"${projectDir}/command_line.cpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
        /ifcSearchDir \"${buildDir}\" ^
        /ifcOutput\"${buildDir}/acommandline.ifc\" ^
        /Fo\"${buildDir}/acommandline.obj\" ^
-       /c \"${projectDir}/acommandline.cpp\"
+       /c \"${projectDir}/acommandline.cpp\" || exit 1
 
 lib.exe /NOLOGO ^
         /OUT:\"${buildDir}/acommandline.lib\" ^
@@ -77,8 +77,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/acommandline-option_setter.obj\" ^
         \"${buildDir}/acommandline-option_help_line.obj\" ^
         \"${buildDir}/acommandline-printer.obj\" ^
-        \"${buildDir}/acommandline-command_line.obj\"
-
+        \"${buildDir}/acommandline-command_line.obj\" || exit 1
 "
 
 sh/build_astl.sh $toolchain

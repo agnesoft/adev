@@ -14,7 +14,7 @@ function list_projects() {
     done
 }
 
-function build_all () {
+function build_all() {
     echo "Toolchain: $toolchain"
     echo ""
 
@@ -25,7 +25,7 @@ function build_all () {
     done
 }
 
-function build_project () {
+function build_project() {
     echo "Toolchain: $toolchain"
     echo ""
 
@@ -43,13 +43,13 @@ Available projects:"
     fi
 }
 
-function remove_done_files () {
+function remove_done_files() {
     if [[ -d "build/$toolchain/" ]]; then
         find build/$toolchain/ -name "*.done" -type f -delete
     fi
 }
 
-function run_build_script () {
+function run_build_script() {
     local buildScript="${1}"
     local project="${2}"
     local status=0
@@ -63,7 +63,7 @@ function run_build_script () {
     fi
 }
 
-function set_properties () {
+function set_properties() {
     if [[ "${1}" == "list" ]]; then
         action="list"
     elif [[ "${1}" == "docs" ]]; then
