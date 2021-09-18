@@ -18,14 +18,6 @@ static const auto s = suite("CommandLine", [] {
         expect(std::is_nothrow_move_constructible_v<::acommandline::CommandLine>).to_be(true);
     });
 
-    test("copy assignable", [] {
-        expect(std::is_copy_assignable_v<::acommandline::CommandLine>).to_be(true);
-    });
-
-    test("nothrow move assignable", [] {
-        expect(std::is_nothrow_move_assignable_v<::acommandline::CommandLine>).to_be(true);
-    });
-
     test("nothrow destructible", [] {
         expect(std::is_nothrow_destructible_v<::acommandline::CommandLine>).to_be(true);
     });
@@ -36,24 +28,26 @@ static const auto s = suite("CommandLine", [] {
 
     test("copy constructor", [] {
         std::int64_t value = 0;
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
         commandLine.option().positional().description("").bind_to(&value);
         ::acommandline::CommandLine other{commandLine};
-        other.parse(2, std::vector<const char *>{"./app.exe", "10"}.data());
+        other.parse(2, std::array<const char *, 2>{"./app.exe", "10"}.data());
 
         expect(value).to_be(10);
 
-        commandLine.parse(2, std::vector<const char *>{"./diff", "100"}.data());
+        commandLine.parse(2, std::array<const char *, 2>{"./diff", "100"}.data());
 
         expect(value).to_be(100);
     });
 
     test("move constructor", [] {
         std::int64_t value = 0;
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
         commandLine.option().positional().description("").bind_to(&value);
         ::acommandline::CommandLine other{std::move(commandLine)};
-        other.parse(2, std::vector<const char *>{"./app.exe", "10"}.data());
+        other.parse(2, std::array<const char *, 2>{"./app.exe", "10"}.data());
 
         expect(value).to_be(10);
     });

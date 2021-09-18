@@ -10,19 +10,21 @@ using ::atest::test;
 
 static const auto s = suite("required", [] {
     test("unmatched positional", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
 
         std::vector<std::string> value;
         commandLine.option().positional().required().description("").bind_to(&value);
 
         expect([&] {
-            commandLine.parse(1, std::vector<const char *>{"app"}.data());
+            commandLine.parse(1, std::array<const char *, 1>{"app"}.data());
         })
             .to_throw<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
     });
 
     test("unmatched named", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
 
         bool value = false;
         double required = 0.0;
@@ -31,7 +33,7 @@ static const auto s = suite("required", [] {
         commandLine.option().positional().required().description("").bind_to(&required);
 
         expect([&] {
-            commandLine.parse(2, std::vector<const char *>{"./app", "-v"}.data());
+            commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data());
         })
             .to_throw<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
     });

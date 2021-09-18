@@ -10,17 +10,19 @@ using ::atest::test;
 
 static const auto s = suite("positional", [] {
     test("single", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
         std::string value;
 
         commandLine.option().positional().description("").bind_to(&value);
-        commandLine.parse(2, std::vector<const char *>{"./app.exe", "value"}.data());
+        commandLine.parse(2, std::array<const char *, 2>{"./app.exe", "value"}.data());
 
         expect(value).to_be("value");
     });
 
     test("multiple", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
 
         std::string sValue;
         std::int64_t iValue = 0;
@@ -29,7 +31,7 @@ static const auto s = suite("positional", [] {
         commandLine.option().positional().description("").bind_to(&iValue);
         commandLine.option().positional().description("").bind_to(&dValue);
         commandLine.option().positional().description("").bind_to(&sValue);
-        commandLine.parse(4, std::vector<const char *>{"./app", "value", "-10", "5.5"}.data());
+        commandLine.parse(4, std::array<const char *, 4>{"./app", "value", "-10", "5.5"}.data());
 
         expect(sValue).to_be("value");
         expect(iValue).to_be(-10);
@@ -37,28 +39,26 @@ static const auto s = suite("positional", [] {
     });
 
     test("type mismatch", [] {
-        ::acommandline::CommandLine commandLine;
-
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
         std::int64_t value = 0;
         commandLine.option().positional().description("").bind_to(&value);
+        const std::array<const char *, 2> argv{"./app", "hello"};
 
-        const std::string exceptionText = "Failed to set option '[positional]' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.";
-
-        expect([&] {
-            commandLine.parse(2, std::vector<const char *>{"./app", "hello"}.data());
+        expect([&]() {
+            commandLine.parse(2, argv.data());
         })
-            .to_throw<std::runtime_error>(exceptionText);
+            .to_throw<std::runtime_error>("Failed to set option '[positional]' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.");
     });
 
     test("missing bound variable", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
         static_cast<void>(commandLine.option().long_name("long").description(""));
 
-        const std::string exceptionText = "Undefined bound variable for option '[positional]'.";
-
         expect([&] {
-            commandLine.parse(2, std::vector<const char *>{"./app", "long=hello"}.data());
+            commandLine.parse(2, std::array<const char *, 2>{"./app", "long=hello"}.data());
         })
-            .to_throw<std::runtime_error>(exceptionText);
+            .to_throw<std::runtime_error>("Undefined bound variable for option '[positional]'.");
     });
 });

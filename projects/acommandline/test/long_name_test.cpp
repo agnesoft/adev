@@ -10,7 +10,8 @@ using ::atest::test;
 
 static const auto s = suite("long name", [] {
     test("single", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
         bool value = false;
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
@@ -20,7 +21,8 @@ static const auto s = suite("long name", [] {
     });
 
     test("multiple", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
 
         bool value = false;
         std::string option;
@@ -29,7 +31,7 @@ static const auto s = suite("long name", [] {
         commandLine.option().long_name("value").description("").bind_to(&value);
         commandLine.option().long_name("option").description("").bind_to(&option);
         commandLine.option().long_name("yetanother").short_name('y').description("").bind_to(&another);
-        commandLine.parse(5, std::vector<const char *>{"./app", "--value", "--option=file", "--yetanother", "10"}.data());
+        commandLine.parse(5, std::array<const char *, 5>{"./app", "--value", "--option=file", "--yetanother", "10"}.data());
 
         expect(value).to_be(true);
         expect(option).to_be("file");
@@ -37,7 +39,8 @@ static const auto s = suite("long name", [] {
     });
 
     test("type mismatch", [] {
-        ::acommandline::CommandLine commandLine;
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
 
         std::int64_t value = 0;
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
@@ -45,7 +48,7 @@ static const auto s = suite("long name", [] {
         const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.";
 
         expect([&] {
-            commandLine.parse(2, std::vector<const char *>{"./app", "-v=hello"}.data());
+            commandLine.parse(2, std::array<const char *, 2>{"./app", "-v=hello"}.data());
         })
             .to_throw<std::runtime_error>(exceptionText);
     });

@@ -44,9 +44,9 @@ namespace acommandline
 //!
 //! - Long name is mandatory for named options and
 //!   must match the pattern
-//!   `[a-zA-Z][a-zA-Z\\d]+`. Long names are
+//!   `[a-zA-Z][a-zA-Z\\d_-\.]+`. Long names are
 //!   expected to be prefixed with `--`, e.g.
-//!   `--longName1`
+//!   `--longName1, --long_name1, --long.name, --long-name`
 //! - Short name is optional and must be a single
 //!   alphabetic character `[a-zA-Z]`. Short names
 //!   are expected to be prefixed with `-`, e.g.
@@ -207,11 +207,12 @@ private:
                 if (OptionMatcher::match(option, argumentValue) && OptionSetter::set_value(option, argument, this->arguments.cend()))
                 {
                     option.matched = true;
+                    return;
                 }
             }
         }
 
-        throw std::runtime_error{std::string{"Unknown option '"} + argumentValue + "'."};
+        throw std::runtime_error{"Unmatched argument '" + argumentValue + "'."};
     }
 
     auto match_arguments() -> void
@@ -236,20 +237,13 @@ private:
         }
     }
 
-    [[nodiscard]] static auto parse_argument(const char *const *argv, int index) -> std::string
-    {
-        const char *const *arg = argv;
-        std::advance(arg, index);
-        return *arg;
-    }
-
     auto parse_arguments(int argc, const char *const *argv) -> void
     {
         this->arguments.clear();
 
         for (int i = 1; i < argc; i++)
         {
-            this->arguments.emplace_back(CommandLine::parse_argument(argv, i));
+            this->arguments.emplace_back(argv[i]);
         }
     }
 
