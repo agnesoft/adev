@@ -18,3 +18,5 @@ function is_available() {
     local cmd=$(command -v $1)
     test "${cmd}"
 }
+
+shopt -s globstar
