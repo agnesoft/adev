@@ -12,6 +12,7 @@ function build_clang() {
            "${projectDir}/application_name_test.cpp" \
            "${projectDir}/command_line_test.cpp" \
            "${projectDir}/command_test.cpp" \
+           "${projectDir}/default_value_test.cpp" \
            "${projectDir}/help_test.cpp" \
            "${projectDir}/long_name_test.cpp" \
            "${projectDir}/main.cpp" \
@@ -31,6 +32,7 @@ function build_gcc() {
          "${projectDir}/application_name_test.cpp" \
          "${projectDir}/command_line_test.cpp" \
          "${projectDir}/command_test.cpp" \
+         "${projectDir}/default_value_test.cpp" \
          "${projectDir}/help_test.cpp" \
          "${projectDir}/long_name_test.cpp" \
          "${projectDir}/main.cpp" \
@@ -53,6 +55,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/application_name_test.cpp\" \
        \"${projectDir}/command_line_test.cpp\" \
        \"${projectDir}/command_test.cpp\" \
+       \"${projectDir}/default_value_test.cpp\" \
        \"${projectDir}/help_test.cpp\" \
        \"${projectDir}/long_name_test.cpp\" \
        \"${projectDir}/main.cpp\" \
