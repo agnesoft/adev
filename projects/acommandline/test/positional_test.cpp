@@ -38,27 +38,14 @@ static const auto s = suite("positional", [] {
         expect(dValue).to_be(5.5);
     });
 
-    test("type mismatch", [] {
-        std::stringstream stream;
-        ::acommandline::CommandLine commandLine{stream};
-        std::int64_t value = 0;
-        commandLine.option().positional().description("").bind_to(&value);
-        const std::array<const char *, 2> argv{"./app", "hello"};
-
-        expect([&]() {
-            commandLine.parse(2, argv.data());
-        })
-            .to_throw<std::runtime_error>("Failed to set option '[positional]' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.");
-    });
-
     test("missing bound variable", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
         static_cast<void>(commandLine.option().long_name("long").description(""));
 
         expect([&] {
-            commandLine.parse(2, std::array<const char *, 2>{"./app", "long=hello"}.data());
+            commandLine.parse(2, std::array<const char *, 2>{"./app", "--long=hello"}.data());
         })
-            .to_throw<std::runtime_error>("Undefined bound variable for option '[positional]'.");
+            .to_throw<std::runtime_error>("Bind value undefined for option 'long'.");
     });
 });

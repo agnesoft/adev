@@ -196,6 +196,7 @@ private:
                                   helpNames.cend())
             != this->arguments.cend();
     }
+
     auto match_argument(std::vector<std::string>::const_iterator *argument) -> void
     {
         const std::string argumentValue = **argument;
