@@ -148,7 +148,7 @@ public:
     //! this command line. Returns the builder
     //! object. See CommandLine class description
     //! for the option building.
-    [[nodiscard]] auto option() -> OptionBuilder
+    [[nodiscard]] auto option() & -> OptionBuilder
     {
         return OptionBuilder{this->options.emplace_back(Option{})};
     }

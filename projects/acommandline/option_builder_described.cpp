@@ -34,7 +34,7 @@ private:
 
             if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
             {
-                throw std::runtime_error{std::string{"The option '"} + this->option().longName + "''s default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
+                throw std::runtime_error{"The option '" + this->option().longName + "''s default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
             }
         };
 

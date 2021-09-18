@@ -20,7 +20,7 @@ public:
             }
             else
             {
-                throw std::runtime_error{std::string{"The option "} + option.longName + " is missing a bound value."};
+                throw std::runtime_error{"The option " + option.longName + " is missing a bound value."};
             }
         };
 
@@ -29,6 +29,7 @@ public:
 
     [[nodiscard]] static auto set_value(Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> bool
     {
+        (void)end;
         if (OptionSetter::set_value(option, OptionSetter::extract_value(option, argument, end)))
         {
             ++(*argument);
@@ -43,7 +44,7 @@ private:
     {
         if (++(*argument) == end)
         {
-            throw std::runtime_error{std::string{"Missing value for option '"} + option.longName + "'."};
+            throw std::runtime_error{"Missing value for option '" + option.longName + "'."};
         }
     }
 

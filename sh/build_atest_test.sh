@@ -48,5 +48,6 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" || exit 1
 "
+
 sh/build_atest.sh $toolchain
 build
