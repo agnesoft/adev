@@ -1,13 +1,13 @@
 #ifndef __clang__
-module acommandline : option_builder;
-import : option_builder_named;
+export module acommandline : option_builder;
+export import : option_builder_named;
 #endif
 
 namespace acommandline
 {
 //! The OptionBuilder class represents the first
 //! step in composing a command line option.
-class OptionBuilder : public OptionBuilderBase
+export class OptionBuilder : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;

@@ -29,7 +29,6 @@ public:
 
     [[nodiscard]] static auto set_value(Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> bool
     {
-        (void)end;
         if (OptionSetter::set_value(option, OptionSetter::extract_value(option, argument, end)))
         {
             ++(*argument);

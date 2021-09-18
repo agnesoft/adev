@@ -1,13 +1,13 @@
 #ifndef __clang__
-module acommandline : option_builder_named;
-import : option_builder_value;
+export module acommandline : option_builder_named;
+export import : option_builder_value;
 #endif
 
 namespace acommandline
 {
 //! The OptionBuilderNamed continues building a
 //! named command line option.
-class OptionBuilderNamed : public OptionBuilderValue
+export class OptionBuilderNamed : public OptionBuilderValue
 {
 public:
     using OptionBuilderValue::OptionBuilderValue;

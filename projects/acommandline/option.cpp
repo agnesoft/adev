@@ -1,6 +1,6 @@
 #ifndef __clang__
-module acommandline : option;
-import astl;
+export module acommandline : option;
+export import astl;
 #endif
 
 namespace acommandline
@@ -26,7 +26,7 @@ using BoundValue = std::variant<std::monostate,
 static constexpr const char *const POSITIONAL_LONG_NAME = "[positional]";
 
 //! \private
-struct Option
+export struct Option
 {
     std::string longName;
     std::string description;

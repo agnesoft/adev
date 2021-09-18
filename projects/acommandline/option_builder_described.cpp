@@ -1,5 +1,5 @@
 #ifndef __clang__
-module acommandline : option_builder_described;
+export module acommandline : option_builder_described;
 import : option_builder_base;
 #endif
 
@@ -8,7 +8,7 @@ namespace acommandline
 //! The OptionBuilderDescribed class represents
 //! the final step in defining a command line
 //! option.
-class OptionBuilderDescribed : public OptionBuilderBase
+export class OptionBuilderDescribed : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;

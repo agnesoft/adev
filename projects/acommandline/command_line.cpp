@@ -198,18 +198,20 @@ private:
     }
     auto match_argument(std::vector<std::string>::const_iterator *argument) -> void
     {
+        const std::string argumentValue = **argument;
+
         for (Option &option : this->options)
         {
             if (!option.matched || ::acommandline::is_repeated(option))
             {
-                if (OptionMatcher::match(option, argument) && OptionSetter::set_value(option, argument, this->arguments.cend()))
+                if (OptionMatcher::match(option, argumentValue) && OptionSetter::set_value(option, argument, this->arguments.cend()))
                 {
                     option.matched = true;
                 }
             }
         }
 
-        throw std::runtime_error{std::string{"Unknown option '"} + **argument + "'."};
+        throw std::runtime_error{std::string{"Unknown option '"} + argumentValue + "'."};
     }
 
     auto match_arguments() -> void
