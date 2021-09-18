@@ -6,16 +6,28 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto s = suite("short name", [] {
-    test("single", [] {
+    test("'S'", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
 
         bool value = false;
 
-        commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
-        commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data());
+        commandLine.option().long_name("short").short_name('S').description("").bind_to(&value);
+        commandLine.parse(2, std::array<const char *, 2>{"./app", "-S"}.data());
 
         expect(value).to_be(true);
+    });
+
+    test("'s'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("short").short_name('s').description("").bind_to(&value);
+        commandLine.parse(3, std::array<const char *, 3>{"./app", "-s", "10"}.data());
+
+        expect(value).to_be(10);
     });
 
     test("multiple", [] {

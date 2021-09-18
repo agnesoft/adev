@@ -39,7 +39,5 @@ static const auto s = suite("help", [] {
                                      "    [positional]         [string]          Positional argument description.\n";
 
         expect(stream.str()).to_be(expected);
-
-        const std::string actual = stream.str();
     });
 });

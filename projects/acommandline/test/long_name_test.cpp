@@ -6,15 +6,70 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto s = suite("long name", [] {
-    test("single", [] {
+    test("'value'", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
         bool value = false;
 
-        commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
+        commandLine.option().long_name("value").description("").bind_to(&value);
         commandLine.parse(2, std::vector<const char *>{"./app", "--value"}.data());
 
         expect(value).to_be(true);
+    });
+
+    test("'long.name'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("long.name").description("").bind_to(&value);
+        commandLine.parse(2, std::vector<const char *>{"./app", "--long.name=10"}.data());
+
+        expect(value).to_be(10);
+    });
+
+    test("'long-name'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("long-name").description("").bind_to(&value);
+        commandLine.parse(2, std::vector<const char *>{"./app", "--long-name=10"}.data());
+
+        expect(value).to_be(10);
+    });
+
+    test("'long_name'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("long_name").description("").bind_to(&value);
+        commandLine.parse(2, std::vector<const char *>{"./app", "--long_name=10"}.data());
+
+        expect(value).to_be(10);
+    });
+
+    test("'longName'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("longName").description("").bind_to(&value);
+        commandLine.parse(2, std::vector<const char *>{"./app", "--longName=10"}.data());
+
+        expect(value).to_be(10);
+    });
+
+    test("'Long--Name.1'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("Long--Name.1").description("").bind_to(&value);
+        commandLine.parse(2, std::vector<const char *>{"./app", "--Long--Name.1=10"}.data());
+
+        expect(value).to_be(10);
     });
 
     test("multiple", [] {

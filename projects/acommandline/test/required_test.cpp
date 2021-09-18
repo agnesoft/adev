@@ -6,6 +6,17 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto s = suite("required", [] {
+    test("matched positional", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        std::string value;
+        commandLine.option().positional().required().description("").bind_to(&value);
+        commandLine.parse(2, std::array<const char *, 2>{"app", "req"}.data());
+
+        expect(value).to_be("req");
+    });
+
     test("unmatched positional", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};

@@ -27,6 +27,18 @@ static const auto s = suite("CommandLine::parse()", [] {
         expect(positional).to_be("somefile");
     });
 
+    test("quoted", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        std::string value;
+
+        commandLine.option().long_name("value").description("").bind_to(&value);
+        commandLine.parse(3, std::array<const char *, 3>{"./app", "--value", "\"my long quoted value\""}.data());
+
+        expect(value).to_be("my long quoted value");
+    });
+
     test("single, missing, defaulted and repeated options", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -39,13 +51,13 @@ static const auto s = suite("CommandLine::parse()", [] {
         commandLine.option().long_name("param").short_name('p').description("").bind_to(&parameters);
         commandLine.option().long_name("flag").short_name('f').description("").bind_to(&flag);
         commandLine.option().positional().required().description("").bind_to(&output);
-        commandLine.option().long_name("include").short_name('I').default_value(std::vector<std::string>{"\"c:/path/with spaces/", "//"}).description("").bind_to(&paths);
+        commandLine.option().long_name("include").short_name('I').default_value(std::vector<std::string>{"c:/path/with spaces/", "//"}).description("").bind_to(&paths);
         commandLine.parse(6, std::array<const char *, 6>{"a", "-p=1", "-p=2", "--param", "100", "output_option"}.data());
 
         expect(parameters).to_be(std::vector<std::int64_t>{1, 2, 100});
         expect(flag).to_be(true);
         expect(output).to_be("output_option");
-        expect(paths).to_be(std::vector<std::string>{"\"c:/path/with spaces/", "//"});
+        expect(paths).to_be(std::vector<std::string>{"c:/path/with spaces/", "//"});
     });
 
     test("no arguments", [] {
