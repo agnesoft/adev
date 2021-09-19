@@ -1,5 +1,5 @@
 #ifndef __clang__
-module acommandline : option_builder_described;
+export module acommandline : option_builder_described;
 import : option_builder_base;
 #endif
 
@@ -8,7 +8,7 @@ namespace acommandline
 //! The OptionBuilderDescribed class represents
 //! the final step in defining a command line
 //! option.
-class OptionBuilderDescribed : public OptionBuilderBase
+export class OptionBuilderDescribed : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;
@@ -34,7 +34,7 @@ private:
 
             if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
             {
-                throw std::runtime_error{std::string{"The option '"} + this->option().longName + "''s default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
+                throw std::runtime_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
             }
         };
 

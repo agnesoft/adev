@@ -9,9 +9,9 @@ namespace acommandline
 class OptionMatcher
 {
 public:
-    [[nodiscard]] static auto match(const Option &option, std::vector<std::string>::const_iterator *argument) -> bool
+    [[nodiscard]] static auto match(const Option &option, const std::string &argument) -> bool
     {
-        return OptionMatcher::match_option(option, OptionMatcher::extract_name(**argument));
+        return OptionMatcher::match_option(option, OptionMatcher::extract_name(argument));
     }
 
 private:

@@ -20,7 +20,7 @@ public:
             }
             else
             {
-                throw std::runtime_error{std::string{"The option "} + option.longName + " is missing a bound value."};
+                throw std::runtime_error{"The option " + option.longName + " is missing a bound value."};
             }
         };
 
@@ -43,7 +43,7 @@ private:
     {
         if (++(*argument) == end)
         {
-            throw std::runtime_error{std::string{"Missing value for option '"} + option.longName + "'."};
+            throw std::runtime_error{"Missing value for option '" + option.longName + "'."};
         }
     }
 

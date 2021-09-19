@@ -1,13 +1,13 @@
 #ifndef __clang__
-module acommandline : option_builder_value;
-import : option_builder_defined;
+export module acommandline : option_builder_value;
+export import : option_builder_defined;
 #endif
 
 namespace acommandline
 {
 //! The OptionBuilderValue class allows defining
 //! optional features of a command line option.
-class OptionBuilderValue : public OptionBuilderDefined
+export class OptionBuilderValue : public OptionBuilderDefined
 {
 public:
     using OptionBuilderDefined::OptionBuilderDefined;

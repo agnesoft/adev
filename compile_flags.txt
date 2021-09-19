@@ -5,6 +5,7 @@
 -Wno-missing-field-initializers
 -Werror
 -fmodules
+-fprebuilt-module-path=build/clang/acommandline
 -fprebuilt-module-path=build/clang/atest
 -fprebuilt-module-path=build/clang/astl
 -fmodule-map-file=projects/astl/module.modulemap

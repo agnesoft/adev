@@ -1,13 +1,13 @@
 #ifndef __clang__
-module acommandline : option_builder;
-import : option_builder_named;
+export module acommandline : option_builder;
+export import : option_builder_named;
 #endif
 
 namespace acommandline
 {
 //! The OptionBuilder class represents the first
 //! step in composing a command line option.
-class OptionBuilder : public OptionBuilderBase
+export class OptionBuilder : public OptionBuilderBase
 {
 public:
     using OptionBuilderBase::OptionBuilderBase;
@@ -39,7 +39,7 @@ private:
     {
         if (!::acommandline::is_long_name(name))
         {
-            throw std::runtime_error{std::string{"'"} + name + "' is not a valid option long name ([a-zA-Z][a-zA-Z\\d]+)."};
+            throw std::runtime_error{"'" + name + "' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+)."};
         }
 
         this->option().longName = std::move(name);

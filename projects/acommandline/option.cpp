@@ -1,6 +1,6 @@
 #ifndef __clang__
-module acommandline : option;
-import astl;
+export module acommandline : option;
+export import astl;
 #endif
 
 namespace acommandline
@@ -26,7 +26,7 @@ using BoundValue = std::variant<std::monostate,
 static constexpr const char *const POSITIONAL_LONG_NAME = "[positional]";
 
 //! \private
-struct Option
+export struct Option
 {
     std::string longName;
     std::string description;
@@ -45,11 +45,11 @@ struct Option
 [[nodiscard]] auto is_long_name(const std::string &name) -> bool
 {
     const auto isNotAlphanumeric = [](char c) {
-        return std::isalnum(c) == 0;
+        return std::isalnum(c) == 0 && c != '_' && c != '-' && c != '.';
     };
 
     return name.size() > 1
-        && ::acommandline::is_short_name(name[0])
+        && ::acommandline::is_short_name(name.front())
         && std::find_if(++name.begin() + 1, name.end(), isNotAlphanumeric) == name.end();
 }
 
