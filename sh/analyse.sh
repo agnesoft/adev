@@ -27,9 +27,10 @@ function analyse_source() {
     if (( $? != 0 )); then
         echo "${log}"
         print_error "[ FAILED ] ${source}"
-        result=$(( $result + 1 ))
+        exit 1
     else
         print_ok "[ PASSED ] ${source}"
+        exit 0
     fi
 }
 
@@ -37,7 +38,7 @@ function analyse_sources() {
     local path="${1}"
 
     for source in $path/*.cpp; do
-        analyse_source $source
+        analyse_source $source &
     done
 }
 
@@ -55,7 +56,7 @@ function analyse_project() {
     local source="projects/${project}/${project}.cpp"
 
     if [[ "${project}" != "astl" ]]; then
-        analyse_source $source "-header-filter=.*"
+        analyse_source $source "-header-filter=.*" &
     fi
 
     analyse_project_test $project
@@ -73,6 +74,11 @@ function analyse() {
     else
         analyse_project $project
     fi
+
+    for job in $(jobs -p)
+    do
+        wait $job || $((result += 1))
+    done
 
     if (( $result != 0 )); then
         print_error "ERROR: analysis found issues (see above)"
