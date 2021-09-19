@@ -28,15 +28,15 @@ static const auto s = suite("help", [] { //NOLINT(cert-err58-cpp)
                                      "  named        --name=value, --n=value, --name value, --n value\n"
                                      "  positional   value\n"
                                      "Options:\n"
-                                     "    -?                   [switch]          Prints this help.\n"
+                                     "    -?                   [switch]            Prints this help.\n"
                                      "  Required:\n"
-                                     "    [positional]         [string]          Positional argument description.\n"
+                                     "    [positional]         [string]            Positional argument description.\n"
                                      "  Optional:\n"
-                                     "    -l, --long_name1     [switch]          Some long name argument.\n"
-                                     "    --another            [floating=13.3]   Another argument description.\n"
-                                     "    -o, --output         [integer]         Output parameter.\n"
+                                     "    -l, --long_name1     [switch]            Some long name argument.\n"
+                                     "    --another            [floating=13.3]     Another argument description.\n"
+                                     "    -o, --output         [integer]           Output parameter.\n"
                                      "  Positional:\n"
-                                     "    [positional]         [string]          Positional argument description.\n";
+                                     "    [positional]         [string]            Positional argument description.\n";
 
         expect(stream.str()).to_be(expected);
     });
