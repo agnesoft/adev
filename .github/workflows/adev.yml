@@ -7,15 +7,6 @@ on:
     branches: [main]
 
 jobs:
-  documentation:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash
-        run: ./adev.sh install doxygen
-      - shell: bash
-        run: ./adev.sh build docs
-
   analysis:
     runs-on: ubuntu-latest
     steps:
@@ -24,6 +15,15 @@ jobs:
       - run: ./adev.sh install clang-tidy
       - run: ./adev.sh build clang
       - run: ./adev.sh analyse
+
+  documentation:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - shell: bash
+        run: ./adev.sh install doxygen
+      - shell: bash
+        run: ./adev.sh build docs
 
   formatting:
     runs-on: ubuntu-latest
