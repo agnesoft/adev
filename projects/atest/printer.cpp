@@ -133,9 +133,9 @@ private:
 
     auto print_failures(const std::vector<TestSuite> &testSuites) -> void
     {
-        for (const TestSuite &test_suite : testSuites)
+        for (const TestSuite &testSuite : testSuites)
         {
-            this->print_failures(test_suite);
+            this->print_failures(testSuite);
         }
     }
 
@@ -170,8 +170,8 @@ private:
 
     [[nodiscard]] static auto separator() -> std::string
     {
-        constexpr size_t SEPARATOR_WIDTH = 75;
-        return std::string(SEPARATOR_WIDTH, '=');
+        constexpr size_t separatorWidth = 75;
+        return std::string(separatorWidth, '=');
     }
 
     [[nodiscard]] static auto source_location_to_string(const std::source_location &sourceLocation) -> std::string

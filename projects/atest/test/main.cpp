@@ -7,10 +7,10 @@ auto main(int argc, char *argv[]) -> int
     test("Global test", [] {
     });
 
-    constexpr int EXPECTED_FAILURES = 16;
+    constexpr int expectedFailures = 16;
     const int failures = ::atest::TestRunner{argc, argv}.run();
 
-    if (failures == EXPECTED_FAILURES)
+    if (failures == expectedFailures)
     {
         return 0;
     }

@@ -36,7 +36,7 @@ At a glance:
 ```
 import atest;
 
-static auto s = ::atest::suite("My test suite", [] {
+static const auto S= ::atest::suite("My test suite", [] {
     test("a test", [] {
         ::atest::expect(1 + 1).to_be(2);
     });
@@ -97,7 +97,7 @@ Example:
 
 ```
 import atest;
-static const auto s = ::atest::suite("My test suite", [] {
+static auto s= ::atest::suite("My test suite", [] {
     ::atest::test("My test", [] {
         //...
     });

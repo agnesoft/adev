@@ -5,7 +5,7 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("Expect::toBe()", [] { //NOLINT(cert-err58-cpp)
     test("Value is equal to itself", [] {
         expect(1).to_be(1);
     });

@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("CommandLine::application_name()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("CommandLine::application_name()", [] { //NOLINT(cert-err58-cpp)
     test("./app.exe", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};

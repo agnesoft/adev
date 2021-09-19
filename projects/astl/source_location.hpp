@@ -4,7 +4,7 @@
 namespace astl
 {
 export template<typename T>
-class source_location_impl
+class SourceLocationImpl
 {
 public:
     [[nodiscard]] static auto current(const char *file = __builtin_FILE(), int line = __builtin_LINE()) noexcept -> T
@@ -33,7 +33,7 @@ private:
 
 namespace std //NOLINT(cert-dcl58-cpp)
 {
-export class source_location : public astl::source_location_impl<source_location>
+export class source_location : public astl::SourceLocationImpl<source_location> //NOLINT(readability-identifier-naming)
 {
 };
 }
