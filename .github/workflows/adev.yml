@@ -16,6 +16,12 @@ jobs:
       - shell: bash
         run: ./adev.sh build docs
 
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh analyse
+
   formatting:
     runs-on: ubuntu-latest
     steps:
