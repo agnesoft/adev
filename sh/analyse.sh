@@ -77,7 +77,7 @@ function analyse() {
 
     for job in $(jobs -p)
     do
-        wait $job || $((result += 1))
+        wait $job || ((result=result+1))
     done
 
     if (( $result != 0 )); then
