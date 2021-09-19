@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("long name", [] {
+static const auto s = suite("long name", [] { //NOLINT(cert-err58-cpp)
     test("'value'", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -23,9 +23,9 @@ static const auto s = suite("long name", [] {
         std::int64_t value = 0;
 
         commandLine.option().long_name("long.name").description("").bind_to(&value);
-        commandLine.parse(2, std::vector<const char *>{"./app", "--long.name=10"}.data());
+        commandLine.parse(2, std::vector<const char *>{"./app", "--long.name=3"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(3);
     });
 
     test("'long-name'", [] {
@@ -34,9 +34,9 @@ static const auto s = suite("long name", [] {
         std::int64_t value = 0;
 
         commandLine.option().long_name("long-name").description("").bind_to(&value);
-        commandLine.parse(2, std::vector<const char *>{"./app", "--long-name=10"}.data());
+        commandLine.parse(2, std::vector<const char *>{"./app", "--long-name=-2"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(-2);
     });
 
     test("'long_name'", [] {
@@ -45,9 +45,9 @@ static const auto s = suite("long name", [] {
         std::int64_t value = 0;
 
         commandLine.option().long_name("long_name").description("").bind_to(&value);
-        commandLine.parse(2, std::vector<const char *>{"./app", "--long_name=10"}.data());
+        commandLine.parse(2, std::vector<const char *>{"./app", "--long_name=-1"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(-1);
     });
 
     test("'longName'", [] {
@@ -56,9 +56,9 @@ static const auto s = suite("long name", [] {
         std::int64_t value = 0;
 
         commandLine.option().long_name("longName").description("").bind_to(&value);
-        commandLine.parse(2, std::vector<const char *>{"./app", "--longName=10"}.data());
+        commandLine.parse(2, std::vector<const char *>{"./app", "--longName=3"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(3);
     });
 
     test("'Long--Name.1'", [] {
@@ -67,9 +67,9 @@ static const auto s = suite("long name", [] {
         std::int64_t value = 0;
 
         commandLine.option().long_name("Long--Name.1").description("").bind_to(&value);
-        commandLine.parse(2, std::vector<const char *>{"./app", "--Long--Name.1=10"}.data());
+        commandLine.parse(2, std::vector<const char *>{"./app", "--Long--Name.1=4"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(4);
     });
 
     test("multiple", [] {
@@ -79,15 +79,16 @@ static const auto s = suite("long name", [] {
         bool value = false;
         std::string option;
         std::int64_t another = 0;
+        constexpr int argc = 5;
 
         commandLine.option().long_name("value").description("").bind_to(&value);
         commandLine.option().long_name("option").description("").bind_to(&option);
         commandLine.option().long_name("yetanother").short_name('y').description("").bind_to(&another);
-        commandLine.parse(5, std::array<const char *, 5>{"./app", "--value", "--option=file", "--yetanother", "10"}.data());
+        commandLine.parse(argc, std::array<const char *, argc>{"./app", "--value", "--option=file", "--yetanother", "-1"}.data());
 
         expect(value).to_be(true);
         expect(option).to_be("file");
-        expect(another).to_be(10);
+        expect(another).to_be(-1);
     });
 
     test("type mismatch", [] {

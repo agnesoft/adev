@@ -5,18 +5,18 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("help", [] {
+static const auto s = suite("help", [] { //NOLINT(cert-err58-cpp)
     test("Mixed options", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
 
         bool b = false;
-        std::int64_t i = 10;
+        std::int64_t i{};
         std::string str;
         double d{};
 
         commandLine.option().long_name("long_name1").short_name('l').description("Some long name argument.").bind_to(&b);
-        commandLine.option().long_name("another").default_value(10.0).description("Another argument description.").bind_to(&d);
+        commandLine.option().long_name("another").default_value(13.3).description("Another argument description.").bind_to(&d); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         commandLine.option().positional().required().description("Positional argument description.").bind_to(&str);
         commandLine.option().long_name("output").short_name('o').description("Output parameter.").bind_to(&i);
         commandLine.parse(2, std::array<const char *, 2>{"app", "-?"}.data());
@@ -33,7 +33,7 @@ static const auto s = suite("help", [] {
                                      "    [positional]         [string]          Positional argument description.\n"
                                      "  Optional:\n"
                                      "    -l, --long_name1     [switch]          Some long name argument.\n"
-                                     "    --another            [floating=10]     Another argument description.\n"
+                                     "    --another            [floating=13.3]   Another argument description.\n"
                                      "    -o, --output         [integer]         Output parameter.\n"
                                      "  Positional:\n"
                                      "    [positional]         [string]          Positional argument description.\n";

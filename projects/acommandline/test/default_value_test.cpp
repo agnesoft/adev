@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("default value", [] {
+static const auto s = suite("default value", [] { //NOLINT(cert-err58-cpp)
     test("named", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -35,7 +35,7 @@ static const auto s = suite("default value", [] {
         std::string output;
 
         expect([&] {
-            commandLine.option().positional().default_value(std::int64_t{10}).description("").bind_to(&output);
+            commandLine.option().positional().default_value(std::int64_t{3}).description("").bind_to(&output);
         })
             .to_throw<std::runtime_error>(std::string{"The option '[positional]' default value is set with incompatible type ("} + typeid(std::int64_t).name() + ") to the one it is being bound to (" + typeid(std::string).name() + ").");
     });

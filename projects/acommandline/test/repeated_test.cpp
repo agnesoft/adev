@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("repeated", [] {
+static const auto s = suite("repeated", [] { //NOLINT(cert-err58-cpp)
     test("single named", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -23,11 +23,12 @@ static const auto s = suite("repeated", [] {
         ::acommandline::CommandLine commandLine{stream};
 
         std::vector<double> values;
+        constexpr int argc = 7;
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&values);
-        commandLine.parse(7, std::array<const char *, 7>{"./app", "-v", "33.3", "--value=51.61234", "-v=9.999", "-v", "19.19"}.data());
+        commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "33.3", "--value=51.61234", "-v=9.999", "-v", "19.19"}.data());
 
-        expect(values).to_be(std::vector{33.3, 51.61234, 9.999, 19.19});
+        expect(values).to_be(std::vector{33.3, 51.61234, 9.999, 19.19}); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     });
 
     test("single positional", [] {
@@ -39,7 +40,7 @@ static const auto s = suite("repeated", [] {
         commandLine.option().positional().description("").bind_to(&values);
         commandLine.parse(2, std::array<const char *, 2>{"./app", "13.50"}.data());
 
-        expect(values).to_be(std::vector{13.50});
+        expect(values).to_be(std::vector{13.50}); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     });
 
     test("positional", [] {

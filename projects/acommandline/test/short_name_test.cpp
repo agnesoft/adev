@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("short name", [] {
+static const auto s = suite("short name", [] { //NOLINT(cert-err58-cpp)
     test("'S'", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -25,9 +25,9 @@ static const auto s = suite("short name", [] {
         std::int64_t value = 0;
 
         commandLine.option().long_name("short").short_name('s').description("").bind_to(&value);
-        commandLine.parse(3, std::array<const char *, 3>{"./app", "-s", "10"}.data());
+        commandLine.parse(3, std::array<const char *, 3>{"./app", "-s", "3"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(3);
     });
 
     test("multiple", [] {
@@ -37,15 +37,16 @@ static const auto s = suite("short name", [] {
         bool value = false;
         std::string option;
         std::int64_t another = 0;
+        constexpr int argc = 5;
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
         commandLine.option().long_name("option").short_name('o').description("").bind_to(&option);
         commandLine.option().long_name("yetanother").short_name('y').description("").bind_to(&another);
-        commandLine.parse(5, std::array<const char *, 5>{"./app", "-v", "-o=file", "-y", "10"}.data());
+        commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "-o=file", "-y", "-4"}.data());
 
         expect(value).to_be(true);
         expect(option).to_be("file");
-        expect(another).to_be(10);
+        expect(another).to_be(-4);
     });
 
     test("invalid (number)", [] {

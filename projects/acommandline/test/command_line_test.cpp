@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("CommandLine", [] {
+static const auto s = suite("CommandLine", [] { //NOLINT(cert-err58-cpp)
     test("default constructible", [] {
         expect(std::is_default_constructible_v<::acommandline::CommandLine>).to_be(true);
     });
@@ -32,13 +32,13 @@ static const auto s = suite("CommandLine", [] {
         ::acommandline::CommandLine commandLine{stream};
         commandLine.option().positional().description("").bind_to(&value);
         ::acommandline::CommandLine other{commandLine};
-        other.parse(2, std::array<const char *, 2>{"./app.exe", "10"}.data());
+        other.parse(2, std::array<const char *, 2>{"./app.exe", "4"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(4);
 
-        commandLine.parse(2, std::array<const char *, 2>{"./diff", "100"}.data());
+        commandLine.parse(2, std::array<const char *, 2>{"./diff", "-3"}.data());
 
-        expect(value).to_be(100);
+        expect(value).to_be(-3);
     });
 
     test("move constructor", [] {
@@ -47,14 +47,14 @@ static const auto s = suite("CommandLine", [] {
         ::acommandline::CommandLine commandLine{stream};
         commandLine.option().positional().description("").bind_to(&value);
         ::acommandline::CommandLine other{std::move(commandLine)};
-        other.parse(2, std::array<const char *, 2>{"./app.exe", "10"}.data());
+        other.parse(2, std::array<const char *, 2>{"./app.exe", "4"}.data());
 
-        expect(value).to_be(10);
+        expect(value).to_be(4);
     });
 
     test("example", [] {
         const int argc = 6;
-        std::array<const char *, 6> args{"./app.exe", "-i", "main.cpp", "--flag", "--Include=/some/path", "--Include=\"other/path/with space/\""}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        std::array<const char *, argc> args{"./app.exe", "-i", "main.cpp", "--flag", "--Include=/some/path", "--Include=\"other/path/with space/\""}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         const char **argv = args.data();
 
         // clang-format off

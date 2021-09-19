@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("required", [] {
+static const auto s = suite("required", [] { //NOLINT(cert-err58-cpp)
     test("matched positional", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
