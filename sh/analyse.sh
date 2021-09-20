@@ -1,6 +1,11 @@
 source sh/common.sh
 
-project="${1}"
+if [[ "${1}" == "diff" ]]; then
+    diffOnly=true
+else
+    project="${1}"
+fi
+
 clangTidy=
 result=0
 
@@ -38,7 +43,9 @@ function analyse_sources() {
     local path="${1}"
 
     for source in $path/*.cpp; do
-        analyse_source $source &
+        if ! [[ $diffOnly ]] || is_changed ${source}; then
+            analyse_source $source &
+        fi
     done
 }
 
@@ -54,9 +61,13 @@ function analyse_project_test() {
 function analyse_project() {
     local project="${1}"
     local source="projects/${project}/${project}.cpp"
+    local sources=(projects/${project}/*.cpp)
+    sources="${sources[@]}"
 
     if [[ "${project}" != "astl" ]]; then
-        analyse_source $source "-header-filter=.*" &
+        if ! [[ $diffOnly ]] || is_changed "${sources}"; then 
+            analyse_source $source "-header-filter=.*" &
+        fi
     fi
 
     analyse_project_test $project
@@ -68,8 +79,14 @@ function analyse_projects() {
     done
 }
 
+function is_changed() {
+    local subject="${1}"
+    local diff=$(git diff main --name-only -- $subject)
+    [[ "${diff}" != "" ]]
+}
+
 function analyse() {
-    if  [[ "${project}" == "" ]]; then
+    if [[ "${project}" == "" ]]; then
         analyse_projects
     else
         analyse_project $project

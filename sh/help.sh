@@ -1,7 +1,8 @@
 echo "Usage: ./adev.sh [ACTION] [PARAMS]
 
-./adev.sh analyse                        Run static analysis on all projects with clang-tidy.
-./adev.sh analyse <project>              Run static analysis on <project> with clang-tidy.
+./adev.sh analyse                        Run clang-tidy on all projects.
+./adev.sh analyse diff                   Run clang-tidy on files/projects changed from main.
+./adev.sh analyse <project>              Run clang-tidy on <project>.
 ./adev.sh build                          Build all projects with the default toolchain.
 ./adev.sh build list                     List available projects.
 ./adev.sh build docs                     Build Doxygen documentation.
