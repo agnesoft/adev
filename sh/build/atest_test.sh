@@ -1,4 +1,4 @@
-source "sh/common_build.sh" $1
+source "sh/build_common.sh" $1
 
 project="atest_test"
 projectDir="projects/atest/test"
