@@ -62,7 +62,7 @@ function format_check() {
 
 function format() {
     for file in projects/**/*.{cpp,hpp}; do
-        $clangFormat -i "${file}"
+        "${clangFormat}" -i "${file}"
         print_ok "${file}"
     done
 }

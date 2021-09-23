@@ -108,7 +108,7 @@ function detect_clang_tidy() {
     if ! is_available "${clangTidy}"; then
         print_error "ERROR: ${clangTidy} is not available. Please install it with './adev.sh install clang-tidy'."
     else
-        $clangTidy --version | head -n 2 | tail -n +2
+        "${clangTidy}" --version | head -n 2 | tail -n +2
     fi
 }
 

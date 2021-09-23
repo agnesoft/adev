@@ -3,6 +3,7 @@ source "sh/common.sh"
 readonly PROJECT_NAME_FROM_SCRIPT_PATTERN=".*build_(.*)\.sh"
 
 action=
+diffOnly=
 project=
 toolchain=
 
@@ -15,6 +16,11 @@ function list_projects() {
 }
 
 function build_all() {
+    if [[ $diffOnly ]] && ! is_changed "*.cpp *hpp"; then
+        echo "No sources changed from 'main'. Nothing to build."
+        exit 0
+    fi
+
     echo "Toolchain: $toolchain"
     echo ""
 
@@ -68,6 +74,11 @@ function set_properties() {
         action="list"
     elif [[ "${1}" == "docs" ]]; then
         action="docs"
+    elif [[ "${1}" == "diff" ]]; then
+        action="buildAll"
+        diffOnly=true
+        project=""
+        toolchain=$2
     elif [[ "${1}" == "clang" ]] || [[ "${1}" == "msvc" ]] || [[ "${1}" == "gcc" ]] || [[ "${1}" == "" ]]; then
         action="buildAll"
         toolchain=$1
