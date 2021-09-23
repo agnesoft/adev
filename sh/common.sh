@@ -32,6 +32,18 @@ function is_windows() {
     [[ $OSTYPE == "msys" ]] || [[ $OSTYPE == "cygwin" ]]
 }
 
+function set_toolchain() {
+    if is_toolchain "${1}"; then
+        toolchain="${1}"
+    elif is_linux; then
+        toolchain="gcc"
+    elif is_windows; then
+        toolchain="msvc"
+    else
+        toolchain="clang"
+    fi
+}
+
 function wait_for_jobs() {
     result=0
 
@@ -42,3 +54,7 @@ function wait_for_jobs() {
 }
 
 shopt -s globstar
+
+if is_windows; then
+    executableExtension=".exe"
+fi
