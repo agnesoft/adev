@@ -12,7 +12,7 @@ function is_available() {
 }
 
 function is_changed() {
-    local diff=$(git diff main --name-only -- ${1})
+    local diff=$(git diff origin/main --name-only -- ${1})
     [[ "${diff}" != "" ]]
 }
 
