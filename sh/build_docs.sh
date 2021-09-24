@@ -26,5 +26,7 @@ function build_docs () {
     fi
 }
 
-detect_doxygen
-build_docs
+if [[ "${1}" == "" ]] || ( [[ "${2}" == "diff" ]] && is_changed "*.cpp *.hpp" ); then
+    detect_doxygen
+    build_docs
+fi

@@ -7,10 +7,10 @@ echo "Usage: ./adev.sh [ACTION] [PARAMS]
 ./adev.sh build                            Build all projects with the default toolchain.
 ./adev.sh build list                       List available projects.
 ./adev.sh build docs                       Build Doxygen documentation.
-./adev.sh build diff                       Build with default toolchain if there are changes to sources from main.
-./adev.sh build diff <toolchain>           Build with <toolchain> if there are changes to sources from main.
-./adev.sh build <project> <toolchain>      Build <project> with <toolchain>.
+./adev.sh build docs diff                  Build Doxygen documentation if sources changed from main.
 ./adev.sh build <toolchain>                Build all projects with <toolchain>.
+./adev.sh build diff                       Build all projects with default toolchain if sources changed from main.
+./adev.sh build diff <toolchain>           Build all projects with <toolchain> if sources changed from main.
 ./adev.sh build <project>                  Build <project> with default toolchain.
 ./adev.sh build <project> <toolchain>      Build <project> with <toolchain>.
 ./adev.sh format                           Formats source code with clang-format.

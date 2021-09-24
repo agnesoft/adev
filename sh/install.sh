@@ -6,7 +6,7 @@ function install_package() {
 
     if [[ -f "${installScript}" ]]; then
         echo "Installing package '${package}'..."
-        run_install_script "${installScript}"
+        run_script "${installScript}"
     else
         print_error "ERROR: Package '${package}' does not exist."
         echo ""
@@ -23,17 +23,6 @@ function list_packages() {
             echo "  ${BASH_REMATCH[1]}"
         fi
     done
-}
-
-function run_install_script() {
-    local installScript="${1}"
-    "${installScript[@]}"
-    local status=$?
-
-    if (( $status != 0 )); then
-        print_error "ERROR: Installing package '${package}' (${installScript}) failed: ${status}"
-        exit 1
-    fi
 }
 
 if [[ "${1}" == "list" ]]; then

@@ -32,16 +32,38 @@ function is_windows() {
     [[ $OSTYPE == "msys" ]] || [[ $OSTYPE == "cygwin" ]]
 }
 
-function set_toolchain() {
-    if is_toolchain "${1}"; then
-        toolchain="${1}"
-    elif is_linux; then
-        toolchain="gcc"
-    elif is_windows; then
-        toolchain="msvc"
-    else
-        toolchain="clang"
+function run_script() {
+    local script="${1}"
+    local arg1="${2}"
+    local arg2="${3}"
+    local arg3="${4}"
+    "${script[@]}" "${arg1}" "${arg2}" "${arg3}"
+    local status=$?
+
+    if (( $status != 0 )); then
+        print_error "ERROR: ${script} failed: ${status}"
+        exit 1
     fi
+}
+
+function set_toolchain() {
+    if [[ "${1}" == "" ]]; then
+        if is_linux; then
+            toolchain="gcc"
+        elif is_windows; then
+            toolchain="msvc"
+        else
+            toolchain="clang"
+        fi
+    elif is_toolchain "${1}"; then
+        toolchain="${1}"
+    else
+        print_error "ERROR: unknown toolchain '${1}'"
+        exit 1
+    fi
+
+    echo "Toolchain: ${toolchain}"
+    echo ""
 }
 
 function wait_for_jobs() {
