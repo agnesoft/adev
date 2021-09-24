@@ -28,17 +28,6 @@ function build_projects() {
     done
 }
 
-function build_projects_diff() {
-    local toolchain="${1}"
-
-    if ! is_changed "*.cpp *hpp"; then
-        print_ok "No sources changed from 'main'. Nothing to build."
-        exit 0
-    fi
-
-    build_projects "${toolchain}"
-}
-
 function list_projects() {
     for script in sh/build/*.sh; do
         if [[ "${script}" =~ sh/build/(.*)\.sh ]]; then
@@ -56,9 +45,7 @@ function remove_done_files() {
 if [[ "${1}" == "list" ]]; then
     list_projects
 elif [[ "${1}" == "docs" ]]; then
-    sh/build_docs.sh "${2}"
-elif [[ "${1}" == "diff" ]]; then
-    build_projects_diff "${2}"
+    sh/build_docs.sh
 elif is_toolchain "${1}"; then
     build_projects "${1}"
 elif [[ "${1}" != "" ]]; then
