@@ -18,7 +18,11 @@ public:
     //!
     //! - NOT contain any prefix such as `--`
     //! - be at least 2 characters long
-    //! - use only alphanumeric characters
+    //! - use only:
+    //!     - alphanumeric characters
+    //!     - underscores: `_`
+    //!     - dash: `-`
+    //!     - dot: `.`
     //! - start with a letter
     [[nodiscard]] auto long_name(std::string name) -> OptionBuilderNamed
     {
