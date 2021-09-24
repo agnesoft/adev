@@ -57,6 +57,14 @@ function set_toolchain() {
         fi
     elif is_toolchain "${1}"; then
         toolchain="${1}"
+
+        if [[ "${toolchain}" == "msvc" ]] && ! is_windows; then
+            print_error "ERROR: 'msvc' toolchain is only available on Windows"
+            exit 1
+        elif [[ "${toolchain}" == "gcc" ]] && ! is_linux; then
+            print_error "ERROR: 'gcc' toolchain is only available on Linux"
+            exit 1
+        fi
     else
         print_error "ERROR: unknown toolchain '${1}'"
         exit 1
@@ -79,4 +87,8 @@ shopt -s globstar
 
 if is_windows; then
     executableExtension=".exe"
+    clang="clang++"
+else
+    clang="clang++-12"
+    gcc="g++-11"
 fi

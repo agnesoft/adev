@@ -1,4 +1,4 @@
-source "sh/build_common.sh" $1
+source "sh/build_common.sh" "${1}"
 
 project="astl"
 projectDir="projects/${project}"

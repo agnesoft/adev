@@ -1,4 +1,4 @@
-source "sh/build_common.sh" $1
+source "sh/build_common.sh" "${1}"
 
 project="acommandline"
 projectDir="projects/${project}"
@@ -80,5 +80,5 @@ lib.exe /NOLOGO ^
         \"${buildDir}/acommandline-command_line.obj\" || exit 1
 "
 
-sh/build_astl.sh $toolchain
+sh/build/astl.sh "${toolchain}"
 build

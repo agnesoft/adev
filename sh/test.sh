@@ -42,7 +42,7 @@ function run_tests() {
     echo "Running tests from '${testDir}'..."
 
     if [[ -d "${testDir}" ]]; then
-        for test in $testDir/*_test$extension; do
+        for test in $testDir/*_test$executableExtension; do
             if [[ -f "${test}" ]]; then
                 run_test "${test}"
             fi

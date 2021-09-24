@@ -2,10 +2,10 @@ source "sh/common.sh"
 
 function build_project() {
     local project="${1}"
-    local buildScript="sh/build_${project}.sh"
+    local buildScript="sh/build/${project}.sh"
 
     if [[ -f "${buildScript}" ]]; then
-        run_script "${buildScript}" "${toolcahin}"
+        run_script "${buildScript}" "${toolchain}"
     else
         echo ""
         print_error "ERROR: Project '${project}' does not exist."
@@ -18,6 +18,8 @@ Available projects:"
 
 function build_projects() {
     set_toolchain "${1}"
+
+    remove_done_files
 
     for script in sh/build/*.sh; do
         if [[ "${script}" =~ sh/build/(.*)\.sh ]]; then
@@ -38,8 +40,6 @@ function build_projects_diff() {
 }
 
 function list_projects() {
-    remove_done_files
-
     for script in sh/build/*.sh; do
         if [[ "${script}" =~ sh/build/(.*)\.sh ]]; then
             echo "  ${BASH_REMATCH[1]}"
