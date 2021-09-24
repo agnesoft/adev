@@ -51,38 +51,4 @@ static const auto S = suite("CommandLine", [] { //NOLINT(cert-err58-cpp)
 
         expect(value).to_be(4);
     });
-
-    test("example", [] {
-        const int argc = 6;
-        std::array<const char *, argc> args{"./app.exe", "-i", "main.cpp", "--flag", "--Include=/some/path", "--Include=\"other/path/with space/\""}; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-        const char **argv = args.data();
-
-        // clang-format off
-//! [[Usage]]
-//int main(int argc, char *argv[])
-//argc: "./app.exe", "-i", "main.cpp", "--flag", "--Include=/some/path", "--Include=\"other/path/with space/\"
-std::string input;
-bool flag = false;
-std::string output;
-std::vector<std::string> includePaths;
-
-::acommandline::CommandLine commandLine;
-commandLine.option().long_name("input").short_name('i').required().description("The required input file").bind_to(&input);
-commandLine.option().long_name("flag").description("An optional flag.").bind_to(&flag);
-commandLine.option().positional().default_value(std::string{"a.o"}).description("An optional defaulted output file.").bind_to(&output);
-commandLine.option().long_name("Include").description("Optional repeatable argument").bind_to(&includePaths);
-commandLine.parse(argc, argv);
-
-//intput == main.cpp
-//flag == true
-//output == a.o
-//includePaths == {/some/path, other/path/with space/}
-//! [[Usage]]
-        // clang-format on
-
-        expect(input).to_be("main.cpp");
-        expect(flag).to_be(true);
-        expect(output).to_be("a.o");
-        expect(includePaths).to_be(std::vector<std::string>{"/some/path", "other/path/with space/"});
-    });
 });

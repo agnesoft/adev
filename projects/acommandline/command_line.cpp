@@ -105,8 +105,9 @@ namespace acommandline
 //! this argument is used only the help is
 //! displayed and no parsing is done.
 //!
-//! # Examples
+//! # Example
 //!
+//! \snippet examples.cpp [usage]
 //!
 export class CommandLine
 {
