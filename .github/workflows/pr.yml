@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh install clang
       - if: steps.diff.outputs.diff == 'true'
@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
       - id: diff
         shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - shell: bash
         if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh install doxygen
@@ -45,7 +45,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh install clang-format
       - if: steps.diff.outputs.diff == 'true'
@@ -58,7 +58,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh install clang
       - if: steps.diff.outputs.diff == 'true'
@@ -74,7 +74,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh install gcc
       - if: steps.diff.outputs.diff == 'true'
@@ -90,7 +90,7 @@ jobs:
           fetch-depth: 0
       - id: diff
         shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - shell: bash
         if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build msvc
