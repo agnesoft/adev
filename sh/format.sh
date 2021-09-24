@@ -57,7 +57,7 @@ function format_check() {
         print_ok "Formatting checks PASSED"
     fi
 
-    exit 1
+    exit $result
 }
 
 function format() {
