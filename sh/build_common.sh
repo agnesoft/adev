@@ -1,17 +1,8 @@
 source "sh/common.sh"
 
-status=0
-toolchain=$1
+toolchain="${1}"
 buildRoot="build/${toolchain}"
 binDir="${buildRoot}/bin"
-
-if is_windows; then
-    executableSuffix=".exe"
-    clang="clang++"
-else
-    clang="clang++-12"
-    gcc="g++-11"
-fi
 
 clangCompilerFlags="-std=c++20 \
                     -Wall \
@@ -29,7 +20,8 @@ clangCompilerLinkerFlags="${clangCompilerFlags} \
                           -lpthread"
 
 gccCompilerFlags="-std=c++20 \
-                  -Wall -Werror \
+                  -Wall \
+                  -Werror \
                   -pedantic-errors \
                   -fmodules-ts"
 
@@ -40,13 +32,13 @@ msvcCompilerFlags="/nologo \
                    /W4 \
                    /WX \
                    /ifcSearchDir \"${buildRoot}/astl\" \
-                   /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\""
+                   /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" "
 
 function build() {
     if [[ -f "${buildRoot}/${project}.done" ]]; then
-        exit $status
+        exit 0
     fi
-    
+
     echo "*** ${project} ***"
 
     mkdir -p "${binDir}"
@@ -89,26 +81,28 @@ ${buildMSVC}"
 }
 
 function detect_msvc_env_script() {
-    if [[ "${msvcEnvScript}" == "" ]]; then
-        msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-        
-        if [[ -f "${msvcEnvScript}" ]]; then
-            return
-        fi
-        
-        msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
-        
-        if [[ -f "${msvcEnvScript}" ]]; then
-            return
-        fi
-
-        msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
-        
-        if [[ -f "${msvcEnvScript}" ]]; then
-            return
-        fi
-
-        print_error "ERROR: Visual Studio environment script not found."
-        exit 1
+    if [[ "${msvcEnvScript}" != "" ]]; then
+        return
     fi
+    
+    msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        
+    if [[ -f "${msvcEnvScript}" ]]; then
+        return
+    fi
+
+    msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
+    
+    if [[ -f "${msvcEnvScript}" ]]; then
+        return
+    fi
+
+    msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
+    
+    if [[ -f "${msvcEnvScript}" ]]; then
+        return
+    fi
+
+    print_error "ERROR: Visual Studio 2019 environment script not found."
+    exit 1
 }

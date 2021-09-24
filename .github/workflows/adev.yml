@@ -3,10 +3,17 @@ name: adev
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh install clang
+      - run: ./adev.sh install clang-tidy
+      - run: ./adev.sh build clang
+      - run: ./adev.sh analyse
+
   documentation:
     runs-on: windows-latest
     steps:
@@ -20,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: ./adev.sh install clang-format
       - run: ./adev.sh format check
 
   linux_clang12_x64:

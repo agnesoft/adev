@@ -5,25 +5,25 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-struct S
+struct MyStruct
 {
     int value = 0; //NOLINT(misc-non-private-member-variables-in-classes)
 
-    [[nodiscard]] auto operator==(const S &other) const noexcept -> bool
+    [[nodiscard]] auto operator==(const MyStruct &other) const noexcept -> bool
     {
         return value == other.value;
     }
 };
 
-auto operator<<(std::ostream &stream, const S &value) -> std::ostream &
+auto operator<<(std::ostream &stream, const MyStruct &value) -> std::ostream &
 {
-    stream << "S{" << value.value << '}';
+    stream << "MyStruct{" << value.value << '}';
     return stream;
 }
 
-static const auto s = suite("Printer", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("Printer", [] { //NOLINT(cert-err58-cpp)
     test("Print custom type", [] {
-        expect_fail(S{1}).to_be(S{2});
+        expect_fail(MyStruct{1}).to_be(MyStruct{2});
     });
 
     test("Print container", [] {
@@ -35,11 +35,11 @@ static const auto s = suite("Printer", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Print container of custom type", [] {
-        expect_fail(std::vector<S>{{1}, {2}, {3}}).to_be(std::vector<S>{{3}, {2}, {1}});
+        expect_fail(std::vector<MyStruct>{{1}, {2}, {3}}).to_be(std::vector<MyStruct>{{3}, {2}, {1}});
     });
 
     test("Print container of custom type (INTENTIONAL FAILURE)", [] {
-        expect(std::vector<S>{{1}, {2}, {3}}).to_be(std::vector<S>{{3}, {2}, {1}});
+        expect(std::vector<MyStruct>{{1}, {2}, {3}}).to_be(std::vector<MyStruct>{{3}, {2}, {1}});
     });
 
     test("Print std::pair (INTENTIONAL FAILURE)", [] {

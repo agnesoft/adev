@@ -34,7 +34,7 @@ namespace atest
 //! callable. The call site source location is
 //! automatically captured.
 export template<typename ExpressionT>
-[[nodiscard]] auto assert_(const ExpressionT &expression,
+[[nodiscard]] auto assert_(const ExpressionT &expression, //NOLINT(readability-identifier-naming)
                            const std::source_location &sourceLocation = std::source_location::current()) noexcept
     -> Expect<ExpressionT,
               ExpectationType::Assertion,

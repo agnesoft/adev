@@ -1,4 +1,4 @@
-source "sh/common_build.sh" $1
+source "sh/build_common.sh" "${1}"
 
 project="atest_test"
 projectDir="projects/atest/test"
@@ -49,5 +49,5 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/astl/astl.lib\" || exit 1
 "
 
-sh/build_atest.sh $toolchain
+sh/build/atest.sh "${toolchain}"
 build

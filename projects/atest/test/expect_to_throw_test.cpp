@@ -5,7 +5,7 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     test("Exception types match", [] {
         expect([] { throw std::logic_error{""}; }).to_throw<std::logic_error>();
     });

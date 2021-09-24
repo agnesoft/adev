@@ -1,41 +1,14 @@
 source "sh/common.sh"
 
-readonly PROJECT_NAME_FROM_SCRIPT_PATTERN=".*build_(.*)\.sh"
-
-action=
-project=
-toolchain=
-
-function list_projects() {
-    for script in sh/build_*.sh; do
-        if [[ "${script}" =~ sh/build_(.*)\.sh ]]; then
-            echo "  ${BASH_REMATCH[1]}"
-        fi
-    done
-}
-
-function build_all() {
-    echo "Toolchain: $toolchain"
-    echo ""
-
-    for script in sh/build_*.sh; do
-        if [[ "${script}" =~ sh/build_(.*)\.sh ]]; then
-            run_build_script $script ${BASH_REMATCH[1]}
-        fi
-    done
-}
-
 function build_project() {
-    echo "Toolchain: $toolchain"
-    echo ""
-
-    local buildScript="sh/build_$project.sh"
+    local project="${1}"
+    local buildScript="sh/build/${project}.sh"
 
     if [[ -f "${buildScript}" ]]; then
-        run_build_script $buildScript $project
+        run_script "${buildScript}" "${toolchain}"
     else
         echo ""
-        print_error "ERROR: Project '$project' does not exist."
+        print_error "ERROR: Project '${project}' does not exist."
         echo "
 Available projects:"
         listProjects
@@ -43,71 +16,42 @@ Available projects:"
     fi
 }
 
-function remove_done_files() {
-    if [[ -d "build/$toolchain/" ]]; then
-        find build/$toolchain/ -name "*.done" -type f -delete
-    fi
-}
+function build_projects() {
+    set_toolchain "${1}"
 
-function run_build_script() {
-    local buildScript="${1}"
-    local project="${2}"
-    local status=0
+    remove_done_files
 
-    $buildScript $toolchain
-    status=$?
-
-    if (( $status != 0 )); then
-        print_error "ERROR: Building project '${project}' (${buildScript}) failed: ${status}"
-        exit 1
-    fi
-}
-
-function set_properties() {
-    if [[ "${1}" == "list" ]]; then
-        action="list"
-    elif [[ "${1}" == "docs" ]]; then
-        action="docs"
-    elif [[ "${1}" == "clang" ]] || [[ "${1}" == "msvc" ]] || [[ "${1}" == "gcc" ]] || [[ "${1}" == "" ]]; then
-        action="buildAll"
-        toolchain=$1
-    elif [[ "${2}" == "clang" ]] || [[ "${2}" == "msvc" ]] || [[ "${2}" == "gcc" ]] || [[ "${2}" == "" ]]; then
-        action="buildProject"
-        project=$1
-        toolchain=$2
-    fi
-
-    if [[ "${toolchain}" == "" ]]; then
-        if is_windows; then
-            toolchain="msvc"
-        else
-            toolchain="gcc"
+    for script in sh/build/*.sh; do
+        if [[ "${script}" =~ sh/build/(.*)\.sh ]]; then
+            build_project "${BASH_REMATCH[1]}"
         fi
-    fi
+    done
+}
 
-    if ! is_windows && [[ "${toolchain}" == "msvc" ]]; then
-        print_error "ERROR: toolchain 'msvc' is only available on Windows"
-        exit 1
-    fi
+function list_projects() {
+    for script in sh/build/*.sh; do
+        if [[ "${script}" =~ sh/build/(.*)\.sh ]]; then
+            echo "  ${BASH_REMATCH[1]}"
+        fi
+    done
+}
 
-    if ! is_linux && [[ "$toolchain" == "gcc" ]]; then
-        print_error "ERROR: toolchain 'gcc' is only available on Linux"
-        exit 1
+function remove_done_files() {
+    if [[ -d "build/${toolchain}/" ]]; then
+        find build/${toolchain}/ -name "*.done" -type f -delete
     fi
 }
 
-set_properties $1 $2
-remove_done_files
-
-if test "$action" == "list"; then
+if [[ "${1}" == "list" ]]; then
     list_projects
-elif test "$action" == "docs"; then
-    sh/docs.sh
-elif test "$action" == "buildAll"; then
-    build_all
-elif test "$action" == "buildProject"; then
-    build_project
+elif [[ "${1}" == "docs" ]]; then
+    sh/build_docs.sh
+elif is_toolchain "${1}"; then
+    build_projects "${1}"
+elif [[ "${1}" != "" ]]; then
+    set_toolchain "${2}"
+    remove_done_files
+    build_project "${1}"
 else
-    print_error "ERROR: unknown action '${action}'"
-    exit 1
+    build_projects
 fi

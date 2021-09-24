@@ -1,17 +1,19 @@
-action=$1
-arg1=$2
-arg2=$3
+source "sh/common.sh"
 
-if [[ "${action}" == "analyse" ]]; then
-    sh/analyse.sh $arg1
-elif [[ "${action}" == "build" ]]; then
-    sh/build.sh $arg1 $arg2
-elif [[ "${action}" == "format" ]]; then
-    sh/format.sh $arg1
-elif [[ "${action}" == "install" ]]; then
-    sh/install.sh $arg1
-elif [[ "${action}" == "test" ]]; then
-    sh/test.sh $arg1 $arg2
-else
+action="${1}"
+
+if [[ "${action}" == "" ]] || [[ "${action}" == "help" ]] || [[ "${action}" == "?" ]]; then
     sh/help.sh
+elif [[ "${action}" == "analyse" ]]; then
+    sh/analyse.sh $2 $3
+elif [[ "${action}" == "build" ]]; then
+    sh/build.sh $2 $3
+elif [[ "${action}" == "format" ]]; then
+    sh/format.sh $2 $3
+elif [[ "${action}" == "install" ]]; then
+    sh/install.sh $2 $3
+elif [[ "${action}" == "test" ]]; then
+    sh/test.sh $2 $3
+else
+    print_error "ERROR: unknown action '${action}'. Run './adev.sh' to display available actions."
 fi

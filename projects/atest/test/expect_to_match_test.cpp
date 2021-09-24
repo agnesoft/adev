@@ -29,7 +29,7 @@ public:
     }
 };
 
-static const auto s = suite("Expect::toMatch()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("Expect::toMatch()", [] { //NOLINT(cert-err58-cpp)
     test("Custom matcher", [] {
         expect(1).to_match<MyMatcher>(2);
         expect_fail(1).to_match<MyMatcher>(1);

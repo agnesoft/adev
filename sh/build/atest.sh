@@ -1,4 +1,4 @@
-source "sh/common_build.sh" $1
+source "sh/build_common.sh" "${1}"
 
 project="atest"
 projectDir="projects/${project}"
@@ -95,5 +95,5 @@ lib.exe /NOLOGO ^
         \"${buildDir}/atest-test_runner.obj\" || exit 1
 "
 
-sh/build_astl.sh $toolchain
+sh/build/astl.sh "${toolchain}"
 build

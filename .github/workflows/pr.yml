@@ -1,0 +1,99 @@
+name: pr
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install clang
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install clang-tidy
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh build clang
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh analyse diff
+
+  documentation:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        shell: bash
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+      - shell: bash
+        if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install doxygen
+      - shell: bash
+        if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh build docs
+
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install clang-format
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh format check diff
+
+  linux_clang12_x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install clang
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh build clang
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh test clang 100
+
+  linux_gcc11_x64:
+    runs-on: ubuntu-latest
+    if: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install gcc
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh build gcc
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh test gcc 100
+
+  windows_msvc2019_x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        shell: bash
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp"; then (echo "::set-output name=diff::true") fi
+      - shell: bash
+        if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh build msvc
+      - shell: bash
+        if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh test msvc 100

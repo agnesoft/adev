@@ -6,7 +6,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto s = suite("assert()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("assert()", [] { //NOLINT(cert-err58-cpp)
     test("assert stops the test (INTENTIONAL FAILURE)", [] {
         assert_(1).to_be(2);
         expect(1).to_be(2);

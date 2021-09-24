@@ -1,44 +1,32 @@
 source "sh/common.sh"
 
-package=$1
-
-function list_packages() {
-    echo "Available packages:"
-
-    for script in sh/install_*.sh; do
-        if [[ "${script}" =~ sh/install_(.*)\.sh ]]; then
-            echo "  ${BASH_REMATCH[1]}"
-        fi
-    done
-}
-
 function install_package() {
-    local installScript="sh/install_${package}.sh"
+    local package="${1}"
+    local installScript="sh/install/${package}.sh"
 
-    if [[ -f "$installScript" ]]; then
-        echo "Installing package '$package'..."
-        run_install_script $installScript
+    if [[ -f "${installScript}" ]]; then
+        echo "Installing package '${package}'..."
+        run_script "${installScript}"
     else
-        print_error "ERROR: Package '$package' does not exist."
+        print_error "ERROR: Package '${package}' does not exist."
         echo ""
         list_packages
         exit 1;
     fi
 }
 
-function run_install_script() {
-    local installScript=$1
-    "${installScript[@]}"
-    local status=$?
+function list_packages() {
+    echo "Available packages:"
 
-    if (( $? != 0 )); then
-        print_error "ERROR: Installing package '$package' ($1) failed: $STATUS"
-        exit 1
-    fi
+    for script in sh/install/*.sh; do
+        if [[ "${script}" =~ sh/install/(.*)\.sh ]]; then
+            echo "  ${BASH_REMATCH[1]}"
+        fi
+    done
 }
 
-if [[ "$package" == "list" ]]; then
+if [[ "${1}" == "list" ]]; then
     list_packages
 else
-    install_package
+    install_package "${1}"
 fi

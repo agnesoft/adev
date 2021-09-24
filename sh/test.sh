@@ -1,47 +1,21 @@
 source "sh/common.sh"
 
-toolchain=
-times=
-extension=
-result=0
-
-function set_properties() {
-    if [[ "$1" == "clang" ]]; then
-        toolchain="clang"
-        times=$2
-    elif [[ "$1" == "gcc" ]]; then
-        toolchain="gcc"
-        times=$2
-    elif [[ "$1" == "msvc" ]]; then
-        toolchain="msvc"
-        times=$2
-    elif [[ "$1" == "" ]]; then
-        if is_windows; then
-            toolchain="msvc"
-        elif is_linux; then
-            toolchain="gcc"
-        else
-            toolchain="clang"
-        fi
-
-        times=1
-    fi
-
-    if [[ "$times" == "" ]]; then
-        times=1
-    fi
-
-    if is_windows; then
-        extension=".exe"
+function set_iterations() {
+    if [[ "${1}" != "" ]] && is_number $1; then
+        iterations=$1
+    elif [[ "${2}" != "" ]] && is_number $2; then
+        iterations=$2
+    else
+        iterations=1
     fi
 }
 
 function run_test() {
-    local test=$1
+    local test="${1}"
     local failures=0
     local i=0
 
-    for (( i=0; i < $times; i++ )); do
+    for (( i=0; i < $iterations; i++ )); do
         local log
         log=$($test)
 
@@ -54,31 +28,36 @@ function run_test() {
     done
 
     if (( $failures != 0 )); then
-        print_error "[ FAILED ] ${test} (${failures} of ${times} runs failed)"
+        print_error "[ FAILED ] ${test} (${failures} of ${iterations} runs failed)"
     else
-        print_ok "[ PASSED ] ${test} (${times} of ${times} runs passed)"
+        print_ok "[ PASSED ] ${test} (${iterations} of ${iterations} runs passed)"
     fi
 
     result=$(( $result + $failures ))
 }
 
 function run_tests() {
-    local testDir="build/$toolchain/bin"
+    local testDir="build/${toolchain}/bin"
+    result=0
     echo "Running tests from '${testDir}'..."
 
-    if [[ -d "$testDir" ]]; then
-        for test in $testDir/*_test$extension; do
-            run_test $test
+    if [[ -d "${testDir}" ]]; then
+        for test in $testDir/*_test$executableExtension; do
+            if [[ -f "${test}" ]]; then
+                run_test "${test}"
+            fi
         done
     fi
 
     if (( $result != 0 )); then
         print_error "Tests FAILED"
+        exit 1
     else
         print_ok "All tests PASSED"
+        exit 0
     fi
 }
 
-set_properties $1 $2
+set_toolchain "${1}"
+set_iterations $1 $2
 run_tests
-exit $result

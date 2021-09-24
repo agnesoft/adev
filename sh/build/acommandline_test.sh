@@ -1,4 +1,4 @@
-source "sh/common_build.sh" $1
+source "sh/build_common.sh" "${1}"
 
 project="acommandline_test"
 projectDir="projects/acommandline/test"
@@ -69,6 +69,6 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/acommandline/acommandline.lib\" || exit 1
 "
 
-sh/build_acommandline.sh $toolchain
-sh/build_atest.sh $toolchain
+sh/build/acommandline.sh "${toolchain}"
+sh/build/atest.sh "${toolchain}"
 build
