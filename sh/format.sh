@@ -27,7 +27,7 @@ function format_check_source() {
 }
 
 function format_check_diff() {
-    local sources=$(git diff main --name-only -- *.cpp *.hpp)
+    local sources=$(git diff origin/main --name-only -- *.cpp *.hpp)
 
     for file in ${sources[@]}; do
         format_check_source "${file}"
