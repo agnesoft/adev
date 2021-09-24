@@ -21,7 +21,7 @@ function is_linux() {
 }
 
 function is_number() {
-    test "${1}" ~= ^[0-9]+$
+    [[ "${1}" =~ ^[0-9]+$ ]]
 }
 
 function is_toolchain() {
@@ -71,7 +71,6 @@ function set_toolchain() {
     fi
 
     echo "Toolchain: ${toolchain}"
-    echo ""
 }
 
 function wait_for_jobs() {
