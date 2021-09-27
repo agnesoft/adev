@@ -42,10 +42,13 @@ function remove_done_files() {
     fi
 }
 
-if [[ "${1}" == "list" ]]; then
-    list_projects
+if [[ "${1}" == "coverage" ]]; then
+    export CODE_COVERAGE="true"
+    build_projects "clang"
 elif [[ "${1}" == "docs" ]]; then
     sh/build_docs.sh
+elif [[ "${1}" == "list" ]]; then
+    list_projects
 elif is_toolchain "${1}"; then
     build_projects "${1}"
 elif [[ "${1}" != "" ]]; then
