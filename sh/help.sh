@@ -11,7 +11,7 @@ echo "Usage: ./adev.sh [ACTION] [PARAMS]
 ./adev.sh build <toolchain>                Build all projects with <toolchain>.
 ./adev.sh build <project>                  Build <project> with default toolchain.
 ./adev.sh build <project> <toolchain>      Build <project> with <toolchain>.
-./adev.sh coverage                         Run tests and colelct code coverage stats (requires 'build coverage').
+./adev.sh coverage                         Run tests and collect code coverage stats (requires 'build coverage').
 ./adev.sh format                           Formats source code with clang-format.
 ./adev.sh format check                     Checks formatting of the sources with clang-format.
 ./adev.sh format check diff                Checks formatting of changed sources with clang-format.
