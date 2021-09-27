@@ -16,6 +16,12 @@ clangCompilerFlags="-std=c++20 \
                     -fprebuilt-module-path=${buildRoot}/astl \
                     -fmodule-map-file=projects/astl/module.modulemap"
 
+if [[ "${CODE_COVERAGE}" == "true" ]]; then
+    clangCompilerFlags="${clangCompilerFlags} \
+                        -fprofile-instr-generate \
+                        -fcoverage-mapping"
+fi
+
 clangCompilerLinkerFlags="${clangCompilerFlags} \
                           -lpthread"
 
