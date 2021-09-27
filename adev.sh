@@ -8,6 +8,8 @@ elif [[ "${action}" == "analyse" ]]; then
     sh/analyse.sh $2 $3
 elif [[ "${action}" == "build" ]]; then
     sh/build.sh $2 $3
+elif [[ "${action}" == "coverage" ]]; then
+    sh/coverage.sh $2 $3
 elif [[ "${action}" == "format" ]]; then
     sh/format.sh $2 $3
 elif [[ "${action}" == "install" ]]; then
