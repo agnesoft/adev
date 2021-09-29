@@ -1,5 +1,11 @@
 source "sh/common.sh"
 
+ignoredSources="\/test\/"
+uncoveredFunctions="4"
+uncoveredLines="44"
+uncoveredRegions="43"
+uncoveredBranches="17"
+
 function coverage() {
     detect_llvm_cov
     detect_llvm_profdata
@@ -53,24 +59,27 @@ function generate_report() {
     local profData=$2
 
     "${llvmProfdata}" merge ${profData} -o build/clang/bin/coverage.profdata
-    "${llvmCov}" show ${objectArgs} -output-dir=build/clang/coverage -format=html -instr-profile=build/clang/bin/coverage.profdata
+    "${llvmCov}" show ${objectArgs} -output-dir=build/clang/coverage -format=html -instr-profile=build/clang/bin/coverage.profdata -ignore-filename-regex="${ignoredSources}" -show-instantiations=false
 }
 
 function generate_summary() {
     local objectArgs=$1
-    local total=$($llvmCov report $objectArgs -instr-profile=build/clang/bin/coverage.profdata | grep "TOTAL.*")
-    local match=$(echo $total | perl -nle'print $& while m{[\d\.]+\%}g')
-    local matchArr=(${match})
-    local region=${matchArr[0]}
-    local function=${matchArr[1]}
-    local line=${matchArr[2]}
-    local branch=${matchArr[3]}
+    local total=$($llvmCov report $objectArgs -instr-profile=build/clang/bin/coverage.profdata -ignore-filename-regex="${ignoredSources}" | grep "TOTAL.*")
+    local dataPoints=()
+    for point in ${total}; do
+        dataPoints+=($point)
+    done
 
-    if [[ "${function}" != "100.00%" ]] || [[ "${line}" != "100.00%" ]]; then
+    local regionDiff=${dataPoints[2]}
+    local functionDiff=${dataPoints[5]}
+    local lineDiff=${dataPoints[8]}
+    local branchDiff=${dataPoints[11]}
+
+    if [[ "${functionDiff}" != "${uncoveredFunctions}" ]] || [[ "${lineDiff}" != "${uncoveredLines}" ]] || [[ "${regionDiff}" != "${uncoveredRegions}" ]] || [[ "${branchDiff}" != "${uncoveredBranches}" ]]; then
         result=1
     fi
 
-    print_summary "${function}" "${line}" "${region}" "${branch}"
+    print_summary "${functionDiff}" "${lineDiff}" "${regionDiff}" "${branchDiff}"
 }
 
 function print_summary() {
@@ -81,16 +90,32 @@ function print_summary() {
 
     if (( $result == 1 )); then
         print_error "ERROR: insufficient code coverage:"
-        print_error "  * Function: ${function} (must be 100.00 %)"
-        print_error "  * Line: ${line} (must be 100.00 %)"
-        print_error "  * Region: ${region} (can by any)"
-        print_error "  * Branch: ${branch} (can by any)"
     else
-        print_ok "Code coverage OK:"
-        print_ok "  * Function: ${function} (must be 100.00 %)"
-        print_ok "  * Line: ${line} (must be 100.00 %)"
-        print_ok "  * Region: ${region} (can by any)"
-        print_ok "  * Branch: ${branch} (can by any)"
+        print_ok "Code coverage OK"
+    fi
+
+    if [[ "${function}" != "${uncoveredFunctions}" ]]; then
+        print_error "  * function: ${functionDiff} uncovered (${uncoveredFunctions} expected)"
+    else
+        print_ok "  * function: ${functionDiff} uncovered"
+    fi
+
+    if [[ "${line}" != "${uncoveredLines}" ]]; then
+        print_error "  * line: ${line} uncovered (${uncoveredLines} expected)"
+    else
+        print_ok "  * line: ${line} uncovered"
+    fi
+
+    if [[ "${region}" != "${uncoveredRegions}" ]]; then
+        print_error "  * region: ${region} uncovered (${uncoveredRegions} expected)"
+    else
+        print_ok "  * region: ${region} uncovered"
+    fi
+
+    if [[ "${branch}" != "${uncoveredBranches}" ]]; then
+        print_error "  * branch: ${branch} uncovered (${uncoveredBranches} expected)"
+    else
+        print_ok "  * branch: ${branch} uncovered"
     fi
 }
 

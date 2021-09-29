@@ -19,7 +19,11 @@ clangCompilerFlags="-std=c++20 \
 if [[ "${CODE_COVERAGE}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -fprofile-instr-generate \
-                        -fcoverage-mapping"
+                        -fcoverage-mapping \
+                        -O1"
+else
+    clangCompilerFlags="${clangCompilerFlags} \
+                        -O3"
 fi
 
 clangCompilerLinkerFlags="${clangCompilerFlags} \
