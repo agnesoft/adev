@@ -116,7 +116,7 @@ function should_analyse() {
     local diff="${1}"
     local sources="${2}"
 
-    ( ! [[ "${diff}" == "diff" ]] || is_changed "${source}" )
+    ( ! [[ "${diff}" == "diff" ]] || is_changed "${sources}" )
 }
 
 detect_clang_tidy
