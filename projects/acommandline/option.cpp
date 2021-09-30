@@ -14,6 +14,14 @@ using DefaultValue = std::variant<std::monostate,
                                   std::vector<double>,
                                   std::vector<std::string>>;
 
+using DefaultValueArg = std::variant<bool,
+                                     std::int64_t,
+                                     double,
+                                     std::string,
+                                     std::vector<std::int64_t>,
+                                     std::vector<double>,
+                                     std::vector<std::string>>;
+
 using BoundValue = std::variant<std::monostate,
                                 bool *,
                                 std::int64_t *,
@@ -22,6 +30,14 @@ using BoundValue = std::variant<std::monostate,
                                 std::vector<std::int64_t> *,
                                 std::vector<double> *,
                                 std::vector<std::string> *>;
+
+using BoundValueArg = std::variant<bool *,
+                                   std::int64_t *,
+                                   double *,
+                                   std::string *,
+                                   std::vector<std::int64_t> *,
+                                   std::vector<double> *,
+                                   std::vector<std::string> *>;
 
 static constexpr const char *const POSITIONAL_LONG_NAME = "[positional]";
 

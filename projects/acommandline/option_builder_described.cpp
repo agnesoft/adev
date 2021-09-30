@@ -20,9 +20,9 @@ public:
     //! value will be appended. If the option has
     //! default value set the type of `value` must
     //! be compatible with it.
-    auto bind_to(BoundValue value) -> void
+    auto bind_to(BoundValueArg value) -> void
     {
-        this->bind(value);
+        this->bind(std::move(value));
     }
 
 private:
@@ -41,15 +41,15 @@ private:
         std::visit(validator, this->option().defaultValue);
     }
 
-    auto bind(BoundValue value) -> void
+    auto bind(BoundValueArg value) -> void
     {
-        const auto validator = [&](auto &&boundValue) {
+        const auto setter = [&](auto &&boundValue) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
             this->validate_default_type_compatibility<BoundT>();
+            this->option().boundValue = std::move(boundValue);
         };
 
-        std::visit(validator, value);
-        this->option().boundValue = value;
+        std::visit(setter, value);
     }
 };
 }

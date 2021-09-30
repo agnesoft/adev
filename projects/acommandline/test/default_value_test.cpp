@@ -39,4 +39,15 @@ static const auto S = suite("default value", [] { //NOLINT(cert-err58-cpp)
         })
             .to_throw<std::runtime_error>(std::string{"The option '[positional]' default value is set with incompatible type ("} + typeid(std::int64_t).name() + ") to the one it is being bound to (" + typeid(std::string).name() + ").");
     });
+
+    test("missing bound variable", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        static_cast<void>(commandLine.option().positional().default_value(std::int64_t{3}).description(""));
+
+        expect([&] {
+            commandLine.parse(1, std::array<const char *, 1>{"./app"}.data());
+        })
+            .to_throw<std::runtime_error>(std::string{"The option [positional] is missing a bound value."});
+    });
 });

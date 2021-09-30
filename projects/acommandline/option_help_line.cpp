@@ -8,7 +8,7 @@ namespace acommandline
 template<typename T>
 auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std::ostringstream &
 {
-    stream << "[";
+    stream << "(";
 
     for (const T &value : vector)
     {
@@ -20,7 +20,7 @@ auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std
         }
     }
 
-    stream << "]";
+    stream << ")";
     return stream;
 }
 
@@ -84,10 +84,6 @@ private:
             else if constexpr (std::is_same_v<BoundT, std::vector<std::string>>)
             {
                 stream << "string list";
-            }
-            else
-            {
-                stream << "undefined";
             }
         };
 

@@ -35,12 +35,12 @@ static const auto S = suite("repeated", [] { //NOLINT(cert-err58-cpp)
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
 
-        std::vector<double> values;
+        std::vector<std::int64_t> values;
 
         commandLine.option().positional().description("").bind_to(&values);
-        commandLine.parse(2, std::array<const char *, 2>{"./app", "13.50"}.data());
+        commandLine.parse(2, std::array<const char *, 2>{"./app", "1350"}.data());
 
-        expect(values).to_be(std::vector{13.50}); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        expect(values).to_be(std::vector<std::int64_t>{1350}); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     });
 
     test("positional", [] {
