@@ -20,7 +20,7 @@ public:
     //! value will be appended. If the option has
     //! default value set the type of `value` must
     //! be compatible with it.
-    auto bind_to(BoundValueArg value) -> void
+    auto bind_to(BoundValue value) -> void
     {
         this->bind(value);
     }
@@ -29,27 +29,30 @@ private:
     template<typename T>
     auto validate_default_type_compatibility() const
     {
-        const auto validator = [&](auto &&defaultValue) {
-            using DefaultT = std::decay_t<decltype(defaultValue)>;
+        if (this->option().defaultValue.has_value())
+        {
+            const auto validator = [&](auto &&defaultValue) {
+                using DefaultT = std::decay_t<decltype(defaultValue)>;
 
-            if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
-            {
-                throw std::runtime_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
-            }
-        };
+                if constexpr (!std::is_same_v<T, DefaultT>)
+                {
+                    throw std::runtime_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
+                }
+            };
 
-        std::visit(validator, this->option().defaultValue);
+            std::visit(validator, *this->option().defaultValue);
+        }
     }
 
-    auto bind(BoundValueArg value) -> void
+    auto bind(BoundValue value) -> void
     {
-        const auto setter = [&](auto &&boundValue) {
+        const auto validator = [&](auto &&boundValue) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
             this->validate_default_type_compatibility<BoundT>();
-            this->option().boundValue = boundValue;
         };
 
-        std::visit(setter, value);
+        std::visit(validator, value);
+        this->option().boundValue = value;
     }
 };
 }

@@ -180,14 +180,6 @@ public:
     }
 
 private:
-    auto clear_matches() -> void
-    {
-        for (Option &option : this->options)
-        {
-            option.matched = false;
-        }
-    }
-
     [[nodiscard]] auto help_requested() const -> bool
     {
         const std::vector<std::string> helpNames = {"-?"};
@@ -233,9 +225,9 @@ private:
         }
         else
         {
-            this->clear_matches();
+            this->pre_validate_options();
             this->match_arguments();
-            this->validate_options();
+            this->post_validate_options();
         }
     }
 
@@ -260,13 +252,7 @@ private:
         this->appName = std::filesystem::path{this->cmd}.stem().string();
     }
 
-    auto print_parsing_error(const std::exception &error) -> void
-    {
-        this->printer.print_parsing_error(error);
-        this->printer.print_help_hint();
-    }
-
-    auto validate_options() -> void
+    auto post_validate_options() -> void
     {
         for (Option &option : this->options)
         {
@@ -277,8 +263,30 @@ private:
                     throw std::runtime_error{std::string{"Option '"} + option.longName + "' was set as required but did not match any arguments."};
                 }
 
-                OptionSetter::default_bound_value(option);
+                if (::acommandline::is_defaulted(option))
+                {
+                    OptionSetter::default_bound_value(option);
+                }
             }
+        }
+    }
+
+    auto print_parsing_error(const std::exception &error) -> void
+    {
+        this->printer.print_parsing_error(error);
+        this->printer.print_help_hint();
+    }
+
+    auto pre_validate_options() -> void
+    {
+        for (Option &option : this->options)
+        {
+            if (!option.boundValue.has_value())
+            {
+                throw std::runtime_error{std::string{"Bind value undefined for option '"} + option.longName + "'."};
+            }
+
+            option.matched = false;
         }
     }
 

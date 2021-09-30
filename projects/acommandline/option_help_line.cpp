@@ -87,7 +87,7 @@ private:
             }
         };
 
-        std::visit(stringify, option.boundValue);
+        std::visit(stringify, *option.boundValue);
         return stream.str();
     }
 
@@ -102,13 +102,13 @@ private:
             {
                 stream << (value ? "true" : "false");
             }
-            else if constexpr (!std::is_same_v<T, std::monostate>)
+            else
             {
                 stream << value;
             }
         };
 
-        std::visit(stringify, option.defaultValue);
+        std::visit(stringify, *option.defaultValue);
         return stream.str();
     }
 

@@ -48,6 +48,6 @@ static const auto S = suite("default value", [] { //NOLINT(cert-err58-cpp)
         expect([&] {
             commandLine.parse(1, std::array<const char *, 1>{"./app"}.data());
         })
-            .to_throw<std::runtime_error>(std::string{"The option [positional] is missing a bound value."});
+            .to_throw<std::runtime_error>(std::string{"Bind value undefined for option '[positional]'."});
     });
 });
