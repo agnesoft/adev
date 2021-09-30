@@ -5,8 +5,7 @@ export import astl;
 
 namespace acommandline
 {
-using DefaultValue = std::variant<std::monostate,
-                                  bool,
+using DefaultValue = std::variant<bool,
                                   std::int64_t,
                                   double,
                                   std::string,
@@ -14,8 +13,7 @@ using DefaultValue = std::variant<std::monostate,
                                   std::vector<double>,
                                   std::vector<std::string>>;
 
-using BoundValue = std::variant<std::monostate,
-                                bool *,
+using BoundValue = std::variant<bool *,
                                 std::int64_t *,
                                 double *,
                                 std::string *,
@@ -30,8 +28,8 @@ export struct Option
 {
     std::string longName;
     std::string description;
-    DefaultValue defaultValue;
-    BoundValue boundValue;
+    std::optional<DefaultValue> defaultValue;
+    std::optional<BoundValue> boundValue;
     bool required = false;
     bool matched = false;
     char shortName = {};
@@ -55,9 +53,9 @@ export struct Option
 
 [[nodiscard]] constexpr auto is_repeated(const Option &option) noexcept -> bool
 {
-    return std::holds_alternative<std::vector<std::int64_t> *>(option.boundValue)
-        || std::holds_alternative<std::vector<double> *>(option.boundValue)
-        || std::holds_alternative<std::vector<std::string> *>(option.boundValue);
+    return std::holds_alternative<std::vector<std::int64_t> *>(*option.boundValue)
+        || std::holds_alternative<std::vector<double> *>(*option.boundValue)
+        || std::holds_alternative<std::vector<std::string> *>(*option.boundValue);
 }
 
 [[nodiscard]] auto is_positional(const Option &option) noexcept -> bool
@@ -67,11 +65,11 @@ export struct Option
 
 [[nodiscard]] constexpr auto is_defaulted(const Option &option) noexcept -> bool
 {
-    return !std::holds_alternative<std::monostate>(option.defaultValue);
+    return option.defaultValue.has_value();
 }
 
 [[nodiscard]] constexpr auto is_switch(const Option &option) noexcept -> bool
 {
-    return std::holds_alternative<bool *>(option.boundValue);
+    return std::holds_alternative<bool *>(*option.boundValue);
 }
 }

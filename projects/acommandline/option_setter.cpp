@@ -13,18 +13,10 @@ public:
     {
         const auto valueSetter = [&](auto &&boundVal) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundVal)>>;
-
-            if constexpr (!std::is_same_v<BoundT, std::monostate>)
-            {
-                OptionSetter::set_bound_value_to_default<BoundT>(option, boundVal);
-            }
-            else
-            {
-                throw std::runtime_error{"The option " + option.longName + " is missing a bound value."};
-            }
+            OptionSetter::set_bound_value_to_default<BoundT>(option, boundVal);
         };
 
-        std::visit(valueSetter, option.boundValue);
+        std::visit(valueSetter, *option.boundValue);
     }
 
     [[nodiscard]] static auto set_value(Option &option, std::vector<std::string>::const_iterator *argument, std::vector<std::string>::const_iterator end) -> bool
@@ -91,7 +83,7 @@ private:
                 throw std::runtime_error{std::string{"Failed to set option '"} + option.longName + "' (" + typeid(BoundT).name() + ") from value '" + value + "'."};
             };
 
-            std::visit(throwError, option.boundValue);
+            std::visit(throwError, *option.boundValue);
         }
     }
 
@@ -112,7 +104,7 @@ private:
             }
         };
 
-        std::visit(valueSetter, option.defaultValue);
+        std::visit(valueSetter, *option.defaultValue);
     }
 
     [[nodiscard]] static auto set_value(Option &option, const std::string &value) -> bool
@@ -120,11 +112,7 @@ private:
         const auto valueSetter = [&](auto &&boundValue) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
 
-            if constexpr (std::is_same_v<BoundT, std::monostate>)
-            {
-                throw std::runtime_error{std::string{"Bind value undefined for option '"} + option.longName + "'."};
-            }
-            else if constexpr (std::is_same_v<BoundT, bool>)
+            if constexpr (std::is_same_v<BoundT, bool>)
             {
                 *boundValue = true;
             }
@@ -156,13 +144,10 @@ private:
 
         try
         {
-            std::visit(valueSetter, option.boundValue);
+            std::visit(valueSetter, *option.boundValue);
             return true;
         }
-        catch ([[maybe_unused]] const std::runtime_error &error)
-        {
-            throw;
-        }
+
         catch (const std::exception &error)
         {
             OptionSetter::handle_set_option_failure(option, error, value);

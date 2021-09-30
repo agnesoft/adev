@@ -29,16 +29,19 @@ private:
     template<typename T>
     auto validate_default_type_compatibility() const
     {
-        const auto validator = [&](auto &&defaultValue) {
-            using DefaultT = std::decay_t<decltype(defaultValue)>;
+        if (this->option().defaultValue.has_value())
+        {
+            const auto validator = [&](auto &&defaultValue) {
+                using DefaultT = std::decay_t<decltype(defaultValue)>;
 
-            if constexpr (!std::is_same_v<DefaultT, std::monostate> && !std::is_same_v<T, DefaultT>)
-            {
-                throw std::runtime_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
-            }
-        };
+                if constexpr (!std::is_same_v<T, DefaultT>)
+                {
+                    throw std::runtime_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
+                }
+            };
 
-        std::visit(validator, this->option().defaultValue);
+            std::visit(validator, *this->option().defaultValue);
+        }
     }
 
     auto bind(BoundValue value) -> void

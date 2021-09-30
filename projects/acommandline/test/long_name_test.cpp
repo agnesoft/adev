@@ -105,4 +105,24 @@ static const auto S = suite("long name", [] { //NOLINT(cert-err58-cpp)
         })
             .to_throw<std::runtime_error>(exceptionText);
     });
+
+    test("'l'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        expect([&] {
+            static_cast<void>(commandLine.option().long_name("l"));
+        })
+            .to_throw<std::runtime_error>("'l' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
+    });
+
+    test("'1longName'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        expect([&] {
+            static_cast<void>(commandLine.option().long_name("1longName"));
+        })
+            .to_throw<std::runtime_error>("'1longName' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
+    });
 });

@@ -8,7 +8,7 @@ namespace acommandline
 template<typename T>
 auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std::ostringstream &
 {
-    stream << "[";
+    stream << "(";
 
     for (const T &value : vector)
     {
@@ -20,7 +20,7 @@ auto operator<<(std::ostringstream &stream, const std::vector<T> &vector) -> std
         }
     }
 
-    stream << "]";
+    stream << ")";
     return stream;
 }
 
@@ -85,13 +85,9 @@ private:
             {
                 stream << "string list";
             }
-            else
-            {
-                stream << "undefined";
-            }
         };
 
-        std::visit(stringify, option.boundValue);
+        std::visit(stringify, *option.boundValue);
         return stream.str();
     }
 
@@ -106,13 +102,13 @@ private:
             {
                 stream << (value ? "true" : "false");
             }
-            else if constexpr (!std::is_same_v<T, std::monostate>)
+            else
             {
                 stream << value;
             }
         };
 
-        std::visit(stringify, option.defaultValue);
+        std::visit(stringify, *option.defaultValue);
         return stream.str();
     }
 
