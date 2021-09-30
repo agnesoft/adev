@@ -50,7 +50,7 @@ static const auto S = suite("help", [] { //NOLINT(cert-err58-cpp)
         std::vector<std::string> strings;
 
         commandLine.option().positional().default_value(std::vector<std::int64_t>{1, 2}).description("int list").bind_to(&numbers);
-        commandLine.option().positional().default_value(std::vector<double>{1.1, 2.3}).description("double list").bind_to(&doubles);
+        commandLine.option().positional().default_value(std::vector<double>{1.1, 2.3}).description("double list").bind_to(&doubles); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         commandLine.option().positional().default_value(std::vector<std::string>{"one", "two"}).description("string list").bind_to(&strings);
         commandLine.parse(2, std::array<const char *, 2>{"app", "-?"}.data());
 
