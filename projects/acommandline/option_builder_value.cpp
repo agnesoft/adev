@@ -18,10 +18,10 @@ public:
     //! command line arguments.
     //!
     //! It is mutually exclusive with required().
-    [[nodiscard]] auto default_value(DefaultValueArg value) noexcept -> OptionBuilderDefined
+    [[nodiscard]] auto default_value(DefaultValueArg value) -> OptionBuilderDefined
     {
         const auto setter = [&](auto &&boundValue) {
-            this->option().defaultValue = std::move(boundValue);
+            this->option().defaultValue = boundValue;
         };
         std::visit(setter, value);
         return OptionBuilderDefined{this->option()};

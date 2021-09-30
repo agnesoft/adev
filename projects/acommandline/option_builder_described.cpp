@@ -22,7 +22,7 @@ public:
     //! be compatible with it.
     auto bind_to(BoundValueArg value) -> void
     {
-        this->bind(std::move(value));
+        this->bind(value);
     }
 
 private:
@@ -46,7 +46,7 @@ private:
         const auto setter = [&](auto &&boundValue) {
             using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
             this->validate_default_type_compatibility<BoundT>();
-            this->option().boundValue = std::move(boundValue);
+            this->option().boundValue = boundValue;
         };
 
         std::visit(setter, value);
