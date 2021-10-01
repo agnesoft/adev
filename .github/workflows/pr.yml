@@ -22,6 +22,21 @@ jobs:
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh analyse diff
 
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh install clang
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh build coverage
+      - if: steps.diff.outputs.diff == 'true'
+        run: ./adev.sh coverage
+
   documentation:
     runs-on: windows-latest
     steps:
