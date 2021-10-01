@@ -21,6 +21,11 @@ jobs:
       - run: ./adev.sh install clang
       - run: ./adev.sh build coverage
       - run: ./adev.sh coverage
+      - uses: actions/upload-artifact@v2
+        with:
+          name: adev-${{ env.GITHUB_RUN_NUMBER }}-coverage
+          path: build/coverage/
+          if-no-files-found: error
 
   documentation:
     runs-on: windows-latest
@@ -30,6 +35,11 @@ jobs:
         run: ./adev.sh install doxygen
       - shell: bash
         run: ./adev.sh build docs
+      - uses: actions/upload-artifact@v2
+        with:
+          name: adev-${{ env.GITHUB_RUN_NUMBER }}-documentation
+          path: build/docs/
+          if-no-files-found: error
 
   formatting:
     runs-on: ubuntu-latest
@@ -45,6 +55,11 @@ jobs:
       - run: ./adev.sh install clang
       - run: ./adev.sh build clang
       - run: ./adev.sh test clang 100
+      - uses: actions/upload-artifact@v2
+        with:
+          name: adev-${{ env.GITHUB_RUN_NUMBER }}-linux_clang12_x64
+          path: build/clang/
+          if-no-files-found: error
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
@@ -54,6 +69,11 @@ jobs:
       - run: ./adev.sh install gcc
       - run: ./adev.sh build gcc
       - run: ./adev.sh test gcc 100
+      - uses: actions/upload-artifact@v2
+        with:
+          name: adev-${{ env.GITHUB_RUN_NUMBER }}-linux_gcc11_x64
+          path: build/gcc/
+          if-no-files-found: error
 
   windows_msvc2019_x64:
     runs-on: windows-latest
@@ -63,3 +83,8 @@ jobs:
         run: ./adev.sh build msvc
       - shell: bash
         run: ./adev.sh test msvc 100
+      - uses: actions/upload-artifact@v2
+        with:
+          name: adev-${{ env.GITHUB_RUN_NUMBER }}-windows_msvc2019_x64
+          path: build/msvc/
+          if-no-files-found: error
