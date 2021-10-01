@@ -24,6 +24,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -36,6 +37,12 @@ jobs:
         run: ./adev.sh build coverage
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh coverage
+      - if: always() && steps.diff.outputs.diff == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: adev-pr-${{ github.run_number }}-coverage
+          path: build/coverage/
+          if-no-files-found: error
 
   documentation:
     runs-on: windows-latest
@@ -52,6 +59,12 @@ jobs:
       - shell: bash
         if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build docs
+      - if: always() && steps.diff.outputs.diff == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: adev-pr-${{ github.run_number }}-documentation
+          path: build/docs/
+          if-no-files-found: error
 
   formatting:
     runs-on: ubuntu-latest
@@ -80,6 +93,12 @@ jobs:
         run: ./adev.sh build clang
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh test clang 100
+      - if: always() && steps.diff.outputs.diff == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: adev-pr-${{ github.run_number }}-linux_clang12_x64
+          path: build/clang/
+          if-no-files-found: error
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
@@ -96,6 +115,12 @@ jobs:
         run: ./adev.sh build gcc
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh test gcc 100
+      - if: always() && steps.diff.outputs.diff == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: adev-pr-${{ github.run_number }}-linux_gcc11_x64
+          path: build/gcc/
+          if-no-files-found: error
 
   windows_msvc2019_x64:
     runs-on: windows-latest
@@ -112,3 +137,10 @@ jobs:
       - shell: bash
         if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh test msvc 100
+      - if: always() && steps.diff.outputs.diff == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: adev-pr-${{ github.run_number }}-windows_msvc2019_x64
+          path: build/msvc/
+          if-no-files-found: error
+
