@@ -14,7 +14,7 @@ jobs:
       - run: ./adev.sh build clang
       - run: ./adev.sh analyse
 
-  linux_clang12_x64:
+  coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
