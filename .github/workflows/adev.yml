@@ -14,6 +14,14 @@ jobs:
       - run: ./adev.sh build clang
       - run: ./adev.sh analyse
 
+  linux_clang12_x64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh install clang
+      - run: ./adev.sh build coverage
+      - run: ./adev.sh coverage
+
   documentation:
     runs-on: windows-latest
     steps:
