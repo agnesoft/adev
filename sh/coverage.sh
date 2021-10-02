@@ -33,22 +33,14 @@ function coverage() {
 }
 
 function detect_llvm_cov() {
-    if is_available "llvm-cov-12"; then
-        llvmCov="llvm-cov-12"
-    elif is_available "llvm-cov"; then
-        llvmCov="llvm-cov"
-    else
+    if ! is_available "${llvmCov}"; then
         print_error "ERROR: 'llvm-cov' is not available. Try installing it with './adev.sh install llvm'"
         exit 1
     fi
 }
 
 function detect_llvm_profdata() {
-    if is_available "llvm-profdata-12"; then
-        llvmProfdata="llvm-profdata-12"
-    elif is_available "llvm-profdata"; then
-        llvmProfdata="llvm-profdata"
-    else
+    if ! is_available "${llvmProfdata}"; then
         print_error "ERROR: 'llvm-profdata' is not available. Try installing it with './adev.sh install llvm'"
         exit 1
     fi

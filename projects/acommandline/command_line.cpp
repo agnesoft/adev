@@ -237,7 +237,7 @@ private:
 
         for (int i = 1; i < argc; i++)
         {
-            this->arguments.emplace_back(argv[i]); //NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            this->arguments.emplace_back(argv[i]); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
     }
 

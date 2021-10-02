@@ -20,11 +20,11 @@ Agnesoft central development repository.
 
 \- or -
 
--   LLVM 12+ (see [Known Issues](#known-issues))
+-   LLVM 13+ (see [Known Issues](#known-issues))
 
 ### Linux
 
--   Clang 12
+-   Clang 13
 
 \- or -
 
@@ -40,6 +40,6 @@ Run (use Git Bash on Windows):
 
 ## Known Issues
 
--   _Windows_: Clang 12 (LLVM) is unable to use MSVC's STL failing the build. [31/08/2021]
+-   _Windows_: Clang 12+ (LLVM) is unable to use MSVC's STL failing the build. [31/08/2021]
 -   _Linux_: GCC 11 is unable to use its own STL via header units failing the build. [31/08/2021]
 -   _Coverage_: LLVM instrumentation has difficulties with `if constexpr` and private module entities that means certain parts of code seem "uncovered" even though they are executed [29/09/2021]

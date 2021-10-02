@@ -103,7 +103,7 @@ private:
 
     [[nodiscard]] auto indent() const -> std::string
     {
-        return std::string(this->indentLevel * 2, ' ');
+        return {std::string(this->indentLevel * 2, ' ')};
     }
 
     auto print(const std::string &prefix, const std::string &text) -> void
@@ -171,7 +171,7 @@ private:
     [[nodiscard]] static auto separator() -> std::string
     {
         constexpr size_t separatorWidth = 75;
-        return std::string(separatorWidth, '=');
+        return {std::string(separatorWidth, '=')};
     }
 
     [[nodiscard]] static auto source_location_to_string(const std::source_location &sourceLocation) -> std::string
@@ -185,6 +185,6 @@ private:
     }
 
     std::ostream &stream;
-    int indentLevel = 0;
+    size_t indentLevel = 0;
 };
 }

@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("CommandLine", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("CommandLine", [] { // NOLINT(cert-err58-cpp)
     test("default constructible", [] {
         expect(std::is_default_constructible_v<::acommandline::CommandLine>).to_be(true);
     });

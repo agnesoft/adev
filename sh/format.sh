@@ -1,14 +1,8 @@
 source "sh/common.sh"
 
 function detect_clang_format() {
-    if is_windows; then
-        clangFormat="clang-format.exe"
-    else
-        clangFormat="clang-format-12"
-    fi
-
     if ! is_available "${clangFormat}"; then
-        print_error "ERROR: ${clangFormat} is not available. Please install it with './adev.sh install clang-format'."
+        print_error "ERROR: ${clangFormat} is not available. Please install it with './adev.sh install llvm'."
     else
         $clangFormat --version | head -n 1
     fi

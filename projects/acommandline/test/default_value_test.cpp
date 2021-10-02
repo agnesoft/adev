@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("default value", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("default value", [] { // NOLINT(cert-err58-cpp)
     test("named", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
