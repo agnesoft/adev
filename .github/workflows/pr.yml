@@ -8,15 +8,19 @@ jobs:
   analysis:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    if: false
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
+        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh build clang
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh analyse diff
 
   coverage:
@@ -28,10 +32,13 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
+        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh build coverage
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh coverage
       - if: always() && steps.diff.outputs.diff == 'true'
         uses: actions/upload-artifact@v2
@@ -43,13 +50,16 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    if: false
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
+        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh build docs
       - if: always() && steps.diff.outputs.diff == 'true'
         uses: actions/upload-artifact@v2
@@ -61,13 +71,16 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    if: false
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
+        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh format check diff
 
   linux_clang12_x64:
@@ -78,10 +91,13 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
+        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh build clang
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh test clang 100
       - if: always() && steps.diff.outputs.diff == 'true'
         uses: actions/upload-artifact@v2
@@ -99,12 +115,16 @@ jobs:
         with:
           fetch-depth: 0
       - id: diff
+        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh install gcc
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh build gcc
       - if: steps.diff.outputs.diff == 'true'
+        shell: bash
         run: ./adev.sh test gcc 100
       - if: always() && steps.diff.outputs.diff == 'true'
         uses: actions/upload-artifact@v2
@@ -115,6 +135,7 @@ jobs:
 
   windows_msvc2019_x64:
     runs-on: windows-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
         with:
