@@ -4,6 +4,23 @@
 
 Agnesoft central development repository.
 
+-   [Usage](#usage)
+-   [Projects](#projects)
+-   [Prerequisites](#prerequisites)
+-   [Development](#development)
+-   [Continuous Integration](#continuous-integration)
+-   [Known Issues](#known-issues)
+
+## Usage
+
+Run (use Git Bash on Windows):
+
+```
+./adev.sh
+```
+
+This will show all available actions including installation of prerequisites.
+
 ## Projects
 
 | Name                                            | Path                                              | Description                                  |
@@ -14,32 +31,60 @@ Agnesoft central development repository.
 
 ## Prerequisites
 
-### Windows
+| Action              | Windows                                                                | Linux                                                                | Note                                                                  |
+| ------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| shell               | [Git Bash](https://git-scm.com/download/win)                           | Bash                                                                 |                                                                       |
+| build               | [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | [gcc 11\*](https://gcc.gnu.org/)                                     | \* See [Known Issues](#known-issues)                                  |
+| build               | [clang 13\*](https://llvm.org/)                                        | [clang 13](https://llvm.org/)                                        | \* See [Known Issues](#known-issues)                                  |
+| analysis            | -                                                                      | [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)               |                                                                       |
+| coverage            | -                                                                      | [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html) |                                                                       |
+| documentation       | [Doxygen](https://www.doxygen.nl/index.html)                           | [Doxygen](https://www.doxygen.nl/index.html)                         |                                                                       |
+| formatting          | [clang-format](https://llvm.org/)                                      | [clang-format](https://clang.llvm.org/docs/ClangFormat.html)         |                                                                       |
+| docker\* (optional) | [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | [docker](https://docs.docker.com/engine/install/)                    | \* Required only for [Continous Integration](#continuous-integration) |
 
--   MSVC 2019 (16.10+)
+## Development
 
-\- or -
+Please refer to [contribution.md](contribution.md) and [style_guide.md](style_guide.md) for general information.
 
--   LLVM 13+ (see [Known Issues](#known-issues))
+Workflow summary:
 
-### Linux
+1. [Open and issue](https://github.com/agnesoft/adev/issues/new/choose)
+2. Create a branch for that issue
+    - observe the naming rules in the [style_guide.md](style_guide.md), i.e. use `[project tag]` and name the branch after your issue, including the issue #
+3. Work on the branch
+    - build & run checks via `./adev.sh`
+4. Push the branch to GitHub & open PR from your branch to `main`
+5. Merge to `main`
+    - requires 1 approval & all [Continous Integration](#continuous-integration) checks to pass
 
--   Clang 13
+## Continuous Integration
 
-\- or -
+The `adev` is using GitHub Actions. The `.adev.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites listed above:
 
--   GCC 11 (see [Known Issues](#known-issues))
+-   [`agnesoft/adev`](https://hub.docker.com/r/agnesoft/adev)
 
-## Usage
+The docker image is rebuilt if it changes in a PR and the checks are run on such an image. If the PR with a changed `dockerfile` is merged to `main` the build will rebuild & push the `latest` tag of that image.
 
-Run (use Git Bash on Windows):
+Every CI run uploads artifacts (binaries, documentation, coverage report) for usage or inspection.
 
-```
-./adev.sh
-```
+There are two workflows:
+
+### pr
+
+-   runs on every pull request (pr)
+-   checks are run only on the diff to the latest `main`
+-   skips irrelevant checks.
+
+### adev
+
+-   runs on every push (merge) to `main`
+-   all checks are run fully
 
 ## Known Issues
 
--   _Windows_: Clang 12+ (LLVM) is unable to use MSVC's STL failing the build. [31/08/2021]
--   _Linux_: GCC 11 is unable to use its own STL via header units failing the build. [31/08/2021]
--   _Coverage_: LLVM instrumentation has difficulties with `if constexpr` and private module entities that means certain parts of code seem "uncovered" even though they are executed [29/09/2021]
+| Platform | Action   | Tool           | Version | Description                                                                                                                              | Date       |
+| -------- | -------- | -------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| Windows  | build    | clang          | 12, 13  | Unable to use MSVC STL failing on duplicate intrinsic symbols such as `_freea`.                                                          | 31/08/2021 |
+| Linux    | build    | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error.                                         | 31/08/2021 |
+| any      | coverage | llvm           | 12, 13  | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed | 29/09/2021 |
+| Windows  | docker   | Docker Desktop | 4.1     | It cannot be installed if there is an existing WSL 2 image. Docker Desktop must be installed when there are no other WSL 2 images        | 02/10/2021 |
