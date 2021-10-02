@@ -7,18 +7,17 @@ on:
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh install clang
-      - run: ./adev.sh install clang-tidy
       - run: ./adev.sh build clang
       - run: ./adev.sh analyse
 
   coverage:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh install clang
       - run: ./adev.sh build coverage
       - run: ./adev.sh coverage
       - if: always()
@@ -29,13 +28,11 @@ jobs:
           if-no-files-found: error
 
   documentation:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
-      - shell: bash
-        run: ./adev.sh install doxygen
-      - shell: bash
-        run: ./adev.sh build docs
+      - run: ./adev.sh build docs
       - if: always()
         uses: actions/upload-artifact@v2
         with:
@@ -45,16 +42,16 @@ jobs:
 
   formatting:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh install clang-format
       - run: ./adev.sh format check
 
   linux_clang12_x64:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh install clang
       - run: ./adev.sh build clang
       - run: ./adev.sh test clang 100
       - if: always()
@@ -66,10 +63,10 @@ jobs:
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     if: false
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh install gcc
       - run: ./adev.sh build gcc
       - run: ./adev.sh test gcc 100
       - if: always()

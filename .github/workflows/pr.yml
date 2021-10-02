@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     container: agnesoft/adev
     needs: diff
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build coverage
@@ -93,7 +93,6 @@ jobs:
     if: false
     steps:
       - uses: actions/checkout@v2
-      - run: ./adev.sh install gcc
       - run: ./adev.sh build gcc
       - run: ./adev.sh test gcc 100
       - if: always()
