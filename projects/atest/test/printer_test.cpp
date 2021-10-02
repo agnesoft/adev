@@ -7,7 +7,7 @@ using ::atest::test;
 
 struct MyStruct
 {
-    int value = 0; //NOLINT(misc-non-private-member-variables-in-classes)
+    int value = 0; // NOLINT(misc-non-private-member-variables-in-classes)
 
     [[nodiscard]] auto operator==(const MyStruct &other) const noexcept -> bool
     {
@@ -21,7 +21,7 @@ auto operator<<(std::ostream &stream, const MyStruct &value) -> std::ostream &
     return stream;
 }
 
-static const auto S = suite("Printer", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("Printer", [] { // NOLINT(cert-err58-cpp)
     test("Print custom type", [] {
         expect_fail(MyStruct{1}).to_be(MyStruct{2});
     });

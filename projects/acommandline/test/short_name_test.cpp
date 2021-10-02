@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("short name", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
     test("'S'", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
