@@ -5,9 +5,25 @@ on:
     branches: [main]
 
 jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: if [[ "$(git diff origin/main~1 --name-only -- dockerfile)" != "" ]]; then (echo "::set-output name=DIFF_DOCKERFILE::true") fi
+      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+        run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
+      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+        run: docker build . -t agnesoft/adev:latest
+      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+        run: docker push agnesoft/adev:latest
+
   analysis:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: docker
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build clang
@@ -16,6 +32,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: docker
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build coverage
@@ -30,6 +47,7 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: docker
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build docs
@@ -43,6 +61,7 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: docker
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh format check
@@ -50,6 +69,7 @@ jobs:
   linux_clang12_x64:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: docker
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build clang
@@ -64,6 +84,7 @@ jobs:
   linux_gcc11_x64:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: docker
     if: false
     steps:
       - uses: actions/checkout@v2
