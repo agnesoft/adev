@@ -6,7 +6,7 @@ Agnesoft central development repository.
 
 -   [Usage](#usage)
 -   [Projects](#projects)
--   [Prerequisites](#prerequisites)
+-   [Tools](#tools)
 -   [Development](#development)
 -   [Continuous Integration](#continuous-integration)
 -   [Known Issues](#known-issues)
@@ -19,7 +19,25 @@ Run (use Git Bash on Windows):
 ./adev.sh
 ```
 
-This will show all available actions including installation of prerequisites.
+This will show all available actions: building, running various checks, installation of prerequisites and tools etc. E.g.
+
+To build simply run any of:
+
+```
+./adev.sh build
+./adev.sh build <toolchain>
+./adev.sh build <project> <toolchain>
+```
+
+Available toolchains are:
+
+-   **clang\***
+-   **gcc\*** (default, Linux only)
+-   **msvc** (default, Windows only)
+
+\*see [Known Issues](#known-issues)
+
+The binaries will be output to `build/<toolchain>`.
 
 ## Projects
 
@@ -29,22 +47,25 @@ This will show all available actions including installation of prerequisites.
 | [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
 | [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper |
 
-## Prerequisites
+## Tools
 
-| Action              | Windows                                                                | Linux                                                                | Note                                                                  |
-| ------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| shell               | [Git Bash](https://git-scm.com/download/win)                           | Bash                                                                 |                                                                       |
-| build               | [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | [gcc 11\*](https://gcc.gnu.org/)                                     | \* See [Known Issues](#known-issues)                                  |
-| build               | [clang 13\*](https://llvm.org/)                                        | [clang 13](https://llvm.org/)                                        | \* See [Known Issues](#known-issues)                                  |
-| analysis            | -                                                                      | [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)               |                                                                       |
-| coverage            | -                                                                      | [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html) |                                                                       |
-| documentation       | [Doxygen](https://www.doxygen.nl/index.html)                           | [Doxygen](https://www.doxygen.nl/index.html)                         |                                                                       |
-| formatting          | [clang-format](https://llvm.org/)                                      | [clang-format](https://clang.llvm.org/docs/ClangFormat.html)         |                                                                       |
-| docker\* (optional) | [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | [docker](https://docs.docker.com/engine/install/)                    | \* Required only for [Continous Integration](#continuous-integration) |
+| Windows                                                                | Installation                | Note                                                                   |
+| ---------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------- |
+| [(Git) Bash](https://git-scm.com/download/win)                         | -                           |                                                                        |
+| [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                        |
+| [clang 13\*](https://llvm.org/)                                        | `./adev.sh install llvm`    | \* See [Known Issues](#known-issues)                                   |
+| [gcc 11\*](https://gcc.gnu.org/)                                       | `./adev.sh install gcc`     | \* See [Known Issues](#known-issues)                                   |
+| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./adev.sh install llvm`    |                                                                        |
+| [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)   | `./adev.sh install llvm`    |                                                                        |
+| [Doxygen](https://www.doxygen.nl/index.html)                           | `./adev.sh install doxygen` |                                                                        |
+| [clang-format](https://clang.llvm.org/docs/ClangFormat.html)           | `./adev.sh install llvm`    |                                                                        |
+| [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | manual                      | \* Required only for [Continuous Integration](#continuous-integration) |
 
 ## Development
 
 Please refer to [contribution.md](contribution.md) and [style_guide.md](style_guide.md) for general information.
+
+To setup the development environment use `./adev.sh install <package>` actions or install the [tools](#tools) manually.
 
 Workflow summary:
 
