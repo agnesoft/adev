@@ -7,16 +7,13 @@ on:
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        run: ./adev.sh install clang
-      - if: steps.diff.outputs.diff == 'true'
-        run: ./adev.sh install clang-tidy
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build clang
       - if: steps.diff.outputs.diff == 'true'
@@ -24,6 +21,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     if: false
     steps:
       - uses: actions/checkout@v2
@@ -31,8 +29,6 @@ jobs:
           fetch-depth: 0
       - id: diff
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        run: ./adev.sh install clang
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build coverage
       - if: steps.diff.outputs.diff == 'true'
@@ -45,19 +41,15 @@ jobs:
           if-no-files-found: error
 
   documentation:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
-        shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - shell: bash
-        if: steps.diff.outputs.diff == 'true'
-        run: ./adev.sh install doxygen
-      - shell: bash
-        if: steps.diff.outputs.diff == 'true'
+      - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build docs
       - if: always() && steps.diff.outputs.diff == 'true'
         uses: actions/upload-artifact@v2
@@ -68,27 +60,25 @@ jobs:
 
   formatting:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        run: ./adev.sh install clang-format
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh format check diff
 
   linux_clang12_x64:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - id: diff
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        run: ./adev.sh install clang
       - if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build clang
       - if: steps.diff.outputs.diff == 'true'
@@ -102,6 +92,7 @@ jobs:
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
+    container: agnesoft/adev
     if: false
     steps:
       - uses: actions/checkout@v2
