@@ -7,6 +7,7 @@ on:
 jobs:
   diff:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
         with:
@@ -20,9 +21,25 @@ jobs:
       diff: ${{ steps.diff.outputs.diff }}
       diff_dockerfile: ${{ steps.diff.outputs.diff_dockerfile }}
 
+  docker_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: if [[ "$(git diff origin/main~1 --name-only -- dockerfile)" != "" ]]; then (echo "::set-output name=DIFF_DOCKERFILE::true") fi
+      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+        run: echo "docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}"
+      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+        run: echo "docker build . -t agnesoft/adev:latest"
+      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+        run: echo "docker push agnesoft/adev:latest"
+
   docker:
     runs-on: ubuntu-latest
     needs: diff
+    if: false
     steps:
       - if: needs.diff.outputs.diff_dockerfile == 'true'
         uses: actions/checkout@v2
@@ -46,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
     needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -58,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
     needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build coverage
@@ -74,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
     needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build docs
@@ -88,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
     needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -99,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
     needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
       - run: ./adev.sh build clang
@@ -130,7 +147,7 @@ jobs:
   windows_msvc2019_x64:
     runs-on: windows-latest
     needs: diff
-    if: needs.diff.outputs.diff == 'true'
+    if: false && needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
       - shell: bash
@@ -146,6 +163,7 @@ jobs:
 
   cleanup:
     runs-on: ubuntu-latest
+    if: false
     needs: [ diff, docker, analysis, coverage, documentation, formatting, linux_clang13_x64, linux_gcc11_x64 ]
     if: always() && needs.diff.outputs.diff_dockerfile == 'true'
     steps:
