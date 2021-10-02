@@ -19,7 +19,7 @@ Run (use Git Bash on Windows):
 ./adev.sh
 ```
 
-This will show all available actions: building, running various checks, installation of prerequisites and tools etc. E.g.
+This will show all available actions: building, running various checks, installation of prerequisites & tools etc. E.g.
 
 To build simply run any of:
 
@@ -49,17 +49,17 @@ The binaries will be output to `build/<toolchain>`.
 
 ## Tools
 
-| Windows                                                                | Installation                | Note                                                                   |
-| ---------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------- |
-| [(Git) Bash](https://git-scm.com/download/win)                         | -                           |                                                                        |
-| [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                        |
-| [clang 13\*](https://llvm.org/)                                        | `./adev.sh install llvm`    | \* See [Known Issues](#known-issues)                                   |
-| [gcc 11\*](https://gcc.gnu.org/)                                       | `./adev.sh install gcc`     | \* See [Known Issues](#known-issues)                                   |
-| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./adev.sh install llvm`    |                                                                        |
-| [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)   | `./adev.sh install llvm`    |                                                                        |
-| [Doxygen](https://www.doxygen.nl/index.html)                           | `./adev.sh install doxygen` |                                                                        |
-| [clang-format](https://clang.llvm.org/docs/ClangFormat.html)           | `./adev.sh install llvm`    |                                                                        |
-| [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | manual                      | \* Required only for [Continuous Integration](#continuous-integration) |
+| Windows                                                                | Installation                | Note                                                                |
+| ---------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------- |
+| [(Git) Bash](https://git-scm.com/download/win)                         | -                           |                                                                     |
+| [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                     |
+| [clang 13\*](https://llvm.org/)                                        | `./adev.sh install llvm`    | See [Known Issues](#known-issues)                                   |
+| [gcc 11\*](https://gcc.gnu.org/)                                       | `./adev.sh install gcc`     | See [Known Issues](#known-issues)                                   |
+| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./adev.sh install llvm`    |                                                                     |
+| [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)   | `./adev.sh install llvm`    |                                                                     |
+| [Doxygen](https://www.doxygen.nl/index.html)                           | `./adev.sh install doxygen` |                                                                     |
+| [clang-format](https://clang.llvm.org/docs/ClangFormat.html)           | `./adev.sh install llvm`    |                                                                     |
+| [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | manual                      | Required only for [Continuous Integration](#continuous-integration) |
 
 ## Development
 
@@ -80,13 +80,13 @@ Workflow summary:
 
 ## Continuous Integration
 
-The `adev` is using GitHub Actions. The `.adev.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites listed above:
+The `adev` is using GitHub Actions. The `.adev.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites & tools listed above:
 
 -   [`agnesoft/adev`](https://hub.docker.com/r/agnesoft/adev)
 
-The docker image is rebuilt if it changes in a PR and the checks are run on such an image. If the PR with a changed `dockerfile` is merged to `main` the build will rebuild & push the `latest` tag of that image.
+The docker image is rebuilt if it changes in a PR and the checks are run on such an image. If the PR with a changed `dockerfile` is merged to `main` the build will rebuild & push the `latest` tag of that image to the repository.
 
-Every CI run uploads artifacts (binaries, documentation, coverage report) for usage or inspection.
+Every CI run uploads artifacts (binaries, documentation, coverage report) for usage or inspection even if it failed for easier debugging.
 
 There are two workflows:
 
