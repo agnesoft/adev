@@ -157,5 +157,5 @@ jobs:
     if: always() && needs.diff.outputs.diff_dockerfile == 'true'
     steps:
       - run: |
-          token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
+          token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ secrets.DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
           curl -X DELETE -H "Authorization: JWT ${token}" "https://hub.docker.com/v2/repositories/agnesoft/adev/tags/${{ github.run_number }}/"
