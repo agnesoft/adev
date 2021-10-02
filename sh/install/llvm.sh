@@ -15,4 +15,5 @@ else
     sudo apt-get install -y libc++abi-${llvmVersion}-dev
     sudo apt-get install -y ${lld}
     sudo apt-get install -y llvm-${llvmVersion}
+    sudo apt-get install -y libunwind-${llvmVersion}-dev
 fi
