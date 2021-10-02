@@ -25,7 +25,8 @@ jobs:
     needs: diff
     if: needs.diff.outputs.diff_dockerfile == 'true'
     steps:
-      - uses: actions/checkout@v2
+      - if: needs.diff.outputs.diff_dockerfile == 'true'
+        uses: actions/checkout@v2
       - if: needs.diff.outputs.diff_dockerfile == 'true'
         run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
       - if: needs.diff.outputs.diff_dockerfile == 'true'
