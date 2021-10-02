@@ -144,16 +144,9 @@ jobs:
           path: build/msvc/
           if-no-files-found: error
 
-  test:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    steps:
-      - run: echo "Hello, World"
-
   cleanup:
     runs-on: ubuntu-latest
-    needs: [ diff, docker, analysis, coverage, formatting, documentation, linux_clang13_x64, linux_gcc11_x64, test ]
+    needs: [ diff, docker, analysis, coverage, documentation, formatting, linux_clang13_x64, linux_gcc11_x64 ]
     if: always() && needs.diff.outputs.diff_dockerfile == 'true'
     steps:
       - run: |
