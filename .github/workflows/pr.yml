@@ -27,7 +27,7 @@ jobs:
       - if: needs.diff.outputs.diff_dockerfile == 'true'
         uses: actions/checkout@v2
       - if: needs.diff.outputs.diff_dockerfile == 'true'
-        run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+        run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
       - if: needs.diff.outputs.diff_dockerfile == 'true'
         run: docker build . -t agnesoft/adev:pr${{ github.run_number }}
       - if: needs.diff.outputs.diff_dockerfile == 'true'
@@ -143,3 +143,17 @@ jobs:
           name: adev-pr-${{ github.run_number }}-windows_msvc2019_x64
           path: build/msvc/
           if-no-files-found: error
+
+  test:
+    runs-on: ubuntu-latest
+    container: ${{ needs.docker.outputs.image }}
+    needs: [ diff, docker ]
+    steps:
+      - run: echo "Hello, World"
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [ diff, docker, analysis, coverage, formatting, documentation, linux_clang13_x64, linux_gcc11_x64, test ]
+    if: always() && needs.diff.outputs.diff_dockerfile == 'true'
+    steps:
+      - run: curl -X DELETE -u "agnesoft:${{ secrets.DOCKER_HUB_TOKEN }}" https://hub.docker.com/v2/repositories/agnesoft/adev/tags/pr${{ github.run_number }}
