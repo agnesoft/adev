@@ -87,10 +87,11 @@ CheckOptions:
     value: 'lower_case'
   - key:   readability-identifier-naming.StructCase
     value: 'CamelCase'
-  #- key:   readability-identifier-naming.TemplateParameterCase #Disabled as these two cannot co-exist together as of LLVM 12
+  #Broken as of LLVM 13 (2nd October 2021) 
+  #- key:   readability-identifier-naming.TemplateParameterCase
   #  value: 'CamelCase'
-  #- key:   readability-identifier-naming.ValueTemplateParameterCase
-  #  value: 'camelBack'
+  - key:   readability-identifier-naming.ValueTemplateParameterCase
+    value: 'camelBack'
   - key:   readability-identifier-naming.TypeAliasCase
     value: 'CamelCase'
   - key:   readability-identifier-naming.VariableCase
