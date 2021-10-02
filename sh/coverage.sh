@@ -2,7 +2,7 @@ source "sh/common.sh"
 
 ignoredSources="\/test\/"
 uncoveredFunctions="3"
-uncoveredLines="24"
+uncoveredLines="26"
 uncoveredRegions="27"
 uncoveredBranches="8"
 
