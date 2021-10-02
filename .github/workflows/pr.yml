@@ -5,10 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  analysis:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    if: false
+  diff:
+    run-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -16,31 +14,31 @@ jobs:
       - id: diff
         shell: bash
         run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh build clang
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh analyse diff
+    outputs:
+      diff: ${{ steps.diff.outputs.diff }}
+
+  analysis:
+    runs-on: ubuntu-latest
+    container: agnesoft/adev
+    needs: diff
+    if: needs.diff.outputs.diff == 'true'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: ./adev.sh build clang
+      - run: ./adev.sh analyse diff
 
   coverage:
     runs-on: ubuntu-latest
     container: agnesoft/adev
-    if: false
+    needs: diff
+    if: needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh build coverage
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh coverage
-      - if: always() && steps.diff.outputs.diff == 'true'
+      - run: ./adev.sh build coverage
+      - run: ./adev.sh coverage
+      - if: always()
         uses: actions/upload-artifact@v2
         with:
           name: adev-pr-${{ github.run_number }}-coverage
@@ -50,19 +48,12 @@ jobs:
   documentation:
     runs-on: ubuntu-latest
     container: agnesoft/adev
-    if: false
+    needs: diff
+    if: needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh build docs
-      - if: always() && steps.diff.outputs.diff == 'true'
-        uses: actions/upload-artifact@v2
+      - run: ./adev.sh build docs
+      - uses: actions/upload-artifact@v2
         with:
           name: adev-pr-${{ github.run_number }}-documentation
           path: build/docs/
@@ -71,62 +62,41 @@ jobs:
   formatting:
     runs-on: ubuntu-latest
     container: agnesoft/adev
-    if: false
+    needs: diff
+    if: needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh format check diff
+      - run: ./adev.sh format check diff
 
-  linux_clang12_x64:
+  linux_clang13_x64:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: diff
+    if: needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh build clang
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh test clang 100
-      - if: always() && steps.diff.outputs.diff == 'true'
+      - run: ./adev.sh build clang
+      - run: ./adev.sh test clang 100
+      - if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: adev-pr-${{ github.run_number }}-linux_clang12_x64
+          name: adev-pr-${{ github.run_number }}-linux_clang13_x64
           path: build/clang/
           if-no-files-found: error
 
   linux_gcc11_x64:
     runs-on: ubuntu-latest
     container: agnesoft/adev
+    needs: diff
     if: false
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh install gcc
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh build gcc
-      - if: steps.diff.outputs.diff == 'true'
-        shell: bash
-        run: ./adev.sh test gcc 100
-      - if: always() && steps.diff.outputs.diff == 'true'
+      - run: ./adev.sh install gcc
+      - run: ./adev.sh build gcc
+      - run: ./adev.sh test gcc 100
+      - if: always()
         uses: actions/upload-artifact@v2
         with:
           name: adev-pr-${{ github.run_number }}-linux_gcc11_x64
@@ -135,24 +105,17 @@ jobs:
 
   windows_msvc2019_x64:
     runs-on: windows-latest
-    if: false
+    needs: diff
+    if: needs.diff.outputs.diff == 'true'
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh"; then (echo "::set-output name=diff::true") fi
       - shell: bash
-        if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh build msvc
       - shell: bash
-        if: steps.diff.outputs.diff == 'true'
         run: ./adev.sh test msvc 100
-      - if: always() && steps.diff.outputs.diff == 'true'
+      - if: always()
         uses: actions/upload-artifact@v2
         with:
           name: adev-pr-${{ github.run_number }}-windows_msvc2019_x64
           path: build/msvc/
           if-no-files-found: error
-
