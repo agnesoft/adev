@@ -4,31 +4,12 @@
 
 Agnesoft central development repository.
 
-## Projects
-
-| Name                                            | Path                                              | Description                                  |
-| ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------- |
-| [acommandline](projects/acommandline/readme.md) | [projects/acommandline/](/projects/acommandline/) | c++ command line parser                      |
-| [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
-| [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper |
-
-## Prerequisites
-
-### Windows
-
--   MSVC 2019 (16.10+)
-
-\- or -
-
--   LLVM 13+ (see [Known Issues](#known-issues))
-
-### Linux
-
--   Clang 13
-
-\- or -
-
--   GCC 11 (see [Known Issues](#known-issues))
+-   [Usage](#usage)
+-   [Projects](#projects)
+-   [Tools](#tools)
+-   [Development](#development)
+-   [Continuous Integration](#continuous-integration)
+-   [Known Issues](#known-issues)
 
 ## Usage
 
@@ -38,8 +19,93 @@ Run (use Git Bash on Windows):
 ./adev.sh
 ```
 
+This will show all available actions: building, running various checks, installation of prerequisites & tools etc. E.g.
+
+To build simply run any of:
+
+```
+./adev.sh build
+./adev.sh build <toolchain>
+./adev.sh build <project> <toolchain>
+```
+
+Available toolchains are:
+
+-   **clang\***
+-   **gcc\*** (default, Linux only)
+-   **msvc** (default, Windows only)
+
+\*see [Known Issues](#known-issues)
+
+The binaries will be output to `build/<toolchain>`.
+
+## Projects
+
+| Name                                            | Path                                              | Description                                  |
+| ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------- |
+| [acommandline](projects/acommandline/readme.md) | [projects/acommandline/](/projects/acommandline/) | c++ command line parser                      |
+| [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
+| [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper |
+
+## Tools
+
+| Windows                                                                | Installation                | Note                                                                |
+| ---------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------- |
+| [(Git) Bash](https://git-scm.com/download/win)                         | -                           |                                                                     |
+| [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                     |
+| [clang 13\*](https://llvm.org/)                                        | `./adev.sh install llvm`    | See [Known Issues](#known-issues)                                   |
+| [gcc 11\*](https://gcc.gnu.org/)                                       | `./adev.sh install gcc`     | See [Known Issues](#known-issues)                                   |
+| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./adev.sh install llvm`    |                                                                     |
+| [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)   | `./adev.sh install llvm`    |                                                                     |
+| [Doxygen](https://www.doxygen.nl/index.html)                           | `./adev.sh install doxygen` |                                                                     |
+| [clang-format](https://clang.llvm.org/docs/ClangFormat.html)           | `./adev.sh install llvm`    |                                                                     |
+| [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | manual                      | Required only for [Continuous Integration](#continuous-integration) |
+
+## Development
+
+Please refer to [contribution.md](contribution.md) and [style_guide.md](style_guide.md) for general information.
+
+To setup the development environment use `./adev.sh install <package>` actions or install the [tools](#tools) manually.
+
+Workflow summary:
+
+1. [Open and issue](https://github.com/agnesoft/adev/issues/new/choose)
+2. Create a branch for that issue
+    - observe the naming rules in the [style_guide.md](style_guide.md), i.e. use `[project tag]` and name the branch after your issue, including the issue #
+3. Work on the branch
+    - build & run checks via `./adev.sh`
+4. Push the branch to GitHub & open PR from your branch to `main`
+5. Merge to `main`
+    - requires 1 approval & all [Continous Integration](#continuous-integration) checks to pass
+
+## Continuous Integration
+
+The `adev` is using GitHub Actions. The `.adev.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites & tools listed above:
+
+-   [`agnesoft/adev`](https://hub.docker.com/r/agnesoft/adev)
+
+The docker image is rebuilt if it changes in a PR and the checks are run on such an image. If the PR with a changed `dockerfile` is merged to `main` the build will rebuild & push the `latest` tag of that image to the repository.
+
+Every CI run uploads artifacts (binaries, documentation, coverage report) for usage or inspection even if it failed for easier debugging.
+
+There are two workflows:
+
+### pr
+
+-   runs on every pull request (pr)
+-   checks are run only on the diff to the latest `main`
+-   skips irrelevant checks.
+
+### adev
+
+-   runs on every push (merge) to `main`
+-   all checks are run fully
+
 ## Known Issues
 
--   _Windows_: Clang 12+ (LLVM) is unable to use MSVC's STL failing the build. [31/08/2021]
--   _Linux_: GCC 11 is unable to use its own STL via header units failing the build. [31/08/2021]
--   _Coverage_: LLVM instrumentation has difficulties with `if constexpr` and private module entities that means certain parts of code seem "uncovered" even though they are executed [29/09/2021]
+| Platform | Action   | Tool           | Version | Description                                                                                                                              | Date       |
+| -------- | -------- | -------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| Windows  | build    | clang          | 12, 13  | Unable to use MSVC STL failing on duplicate intrinsic symbols such as `_freea`.                                                          | 31/08/2021 |
+| Linux    | build    | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error.                                         | 31/08/2021 |
+| any      | coverage | llvm           | 12, 13  | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed | 29/09/2021 |
+| Windows  | docker   | Docker Desktop | 4.1     | It cannot be installed if there is an existing WSL 2 image. Docker Desktop must be installed when there are no other WSL 2 images        | 02/10/2021 |
