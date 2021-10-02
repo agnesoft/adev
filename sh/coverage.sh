@@ -51,7 +51,7 @@ function generate_report() {
     local profData=$2
 
     "${llvmProfdata}" merge ${profData} -o build/clang/bin/coverage.profdata
-    "${llvmCov}" show ${objectArgs} -output-dir=build/coverage -format=html -instr-profile=build/clang/bin/coverage.profdata -ignore-filename-regex="${ignoredSources}" -show-instantiations=false -show-branches=count -show-expansions
+    "${llvmCov}" show ${objectArgs} -output-dir=build/coverage -format=html -instr-profile=build/clang/bin/coverage.profdata -ignore-filename-regex="${ignoredSources}" -show-instantiations=false -show-branches=count -show-expansions -show-line-counts-or-regions
 }
 
 function generate_summary() {
