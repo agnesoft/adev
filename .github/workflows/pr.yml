@@ -163,9 +163,8 @@ jobs:
 
   cleanup:
     runs-on: ubuntu-latest
-    if: false
     needs: [ diff, docker, analysis, coverage, documentation, formatting, linux_clang13_x64, linux_gcc11_x64 ]
-    if: always() && needs.diff.outputs.diff_dockerfile == 'true'
+    if: false && always() && needs.diff.outputs.diff_dockerfile == 'true'
     steps:
       - run: |
           token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ secrets.DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
