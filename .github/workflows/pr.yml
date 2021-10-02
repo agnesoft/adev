@@ -156,4 +156,6 @@ jobs:
     needs: [ diff, docker, analysis, coverage, formatting, documentation, linux_clang13_x64, linux_gcc11_x64, test ]
     if: always() && needs.diff.outputs.diff_dockerfile == 'true'
     steps:
-      - run: curl -X DELETE -u "agnesoft:${{ secrets.DOCKER_HUB_PASSWORD }}" https://hub.docker.com/v2/repositories/agnesoft/adev/tags/pr${{ github.run_number }}
+      - run: |
+        token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
+        curl -X DELETE -H "Authorization: JWT ${token}" "https://hub.docker.com/v2/repositories/agnesoft/adev/tags/${{ github.run_number }}/"
