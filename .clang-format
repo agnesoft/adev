@@ -1,5 +1,4 @@
 ---
-# BasedOnStyle: LLVM
 Language: Cpp
 Standard: Latest
 AccessModifierOffset: -4
@@ -63,16 +62,16 @@ FixNamespaceComments: false
 IncludeBlocks: Regroup
 IncludeIsMainRegex: '"pch'
 IncludeCategories:
-  - Regex:           '"pch'
-    Priority:        0
-  - Regex:           '"'
-    Priority:        2
-  - Regex:           '<[a-zA-Z].*/'
-    Priority:        3
-  - Regex:           '<[a-zA-Z]'
-    Priority:        4
-  - Regex:           '<'
-    Priority:        5
+    - Regex: '"pch'
+      Priority: 0
+    - Regex: '"'
+      Priority: 2
+    - Regex: "<[a-zA-Z].*/"
+      Priority: 3
+    - Regex: "<[a-zA-Z]"
+      Priority: 4
+    - Regex: "<"
+      Priority: 5
 IndentCaseLabels: false
 IndentCaseBlocks: false
 IndentGotoLabels: false

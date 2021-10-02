@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("help", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("help", [] { // NOLINT(cert-err58-cpp)
     test("Mixed options", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -16,7 +16,7 @@ static const auto S = suite("help", [] { //NOLINT(cert-err58-cpp)
         double d{};
 
         commandLine.option().long_name("long_name1").short_name('l').description("Some long name argument.").bind_to(&b);
-        commandLine.option().long_name("another").default_value(13.3).description("Another argument description.").bind_to(&d); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        commandLine.option().long_name("another").default_value(13.3).description("Another argument description.").bind_to(&d); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         commandLine.option().positional().required().description("Positional argument description.").bind_to(&str);
         commandLine.option().long_name("output").short_name('o').description("Output parameter.").bind_to(&i);
         commandLine.parse(2, std::array<const char *, 2>{"app", "-?"}.data());
@@ -50,7 +50,7 @@ static const auto S = suite("help", [] { //NOLINT(cert-err58-cpp)
         std::vector<std::string> strings;
 
         commandLine.option().positional().default_value(std::vector<std::int64_t>{1, 2}).description("int list").bind_to(&numbers);
-        commandLine.option().positional().default_value(std::vector<double>{1.1, 2.3}).description("double list").bind_to(&doubles); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        commandLine.option().positional().default_value(std::vector<double>{1.1, 2.3}).description("double list").bind_to(&doubles); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
         commandLine.option().positional().default_value(std::vector<std::string>{"one", "two"}).description("string list").bind_to(&strings);
         commandLine.parse(2, std::array<const char *, 2>{"app", "-?"}.data());
 

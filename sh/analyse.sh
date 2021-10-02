@@ -99,14 +99,8 @@ function analyse_projects() {
 }
 
 function detect_clang_tidy() {
-    if is_windows; then
-        clangTidy="clang-tidy.exe"
-    else
-        clangTidy="clang-tidy-12"
-    fi
-
     if ! is_available "${clangTidy}"; then
-        print_error "ERROR: ${clangTidy} is not available. Please install it with './adev.sh install clang-tidy'."
+        print_error "ERROR: ${clangTidy} is not available. Please install it with './adev.sh install llvm'."
     else
         "${clangTidy}" --version | head -n 2 | tail -n +2
     fi

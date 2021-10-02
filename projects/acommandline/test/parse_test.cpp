@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("CommandLine::parse()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cpp)
     test("long and short mix", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};

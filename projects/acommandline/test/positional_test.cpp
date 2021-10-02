@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("positional", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("positional", [] { // NOLINT(cert-err58-cpp)
     test("single", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -32,7 +32,7 @@ static const auto S = suite("positional", [] { //NOLINT(cert-err58-cpp)
 
         expect(sValue).to_be("value");
         expect(iValue).to_be(-1);
-        expect(dValue).to_be(5.5); //NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+        expect(dValue).to_be(5.5); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     });
 
     test("missing bound variable", [] {

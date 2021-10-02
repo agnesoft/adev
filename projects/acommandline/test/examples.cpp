@@ -5,9 +5,9 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("examples", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
     test("CommandLine", [] {
-        const int argc = 8; //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        const int argc = 8; // NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
         std::array<const char *, argc> args{"./app.exe",
                                             "-i",
                                             "main.cpp",
@@ -49,6 +49,6 @@ commandLine.parse(argc, argv);
         expect(flag).to_be(true);
         expect(output).to_be("a.o");
         expect(includePaths).to_be(std::vector<std::string>{"/some/path", "other/path/with space/"});
-        expect(fraction).to_be(15.59997); //NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+        expect(fraction).to_be(15.59997); // NOLINT(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     });
 });

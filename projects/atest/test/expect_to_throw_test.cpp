@@ -5,7 +5,7 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
+static const auto S = suite("Expect::toThrow()", [] { // NOLINT(cert-err58-cpp)
     test("Exception types match", [] {
         expect([] { throw std::logic_error{""}; }).to_throw<std::logic_error>();
     });
@@ -19,7 +19,7 @@ static const auto S = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception types mismatch: throw int", [] {
-        expect_fail([] { throw 1; }).to_throw<std::exception>(); //NOLINT(hicpp-exception-baseclass)
+        expect_fail([] { throw 1; }).to_throw<std::exception>(); // NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception text match", [] {
@@ -35,7 +35,7 @@ static const auto S = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception text mismatch (INTENTIONAL FAILURE)", [] {
-        expect([] { throw std::string{"error"}; }).to_throw<std::string>("different error"); //NOLINT(hicpp-exception-baseclass)
+        expect([] { throw std::string{"error"}; }).to_throw<std::string>("different error"); // NOLINT(hicpp-exception-baseclass)
     });
 
     test("No exception thrown", [] {
@@ -47,18 +47,18 @@ static const auto S = suite("Expect::toThrow()", [] { //NOLINT(cert-err58-cpp)
     });
 
     test("Exception types match: int", [] {
-        expect([] { throw 1; }).to_throw<int>(); //NOLINT(hicpp-exception-baseclass)
+        expect([] { throw 1; }).to_throw<int>(); // NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception value match: int", [] {
-        expect([] { throw 1; }).to_throw(1); //NOLINT(hicpp-exception-baseclass)
+        expect([] { throw 1; }).to_throw(1); // NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception value match: std::string", [] {
-        expect([] { throw std::string{"Exception text"}; }).to_throw(std::string{"Exception text"}); //NOLINT(hicpp-exception-baseclass)
+        expect([] { throw std::string{"Exception text"}; }).to_throw(std::string{"Exception text"}); // NOLINT(hicpp-exception-baseclass)
     });
 
     test("Exception value match: const char*", [] {
-        expect([] { throw std::string{"Exception text"}; }).to_throw<std::string>("Exception text"); //NOLINT(hicpp-exception-baseclass)
+        expect([] { throw std::string{"Exception text"}; }).to_throw<std::string>("Exception text"); // NOLINT(hicpp-exception-baseclass)
     });
 });

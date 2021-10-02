@@ -6,21 +6,21 @@
 #    pragma clang diagnostic ignored "-Wpedantic"
 #endif
 
-//Concepts
+// Concepts
 #if __has_include(<concepts>)
 #    include <concepts> //C++20
 #else
 #    pragma message("<concepts> not available (C++20)")
 #endif
 
-//Coroutines
+// Coroutines
 #if __has_include(<coroutine>)
 #    include <coroutine> //C++20
 #else
 #    pragma message("<coroutine> not available (C++20)")
 #endif
 
-//Utilities
+// Utilities
 #if __has_include(<cstdlib>)
 #    include <cstdlib>
 #else
@@ -147,7 +147,7 @@
 #    pragma message("<source_location> not available (C++20)")
 #endif
 
-//Memory
+// Memory
 #if __has_include(<new>)
 #    include <new>
 #else
@@ -172,7 +172,7 @@
 #    pragma message("<memory_resource> not available (C++17)")
 #endif
 
-//Limits
+// Limits
 #if __has_include(<climits>)
 #    include <climits>
 #else
@@ -203,7 +203,7 @@
 #    pragma message("<limits> not available")
 #endif
 
-//Error
+// Error
 #if __has_include(<exception>)
 #    include <exception>
 #else
@@ -234,7 +234,7 @@
 #    pragma message("<cerrno> not available")
 #endif
 
-//Strings
+// Strings
 #if __has_include(<cctype>)
 #    include <cctype>
 #else
@@ -289,7 +289,7 @@
 #    pragma message("<format> not available (C++20)")
 #endif
 
-//Containers
+// Containers
 #if __has_include(<array>)
 #    include <array> //C++11
 #else
@@ -362,21 +362,21 @@
 #    pragma message("<span> not available (C++20)")
 #endif
 
-//Iterators
+// Iterators
 #if __has_include(<iterator>)
 #    include <iterator>
 #else
 #    pragma message("<iterator> not available")
 #endif
 
-//Ranges
+// Ranges
 #if __has_include(<ranges>)
 #    include <ranges> //C++20
 #else
 #    pragma message("<ranges> not available (C++20)")
 #endif
 
-//Algorithms
+// Algorithms
 #if __has_include(<algorithm>)
 #    include <algorithm>
 #else
@@ -389,7 +389,7 @@
 #    pragma message("<execution> not available (C++17)")
 #endif
 
-//Numerics
+// Numerics
 #if __has_include(<cmath>)
 #    include <cmath>
 #else
@@ -444,7 +444,7 @@
 #    pragma message("<numbers> not available (C++20)")
 #endif
 
-//Localization
+// Localization
 #if __has_include(<locale>)
 #    include <locale>
 #else
@@ -457,7 +457,7 @@
 #    pragma message("<clocale> not available")
 #endif
 
-//IO
+// IO
 #if __has_include(<iosfwd>)
 #    include <iosfwd>
 #else
@@ -524,28 +524,28 @@
 #    pragma message("<cstdio> not available")
 #endif
 
-//Filesystem
+// Filesystem
 #if __has_include(<filesystem>)
 #    include <filesystem> //C++17
 #else
 #    pragma message("<filesystem> not available (C++17)")
 #endif
 
-//Regexp
+// Regexp
 #if __has_include(<regex>)
 #    include <regex> //C++11
 #else
 #    pragma message("<regex> not available (C++11)")
 #endif
 
-//Atomic
+// Atomic
 #if __has_include(<atomic>)
 #    include <atomic> //C++11
 #else
 #    pragma message("<atomic> not available (C++11)")
 #endif
 
-//Thread
+// Thread
 #if __has_include(<thread>)
 #    include <thread> //C++11
 #else

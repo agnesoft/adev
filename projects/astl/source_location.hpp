@@ -31,9 +31,9 @@ private:
 };
 }
 
-namespace std //NOLINT(cert-dcl58-cpp)
+namespace std // NOLINT(cert-dcl58-cpp)
 {
-export class source_location : public astl::SourceLocationImpl<source_location> //NOLINT(readability-identifier-naming)
+export class source_location : public astl::SourceLocationImpl<source_location> // NOLINT(readability-identifier-naming)
 {
 };
 }

@@ -86,8 +86,24 @@ shopt -s globstar
 
 if is_windows; then
     executableExtension=".exe"
-    clang="clang++"
-else
-    clang="clang++-12"
+    clang="clang++${executableExtension}"
+    clangFormat="clang-format${executableExtension}"
+    clangTidy="clang-tidy${executableExtension}"
+    llvmCov="llvm-cov${executableExtension}"
+    llvmProfdata="llvm-profdata${executableExtension}"
+elif is_linux; then
+    llvmVersion=13
+    clang="clang++-${llvmVersion}"
+    clangFormat="clang-format-${llvmVersion}"
+    clangTidy="clang-tidy-${llvmVersion}"
+    lld="lld-${llvmVersion}"
+    llvmCov="llvm-cov-${llvmVersion}"
+    llvmProfdata="llvm-profdata-${llvmVersion}"
     gcc="g++-11"
+else
+    clang="clang++"
+    clangFormat="clang-format"
+    clangTidy="clang-tidy"
+    llvmCov="llvm-cov"
+    llvmProfdata="llvm-profdata"
 fi

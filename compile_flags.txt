@@ -9,4 +9,4 @@
 -fprebuilt-module-path=build/clang/atest
 -fprebuilt-module-path=build/clang/astl
 -fmodule-map-file=projects/astl/module.modulemap
--fmodule-map-file=/usr/lib/llvm-12/include/c++/v1/module.modulemap
+-fmodule-map-file=/usr/lib/llvm-13/include/c++/v1/module.modulemap

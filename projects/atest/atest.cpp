@@ -34,7 +34,7 @@ namespace atest
 //! callable. The call site source location is
 //! automatically captured.
 export template<typename ExpressionT>
-[[nodiscard]] auto assert_(const ExpressionT &expression, //NOLINT(readability-identifier-naming)
+[[nodiscard]] auto assert_(const ExpressionT &expression, // NOLINT(readability-identifier-naming)
                            const std::source_location &sourceLocation = std::source_location::current()) noexcept
     -> Expect<ExpressionT,
               ExpectationType::Assertion,
@@ -138,10 +138,10 @@ auto suite(const char *name,
     }
     catch (...)
     {
-        //Suppress any further exceptions as this
-        //function is usually run outside of main
-        //and no exception can be caught. See
-        //clang-tidy check: cert-err58-cpp.
+        // Suppress any further exceptions as this
+        // function is usually run outside of main
+        // and no exception can be caught. See
+        // clang-tidy check: cert-err58-cpp.
     }
 
     return 1;

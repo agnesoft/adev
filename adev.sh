@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 source "sh/common.sh"
 
 action="${1}"
