@@ -52,6 +52,9 @@ elif [[ "${1}" == "list" ]]; then
 elif [[ "${1}" == "address-sanitizer" ]]; then
     export ADDRESS_SANITIZER="true"
     build_projects "clang"
+elif [[ "${1}" == "undefined-sanitizer" ]]; then
+    export UNDEFINED_SANITIZER="true"
+    build_projects "clang"
 elif is_toolchain "${1}"; then
     build_projects "${1}"
 elif [[ "${1}" != "" ]]; then

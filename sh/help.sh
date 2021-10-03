@@ -8,7 +8,8 @@ echo "Usage: ./adev.sh [ACTION] [PARAMS]
 ./adev.sh build list                       List available projects.
 ./adev.sh build docs                       Build Doxygen documentation.
 ./adev.sh build coverage                   Build all projects with clang and code coverage instrumentation.
-./adev.sh build address-sanitizer          Build all proejcts with clang and address sanitizer flags.
+./adev.sh build address-sanitizer          Build all projects with clang and address sanitizer flags.
+./adev.sh build undefined-sanitizer        Build all projects with cland and undefined behavior sanitizer flags.
 ./adev.sh build <toolchain>                Build all projects with <toolchain>.
 ./adev.sh build <project>                  Build <project> with default toolchain.
 ./adev.sh build <project> <toolchain>      Build <project> with <toolchain>.
