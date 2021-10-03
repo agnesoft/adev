@@ -20,6 +20,15 @@ jobs:
       - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
         run: docker push agnesoft/adev:latest
 
+  address_sanitizer:
+    runs-on: ubuntu-latest
+    container: agnesoft/adev
+    needs: docker
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh build address-sanitizer
+      - run: ./adev.sh test clang
+
   analysis:
     runs-on: ubuntu-latest
     container: agnesoft/adev
