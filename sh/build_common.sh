@@ -20,6 +20,14 @@ if [[ "${CODE_COVERAGE}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -fprofile-instr-generate \
                         -fcoverage-mapping"
+elif [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
+    clangCompilerFlags="${clangCompilerFlags} \
+                        -g \
+                        -fsanitize=address \
+                        -fsanitize-address-use-after-return=always \
+                        -fsanitize-address-use-after-scope \
+                        -fno-omit-frame-pointer \
+                        -fno-optimize-sibling-calls"
 else
     clangCompilerFlags="${clangCompilerFlags} \
                         -O3"

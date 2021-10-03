@@ -42,6 +42,16 @@ jobs:
     outputs:
       image: ${{ steps.image.outputs.image }}
 
+  address_sanitizer:
+    runs-on: ubuntu-latest
+    container: ${{ needs.docker.outputs.image }}
+    needs: [ diff, docker ]
+    if: needs.diff.outputs.diff == 'true'
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh build address-sanitizer
+      - run: ./adev.sh test clang
+
   analysis:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
