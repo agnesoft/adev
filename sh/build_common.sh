@@ -30,7 +30,7 @@ elif [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
                         -fno-optimize-sibling-calls"
 else
     clangCompilerFlags="${clangCompilerFlags} \
-                        -O4"
+                        -O3"
 fi
 
 clangCompilerLinkerFlags="${clangCompilerFlags} \
