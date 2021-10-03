@@ -28,6 +28,9 @@ elif [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
                         -fsanitize-address-use-after-scope \
                         -fno-omit-frame-pointer \
                         -fno-optimize-sibling-calls"
+elif [[ "${UNDEFINED_SANITIZER}" == "true" ]]; then
+    clangCompilerFlags="${clangCompilerFlags} \
+                        -fsanitize=undefined"
 else
     clangCompilerFlags="${clangCompilerFlags} \
                         -O3"
