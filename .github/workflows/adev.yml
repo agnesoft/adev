@@ -106,6 +106,15 @@ jobs:
           path: build/gcc/
           if-no-files-found: error
 
+  undefined_sanitizer:
+    runs-on: ubuntu-latest
+    container: agnesoft/adev
+    needs: docker
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh build undefined-sanitizer
+      - run: ./adev.sh test clang
+
   windows_msvc2019_x64:
     runs-on: windows-latest
     steps:
