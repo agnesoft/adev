@@ -49,6 +49,9 @@ elif [[ "${1}" == "docs" ]]; then
     sh/build_docs.sh
 elif [[ "${1}" == "list" ]]; then
     list_projects
+elif [[ "${1}" == "address-sanitizer" ]]; then
+    export ADDRESS_SANITIZER="true"
+    build_projects "clang"
 elif is_toolchain "${1}"; then
     build_projects "${1}"
 elif [[ "${1}" != "" ]]; then
