@@ -31,6 +31,11 @@ elif [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
 elif [[ "${UNDEFINED_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -fsanitize=undefined"
+elif [[ "${THREAD_SANITIZER}" == "true" ]]; then
+    clangCompilerFlags="${clangCompilerFlags} \
+                        -g \
+                        -O1 \
+                        -fsanitize=thread"
 else
     clangCompilerFlags="${clangCompilerFlags} \
                         -O3"

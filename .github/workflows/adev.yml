@@ -106,6 +106,15 @@ jobs:
           path: build/gcc/
           if-no-files-found: error
 
+  thread_sanitizer:
+    runs-on: ubuntu-latest
+    container: agnesoft/adev
+    needs: docker
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh build thread-sanitizer
+      - run: ./adev.sh test clang
+
   undefined_sanitizer:
     runs-on: ubuntu-latest
     container: agnesoft/adev
