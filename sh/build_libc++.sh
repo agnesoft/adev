@@ -28,7 +28,7 @@ function get_llvm_sources() {
 }
 
 function build() {
-    cd ../llvm/build_msan/
+    cd ${home}/llvm/build_msan/
 
     cmake -G Ninja \
           ../llvm \
