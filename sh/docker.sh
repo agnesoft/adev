@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "sh/common.sh"
+
 function install_prerequisites() {
     export DEBIAN_FRONTEND="noninteractive"
     apt-get update -y
@@ -19,7 +21,7 @@ function install() {
 
 function cleanup() {
     rm "${home}/adev.sh"
-    rm -rf "${home}/adev"
+    rm -rf "${home}/sh"
     rm -rf "${home}/llvm"
 }
 
