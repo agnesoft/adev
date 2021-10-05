@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-WORKDIR /home/adev
-ADD adev.sh /home/adev/
-ADD sh /home/adev/sh
+ADD adev.sh /root
+ADD sh /root/sh
+WORKDIR /root
 RUN bash sh/docker.sh

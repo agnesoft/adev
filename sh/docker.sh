@@ -18,9 +18,9 @@ function install() {
 }
 
 function cleanup() {
-    rm -rf /home/adev
-    rm -rf /home/llvm
-    apt-get autoremove -y
+    rm "${home}/adev.sh"
+    rm -rf "${home}/adev"
+    rm -rf "${home}/llvm"
 }
 
 install_prerequisites

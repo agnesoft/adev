@@ -34,7 +34,10 @@ elif [[ "${CODE_COVERAGE}" == "true" ]]; then
                         -fcoverage-mapping"
 elif [[ "${MEMORY_SANITIZER}" == "true" ]]; then
     if [[ ! -d "${libCppMsanRoot}" ]]; then
+        echo "home: ${home}"
+        echo "libc++ root: ${libCppMsanRoot}"
         print_error "ERROR: libc++ with memory sanitizer not found. Build it with './adev.sh build libc++-msan'."
+        find ${home}
         exit 1
     fi
 
