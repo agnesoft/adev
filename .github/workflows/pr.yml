@@ -137,6 +137,16 @@ jobs:
           path: build/gcc/
           if-no-files-found: error
 
+  memory_sanitizer:
+    runs-on: ubuntu-latest
+    container: ${{ needs.docker.outputs.image }}
+    needs: [ diff, docker ]
+    if: needs.diff.outputs.diff == 'true'
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./adev.sh build memory-sanitizer
+      - run: ./adev.sh test clang
+
   thread_sanitizer:
     runs-on: ubuntu-latest
     container: ${{ needs.docker.outputs.image }}
