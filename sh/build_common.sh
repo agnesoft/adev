@@ -3,24 +3,24 @@ source "sh/common.sh"
 toolchain="${1}"
 buildRoot="build/${toolchain}"
 binDir="${buildRoot}/bin"
+libCppMsanRoot="${home}/libc++-msan"
 
-clangCompilerFlags="-std=c++20 \
-                    -Wall \
-                    -Wextra \
-                    -Werror \
-                    -pedantic \
-                    -Wno-missing-field-initializers \
-                    -fmodules \
-                    -fimplicit-module-maps \
-                    -stdlib=libc++ \
-                    -fprebuilt-module-path=${buildRoot}/astl \
-                    -fmodule-map-file=projects/astl/module.modulemap"
+clangCompilerFlagsCommon="-std=c++20 \
+                          -Wall \
+                          -Wextra \
+                          -Werror \
+                          -pedantic \
+                          -Wno-missing-field-initializers \
+                          -fmodules \
+                          -fimplicit-module-maps \
+                          -fprebuilt-module-path=${buildRoot}/astl \
+                          -fmodule-map-file=projects/astl/module.modulemap"
 
-if [[ "${CODE_COVERAGE}" == "true" ]]; then
-    clangCompilerFlags="${clangCompilerFlags} \
-                        -fprofile-instr-generate \
-                        -fcoverage-mapping"
-elif [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
+clangCompilerFlags="${clangCompilerFlagsCommon} \
+                    -stdlib=libc++"
+
+
+if [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -g \
                         -fsanitize=address \
@@ -28,14 +28,36 @@ elif [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
                         -fsanitize-address-use-after-scope \
                         -fno-omit-frame-pointer \
                         -fno-optimize-sibling-calls"
-elif [[ "${UNDEFINED_SANITIZER}" == "true" ]]; then
+elif [[ "${CODE_COVERAGE}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
-                        -fsanitize=undefined"
+                        -fprofile-instr-generate \
+                        -fcoverage-mapping"
+elif [[ "${MEMORY_SANITIZER}" == "true" ]]; then
+    if [[ ! -d "${libCppMsanRoot}" ]]; then
+        print_error "ERROR: libc++ with memory sanitizer not found. Build it with './adev.sh build libc++-msan'."
+        exit 1
+    fi
+
+    clangCompilerFlags="${clangCompilerFlagsCommon} \
+                        -g \
+                        -Wno-error=unused-command-line-argument
+                        -fsanitize=memory \
+                        -fno-omit-frame-pointer \
+                        -fno-optimize-sibling-calls \
+                        -fsanitize-memory-track-origins \
+                        -fsanitize-memory-use-after-dtor \
+                        -nostdinc++ \
+                        -I${libCppMsanRoot}/include/c++/v1"
+
 elif [[ "${THREAD_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -g \
                         -O1 \
                         -fsanitize=thread"
+elif [[ "${UNDEFINED_SANITIZER}" == "true" ]]; then
+    clangCompilerFlags="${clangCompilerFlags} \
+                        -fsanitize=undefined"
+
 else
     clangCompilerFlags="${clangCompilerFlags} \
                         -O3"
@@ -43,6 +65,14 @@ fi
 
 clangCompilerLinkerFlags="${clangCompilerFlags} \
                           -lpthread"
+
+if [[ "${MEMORY_SANITIZER}" == "true" ]]; then
+    clangCompilerLinkerFlags="${clangCompilerLinkerFlags} \
+                              -L${libCppMsanRoot}/lib \
+                              -lc++ \
+                              -lc++abi \
+                              -Wl,-rpath,${libCppMsanRoot}/lib"
+fi
 
 gccCompilerFlags="-std=c++20 \
                   -Wall \
