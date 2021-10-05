@@ -92,7 +92,7 @@ if is_windows; then
     llvmCov="llvm-cov${executableExtension}"
     llvmProfdata="llvm-profdata${executableExtension}"
 elif is_linux; then
-    home=$(realpath ~)
+    home="/adev"
     llvmVersion=13
     clang="clang++-${llvmVersion}"
     clangFormat="clang-format-${llvmVersion}"
