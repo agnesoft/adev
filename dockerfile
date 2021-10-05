@@ -13,5 +13,10 @@ RUN find . -type f -print0 | xargs -0 dos2unix
 RUN bash ./adev.sh install llvm
 RUN bash ./adev.sh install gcc
 RUN bash ./adev.sh install doxygen
+RUN bash ./adev.sh install ninja
+RUN bash ./adev.sh install cmake
+RUN bash ./adev.sh build libc++-msan
 #cleanup
+RUN rm -rf /home/adev
+RUN rm -rf /home/llvm
 RUN apt-get autoremove -y
