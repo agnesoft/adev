@@ -18,6 +18,7 @@ function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/test_context.obj"     -c "${projectDir}/test_context.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/matcher_base.obj"     -c "${projectDir}/matcher_base.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/matcher.obj"          -c "${projectDir}/matcher.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/matcher_contains.obj" -c "${projectDir}/matcher_contains.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/expect_base.obj"      -c "${projectDir}/expect_base.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/expect_to_match.obj"  -c "${projectDir}/expect_to_match.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/expect_to_throw.obj"  -c "${projectDir}/expect_to_throw.cpp"
@@ -39,6 +40,7 @@ function build_gcc() {
          "${buildDir}/test_context.obj" \
          "${buildDir}/matcher_base.obj" \
          "${buildDir}/matcher.obj" \
+         "${buildDir}/matcher_contains.obj" \
          "${buildDir}/expect_base.obj" \
          "${buildDir}/expect_to_match.obj" \
          "${buildDir}/expect_to_throw.obj" \
@@ -59,6 +61,7 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-test_context.ifc\"     /Fo\"${buildDir}/atest-test_context.obj\"     /c /TP \"${projectDir}/test_context.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-matcher_base.ifc\"     /Fo\"${buildDir}/atest-matcher_base.obj\"     /c /TP \"${projectDir}/matcher_base.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-matcher.ifc\"          /Fo\"${buildDir}/atest-matcher.obj\"          /c /TP \"${projectDir}/matcher.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-matcher_contains.ifc\" /Fo\"${buildDir}/atest-matcher_contains.obj\" /c /TP \"${projectDir}/matcher_contains.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect_base.ifc\"      /Fo\"${buildDir}/atest-expect_base.obj\"      /c /TP \"${projectDir}/expect_base.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect_to_match.ifc\"  /Fo\"${buildDir}/atest-expect_to_match.obj\"  /c /TP \"${projectDir}/expect_to_match.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect_to_throw.ifc\"  /Fo\"${buildDir}/atest-expect_to_throw.obj\"  /c /TP \"${projectDir}/expect_to_throw.cpp\" || exit 1
@@ -87,6 +90,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/atest-test_context.obj\" ^
         \"${buildDir}/atest-matcher_base.obj\" ^
         \"${buildDir}/atest-matcher.obj\" ^
+        \"${buildDir}/atest-matcher_contains.obj\" ^
         \"${buildDir}/atest-expect_base.obj\" ^
         \"${buildDir}/atest-expect_to_match.obj\" ^
         \"${buildDir}/atest-expect_to_throw.obj\" ^

@@ -7,6 +7,13 @@ namespace atest
 {
 //! \private
 template<typename T>
+concept StringConvertible = requires(const T &type)
+{
+    {std::string{type}};
+};
+
+//! \private
+template<typename T>
 concept Stringifiable = requires(const T &type)
 {
     {std::ostringstream{} << type};

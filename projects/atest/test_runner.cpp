@@ -19,19 +19,17 @@ namespace atest
 export class TestRunner
 {
 public:
-    //! Constructs the object with `main()`'s
-    //! arguments.
-    TestRunner(int argc, char **argv) :
-        TestRunner(argc, argv, std::cout)
+    //! Constructs the object with `std::cout` as
+    //! the output stream.
+    TestRunner() :
+        TestRunner{std::cout}
     {
     }
 
-    //! Constructs the object with `main()`'s
-    //! arguments and `stream`.
-    TestRunner(int argc, char **argv, std::ostream &stream) :
-        printer{stream},
-        argc{argc},
-        argv{argv}
+    //! Constructs the object with `stream` as the
+    //! output stream.
+    explicit TestRunner(std::ostream &stream) :
+        printer{stream}
     {
     }
 
@@ -56,8 +54,10 @@ public:
     //! well. I.e. it is possible to have all
     //! expectations passing but still getting
     //! non-0 amount of failures.
-    [[nodiscard]] auto run() -> int
+    [[nodiscard]] auto run(int argc, char **argv) -> int
     {
+        this->argumentCount = argc;
+        this->argumentVector = argv;
         this->begin_run();
         this->run_test_suites();
         return this->end_run();
@@ -66,6 +66,7 @@ public:
 private:
     auto begin_run() -> void
     {
+        ::atest::test_context().reset();
         ::atest::test_context().sort_test_suites();
         const Stats stats = Reporter::stats(::atest::test_context().test_suites());
         this->printer.begin_run(stats);
@@ -140,8 +141,9 @@ private:
         }
     }
 
+    const TestContext context;
     Printer printer;
-    [[maybe_unused]] int argc = 0;
-    [[maybe_unused]] char **argv = nullptr;
+    [[maybe_unused]] int argumentCount = 0;
+    [[maybe_unused]] char **argumentVector = nullptr;
 };
 }

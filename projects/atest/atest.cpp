@@ -16,6 +16,7 @@ export import : expect;
 #include "test_context.cpp" //NOLINT(bugprone-suspicious-include)
 #include "matcher_base.cpp" //NOLINT(bugprone-suspicious-include)
 #include "matcher.cpp" //NOLINT(bugprone-suspicious-include)
+#include "matcher_contains.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect_base.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect_to_match.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect_to_throw.cpp" //NOLINT(bugprone-suspicious-include)
@@ -112,19 +113,6 @@ auto suite(const char *name,
            auto (*body)()->void,
            const std::source_location &sourceLocation = std::source_location::current()) noexcept -> int
 {
-    try
-    {
-        ::atest::test_context().add_test_suite(name, body, sourceLocation);
-        return 0;
-    }
-    catch (...)
-    {
-        // Suppress any further exceptions as this
-        // function is usually run outside of main
-        // and no exception can be caught. See
-        // clang-tidy check: cert-err58-cpp.
-    }
-
-    return 1;
+    return ::atest::test_context().add_test_suite(name, body, sourceLocation);
 }
 }

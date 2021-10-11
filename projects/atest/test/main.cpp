@@ -8,7 +8,7 @@ auto main(int argc, char *argv[]) -> int
     });
 
     constexpr int expectedFailures = 16;
-    const int failures = ::atest::TestRunner{argc, argv}.run();
+    const int failures = ::atest::TestRunner{}.run(argc, argv);
 
     if (failures == expectedFailures)
     {

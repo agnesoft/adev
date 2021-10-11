@@ -3,6 +3,7 @@ export module atest : expect;
 export import : expect_to_match;
 export import : expect_to_throw;
 export import : matcher;
+export import : matcher_contains;
 #endif
 
 namespace atest
@@ -35,6 +36,19 @@ public:
                                                      Matcher,
                                                      expectationType,
                                                      resultHandlingPolicy>
+    {
+        return {this->expression, value, this->sourceLocation};
+    }
+
+    //! Creates the value matcher expectation that
+    //! tries to find the `value` in the
+    //! `expression`.
+    template<typename ValueT>
+    auto to_contain(const ValueT &value) -> ExpectToMatch<ExpressionT,
+                                                          ValueT,
+                                                          MatcherContains,
+                                                          expectationType,
+                                                          resultHandlingPolicy>
     {
         return {this->expression, value, this->sourceLocation};
     }
