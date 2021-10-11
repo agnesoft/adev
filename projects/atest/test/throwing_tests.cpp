@@ -11,7 +11,7 @@ static const auto S = suite("throwing tests", [] { // NOLINT(cert-err58-cpp)
             ::atest::TestRunner runner{output};
 
             test("Bad test", [] {
-                throw 1;
+                throw 1; // NOLINT(hicpp-exception-baseclass)
             });
 
             return runner.run(0, nullptr);
@@ -25,7 +25,7 @@ static const auto S = suite("throwing tests", [] { // NOLINT(cert-err58-cpp)
             ::atest::TestRunner runner{output};
 
             test("Bad test", [] {
-                throw 1;
+                throw 1; // NOLINT(hicpp-exception-baseclass)
             });
 
             static_cast<void>(runner.run(0, nullptr));

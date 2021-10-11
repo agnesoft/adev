@@ -12,7 +12,6 @@ export import : expect;
 #include "failure.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_suite.cpp" //NOLINT(bugprone-suspicious-include)
-#include "tests.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_context.cpp" //NOLINT(bugprone-suspicious-include)
 #include "matcher_base.cpp" //NOLINT(bugprone-suspicious-include)
 #include "matcher.cpp" //NOLINT(bugprone-suspicious-include)
