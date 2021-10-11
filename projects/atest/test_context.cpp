@@ -149,6 +149,7 @@ private:
     TestContext *parentContext = nullptr;
 };
 
+//! \private
 [[nodiscard]] auto test_context() -> TestContext &
 {
     return *TestContext::current().context;
