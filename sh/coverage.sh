@@ -3,7 +3,7 @@ source "sh/common.sh"
 ignoredSources="\/test\/"
 uncoveredFunctions="3"
 uncoveredLines="26"
-uncoveredRegions="27"
+uncoveredRegions="28"
 uncoveredBranches="8"
 
 function coverage() {

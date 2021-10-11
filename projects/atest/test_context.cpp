@@ -26,6 +26,9 @@ public:
         ++TestContext::current().instances;
     }
 
+    TestContext(const TestContext &other) = delete;
+    TestContext(TestContext &&other) noexcept = delete;
+
     ~TestContext()
     {
         TestContext::current().context = this->parentContext;
@@ -89,11 +92,6 @@ public:
         return *this->currentTestSuite;
     }
 
-    [[nodiscard]] auto parent_context() const noexcept -> TestContext *
-    {
-        return this->parentContext;
-    }
-
     auto reset() -> void
     {
         for (TestSuite &testSuite : this->testSuites)
@@ -120,6 +118,9 @@ public:
     {
         return this->testSuites;
     }
+
+    auto operator=(const TestContext &other) -> TestContext & = delete;
+    auto operator=(TestContext &&other) noexcept -> TestContext & = delete;
 
 private:
     TestContext(TestContext *context) :

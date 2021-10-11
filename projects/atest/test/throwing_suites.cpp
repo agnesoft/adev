@@ -12,6 +12,9 @@ public:
         std::cout.rdbuf(this->buf.rdbuf());
     }
 
+    CoutRedirect(const CoutRedirect &other) = delete;
+    CoutRedirect(CoutRedirect &&other) noexcept = delete;
+
     ~CoutRedirect()
     {
         std::cout.rdbuf(coutbuf);
@@ -21,6 +24,9 @@ public:
     {
         return this->buf;
     }
+
+    auto operator=(const CoutRedirect &other) -> CoutRedirect & = delete;
+    auto operator=(CoutRedirect &&other) noexcept -> CoutRedirect & = delete;
 
 private:
     std::stringstream buf;
@@ -32,7 +38,7 @@ static const auto S = suite("throwing suite()", [] { // NOLINT(cert-err58-cpp)
         expect([] {
             CoutRedirect redirect;
             ::atest::TestRunner runner;
-            return suite("test suite", [] { throw 1; });
+            return suite("test suite", [] { throw 1; }); // NOLINT(hicpp-exception-baseclass)
         })
             .to_be(1);
     });
@@ -41,7 +47,7 @@ static const auto S = suite("throwing suite()", [] { // NOLINT(cert-err58-cpp)
         expect([] {
             CoutRedirect redirect;
             ::atest::TestRunner runner{redirect.buffer()};
-            suite("some suite", [] { throw 1; });
+            suite("some suite", [] { throw 1; }); // NOLINT(hicpp-exception-baseclass)
             return redirect.buffer().str();
         })
             .to_be("ERROR: Unknown exception thrown during registration of 'some suite' test suite.\n");
