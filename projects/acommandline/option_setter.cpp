@@ -41,7 +41,7 @@ private:
 
     [[nodiscard]] static auto extract_named_value(const std::string &argument) -> std::string
     {
-        const size_t pos = argument.find('=');
+        const std::size_t pos = argument.find('=');
 
         if (pos != std::string::npos)
         {

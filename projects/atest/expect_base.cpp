@@ -1,7 +1,7 @@
 #ifndef __clang__
 module atest : expect_base;
 import : failed_assertion;
-import : global_tests;
+import : test_context;
 #endif
 
 namespace atest
@@ -29,7 +29,7 @@ public:
         expressionT{expression},
         sourceLocation{sourceLocation}
     {
-        ::atest::global_tests().currentTest->expectations++;
+        ::atest::test_context().current_test().expectations++;
     }
 
 protected:
@@ -65,8 +65,8 @@ protected:
     auto fail(Failure &&failure) -> void
     {
         failure.sourceLocation = this->sourceLocation;
-        ::atest::global_tests().currentTest->failedExpectations++;
-        ::atest::global_tests().currentTest->failures.emplace_back(std::move(failure));
+        ::atest::test_context().current_test().failedExpectations++;
+        ::atest::test_context().current_test().failures.emplace_back(std::move(failure));
 
         if constexpr (expectationType == ExpectationType::Assertion)
         {

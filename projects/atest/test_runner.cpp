@@ -1,7 +1,7 @@
 #ifndef __clang__
 export module atest : test_runner;
 import : failed_assertion;
-import : global_tests;
+import : test_context;
 import : printer;
 import : reporter;
 #endif
@@ -19,19 +19,17 @@ namespace atest
 export class TestRunner
 {
 public:
-    //! Constructs the object with `main()`'s
-    //! arguments.
-    TestRunner(int argc, char **argv) :
-        TestRunner(argc, argv, std::cout)
+    //! Constructs the object with `std::cout` as
+    //! the output stream.
+    TestRunner() :
+        TestRunner{std::cout}
     {
     }
 
-    //! Constructs the object with `main()`'s
-    //! arguments and `stream`.
-    TestRunner(int argc, char **argv, std::ostream &stream) :
-        printer{stream},
-        argc{argc},
-        argv{argv}
+    //! Constructs the object with `stream` as the
+    //! output stream.
+    explicit TestRunner(std::ostream &stream) :
+        printer{stream}
     {
     }
 
@@ -56,21 +54,34 @@ public:
     //! well. I.e. it is possible to have all
     //! expectations passing but still getting
     //! non-0 amount of failures.
-    [[nodiscard]] auto run() -> int
+    [[nodiscard]] auto run(int argc, char **argv) -> int
     {
-        TestRunner::sort_global_test_suites();
-        this->printer.begin_run(Reporter::generate_stats(::atest::global_tests().suites));
+        this->argumentCount = argc;
+        this->argumentVector = argv;
+        this->begin_run();
         this->run_test_suites();
-
-        const auto report = Reporter::generate_report(::atest::global_tests().suites);
-        this->printer.end_run(report, ::atest::global_tests().suites);
-        return static_cast<int>(report.failures);
+        return this->end_run();
     }
 
 private:
+    auto begin_run() -> void
+    {
+        ::atest::test_context().reset();
+        ::atest::test_context().sort_test_suites();
+        const Stats stats = Reporter::stats(::atest::test_context().test_suites());
+        this->printer.begin_run(stats);
+    }
+
+    [[nodiscard]] auto end_run() -> int
+    {
+        const Results results = Reporter::results(::atest::test_context().test_suites());
+        this->printer.end_run(results, ::atest::test_context().test_suites());
+        return static_cast<int>(results.failures);
+    }
+
     auto run_test(Test &test) -> void
     {
-        ::atest::global_tests().currentTest = &test;
+        ::atest::test_context().set_current_test(test);
         this->printer.begin_test(test);
         TestRunner::run_test_body_measured(test);
         this->printer.end_test(test);
@@ -124,24 +135,15 @@ private:
 
     auto run_test_suites() -> void
     {
-        for (TestSuite &testSuite : ::atest::global_tests().suites)
+        for (TestSuite &testSuite : ::atest::test_context().test_suites())
         {
             this->run_test_suite(testSuite);
         }
     }
 
-    static auto sort_global_test_suites() -> void
-    {
-        GlobalTests &tests = ::atest::global_tests();
-        std::sort(++tests.suites.begin(),
-                  tests.suites.end(),
-                  [](const TestSuite &left, const TestSuite &right) {
-                      return std::string{left.sourceLocation.file_name()} < std::string{right.sourceLocation.file_name()};
-                  });
-    }
-
+    const TestContext context;
     Printer printer;
-    [[maybe_unused]] int argc = 0;
-    [[maybe_unused]] char **argv = nullptr;
+    [[maybe_unused]] int argumentCount = 0;
+    [[maybe_unused]] char **argumentVector = nullptr;
 };
 }

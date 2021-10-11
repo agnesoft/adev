@@ -12,14 +12,16 @@ export import : expect;
 #include "failure.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_suite.cpp" //NOLINT(bugprone-suspicious-include)
-#include "global_tests.cpp" //NOLINT(bugprone-suspicious-include)
+#include "test_context.cpp" //NOLINT(bugprone-suspicious-include)
 #include "matcher_base.cpp" //NOLINT(bugprone-suspicious-include)
 #include "matcher.cpp" //NOLINT(bugprone-suspicious-include)
+#include "matcher_contains.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect_base.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect_to_match.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect_to_throw.cpp" //NOLINT(bugprone-suspicious-include)
 #include "expect.cpp" //NOLINT(bugprone-suspicious-include)
-#include "report.cpp" //NOLINT(bugprone-suspicious-include)
+#include "stats.cpp" //NOLINT(bugprone-suspicious-include)
+#include "results.cpp" //NOLINT(bugprone-suspicious-include)
 #include "reporter.cpp" //NOLINT(bugprone-suspicious-include)
 #include "printer.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_runner.cpp" //NOLINT(bugprone-suspicious-include)
@@ -95,7 +97,7 @@ auto test(const char *name,
           auto (*body)()->void,
           const std::source_location &sourceLocation = std::source_location::current()) -> void
 {
-    ::atest::global_tests().currentTestSuite->tests.emplace_back(Test{name, body, sourceLocation});
+    ::atest::test_context().current_test_suite().tests.emplace_back(Test{name, body, sourceLocation});
 }
 
 //! Registers the test suite under `name`. The
@@ -110,40 +112,6 @@ auto suite(const char *name,
            auto (*body)()->void,
            const std::source_location &sourceLocation = std::source_location::current()) noexcept -> int
 {
-    try
-    {
-        try
-        {
-            GlobalTests &tests = ::atest::global_tests();
-            tests.currentTestSuite = &tests.suites.emplace_back(TestSuite{name, sourceLocation});
-            body();
-            tests.currentTestSuite = &tests.suites.front();
-            return 0;
-        }
-        catch (const std::exception &exception)
-        {
-            std::cout << "ERROR: Exception thrown during registration of '"
-                      << name
-                      << "' test suite ("
-                      << typeid(exception).name()
-                      << "): " << exception.what()
-                      << '\n';
-        }
-        catch (...)
-        {
-            std::cout << "ERROR: Unknown exception thrown during registration of '"
-                      << name
-                      << "' test suite.\n";
-        }
-    }
-    catch (...)
-    {
-        // Suppress any further exceptions as this
-        // function is usually run outside of main
-        // and no exception can be caught. See
-        // clang-tidy check: cert-err58-cpp.
-    }
-
-    return 1;
+    return ::atest::test_context().add_test_suite(name, body, sourceLocation);
 }
 }

@@ -1,6 +1,6 @@
 #ifndef __clang__
 module atest : reporter;
-import : report;
+import : results;
 import : test_suite;
 #endif
 
@@ -10,57 +10,55 @@ namespace atest
 class Reporter
 {
 public:
-    [[nodiscard]] static auto generate_report(const std::vector<TestSuite> &testSuites) -> Report
+    [[nodiscard]] static auto results(const std::vector<TestSuite> &testSuites) -> Results
     {
-        Report report{
-            .testSuites = Reporter::test_suites_count(testSuites)};
+        Results results{
+            Stats{.testSuites = Reporter::test_suites_count(testSuites)}};
 
         for (const TestSuite &testSuite : testSuites)
         {
-            Reporter::report_test_suite(report, testSuite);
+            Reporter::report_test_suite(testSuite, results);
         }
 
-        return report;
+        return results;
     }
 
-    [[nodiscard]] static auto generate_stats(const std::vector<TestSuite> &testSuites) -> Report
+    [[nodiscard]] static auto stats(const std::vector<TestSuite> &testSuites) -> Stats
     {
-        Report report{
-            report.testSuites = Reporter::test_suites_count(testSuites),
-            report.tests = std::accumulate(testSuites.begin(),
-                                           testSuites.end(),
-                                           size_t{0},
-                                           [](size_t count, const TestSuite &testSuite) {
-                                               return count + testSuite.tests.size();
-                                           })};
-        return report;
+        return Stats{.testSuites = Reporter::test_suites_count(testSuites),
+                     .tests = std::accumulate(testSuites.begin(),
+                                              testSuites.end(),
+                                              std::size_t{0},
+                                              [](std::size_t count, const TestSuite &testSuite) {
+                                                  return count + testSuite.tests.size();
+                                              })};
     }
 
 private:
-    static auto report_test(Report &report, const Test &test) -> void
+    static auto report_test(const Test &test, Results &results) -> void
     {
-        report.expectations += test.expectations;
-        report.duration += test.duration;
+        results.expectations += test.expectations;
+        results.duration += test.duration;
 
         if (!test.failures.empty())
         {
-            report.failedTests++;
-            report.failedExpectations += test.failedExpectations;
-            report.failures += test.failures.size();
+            results.failedTests++;
+            results.failedExpectations += test.failedExpectations;
+            results.failures += test.failures.size();
         }
     }
 
-    static auto report_test_suite(Report &report, const TestSuite &testSuite) -> void
+    static auto report_test_suite(const TestSuite &testSuite, Results &results) -> void
     {
-        report.tests += testSuite.tests.size();
+        results.tests += testSuite.tests.size();
 
         for (const Test &test : testSuite.tests)
         {
-            Reporter::report_test(report, test);
+            Reporter::report_test(test, results);
         }
     }
 
-    [[nodiscard]] static auto test_suites_count(const std::vector<TestSuite> &testSuites) -> size_t
+    [[nodiscard]] static auto test_suites_count(const std::vector<TestSuite> &testSuites) -> std::size_t
     {
         if (testSuites[0].tests.empty())
         {

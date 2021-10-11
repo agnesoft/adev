@@ -1,7 +1,7 @@
 #ifndef __clang__
 module atest : printer;
 import : test_suite;
-import : report;
+import : results;
 import : stringify;
 #endif
 
@@ -26,9 +26,9 @@ public:
     {
     }
 
-    auto begin_run(const Report &report) -> void
+    auto begin_run(const Stats &stats) -> void
     {
-        this->stream << "Running " << report.tests << " tests from " << report.testSuites << " test suites...\n"
+        this->stream << "Running " << stats.tests << " tests from " << stats.testSuites << " test suites...\n"
                      << Printer::separator() << "\n";
     }
 
@@ -50,26 +50,26 @@ public:
         this->indentLevel++;
     }
 
-    auto end_run(const Report &report, const std::vector<TestSuite> &testSuites) -> void
+    auto end_run(const Results &results, const std::vector<TestSuite> &testSuites) -> void
     {
-        const int width = static_cast<int>(std::to_string(std::max(report.tests, report.expectations)).size());
-        const int passedWidth = static_cast<int>(std::to_string(std::max(report.failedTests, report.failedExpectations)).size());
+        const int width = static_cast<int>(std::to_string(std::max(results.tests, results.expectations)).size());
+        const int passedWidth = static_cast<int>(std::to_string(std::max(results.failedTests, results.failedExpectations)).size());
 
-        if (report.failures != 0)
+        if (results.failures != 0)
         {
             this->stream << Printer::separator() << "\n";
             this->print_failures(testSuites);
         }
 
         this->stream << Printer::separator() << "\n"
-                     << "Result      : " << (report.failedTests == 0 ? green("PASSED") : red("FAILED")) << '\n'
-                     << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(report.duration).count() << "ms\n"
-                     << "Tests       : " << std::left << std::setw(width) << report.tests << " | "
-                     << std::left << std::setw(passedWidth) << (report.tests - report.failedTests) << " passed | "
-                     << report.failedTests << " failed\n"
-                     << "Expectations: " << std::left << std::setw(width) << report.expectations << " | "
-                     << std::left << std::setw(passedWidth) << (report.expectations - report.failedExpectations) << " passed | "
-                     << report.failedExpectations << " failed\n";
+                     << "Result      : " << (results.failedTests == 0 ? green("PASSED") : red("FAILED")) << '\n'
+                     << "Duration    : " << std::chrono::duration_cast<std::chrono::milliseconds>(results.duration).count() << "ms\n"
+                     << "Tests       : " << std::left << std::setw(width) << results.tests << " | "
+                     << std::left << std::setw(passedWidth) << (results.tests - results.failedTests) << " passed | "
+                     << results.failedTests << " failed\n"
+                     << "Expectations: " << std::left << std::setw(width) << results.expectations << " | "
+                     << std::left << std::setw(passedWidth) << (results.expectations - results.failedExpectations) << " passed | "
+                     << results.failedExpectations << " failed\n";
     }
 
     auto end_test(const Test &test) -> void
@@ -170,7 +170,7 @@ private:
 
     [[nodiscard]] static auto separator() -> std::string
     {
-        constexpr size_t separatorWidth = 75;
+        constexpr std::size_t separatorWidth = 75;
         return {std::string(separatorWidth, '=')};
     }
 
@@ -185,6 +185,6 @@ private:
     }
 
     std::ostream &stream;
-    size_t indentLevel = 0;
+    std::size_t indentLevel = 0;
 };
 }
