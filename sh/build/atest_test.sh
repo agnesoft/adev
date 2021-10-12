@@ -16,8 +16,10 @@ function build_clang() {
            "${projectDir}/expect_to_match_test.cpp" \
            "${projectDir}/expect_to_throw_test.cpp" \
            "${projectDir}/test_runner_test.cpp" \
+           "${projectDir}/test_filter_test.cpp" \
            "${projectDir}/main.cpp" \
            "${buildRoot}/atest/atest.obj" \
+           "${buildRoot}/acommandline/acommandline.lib" \
            "${buildRoot}/astl/astl.obj"
 }
 
@@ -32,8 +34,10 @@ function build_gcc() {
          "${projectDir}/expect_to_match_test.cpp" \
          "${projectDir}/expect_to_throw_test.cpp" \
          "${projectDir}/test_runner_test.cpp" \
+         "${projectDir}/test_filter_test.cpp" \
          "${projectDir}/main.cpp" \
          "${buildRoot}/atest/atest.lib" \
+         "${buildRoot}/acommandline/acommandline.lib" \
          "${buildRoot}/astl/astl.obj"
 }
 
@@ -50,8 +54,10 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/expect_to_match_test.cpp\" ^
        \"${projectDir}/expect_to_throw_test.cpp\" ^
        \"${projectDir}/test_runner_test.cpp\" ^
+       \"${projectDir}/test_filter_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
+       \"${buildRoot}/acommandline/acommandline.lib\" ^
        \"${buildRoot}/astl/astl.lib\" || exit 1
 "
 
