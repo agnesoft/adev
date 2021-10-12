@@ -2,6 +2,7 @@
 export module atest : test_runner;
 import : failed_assertion;
 import : test_context;
+import : test_filter;
 import : printer;
 import : reporter;
 #endif
@@ -54,10 +55,9 @@ public:
     //! well. I.e. it is possible to have all
     //! expectations passing but still getting
     //! non-0 amount of failures.
-    [[nodiscard]] auto run(int argc, char **argv) -> int
+    [[nodiscard]] auto run(int argc, const char *const *argv) -> int
     {
-        this->argumentCount = argc;
-        this->argumentVector = argv;
+        this->filter = TestFilter{argc, argv, this->printer.output_stream()};
         this->begin_run();
         this->run_test_suites();
         return this->end_run();
@@ -119,13 +119,16 @@ private:
     {
         for (Test &test : testSuite.tests)
         {
-            this->run_test(test);
+            if (this->filter.is_test_selected(test.name))
+            {
+                this->run_test(test);
+            }
         }
     }
 
     auto run_test_suite(TestSuite &testSuite) -> void
     {
-        if (!testSuite.tests.empty())
+        if (!testSuite.tests.empty() && this->filter.is_suite_selected(testSuite.name))
         {
             this->printer.begin_test_suite(testSuite);
             this->run_tests(testSuite);
@@ -142,8 +145,7 @@ private:
     }
 
     const TestContext context;
+    TestFilter filter{0, nullptr, std::cout};
     Printer printer;
-    [[maybe_unused]] int argumentCount = 0;
-    [[maybe_unused]] char **argumentVector = nullptr;
 };
 }

@@ -85,6 +85,11 @@ public:
         this->indentLevel--;
     }
 
+    [[nodiscard]] auto output_stream() const noexcept -> std::ostream &
+    {
+        return this->stream;
+    }
+
 private:
     [[nodiscard]] static auto gray(const std::string &text) -> std::string
     {
