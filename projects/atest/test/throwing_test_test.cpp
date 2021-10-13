@@ -4,8 +4,8 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("throwing tests", [] { // NOLINT(cert-err58-cpp)
-    test("test() throws int", [] {
+static const auto S = suite("throwing test()", [] { // NOLINT(cert-err58-cpp)
+    test("throws int", [] {
         expect([] {
             std::stringstream output;
             ::atest::TestRunner runner{output};
@@ -19,7 +19,7 @@ static const auto S = suite("throwing tests", [] { // NOLINT(cert-err58-cpp)
             .to_be(1);
     });
 
-    test("test() throws int (text)", [] {
+    test("throws int (text)", [] {
         const std::string output = [] {
             std::stringstream output;
             ::atest::TestRunner runner{output};

@@ -9,14 +9,17 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/atest \
            -o "${binDir}/atest_test$executableSuffix" \
            "${projectDir}/assert_test.cpp" \
-           "${projectDir}/throwing_tests.cpp" \
-           "${projectDir}/throwing_suites.cpp" \
+           "${projectDir}/throwing_test_test.cpp" \
+           "${projectDir}/throwing_suites_test.cpp" \
            "${projectDir}/expect_to_be_test.cpp" \
            "${projectDir}/expect_to_contain_test.cpp" \
            "${projectDir}/expect_to_match_test.cpp" \
            "${projectDir}/expect_to_throw_test.cpp" \
            "${projectDir}/test_runner_test.cpp" \
-           "${projectDir}/test_filter_test.cpp" \
+           "${projectDir}/test_filter_test_test.cpp" \
+           "${projectDir}/test_filter_suite_test.cpp" \
+           "${projectDir}/test_filter_filter_test_test.cpp" \
+           "${projectDir}/test_filter_filter_suite_test.cpp" \
            "${projectDir}/main.cpp" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/acommandline/acommandline.lib" \
@@ -27,14 +30,17 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/atest_test" \
          "${projectDir}/assert_test.cpp" \
-         "${projectDir}/throwing_tests.cpp" \
-         "${projectDir}/throwing_suites.cpp" \
+         "${projectDir}/throwing_test_test.cpp" \
+         "${projectDir}/throwing_suites_test.cpp" \
          "${projectDir}/expect_to_be_test.cpp" \
          "${projectDir}/expect_to_contain_test.cpp" \
          "${projectDir}/expect_to_match_test.cpp" \
          "${projectDir}/expect_to_throw_test.cpp" \
          "${projectDir}/test_runner_test.cpp" \
-         "${projectDir}/test_filter_test.cpp" \
+         "${projectDir}/test_filter_test_test.cpp" \
+         "${projectDir}/test_filter_suite_test.cpp" \
+         "${projectDir}/test_filter_filter_test_test.cpp" \
+         "${projectDir}/test_filter_filter_suite_test.cpp" \
          "${projectDir}/main.cpp" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/acommandline/acommandline.lib" \
@@ -47,14 +53,17 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/atest_test.exe\" ^
        \"${projectDir}/assert_test.cpp\" ^
-       \"${projectDir}/throwing_tests.cpp\" ^
-       \"${projectDir}/throwing_suites.cpp\" ^
+       \"${projectDir}/throwing_test_test.cpp\" ^
+       \"${projectDir}/throwing_suites_test.cpp\" ^
        \"${projectDir}/expect_to_be_test.cpp\" ^
        \"${projectDir}/expect_to_contain_test.cpp\" ^
        \"${projectDir}/expect_to_match_test.cpp\" ^
        \"${projectDir}/expect_to_throw_test.cpp\" ^
        \"${projectDir}/test_runner_test.cpp\" ^
-       \"${projectDir}/test_filter_test.cpp\" ^
+       \"${projectDir}/test_filter_test_test.cpp\" ^
+       \"${projectDir}/test_filter_suite_test.cpp\" ^
+       \"${projectDir}/test_filter_filter_test_test.cpp\" ^
+       \"${projectDir}/test_filter_filter_suite_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^

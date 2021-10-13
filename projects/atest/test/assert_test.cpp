@@ -6,7 +6,7 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("assert()", [] { // NOLINT(cert-err58-cpp)
+static const auto S = suite("assert_()", [] { // NOLINT(cert-err58-cpp)
     test("assert_().to_be()", [] {
         assert_(1).to_be(1);
     });

@@ -5,7 +5,7 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("test filter", [] { // NOLINT(cert-err58-cpp)
+static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
     test("run 1 test", [] {
         std::stringstream output;
 
@@ -103,5 +103,31 @@ static const auto S = suite("test filter", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("yay test");
         expect(output.str()).to_contain("lol test");
         expect_fail(output.str()).to_contain("my tst");
+    });
+
+    test("run tests with wildcards in front and back", [] {
+        std::stringstream output;
+
+        {
+            ::atest::TestRunner runner{output};
+
+            test("yay testing", [] {
+                expect(1).to_be(1);
+            });
+
+            test("lol test me", [] {
+                expect(1).to_be(1);
+            });
+
+            test("my tst not me", [] {
+                expect(1).to_be(1);
+            });
+
+            static_cast<void>(runner.run(2, std::array<const char *, 2>{"./app_test", "--test=*test*"}.data()));
+        }
+
+        expect(output.str()).to_contain("yay testing");
+        expect(output.str()).to_contain("lol test me");
+        expect_fail(output.str()).to_contain("my tst not me");
     });
 });
