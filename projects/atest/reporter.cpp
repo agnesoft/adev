@@ -2,6 +2,7 @@
 module atest : reporter;
 import : results;
 import : test_suite;
+import : test_filter;
 #endif
 
 namespace atest
@@ -10,33 +11,76 @@ namespace atest
 class Reporter
 {
 public:
-    [[nodiscard]] static auto results(const std::vector<TestSuite> &testSuites) -> Results
+    [[nodiscard]] static auto results(const std::vector<TestSuite> &suites, const TestFilter &filter) -> Results
     {
-        Results results{
-            Stats{.testSuites = Reporter::test_suites_count(testSuites)}};
+        Results results{Stats{.testSuites = Reporter::count_test_suites(suites, filter)}};
 
-        for (const TestSuite &testSuite : testSuites)
+        for (const TestSuite &suite : suites)
         {
-            Reporter::report_test_suite(testSuite, results);
+            if (filter.is_suite_selected(suite.name))
+            {
+                Reporter::report_test_suite(suite, results, filter);
+            }
         }
 
         return results;
     }
 
-    [[nodiscard]] static auto stats(const std::vector<TestSuite> &testSuites) -> Stats
+    [[nodiscard]] static auto stats(const std::vector<TestSuite> &suites, const TestFilter &filter) -> Stats
     {
-        return Stats{.testSuites = Reporter::test_suites_count(testSuites),
-                     .tests = std::accumulate(testSuites.begin(),
-                                              testSuites.end(),
-                                              std::size_t{0},
-                                              [](std::size_t count, const TestSuite &testSuite) {
-                                                  return count + testSuite.tests.size();
-                                              })};
+        return Stats{.testSuites = Reporter::count_test_suites(suites, filter),
+                     .tests = Reporter::count_tests(suites, filter)};
     }
 
 private:
+    [[nodiscard]] static auto count_test(const TestSuite &suite, const TestFilter &filter) -> std::size_t
+    {
+        std::size_t count = 0;
+
+        for (const Test &test : suite.tests)
+        {
+            if (filter.is_test_selected(test.name))
+            {
+                ++count;
+            }
+        }
+
+        return count;
+    }
+
+    [[nodiscard]] static auto count_test_suites(const std::vector<TestSuite> &suites, const TestFilter &filter) -> std::size_t
+    {
+        std::size_t count = 0;
+
+        for (const TestSuite &suite : suites)
+        {
+            if (filter.is_suite_selected(suite.name) && !suite.tests.empty())
+            {
+                ++count;
+            }
+        }
+
+        return count;
+    }
+
+    [[nodiscard]] static auto count_tests(const std::vector<TestSuite> &suites, const TestFilter &filter) -> std::size_t
+    {
+        std::size_t count = 0;
+
+        for (const TestSuite &suite : suites)
+        {
+            if (filter.is_suite_selected(suite.name))
+            {
+                count += Reporter::count_test(suite, filter);
+            }
+        }
+
+        return count;
+    }
+
     static auto report_test(const Test &test, Results &results) -> void
     {
+        ++results.tests;
         results.expectations += test.expectations;
         results.duration += test.duration;
 
@@ -48,24 +92,15 @@ private:
         }
     }
 
-    static auto report_test_suite(const TestSuite &testSuite, Results &results) -> void
+    static auto report_test_suite(const TestSuite &suite, Results &results, const TestFilter &filter) -> void
     {
-        results.tests += testSuite.tests.size();
-
-        for (const Test &test : testSuite.tests)
+        for (const Test &test : suite.tests)
         {
-            Reporter::report_test(test, results);
+            if (filter.is_test_selected(test.name))
+            {
+                Reporter::report_test(test, results);
+            }
         }
-    }
-
-    [[nodiscard]] static auto test_suites_count(const std::vector<TestSuite> &testSuites) -> std::size_t
-    {
-        if (testSuites[0].tests.empty())
-        {
-            return testSuites.size() - 1;
-        }
-
-        return testSuites.size();
     }
 };
 }

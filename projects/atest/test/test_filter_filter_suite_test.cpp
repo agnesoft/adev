@@ -37,6 +37,8 @@ static const auto S = suite("test filter (filter-suite)", [] { // NOLINT(cert-er
             static_cast<void>(runner.run(2, std::array<const char *, 2>{"./app_test", "--filter-suite=\"other suite to run\""}.data()));
         }
 
+        expect(output.str()).to_contain("Running 3 tests from 2 test suites...");
+        expect(output.str()).to_contain("Tests       : 3 | 3 passed | 0 failed");
         expect(output.str()).to_contain("my suite");
         expect(output.str()).to_contain("yay testing");
         expect(output.str()).to_contain("lol test me");
@@ -77,6 +79,8 @@ static const auto S = suite("test filter (filter-suite)", [] { // NOLINT(cert-er
             static_cast<void>(runner.run(3, std::array<const char *, 3>{"./app_test", "--filter-suite=\"my suite\"", "--filter-suite=\"other suite to run\""}.data()));
         }
 
+        expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
+        expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
         expect_fail(output.str()).to_contain("my suite");
         expect_fail(output.str()).to_contain("yay testing");
         expect_fail(output.str()).to_contain("lol test me");
@@ -117,6 +121,8 @@ static const auto S = suite("test filter (filter-suite)", [] { // NOLINT(cert-er
             static_cast<void>(runner.run(2, std::array<const char *, 2>{"./app_test", "--filter-suite=other*"}.data()));
         }
 
+        expect(output.str()).to_contain("Running 3 tests from 2 test suites...");
+        expect(output.str()).to_contain("Tests       : 3 | 3 passed | 0 failed");
         expect(output.str()).to_contain("my suite");
         expect(output.str()).to_contain("yay testing");
         expect(output.str()).to_contain("lol test me");
@@ -157,6 +163,8 @@ static const auto S = suite("test filter (filter-suite)", [] { // NOLINT(cert-er
             static_cast<void>(runner.run(2, std::array<const char *, 2>{"./app_test", "--filter-suite=*suite"}.data()));
         }
 
+        expect(output.str()).to_contain("Running 2 tests from 2 test suites...");
+        expect(output.str()).to_contain("Tests       : 2 | 2 passed | 0 failed");
         expect_fail(output.str()).to_contain("my suite");
         expect_fail(output.str()).to_contain("yay testing");
         expect_fail(output.str()).to_contain("lol test me");
@@ -197,6 +205,8 @@ static const auto S = suite("test filter (filter-suite)", [] { // NOLINT(cert-er
             static_cast<void>(runner.run(2, std::array<const char *, 2>{"./app_test", "--filter-suite=*suite*"}.data()));
         }
 
+        expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
+        expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
         expect_fail(output.str()).to_contain("my suite");
         expect_fail(output.str()).to_contain("yay testing");
         expect_fail(output.str()).to_contain("lol test me");

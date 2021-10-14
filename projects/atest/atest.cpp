@@ -22,6 +22,7 @@ export import : expect;
 #include "expect.cpp" //NOLINT(bugprone-suspicious-include)
 #include "stats.cpp" //NOLINT(bugprone-suspicious-include)
 #include "results.cpp" //NOLINT(bugprone-suspicious-include)
+#include "test_filter.cpp" //NOLINT(bugprone-suspicious-include)
 #include "reporter.cpp" //NOLINT(bugprone-suspicious-include)
 #include "printer.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_runner.cpp" //NOLINT(bugprone-suspicious-include)

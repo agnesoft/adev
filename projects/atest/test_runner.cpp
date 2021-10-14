@@ -68,13 +68,13 @@ private:
     {
         ::atest::test_context().reset();
         ::atest::test_context().sort_test_suites();
-        const Stats stats = Reporter::stats(::atest::test_context().test_suites());
+        const Stats stats = Reporter::stats(::atest::test_context().test_suites(), this->filter);
         this->printer.begin_run(stats);
     }
 
     [[nodiscard]] auto end_run() -> int
     {
-        const Results results = Reporter::results(::atest::test_context().test_suites());
+        const Results results = Reporter::results(::atest::test_context().test_suites(), this->filter);
         this->printer.end_run(results, ::atest::test_context().test_suites());
         return static_cast<int>(results.failures);
     }
