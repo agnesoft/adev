@@ -9,6 +9,7 @@
 *.ifc
 *.pcm
 *.pch
+*.profraw
 /gcm.cache/
 
 #JS
