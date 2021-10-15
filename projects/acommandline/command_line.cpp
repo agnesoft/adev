@@ -115,7 +115,7 @@ public:
     //! Constructs the CommandLine with
     //! `std::cout` stream to print output.
     CommandLine() :
-        CommandLine(std::cout)
+        CommandLine{std::cout}
     {
     }
 
