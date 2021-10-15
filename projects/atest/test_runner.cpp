@@ -57,6 +57,10 @@ public:
     //! well. I.e. it is possible to have all
     //! expectations passing but still getting
     //! non-0 amount of failures.
+    //!
+    //! If the user requested help via `-?`
+    //! command line argument the test run will be
+    //! skipped and the help is displayed instead.
     [[nodiscard]] auto run(int argc, const char *const *argv) -> int
     {
         if (this->parse_arguments(argc, argv))
@@ -92,8 +96,7 @@ private:
         parser.option().long_name("suite").short_name('s').description("Select test suites matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suites);
         parser.option().long_name("filter-test").description("Skips tests matching the pattern. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.testFilters);
         parser.option().long_name("filter-suite").description("Skips test suites matching the pattern. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suiteFilters);
-        parser.parse(argc, argv);
-        return true;
+        return argv == nullptr || parser.parse(argc, argv);
     }
 
     auto run_test(Test &test) -> void
