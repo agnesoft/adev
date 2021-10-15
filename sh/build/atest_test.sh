@@ -22,7 +22,7 @@ function build_clang() {
            "${projectDir}/test_filter_filter_suite_test.cpp" \
            "${projectDir}/main.cpp" \
            "${buildRoot}/atest/atest.obj" \
-           "${buildRoot}/acommandline/acommandline.lib" \
+           "${buildRoot}/acommandline/acommandline.obj" \
            "${buildRoot}/astl/astl.obj"
 }
 

@@ -28,10 +28,8 @@ public:
         {
             return !TestFilter::match(name, this->testFilters);
         }
-        else
-        {
-            return TestFilter::match(name, this->tests);
-        }
+
+        return TestFilter::match(name, this->tests);
     }
 
     [[nodiscard]] auto is_suite_selected(const std::string &name) const -> bool
@@ -40,44 +38,24 @@ public:
         {
             return !TestFilter::match(name, this->suiteFilters);
         }
-        else
-        {
-            return TestFilter::match(name, this->suites);
-        }
+
+        return TestFilter::match(name, this->suites);
     }
 
 private:
     [[nodiscard]] static auto has_back_wildcard(const std::string &filter) -> bool
     {
-        return filter.back() == '*';
+        return filter.ends_with('*');
     }
 
     [[nodiscard]] static auto has_front_wildcard(const std::string &filter) -> bool
     {
-        return filter.front() == '*';
+        return filter.starts_with('*');
     }
 
     [[nodiscard]] static auto match(const std::string &name, const std::vector<std::string> &filters) -> bool
     {
-        for (const std::string &filter : filters)
-        {
-            if (TestFilter::match(name, filter))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    [[nodiscard]] static auto match(const std::string &name, const std::string &filter) -> bool
-    {
-        if (!name.empty())
-        {
-            return TestFilter::match_name(name, filter);
-        }
-
-        return false;
+        return std::any_of(filters.begin(), filters.end(), [&](const std::string &filter) { return TestFilter::match_name(name, filter); });
     }
 
     [[nodiscard]] static auto match_back_wildcard(const std::string &name, const std::string &filter) -> bool
@@ -91,14 +69,13 @@ private:
         {
             return TestFilter::match_front_wildcard(name, filter);
         }
-        else if (TestFilter::has_back_wildcard(filter))
+
+        if (TestFilter::has_back_wildcard(filter))
         {
             return TestFilter::match_back_wildcard(name, filter);
         }
-        else
-        {
-            return filter == name;
-        }
+
+        return filter == name;
     }
 
     [[nodiscard]] static auto match_front_wildcard(const std::string &name, const std::string &filter) -> bool
@@ -107,10 +84,8 @@ private:
         {
             return name.find(filter.substr(1, filter.size() - 2)) != std::string::npos;
         }
-        else
-        {
-            return name.ends_with(filter.substr(1));
-        }
+
+        return name.ends_with(filter.substr(1));
     }
 
     std::vector<std::string> suites;

@@ -5,8 +5,17 @@ projectDir="projects/${project}"
 buildDir="${buildRoot}/${project}"
 
 function build_clang() {
-    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/atest.pcm" -c "${projectDir}/atest.cpp"
-    $clang $clangCompilerFlags -o "${buildDir}/atest.obj" -c "${projectDir}/atest.cpp"
+    $clang $clangCompilerFlags \
+           -Xclang \
+           -emit-module-interface \
+           -fprebuilt-module-path=${buildRoot}/acommandline \
+           -o "${buildDir}/atest.pcm" \
+           -c "${projectDir}/atest.cpp"
+    
+    $clang $clangCompilerFlags \
+           -fprebuilt-module-path=${buildRoot}/acommandline \
+           -o "${buildDir}/atest.obj" \
+           -c "${projectDir}/atest.cpp"
 }
 
 function build_gcc() {

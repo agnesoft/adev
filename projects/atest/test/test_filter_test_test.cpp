@@ -140,4 +140,38 @@ static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("lol test me");
         expect_fail(output.str()).to_contain("my tst not me");
     });
+
+    test("empty name", [] {
+        std::stringstream output;
+
+        {
+            ::atest::TestRunner runner{output};
+
+            test("", [] {
+                expect(1).to_be(1);
+            });
+
+            static_cast<void>(runner.run(1, nullptr));
+        }
+
+        expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
+        expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
+    });
+
+    test("empty filter", [] {
+        std::stringstream output;
+
+        {
+            ::atest::TestRunner runner{output};
+
+            test("", [] {
+                expect(1).to_be(1);
+            });
+
+            static_cast<void>(runner.run(2, std::array<const char *, 2>{"./app_test", "--test=\"\""}.data()));
+        }
+
+        expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
+        expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
+    });
 });

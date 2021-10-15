@@ -6,6 +6,7 @@ export import astl;
 export import : test_runner;
 export import : expect;
 #else
+export import acommandline;
 // clang-format off
 #include "stringify.cpp" //NOLINT(bugprone-suspicious-include)
 #include "failed_assertion.cpp" //NOLINT(bugprone-suspicious-include)
