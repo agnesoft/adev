@@ -34,6 +34,7 @@ function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/expect.obj"           -c "${projectDir}/expect.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/stats.obj"            -c "${projectDir}/stats.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/results.obj"          -c "${projectDir}/results.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/filters.obj"      -c "${projectDir}/filters.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/test_filter.obj"      -c "${projectDir}/test_filter.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/reporter.obj"         -c "${projectDir}/reporter.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/printer.obj"          -c "${projectDir}/printer.cpp"
@@ -59,6 +60,7 @@ function build_gcc() {
          "${buildDir}/results.obj" \
          "${buildDir}/reporter.obj" \
          "${buildDir}/printer.obj" \
+         "${buildDir}/filters.obj" \
          "${buildDir}/test_filter.obj" \
          "${buildDir}/test_runner.obj"
 }
@@ -78,6 +80,7 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-expect_to_throw.ifc\"  /Fo\"${buildDir}/atest-expect_to_throw.obj\"  /c /TP \"${projectDir}/expect_to_throw.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-expect.ifc\"           /Fo\"${buildDir}/atest-expect.obj\"           /c /TP \"${projectDir}/expect.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-stats.ifc\"            /Fo\"${buildDir}/atest-stats.obj\"            /c /TP \"${projectDir}/stats.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-filters.ifc\"          /Fo\"${buildDir}/atest-filters.obj\"          /c /TP \"${projectDir}/filters.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-test_filter.ifc\"      /Fo\"${buildDir}/atest-test_filter.obj\"      /c /TP \"${projectDir}/test_filter.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-results.ifc\"          /Fo\"${buildDir}/atest-results.obj\"          /c /TP \"${projectDir}/results.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-reporter.ifc\"         /Fo\"${buildDir}/atest-reporter.obj\"         /c /TP \"${projectDir}/reporter.cpp\" || exit 1
@@ -112,6 +115,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/atest-results.obj\" ^
         \"${buildDir}/atest-reporter.obj\" ^
         \"${buildDir}/atest-printer.obj\" ^
+        \"${buildDir}/atest-filters.obj\" ^
         \"${buildDir}/atest-test_filter.obj\" ^
         \"${buildDir}/atest-test_runner.obj\" || exit 1
 "

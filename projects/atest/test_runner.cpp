@@ -5,6 +5,8 @@ import : test_context;
 import : test_filter;
 import : printer;
 import : reporter;
+import : filters;
+import acommandline;
 #endif
 
 namespace atest
@@ -57,10 +59,14 @@ public:
     //! non-0 amount of failures.
     [[nodiscard]] auto run(int argc, const char *const *argv) -> int
     {
-        this->filter = TestFilter{argc, argv, this->printer.output_stream()};
-        this->begin_run();
-        this->run_test_suites();
-        return this->end_run();
+        if (this->parse_arguments(argc, argv))
+        {
+            this->begin_run();
+            this->run_test_suites();
+            return this->end_run();
+        }
+
+        return 0;
     }
 
 private:
@@ -77,6 +83,17 @@ private:
         const Results results = Reporter::results(::atest::test_context().test_suites(), this->filter);
         this->printer.end_run(results, ::atest::test_context().test_suites());
         return static_cast<int>(results.failures);
+    }
+
+    [[nodiscard]] auto parse_arguments(int argc, const char *const *argv) -> bool
+    {
+        ::acommandline::CommandLine parser{this->printer.output_stream()};
+        parser.option().long_name("test").short_name('t').description("Select tests matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.tests);
+        parser.option().long_name("suite").short_name('s').description("Select test suites matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suites);
+        parser.option().long_name("filter-test").description("Skips tests matching the pattern. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.testFilters);
+        parser.option().long_name("filter-suite").description("Skips test suites matching the pattern. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suiteFilters);
+        parser.parse(argc, argv);
+        return true;
     }
 
     auto run_test(Test &test) -> void
@@ -145,7 +162,8 @@ private:
     }
 
     const TestContext context;
-    TestFilter filter{0, nullptr, std::cout};
+    Filters filters;
+    TestFilter filter{this->filters};
     Printer printer;
 };
 }

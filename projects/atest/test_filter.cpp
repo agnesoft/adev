@@ -1,6 +1,6 @@
 #ifndef __clang__
 module atest : test_filter;
-import acommandline;
+import : filters;
 #endif
 
 namespace atest
@@ -9,37 +9,29 @@ namespace atest
 class TestFilter
 {
 public:
-    TestFilter(int argc, const char *const *argv, std::ostream &stream)
+    explicit TestFilter(Filters &filters) :
+        filters{filters}
     {
-        if (argc > 0 && argv != nullptr)
-        {
-            ::acommandline::CommandLine parser{stream};
-            parser.option().long_name("test").short_name('t').description("Select tests matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->tests);
-            parser.option().long_name("suite").short_name('s').description("Select test suites matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->suites);
-            parser.option().long_name("filter-test").description("Skips tests matching the pattern. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->testFilters);
-            parser.option().long_name("filter-suite").description("Skips test suites matching the pattern. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->suiteFilters);
-            parser.parse(argc, argv);
-        }
     }
 
     [[nodiscard]] auto is_test_selected(const std::string &name) const -> bool
     {
-        if (this->tests.empty())
+        if (this->filters.tests.empty())
         {
-            return !TestFilter::match(name, this->testFilters);
+            return !TestFilter::match(name, this->filters.testFilters);
         }
 
-        return TestFilter::match(name, this->tests);
+        return TestFilter::match(name, this->filters.tests);
     }
 
     [[nodiscard]] auto is_suite_selected(const std::string &name) const -> bool
     {
-        if (this->suites.empty())
+        if (this->filters.suites.empty())
         {
-            return !TestFilter::match(name, this->suiteFilters);
+            return !TestFilter::match(name, this->filters.suiteFilters);
         }
 
-        return TestFilter::match(name, this->suites);
+        return TestFilter::match(name, this->filters.suites);
     }
 
 private:
@@ -88,9 +80,6 @@ private:
         return name.ends_with(filter.substr(1));
     }
 
-    std::vector<std::string> suites;
-    std::vector<std::string> tests;
-    std::vector<std::string> suiteFilters;
-    std::vector<std::string> testFilters;
+    Filters &filters;
 };
 }

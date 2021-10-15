@@ -23,6 +23,7 @@ export import acommandline;
 #include "expect.cpp" //NOLINT(bugprone-suspicious-include)
 #include "stats.cpp" //NOLINT(bugprone-suspicious-include)
 #include "results.cpp" //NOLINT(bugprone-suspicious-include)
+#include "filters.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_filter.cpp" //NOLINT(bugprone-suspicious-include)
 #include "reporter.cpp" //NOLINT(bugprone-suspicious-include)
 #include "printer.cpp" //NOLINT(bugprone-suspicious-include)
