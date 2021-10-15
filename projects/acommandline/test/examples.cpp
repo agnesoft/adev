@@ -17,6 +17,7 @@ static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
                                             "\"other/path/with space/\"",
                                             "-f=15.59997"};
         const char **argv = args.data();
+
         // clang-format off
 //! [[usage]]
 //int main(int argc, char *argv[])
@@ -35,13 +36,16 @@ commandLine.option().long_name("flag").description("An optional flag.").bind_to(
 commandLine.option().positional().default_value(std::string{"a.o"}).description("An optional defaulted output file.").bind_to(&output);
 commandLine.option().long_name("Include").description("Optional repeatable argument").bind_to(&includePaths);
 commandLine.option().long_name("fraction").short_name('f').description("A double value").bind_to(&fraction);
-commandLine.parse(argc, argv);
-
-//intput == "main.cpp"
-//flag == true
-//output == "a.o"
-//includePaths == {"/some/path", "other/path/with space/"}
-//fraction == 15.9997
+if (commandLine.parse(argc, argv))
+{
+    //run your application with:
+    //
+    //intput == "main.cpp"
+    //flag == true
+    //output == "a.o"
+    //includePaths == {"/some/path", "other/path/with space/"}
+    //fraction == 15.9997
+}
 //! [[usage]]
         // clang-format on
 

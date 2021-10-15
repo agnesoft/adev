@@ -43,7 +43,10 @@ export struct Option
 [[nodiscard]] auto is_long_name(const std::string &name) -> bool
 {
     const auto isNotAlphanumeric = [](char c) {
-        return std::isalnum(c) == 0 && c != '_' && c != '-' && c != '.';
+        return std::isalnum(c) == 0
+            && c != '_'
+            && c != '-'
+            && c != '.';
     };
 
     return name.size() > 1

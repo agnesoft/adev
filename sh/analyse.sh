@@ -122,3 +122,5 @@ if (( $result == 1 )); then
 else
     print_ok "Analysis OK"
 fi
+
+exit $result

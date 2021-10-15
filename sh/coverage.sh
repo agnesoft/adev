@@ -1,10 +1,10 @@
 source "sh/common.sh"
 
 ignoredSources="\/test\/"
-uncoveredFunctions="4"
-uncoveredLines="27"
-uncoveredRegions="29"
-uncoveredBranches="8"
+uncoveredFunctions="3"
+uncoveredLines="26"
+uncoveredRegions="28"
+uncoveredBranches="2"
 
 function coverage() {
     detect_llvm_cov

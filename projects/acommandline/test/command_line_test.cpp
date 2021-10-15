@@ -32,11 +32,11 @@ static const auto S = suite("CommandLine", [] { // NOLINT(cert-err58-cpp)
         ::acommandline::CommandLine commandLine{stream};
         commandLine.option().positional().description("").bind_to(&value);
         ::acommandline::CommandLine other{commandLine};
-        other.parse(2, std::array<const char *, 2>{"./app.exe", "4"}.data());
+        expect(other.parse(2, std::array<const char *, 2>{"./app.exe", "4"}.data())).to_be(true);
 
         expect(value).to_be(4);
 
-        commandLine.parse(2, std::array<const char *, 2>{"./diff", "-3"}.data());
+        expect(commandLine.parse(2, std::array<const char *, 2>{"./diff", "-3"}.data())).to_be(true);
 
         expect(value).to_be(-3);
     });
@@ -47,7 +47,7 @@ static const auto S = suite("CommandLine", [] { // NOLINT(cert-err58-cpp)
         ::acommandline::CommandLine commandLine{stream};
         commandLine.option().positional().description("").bind_to(&value);
         ::acommandline::CommandLine other{std::move(commandLine)};
-        other.parse(2, std::array<const char *, 2>{"./app.exe", "4"}.data());
+        expect(other.parse(2, std::array<const char *, 2>{"./app.exe", "4"}.data())).to_be(true);
 
         expect(value).to_be(4);
     });
