@@ -263,6 +263,26 @@ By default, the `atest` outputs the progress and results to `std::cout`. It is p
 
 It is also a requirement for all values used in the expectations and matching to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when compiling the test. The containers that have `begin()` and `end()` are automatically printed as arrays and thus only the internal type `T` might need to be made printable. A custom printing of the whole containers can still be provided by the user.
 
+## Filtering
+
+The tests can be selected or filtered using the optional command line arguments:
+
+```
+-?                             Display the help.
+--test=pattern, -t=pattern     Runs only the tests that matches the pattern.
+--suite-pattern, -s=pattern    Runs only test suites that matches the pattern.
+--filter-test=pattern          Skips tests that matches the pattern value.
+--filter-suite=pattern         Skips test suites that matches the pattern value.
+```
+
+The pattern supports only leading and trailing wildcard `*`, e.g.
+
+-   `,y test` will match only test (or suite) that match exactly the pattern `my test`
+-   `test*` will match any test (or suite) that starts with the word `test`
+-   `*test` will match any test (or suite) that ends with the word `test`
+
+The options can be combined. So for example if the two test suites both contain test `my test` you can select the desired test by combining `-t "my test" -s "suite1"`.
+
 # Known Issues
 
 -   Using `clang-tidy` with global calls to `suite()` will result in incorrect `cert-err58-cpp` warning being emitted stating that the function may throw and there is no possibility to catch the exception. The function is however declared `noexcept` and its body is wrapped in `try {} catch (...) {}` therefore it cannot actually throw any exceptions. It indicates success by returning `0` and failure (an exception) byt returing `1`. To avoid this you need either to add `//NOLINT(cert-err58-cpp)` to the line where you call `suite()` or call `suite()` directly or indirectly from `main()` only.
