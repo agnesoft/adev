@@ -12,7 +12,7 @@ static const auto S = suite("required", [] { // NOLINT(cert-err58-cpp)
 
         std::string value;
         commandLine.option().positional().required().description("").bind_to(&value);
-        commandLine.parse(2, std::array<const char *, 2>{"app", "req"}.data());
+        expect(commandLine.parse(2, std::array<const char *, 2>{"app", "req"}.data())).to_be(true);
 
         expect(value).to_be("req");
     });
@@ -25,7 +25,7 @@ static const auto S = suite("required", [] { // NOLINT(cert-err58-cpp)
         commandLine.option().positional().required().description("").bind_to(&value);
 
         expect([&] {
-            commandLine.parse(1, std::array<const char *, 1>{"app"}.data());
+            static_cast<void>(commandLine.parse(1, std::array<const char *, 1>{"app"}.data()));
         })
             .to_throw<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
     });
@@ -41,7 +41,7 @@ static const auto S = suite("required", [] { // NOLINT(cert-err58-cpp)
         commandLine.option().positional().required().description("").bind_to(&required);
 
         expect([&] {
-            commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data());
+            static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data()));
         })
             .to_throw<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
     });

@@ -4,7 +4,7 @@ ignoredSources="\/test\/"
 uncoveredFunctions="3"
 uncoveredLines="26"
 uncoveredRegions="28"
-uncoveredBranches="8"
+uncoveredBranches="2"
 
 function coverage() {
     detect_llvm_cov

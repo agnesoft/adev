@@ -115,7 +115,7 @@ public:
     //! Constructs the CommandLine with
     //! `std::cout` stream to print output.
     CommandLine() :
-        CommandLine(std::cout)
+        CommandLine{std::cout}
     {
     }
 
@@ -163,14 +163,17 @@ public:
     //! matched to any of the option or if
     //! matching fails an exception is thrown. See
     //! CommandLine class description for the
-    //! matching rules.
-    auto parse(int argc, const char *const *argv) -> void
+    //! matching rules. Returns `true` if the
+    //! arguments were passed. Returns `false` if
+    //! the help was displayed. Throws an
+    //! exception if an error occurred.
+    [[nodiscard]] auto parse(int argc, const char *const *argv) -> bool
     {
         try
         {
             this->parse_command(argc, argv);
             this->parse_arguments(argc, argv);
-            this->parse();
+            return this->parse();
         }
         catch (const std::exception &error)
         {
@@ -217,18 +220,18 @@ private:
         }
     }
 
-    auto parse() -> void
+    [[nodiscard]] auto parse() -> bool
     {
         if (this->help_requested())
         {
             this->printer.print_help(this->appName, this->options);
+            return false;
         }
-        else
-        {
-            this->pre_validate_options();
-            this->match_arguments();
-            this->post_validate_options();
-        }
+
+        this->pre_validate_options();
+        this->match_arguments();
+        this->post_validate_options();
+        return true;
     }
 
     auto parse_arguments(int argc, const char *const *argv) -> void

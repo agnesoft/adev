@@ -32,12 +32,17 @@ auto main(int argc, char *argv[]) -> void
     parser.option().long_name("longName").description("Some option").bind_to(&longValue);
     parser.option().long_name("flag").short_name('f').default_value(true).description("Some flag").bind_to(&flag);
     parser.option().positional().description("Input numbers").bind_to(&numbers);
-    parser.parse(argc, argv);
-
-    //Possibly called as: ./myapp -f --longName "my value" 1 2 3
-    //longValue == "my value"
-    //flag == true
-    //numbers == { 1, 2, 3 }
+    if (parser.parse(argc, argv))
+    {
+        //Possibly called as: ./myapp -f --longName "my value" 1 2 3
+        //longValue == "my value"
+        //flag == true
+        //numbers == { 1, 2, 3 }
+    }
+    else
+    {
+        //help displayed, probably should not continue
+    }
 }
 ```
 
@@ -82,4 +87,4 @@ positional_value
 15.50
 ```
 
-Providing description for each option is required and the parser generates automatic help that can be displayed with `-?` argument. The parser will throw an exception if there is an error during parsing such as missing required argument, type mismatch etc.
+Providing description for each option is required and the parser generates automatic help that can be displayed with `-?` argument. The `parse()` method will return `true` if the arguments were successfully parsed or `false` if help was requested & displayed and no arguments were parsed. The parser will throw an exception if there was an error during parsing such as missing required argument, type mismatch etc.
