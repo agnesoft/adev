@@ -5,8 +5,17 @@ projectDir="projects/${project}"
 buildDir="${buildRoot}/${project}"
 
 function build_clang() {
-    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/atest.pcm" -c "${projectDir}/atest.cpp"
-    $clang $clangCompilerFlags -o "${buildDir}/atest.obj" -c "${projectDir}/atest.cpp"
+    $clang $clangCompilerFlags \
+           -Xclang \
+           -emit-module-interface \
+           -fprebuilt-module-path=${buildRoot}/acommandline \
+           -o "${buildDir}/atest.pcm" \
+           -c "${projectDir}/atest.cpp"
+    
+    $clang $clangCompilerFlags \
+           -fprebuilt-module-path=${buildRoot}/acommandline \
+           -o "${buildDir}/atest.obj" \
+           -c "${projectDir}/atest.cpp"
 }
 
 function build_gcc() {
@@ -25,6 +34,9 @@ function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/expect.obj"           -c "${projectDir}/expect.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/stats.obj"            -c "${projectDir}/stats.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/results.obj"          -c "${projectDir}/results.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/filters.obj"          -c "${projectDir}/filters.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/test_filter.obj"      -c "${projectDir}/test_filter.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/selected_tests.obj"   -c "${projectDir}/selected_tests.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/reporter.obj"         -c "${projectDir}/reporter.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/printer.obj"          -c "${projectDir}/printer.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/test_runner.obj"      -c "${projectDir}/test_runner.cpp"
@@ -47,34 +59,41 @@ function build_gcc() {
          "${buildDir}/expect.obj" \
          "${buildDir}/stats.obj" \
          "${buildDir}/results.obj" \
+         "${buildDir}/selected_tests.obj" \
          "${buildDir}/reporter.obj" \
          "${buildDir}/printer.obj" \
+         "${buildDir}/filters.obj" \
+         "${buildDir}/test_filter.obj" \
          "${buildDir}/test_runner.obj"
 }
 
 buildMSVC="
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-stringify.ifc\"        /Fo\"${buildDir}/atest-stringify.obj\"        /c /TP \"${projectDir}/stringify.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-failed_assertion.ifc\" /Fo\"${buildDir}/atest-failed_assertion.obj\" /c /TP \"${projectDir}/failed_assertion.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-failure.ifc\"          /Fo\"${buildDir}/atest-failure.obj\"          /c /TP \"${projectDir}/failure.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-test.ifc\"             /Fo\"${buildDir}/atest-test.obj\"             /c /TP \"${projectDir}/test.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-test_suite.ifc\"       /Fo\"${buildDir}/atest-test_suite.obj\"       /c /TP \"${projectDir}/test_suite.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-test_context.ifc\"     /Fo\"${buildDir}/atest-test_context.obj\"     /c /TP \"${projectDir}/test_context.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-matcher_base.ifc\"     /Fo\"${buildDir}/atest-matcher_base.obj\"     /c /TP \"${projectDir}/matcher_base.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-matcher.ifc\"          /Fo\"${buildDir}/atest-matcher.obj\"          /c /TP \"${projectDir}/matcher.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-matcher_contains.ifc\" /Fo\"${buildDir}/atest-matcher_contains.obj\" /c /TP \"${projectDir}/matcher_contains.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect_base.ifc\"      /Fo\"${buildDir}/atest-expect_base.obj\"      /c /TP \"${projectDir}/expect_base.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect_to_match.ifc\"  /Fo\"${buildDir}/atest-expect_to_match.obj\"  /c /TP \"${projectDir}/expect_to_match.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect_to_throw.ifc\"  /Fo\"${buildDir}/atest-expect_to_throw.obj\"  /c /TP \"${projectDir}/expect_to_throw.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-expect.ifc\"           /Fo\"${buildDir}/atest-expect.obj\"           /c /TP \"${projectDir}/expect.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-stats.ifc\"            /Fo\"${buildDir}/atest-stats.obj\"            /c /TP \"${projectDir}/stats.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-results.ifc\"          /Fo\"${buildDir}/atest-results.obj\"          /c /TP \"${projectDir}/results.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-reporter.ifc\"         /Fo\"${buildDir}/atest-reporter.obj\"         /c /TP \"${projectDir}/reporter.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-printer.ifc\"          /Fo\"${buildDir}/atest-printer.obj\"          /c /TP \"${projectDir}/printer.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/atest-test_runner.ifc\"      /Fo\"${buildDir}/atest-test_runner.obj\"      /c /TP \"${projectDir}/test_runner.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-stringify.ifc\"        /Fo\"${buildDir}/atest-stringify.obj\"        /c /TP \"${projectDir}/stringify.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-failed_assertion.ifc\" /Fo\"${buildDir}/atest-failed_assertion.obj\" /c /TP \"${projectDir}/failed_assertion.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-failure.ifc\"          /Fo\"${buildDir}/atest-failure.obj\"          /c /TP \"${projectDir}/failure.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-test.ifc\"             /Fo\"${buildDir}/atest-test.obj\"             /c /TP \"${projectDir}/test.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-test_suite.ifc\"       /Fo\"${buildDir}/atest-test_suite.obj\"       /c /TP \"${projectDir}/test_suite.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-test_context.ifc\"     /Fo\"${buildDir}/atest-test_context.obj\"     /c /TP \"${projectDir}/test_context.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-matcher_base.ifc\"     /Fo\"${buildDir}/atest-matcher_base.obj\"     /c /TP \"${projectDir}/matcher_base.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-matcher.ifc\"          /Fo\"${buildDir}/atest-matcher.obj\"          /c /TP \"${projectDir}/matcher.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-matcher_contains.ifc\" /Fo\"${buildDir}/atest-matcher_contains.obj\" /c /TP \"${projectDir}/matcher_contains.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-expect_base.ifc\"      /Fo\"${buildDir}/atest-expect_base.obj\"      /c /TP \"${projectDir}/expect_base.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-expect_to_match.ifc\"  /Fo\"${buildDir}/atest-expect_to_match.obj\"  /c /TP \"${projectDir}/expect_to_match.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-expect_to_throw.ifc\"  /Fo\"${buildDir}/atest-expect_to_throw.obj\"  /c /TP \"${projectDir}/expect_to_throw.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-expect.ifc\"           /Fo\"${buildDir}/atest-expect.obj\"           /c /TP \"${projectDir}/expect.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-stats.ifc\"            /Fo\"${buildDir}/atest-stats.obj\"            /c /TP \"${projectDir}/stats.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-filters.ifc\"          /Fo\"${buildDir}/atest-filters.obj\"          /c /TP \"${projectDir}/filters.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-test_filter.ifc\"      /Fo\"${buildDir}/atest-test_filter.obj\"      /c /TP \"${projectDir}/test_filter.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-results.ifc\"          /Fo\"${buildDir}/atest-results.obj\"          /c /TP \"${projectDir}/results.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-selected_tests.ifc\"   /Fo\"${buildDir}/atest-selected_tests.obj\"   /c /TP \"${projectDir}/selected_tests.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-reporter.ifc\"         /Fo\"${buildDir}/atest-reporter.obj\"         /c /TP \"${projectDir}/reporter.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-printer.ifc\"          /Fo\"${buildDir}/atest-printer.obj\"          /c /TP \"${projectDir}/printer.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/acommandline\" /ifcOutput\"${buildDir}/atest-test_runner.ifc\"      /Fo\"${buildDir}/atest-test_runner.obj\"      /c /TP \"${projectDir}/test_runner.cpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
        /ifcSearchDir \"${buildDir}\" ^
+       /ifcSearchDir \"${buildRoot}/acommandline\" ^
        /ifcOutput\"${buildDir}/atest.ifc\" ^
        /Fo\"${buildDir}/atest.obj\" ^
        /c \"${projectDir}/atest.cpp\" || exit 1
@@ -97,10 +116,13 @@ lib.exe /NOLOGO ^
         \"${buildDir}/atest-expect.obj\" ^
         \"${buildDir}/atest-stats.obj\" ^
         \"${buildDir}/atest-results.obj\" ^
+        \"${buildDir}/atest-selected_tests.obj\" ^
         \"${buildDir}/atest-reporter.obj\" ^
         \"${buildDir}/atest-printer.obj\" ^
+        \"${buildDir}/atest-filters.obj\" ^
+        \"${buildDir}/atest-test_filter.obj\" ^
         \"${buildDir}/atest-test_runner.obj\" || exit 1
 "
 
-sh/build/astl.sh "${toolchain}"
+sh/build/acommandline.sh "${toolchain}"
 build

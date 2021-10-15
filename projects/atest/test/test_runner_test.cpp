@@ -1,6 +1,7 @@
 import atest;
 
 using ::atest::expect;
+using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -109,5 +110,37 @@ static const auto S = suite("TestRunner", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Result      : \033[1;31mFAILED\033[0m");
         expect(output.str()).to_contain("Tests       : 3 | 1 passed | 2 failed");
         expect(output.str()).to_contain("Expectations: 3 | 1 passed | 2 failed");
+    });
+
+    test("display help", [] {
+        std::stringstream output;
+        int result = -1;
+
+        {
+            ::atest::TestRunner runner{output};
+
+            test("test1", [] {
+                expect(1).to_be(1);
+            });
+
+            test("test2", [] {
+                expect(1).to_be(2);
+                throw std::exception{};
+            });
+
+            test("test3", [] {
+                expect(1).to_be(3);
+            });
+
+            result = runner.run(2, std::array<const char *, 2>{"./test", "-?"}.data());
+        }
+
+        expect(result).to_be(0);
+        expect(output.str()).to_contain("--test");
+        expect(output.str()).to_contain("--suite");
+        expect_fail(output.str()).to_contain("Running");
+        expect_fail(output.str()).to_contain("Result");
+        expect_fail(output.str()).to_contain("Tests       :");
+        expect_fail(output.str()).to_contain("Expectations:");
     });
 });
