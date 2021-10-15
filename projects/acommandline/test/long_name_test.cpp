@@ -72,6 +72,17 @@ static const auto S = suite("long name", [] { // NOLINT(cert-err58-cpp)
         expect(value).to_be(4);
     });
 
+    test("'long_Name.1-1'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+        std::int64_t value = 0;
+
+        commandLine.option().long_name("long_Name.1-1").description("").bind_to(&value);
+        expect(commandLine.parse(2, std::vector<const char *>{"./app", "--long_Name.1-1=4"}.data())).to_be(true);
+
+        expect(value).to_be(4);
+    });
+
     test("multiple", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};
@@ -124,5 +135,15 @@ static const auto S = suite("long name", [] { // NOLINT(cert-err58-cpp)
             static_cast<void>(commandLine.option().long_name("1longName"));
         })
             .to_throw<std::runtime_error>("'1longName' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
+    });
+
+    test("'long@Name'", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        expect([&] {
+            static_cast<void>(commandLine.option().long_name("long@Name"));
+        })
+            .to_throw<std::runtime_error>("'long@Name' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
     });
 });

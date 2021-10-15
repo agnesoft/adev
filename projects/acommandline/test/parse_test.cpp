@@ -40,6 +40,30 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         expect(value).to_be("my long quoted value");
     });
 
+    test("one quote", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        std::string value;
+
+        commandLine.option().long_name("value").description("").bind_to(&value);
+        expect(commandLine.parse(3, std::array<const char *, 3>{"./app", "--value", "\""}.data())).to_be(true);
+
+        expect(value).to_be("\"");
+    });
+
+    test("wrongly quoted", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        std::string value;
+
+        commandLine.option().long_name("value").description("").bind_to(&value);
+        expect(commandLine.parse(3, std::array<const char *, 3>{"./app", "--value", "\"wrongly \"quoted"}.data())).to_be(true);
+
+        expect(value).to_be("\"wrongly \"quoted");
+    });
+
     test("single, missing, defaulted and repeated options", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};

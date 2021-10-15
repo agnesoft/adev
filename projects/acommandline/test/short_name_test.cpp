@@ -72,6 +72,19 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
             .to_throw<std::runtime_error>("Missing value for option 'value'.");
     });
 
+    test("long name", [] {
+        std::stringstream stream;
+        ::acommandline::CommandLine commandLine{stream};
+
+        std::int64_t value = 0;
+        commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
+
+        expect([&] {
+            static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-value"}.data()));
+        })
+            .to_throw<std::runtime_error>("Unmatched argument '-value'.");
+    });
+
     test("type mismatch", [] {
         std::stringstream stream;
         ::acommandline::CommandLine commandLine{stream};

@@ -147,7 +147,6 @@ private:
             std::visit(valueSetter, *option.boundValue);
             return true;
         }
-
         catch (const std::exception &error)
         {
             OptionSetter::handle_set_option_failure(option, error, value);
@@ -158,7 +157,9 @@ private:
 
     [[nodiscard]] static auto is_quoted(const std::string &value) noexcept -> bool
     {
-        return value.size() >= 2 && value.front() == '"' && value.back() == '"';
+        return value.size() >= 2
+            && value.front() == '"'
+            && value.back() == '"';
     }
 
     [[nodiscard]] static auto unquote(const std::string &value) -> std::string
