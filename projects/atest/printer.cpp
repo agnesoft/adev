@@ -1,6 +1,6 @@
 #ifndef __clang__
 module atest : printer;
-import : test_suite;
+import : selected_tests;
 import : results;
 import : stringify;
 #endif
@@ -50,7 +50,7 @@ public:
         this->indentLevel++;
     }
 
-    auto end_run(const Results &results, const std::vector<TestSuite> &testSuites) -> void
+    auto end_run(const Results &results, const std::vector<SelectedTests> &testSuites) -> void
     {
         const int width = static_cast<int>(std::to_string(std::max(results.tests, results.expectations)).size());
         const int passedWidth = static_cast<int>(std::to_string(std::max(results.failedTests, results.failedExpectations)).size());
@@ -136,11 +136,11 @@ private:
         }
     }
 
-    auto print_failures(const std::vector<TestSuite> &testSuites) -> void
+    auto print_failures(const std::vector<SelectedTests> &testSuites) -> void
     {
-        for (const TestSuite &testSuite : testSuites)
+        for (const SelectedTests &testSuite : testSuites)
         {
-            this->print_failures(testSuite);
+            this->print_failures(*testSuite.suite);
         }
     }
 

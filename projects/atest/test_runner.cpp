@@ -78,14 +78,14 @@ private:
     {
         ::atest::test_context().reset();
         ::atest::test_context().sort_test_suites();
-        const Stats stats = Reporter::stats(::atest::test_context().test_suites(), this->filter);
-        this->printer.begin_run(stats);
+        this->selectedTests = this->select_tests();
+        this->printer.begin_run(Reporter::stats(this->selectedTests));
     }
 
     [[nodiscard]] auto end_run() -> int
     {
-        const Results results = Reporter::results(::atest::test_context().test_suites(), this->filter);
-        this->printer.end_run(results, ::atest::test_context().test_suites());
+        const Results results = Reporter::results(this->selectedTests);
+        this->printer.end_run(results, this->selectedTests);
         return static_cast<int>(results.failures);
     }
 
@@ -135,36 +135,73 @@ private:
         test.duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     }
 
-    auto run_tests(TestSuite &testSuite) -> void
+    auto run_tests(const std::vector<Test *> &tests) -> void
     {
-        for (Test &test : testSuite.tests)
+        for (Test *test : tests)
         {
-            if (this->filter.is_test_selected(test.name))
-            {
-                this->run_test(test);
-            }
+            this->run_test(*test);
         }
     }
 
-    auto run_test_suite(TestSuite &testSuite) -> void
+    auto run_test_suite(const SelectedTests &tests) -> void
     {
-        if (!testSuite.tests.empty() && this->filter.is_suite_selected(testSuite.name))
-        {
-            this->printer.begin_test_suite(testSuite);
-            this->run_tests(testSuite);
-            this->printer.end_test_suite(testSuite);
-        }
+        this->printer.begin_test_suite(*tests.suite);
+        this->run_tests(tests.tests);
+        this->printer.end_test_suite(*tests.suite);
     }
 
     auto run_test_suites() -> void
     {
-        for (TestSuite &testSuite : ::atest::test_context().test_suites())
+        for (const SelectedTests &suite : this->selectedTests)
         {
-            this->run_test_suite(testSuite);
+            this->run_test_suite(suite);
         }
     }
 
+    [[nodiscard]] auto select_tests(TestSuite &suite) const -> std::vector<Test *>
+    {
+        std::vector<Test *> tests;
+
+        for (Test &test : suite.tests)
+        {
+            if (this->filter.is_test_selected(test.name))
+            {
+                tests.push_back(&test);
+            }
+        }
+
+        return tests;
+    }
+
+    auto select_tests(TestSuite &suite, std::vector<SelectedTests> &selected) const -> void
+    {
+        std::vector<Test *> tests = this->select_tests(suite);
+
+        if (!tests.empty())
+        {
+            selected.emplace_back(SelectedTests{
+                .suite = &suite,
+                .tests = std::move(tests)});
+        }
+    }
+
+    [[nodiscard]] auto select_tests() const -> std::vector<SelectedTests>
+    {
+        std::vector<SelectedTests> selected;
+
+        for (TestSuite &suite : ::atest::test_context().test_suites())
+        {
+            if (this->filter.is_suite_selected(suite.name))
+            {
+                this->select_tests(suite, selected);
+            }
+        }
+
+        return selected;
+    }
+
     const TestContext context;
+    std::vector<SelectedTests> selectedTests;
     Filters filters;
     TestFilter filter{this->filters};
     Printer printer;

@@ -25,6 +25,7 @@ export import acommandline;
 #include "results.cpp" //NOLINT(bugprone-suspicious-include)
 #include "filters.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_filter.cpp" //NOLINT(bugprone-suspicious-include)
+#include "selected_tests.cpp" //NOLINT(bugprone-suspicious-include)
 #include "reporter.cpp" //NOLINT(bugprone-suspicious-include)
 #include "printer.cpp" //NOLINT(bugprone-suspicious-include)
 #include "test_runner.cpp" //NOLINT(bugprone-suspicious-include)
