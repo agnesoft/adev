@@ -12,7 +12,7 @@ static const auto S = suite("default value", [] { // NOLINT(cert-err58-cpp)
 
         std::string output;
         commandLine.option().long_name("long_name1").default_value("test value").description("").bind_to(&output);
-        commandLine.parse(1, std::array<const char *, 1>{"./app"}.data());
+        expect(commandLine.parse(1, std::array<const char *, 1>{"./app"}.data())).to_be(true);
 
         expect(output).to_be("test value");
     });
@@ -23,7 +23,7 @@ static const auto S = suite("default value", [] { // NOLINT(cert-err58-cpp)
 
         std::string output;
         commandLine.option().positional().default_value("test value").description("").bind_to(&output);
-        commandLine.parse(1, std::array<const char *, 1>{"./app"}.data());
+        expect(commandLine.parse(1, std::array<const char *, 1>{"./app"}.data())).to_be(true);
 
         expect(output).to_be("test value");
     });
@@ -46,7 +46,7 @@ static const auto S = suite("default value", [] { // NOLINT(cert-err58-cpp)
         static_cast<void>(commandLine.option().positional().default_value(std::int64_t{3}).description(""));
 
         expect([&] {
-            commandLine.parse(1, std::array<const char *, 1>{"./app"}.data());
+            static_cast<void>(commandLine.parse(1, std::array<const char *, 1>{"./app"}.data()));
         })
             .to_throw<std::runtime_error>(std::string{"Bind value undefined for option '[positional]'."});
     });

@@ -20,7 +20,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         commandLine.option().long_name("option").short_name('o').description("").bind_to(&option);
         commandLine.option().long_name("yetanother").description("").bind_to(&another);
         commandLine.option().positional().description("").bind_to(&positional);
-        commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "-o=file", "--yetanother", "1", "somefile"}.data());
+        expect(commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "-o=file", "--yetanother", "1", "somefile"}.data())).to_be(true);
 
         expect(value).to_be(true);
         expect(option).to_be("file");
@@ -35,7 +35,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         std::string value;
 
         commandLine.option().long_name("value").description("").bind_to(&value);
-        commandLine.parse(3, std::array<const char *, 3>{"./app", "--value", "\"my long quoted value\""}.data());
+        expect(commandLine.parse(3, std::array<const char *, 3>{"./app", "--value", "\"my long quoted value\""}.data())).to_be(true);
 
         expect(value).to_be("my long quoted value");
     });
@@ -54,7 +54,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         commandLine.option().long_name("flag").short_name('f').description("").bind_to(&flag);
         commandLine.option().positional().required().description("").bind_to(&output);
         commandLine.option().long_name("include").short_name('I').default_value(std::vector<std::string>{"c:/path/with spaces/", "//"}).description("").bind_to(&paths);
-        commandLine.parse(argc, std::array<const char *, argc>{"a", "-p=1", "-p=2", "--param", "3", "output_option"}.data());
+        expect(commandLine.parse(argc, std::array<const char *, argc>{"a", "-p=1", "-p=2", "--param", "3", "output_option"}.data())).to_be(true);
 
         expect(parameters).to_be(std::vector<std::int64_t>{1, 2, 3});
         expect(flag).to_be(true);
@@ -67,7 +67,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         ::acommandline::CommandLine commandLine{stream};
 
         expect([&] {
-            commandLine.parse(0, std::array<const char *, 0>{}.data());
+            static_cast<void>(commandLine.parse(0, std::array<const char *, 0>{}.data()));
         })
             .to_throw<std::logic_error>("Missing mandatory first command line argument.");
     });
@@ -77,7 +77,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         ::acommandline::CommandLine commandLine{stream};
 
         expect([&] {
-            commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data());
+            static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data()));
         })
             .to_throw<std::runtime_error>("Unmatched argument '-v'.");
     });

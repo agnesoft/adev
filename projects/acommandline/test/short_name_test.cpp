@@ -13,7 +13,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         bool value = false;
 
         commandLine.option().long_name("short").short_name('S').description("").bind_to(&value);
-        commandLine.parse(2, std::array<const char *, 2>{"./app", "-S"}.data());
+        expect(commandLine.parse(2, std::array<const char *, 2>{"./app", "-S"}.data())).to_be(true);
 
         expect(value).to_be(true);
     });
@@ -25,7 +25,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         std::int64_t value = 0;
 
         commandLine.option().long_name("short").short_name('s').description("").bind_to(&value);
-        commandLine.parse(3, std::array<const char *, 3>{"./app", "-s", "3"}.data());
+        expect(commandLine.parse(3, std::array<const char *, 3>{"./app", "-s", "3"}.data())).to_be(true);
 
         expect(value).to_be(3);
     });
@@ -42,7 +42,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
         commandLine.option().long_name("option").short_name('o').description("").bind_to(&option);
         commandLine.option().long_name("yetanother").short_name('y').description("").bind_to(&another);
-        commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "-o=file", "-y", "-4"}.data());
+        expect(commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "-o=file", "-y", "-4"}.data())).to_be(true);
 
         expect(value).to_be(true);
         expect(option).to_be("file");
@@ -67,7 +67,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
 
         expect([&] {
-            commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data());
+            static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data()));
         })
             .to_throw<std::runtime_error>("Missing value for option 'value'.");
     });
@@ -82,7 +82,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
 
         expect([&] {
-            commandLine.parse(2, std::array<const char *, 2>{"./app", "-v=hello"}.data());
+            static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v=hello"}.data()));
         })
             .to_throw<std::runtime_error>(exceptionText);
     });

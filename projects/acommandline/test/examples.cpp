@@ -35,13 +35,20 @@ commandLine.option().long_name("flag").description("An optional flag.").bind_to(
 commandLine.option().positional().default_value(std::string{"a.o"}).description("An optional defaulted output file.").bind_to(&output);
 commandLine.option().long_name("Include").description("Optional repeatable argument").bind_to(&includePaths);
 commandLine.option().long_name("fraction").short_name('f').description("A double value").bind_to(&fraction);
-commandLine.parse(argc, argv);
-
-//intput == "main.cpp"
-//flag == true
-//output == "a.o"
-//includePaths == {"/some/path", "other/path/with space/"}
-//fraction == 15.9997
+if (commandLine.parse(argc, argv))
+{
+    //run your application with:
+    //
+    //intput == "main.cpp"
+    //flag == true
+    //output == "a.o"
+    //includePaths == {"/some/path", "other/path/with space/"}
+    //fraction == 15.9997
+}
+else
+{
+    //help was displayed, probably time to exit
+}
 //! [[usage]]
         // clang-format on
 
