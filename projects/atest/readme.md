@@ -12,6 +12,7 @@
         -   [to_throw()](#to_throw)
         -   [expect_fail(), assert_fail()](#expect_fail-assert_fail)
     -   [Test Runner](#test-runner)
+    -   [Filtering & Listing](#filtering--listing)
     -   [Printer](#printer)
 -   [Known Issues](#known-issues)
 
@@ -263,12 +264,13 @@ By default, the `atest` outputs the progress and results to `std::cout`. It is p
 
 It is also a requirement for all values used in the expectations and matching to be printable. A printable value is any value for which `auto operator<<(std::ostream &stream, const T &value) -> std::ostream &` exists. If the operator does not exist it will result in a compiler error when compiling the test. The containers that have `begin()` and `end()` are automatically printed as arrays and thus only the internal type `T` might need to be made printable. A custom printing of the whole containers can still be provided by the user.
 
-## Filtering
+## Filtering & Listing
 
-The tests can be selected or filtered using the optional command line arguments:
+The tests can be listed, selected or filtered using the optional command line arguments:
 
 ```
 -?                             Display the help.
+--list, -l                     Lists tests. Can be combined with filters.
 --test=pattern, -t=pattern     Runs only the tests that matches the pattern.
 --suite-pattern, -s=pattern    Runs only test suites that matches the pattern.
 --filter-test=pattern          Skips tests that matches the pattern value.

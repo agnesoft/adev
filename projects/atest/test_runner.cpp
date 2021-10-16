@@ -61,13 +61,27 @@ public:
     //! If the user requested help via `-?`
     //! command line argument the test run will be
     //! skipped and the help is displayed instead.
+    //!
+    //! If the user requests listing via --list or
+    //! -l the test suites and tests (possibly
+    //! filtered using other command line options)
+    //! are only listed but not run.
     [[nodiscard]] auto run(int argc, const char *const *argv) -> int
     {
         if (this->parse_arguments(argc, argv))
         {
-            this->begin_run();
-            this->run_test_suites();
-            return this->end_run();
+            this->selectedTests = this->select_tests();
+
+            if (this->list)
+            {
+                this->list_tests();
+            }
+            else
+            {
+                this->begin_run();
+                this->run_test_suites();
+                return this->end_run();
+            }
         }
 
         return 0;
@@ -76,9 +90,6 @@ public:
 private:
     auto begin_run() -> void
     {
-        ::atest::test_context().reset();
-        ::atest::test_context().sort_test_suites();
-        this->selectedTests = this->select_tests();
         this->printer.begin_run(Reporter::stats(this->selectedTests));
     }
 
@@ -89,9 +100,23 @@ private:
         return static_cast<int>(results.failures);
     }
 
+    auto list_tests() -> void
+    {
+        for (const SelectedTests &suite : this->selectedTests)
+        {
+            this->printer.list_test_suite(*suite.suite);
+
+            for (const Test *test : suite.tests)
+            {
+                this->printer.list_test(*test);
+            }
+        }
+    }
+
     [[nodiscard]] auto parse_arguments(int argc, const char *const *argv) -> bool
     {
         ::acommandline::CommandLine parser{this->printer.output_stream()};
+        parser.option().long_name("list").short_name('l').description("Lists test suites and tests. Can be combined with test filters and selections.").bind_to(&this->list);
         parser.option().long_name("test").short_name('t').description("Select tests matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.tests);
         parser.option().long_name("suite").short_name('s').description("Select test suites matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suites);
         parser.option().long_name("filter-test").description("Skips tests matching the pattern. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.testFilters);
@@ -187,6 +212,9 @@ private:
 
     [[nodiscard]] auto select_tests() const -> std::vector<SelectedTests>
     {
+        ::atest::test_context().reset();
+        ::atest::test_context().sort_test_suites();
+
         std::vector<SelectedTests> selected;
 
         for (TestSuite &suite : ::atest::test_context().test_suites())
@@ -200,10 +228,11 @@ private:
         return selected;
     }
 
-    const TestContext context;
     std::vector<SelectedTests> selectedTests;
     Filters filters;
     TestFilter filter{this->filters};
+    TestContext context;
     Printer printer;
+    bool list = false;
 };
 }

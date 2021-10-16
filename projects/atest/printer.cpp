@@ -43,8 +43,7 @@ public:
 
         if (Printer::has_location(testSuite))
         {
-            this->stream << Printer::gray(Printer::source_location_to_string(testSuite.sourceLocation))
-                         << testSuite.name << "\n";
+            this->list_test_suite(testSuite);
         }
 
         this->indentLevel++;
@@ -83,6 +82,19 @@ public:
     {
         this->stream << '\n';
         this->indentLevel--;
+    }
+
+    auto list_test(const Test &test) -> void
+    {
+        this->stream << "  "
+                     << Printer::gray(Printer::source_location_to_string(test.sourceLocation))
+                     << test.name << "\n";
+    }
+
+    auto list_test_suite(const TestSuite &testSuite) -> void
+    {
+        this->stream << Printer::gray(Printer::source_location_to_string(testSuite.sourceLocation))
+                     << testSuite.name << "\n";
     }
 
     [[nodiscard]] auto output_stream() const noexcept -> std::ostream &
