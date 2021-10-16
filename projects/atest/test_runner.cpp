@@ -61,6 +61,11 @@ public:
     //! If the user requested help via `-?`
     //! command line argument the test run will be
     //! skipped and the help is displayed instead.
+    //!
+    //! If the user requests listing via --list or
+    //! -l the test suites and tests (possibly
+    //! filtered using other command line options)
+    //! are only listed but not run.
     [[nodiscard]] auto run(int argc, const char *const *argv) -> int
     {
         if (this->parse_arguments(argc, argv))
