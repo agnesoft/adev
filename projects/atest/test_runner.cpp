@@ -66,6 +66,9 @@ public:
     //! -l the test suites and tests (possibly
     //! filtered using other command line options)
     //! are only listed but not run.
+    //!
+    //! If the command line arguments are
+    //! incorrect returns -1.
     [[nodiscard]] auto run(int argc, const char *const *argv) noexcept -> int
     {
         try
@@ -90,7 +93,6 @@ public:
         }
         catch (...)
         {
-            //Supress any further exceptions
             return -1;
         }
     }
