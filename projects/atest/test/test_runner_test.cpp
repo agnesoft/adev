@@ -233,4 +233,11 @@ static const auto S = suite("TestRunner", [] { // NOLINT(cert-err58-cpp)
         expect_fail(output.str()).to_contain("Tests       :");
         expect_fail(output.str()).to_contain("Expectations:");
     });
+
+    test("unmatched command line argument", [] {
+        std::stringstream output;
+        const int result = ::atest::TestRunner{output}.run(2, std::array<const char *, 2>{"./app_test", "--argument=1"}.data());
+        expect(result).to_be(-1);
+        expect(output.str()).to_be("ERROR: parsing command line arguments: Unmatched argument '--argument=1'.\nUse -? to list the command line options.\n");
+    });
 });

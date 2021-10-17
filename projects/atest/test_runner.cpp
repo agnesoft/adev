@@ -66,25 +66,35 @@ public:
     //! -l the test suites and tests (possibly
     //! filtered using other command line options)
     //! are only listed but not run.
-    [[nodiscard]] auto run(int argc, const char *const *argv) -> int
+    //!
+    //! If the command line arguments are
+    //! incorrect returns -1.
+    [[nodiscard]] auto run(int argc, const char *const *argv) noexcept -> int
     {
-        if (this->parse_arguments(argc, argv))
+        try
         {
-            this->selectedTests = this->select_tests();
+            if (this->parse_arguments(argc, argv))
+            {
+                this->selectedTests = this->select_tests();
 
-            if (this->list)
-            {
-                this->list_tests();
+                if (this->list)
+                {
+                    this->list_tests();
+                }
+                else
+                {
+                    this->begin_run();
+                    this->run_test_suites();
+                    return this->end_run();
+                }
             }
-            else
-            {
-                this->begin_run();
-                this->run_test_suites();
-                return this->end_run();
-            }
+
+            return 0;
         }
-
-        return 0;
+        catch (...)
+        {
+            return -1;
+        }
     }
 
 private:
