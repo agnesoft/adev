@@ -8,5 +8,6 @@
 -fprebuilt-module-path=build/clang/acommandline
 -fprebuilt-module-path=build/clang/atest
 -fprebuilt-module-path=build/clang/astl
+-fprebuilt-module-path=build/clang/aprocess
 -fmodule-map-file=projects/astl/module.modulemap
 -fmodule-map-file=/usr/lib/llvm-13/include/c++/v1/module.modulemap

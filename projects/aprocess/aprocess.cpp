@@ -94,23 +94,26 @@ public:
     {
     }
 
+    Process(const Process &other) = delete;
+    Process(Process &&other) noexcept = default;
+
     //! Destroys the process object. If the
     //! process is still running it is first
     //! killed by calling kill().
-    ~Process()
-    {
-    }
+    ~Process() = default;
 
     //! Detaches from the process so it can
     //! outlive the parent process.
     auto detach() -> void
     {
+        static_cast<void>(this->processSetup);
     }
 
     //! Returns the exit code of the process when
     //! it finishes otherwise returns `0`.
     [[nodiscard]] auto exit_code() const -> int
     {
+        static_cast<void>(this->processSetup);
         return 0;
     }
 
@@ -118,12 +121,14 @@ public:
     //! running or `false` otherwise.
     [[nodiscard]] auto is_running() const -> bool
     {
+        static_cast<void>(this->processSetup);
         return false;
     }
 
     //! Sends `SIGKILL` to the process.
     auto kill() -> void
     {
+        static_cast<void>(this->processSetup);
     }
 
     //! Reads the output of the process since the
@@ -132,6 +137,7 @@ public:
     //! of the output if there is any.
     [[nodiscard]] auto read() -> std::string
     {
+        static_cast<void>(this->processSetup);
         return {};
     }
 
@@ -147,6 +153,7 @@ public:
     //! process to gracefully exit.
     auto terminate() -> void
     {
+        static_cast<void>(this->processSetup);
     }
 
     //! Waits indefinitely for the process to
@@ -162,13 +169,18 @@ public:
     //! out.
     [[nodiscard]] auto wait([[maybe_unused]] std::chrono::seconds timeout) -> bool
     {
+        static_cast<void>(this->processSetup);
         return false;
     }
 
     //! Writes `message` to the process.
     auto write([[maybe_unused]] const std::string &message) -> void
     {
+        static_cast<void>(this->processSetup);
     }
+
+    auto operator=(const Process &other) -> Process & = delete;
+    auto operator=(Process &&other) noexcept -> Process & = default;
 
 private:
     ProcessSetup processSetup;

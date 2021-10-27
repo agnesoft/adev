@@ -1,7 +1,7 @@
 import atest;
 import aprocess;
 
-using ::atest::expect;
+//using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
@@ -11,7 +11,8 @@ static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
 //! [[synchronous process]]
 aprocess::Process process{{.command = "echo Hello World"}};
 process.wait();
-std::cout << process.read();
+const std::string output = process.read();
+static_cast<void>(output);
 //! [[synchronous process]]
         // clang-format on
     });
@@ -20,11 +21,12 @@ std::cout << process.read();
         // clang-format off
 //! [[real time output]]
 aprocess::Process process{{.command = "echo Hello World"}};
+std::stringstream stream;
 while (process.is_running()) //beware of possible deadlock, consider offloading this to a new thread
 {
-    std::cout << process.read();
+    stream << process.read();
 }
-std::cout << process.read(); //make sure you get the rest of the output after the process stopped
+stream << process.read(); //make sure you get the rest of the output after the process stopped
 //! [[real time output]]
         // clang-format on
     });
