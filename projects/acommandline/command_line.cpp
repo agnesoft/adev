@@ -107,7 +107,7 @@ namespace acommandline
 //!
 //! # Example
 //!
-//! \snippet examples.cpp [usage]
+//! \snippet acommandline/test/examples.cpp [usage]
 //!
 export class CommandLine
 {
