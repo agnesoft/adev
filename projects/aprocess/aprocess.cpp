@@ -95,6 +95,8 @@ public:
     }
 
     Process(const Process &other) = delete;
+
+    //! Move constructor.
     Process(Process &&other) noexcept = default;
 
     //! Destroys the process object. If the
@@ -180,6 +182,8 @@ public:
     }
 
     auto operator=(const Process &other) -> Process & = delete;
+
+    //! Move assignment.
     auto operator=(Process &&other) noexcept -> Process & = default;
 
 private:
