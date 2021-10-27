@@ -6,7 +6,7 @@ using ::atest::test;
 auto main(int argc, char *argv[]) -> int
 {
     test("coverage", [] {
-        aprocess::Process process{{.command="echo Hello World"}};
+        aprocess::Process process{{.command = "echo Hello World"}};
         process.detach();
         static_cast<void>(process.exit_code());
         static_cast<void>(process.is_running());
