@@ -13,7 +13,7 @@ export import astl;
 namespace aprocess
 {
 //! EnvironmentVariable
-struct EnvironmentVariable
+export struct EnvironmentVariable
 {
     //! Name of the environment variable
     std::string name;
@@ -23,7 +23,7 @@ struct EnvironmentVariable
 };
 
 //! ProcessSetup
-struct ProcessSetup
+export struct ProcessSetup
 {
     //! Command to run as subprocess
     std::string command;
@@ -85,12 +85,12 @@ struct ProcessSetup
 //! with write():
 //!
 //! \snippet aprocess/test/examples.cpp [input]
-class Process
+export class Process
 {
 public:
     //! Starts the process defined by `setup`.
     explicit Process(ProcessSetup setup) :
-        setup{std::move(setup)}
+        processSetup{std::move(setup)}
     {
     }
 
@@ -137,7 +137,7 @@ public:
 
     //! Returns the process setup that was used
     //! when constructing the process.
-    [[nodiscard]] auto setup() const noexcept -> const ProcessSetup &
+    [[nodiscard]] auto process_setup() const noexcept -> const ProcessSetup &
     {
         return this->processSetup;
     }
@@ -160,13 +160,13 @@ public:
     //! finish. Returns `true` if the process
     //! finished in time or `false` if it timed
     //! out.
-    [[nodiscard]] auto wait([[maybe_unused]] std::chrono::duration timeout) -> bool
+    [[nodiscard]] auto wait([[maybe_unused]] std::chrono::seconds timeout) -> bool
     {
         return false;
     }
 
     //! Writes `message` to the process.
-    auto write(const std::string &message) -> void
+    auto write([[maybe_unused]] const std::string &message) -> void
     {
     }
 
