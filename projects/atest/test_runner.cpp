@@ -125,13 +125,21 @@ private:
 
     [[nodiscard]] auto parse_arguments(int argc, const char *const *argv) -> bool
     {
-        ::acommandline::CommandLine parser{this->printer.output_stream()};
-        parser.option().long_name("list").short_name('l').description("Lists test suites and tests. Can be combined with test filters and selections.").bind_to(&this->list);
-        parser.option().long_name("test").short_name('t').description("Select tests matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.tests);
-        parser.option().long_name("suite").short_name('s').description("Select test suites matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suites);
-        parser.option().long_name("filter-test").description("Skips tests matching the pattern. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.testFilters);
-        parser.option().long_name("filter-suite").description("Skips test suites matching the pattern. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suiteFilters);
-        return argv == nullptr || parser.parse(argc, argv);
+        try
+        {
+            ::acommandline::CommandLine parser{this->printer.output_stream()};
+            parser.option().long_name("list").short_name('l').description("Lists test suites and tests. Can be combined with test filters and selections.").bind_to(&this->list);
+            parser.option().long_name("test").short_name('t').description("Select tests matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.tests);
+            parser.option().long_name("suite").short_name('s').description("Select test suites matching the pattern to run. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suites);
+            parser.option().long_name("filter-test").description("Skips tests matching the pattern. Allows leading and trailing wildcard: *. E.g. *test, *test*, test*.").bind_to(&this->filters.testFilters);
+            parser.option().long_name("filter-suite").description("Skips test suites matching the pattern. Allows leading and trailing wildcard: *. E.g. *suite, *suite*, suite*.").bind_to(&this->filters.suiteFilters);
+            return argv == nullptr || parser.parse(argc, argv);
+        }
+        catch (const std::exception &error)
+        {
+            this->printer.output_stream() << "ERROR - " << error.what();
+            throw;
+        }
     }
 
     auto run_test(Test &test) -> void

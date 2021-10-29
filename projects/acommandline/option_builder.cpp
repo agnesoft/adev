@@ -43,7 +43,7 @@ private:
     {
         if (!::acommandline::is_long_name(name))
         {
-            throw std::runtime_error{"'" + name + "' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+)."};
+            throw std::logic_error{"'" + name + "' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+)."};
         }
 
         this->option().longName = std::move(name);

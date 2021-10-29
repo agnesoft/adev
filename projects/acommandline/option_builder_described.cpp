@@ -36,7 +36,7 @@ private:
 
                 if constexpr (!std::is_same_v<T, DefaultT>)
                 {
-                    throw std::runtime_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
+                    throw std::logic_error{"The option '" + this->option().longName + "' default value is set with incompatible type (" + typeid(DefaultT).name() + ") to the one it is being bound to (" + typeid(T).name() + ")."};
                 }
             };
 

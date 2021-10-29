@@ -56,7 +56,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.option().long_name("longName1").short_name('1'));
         })
-            .to_throw<std::runtime_error>("'1' is not a valid option short name ([a-zA-Z]).");
+            .to_throw<std::logic_error>("'1' is not a valid option short name ([a-zA-Z]).");
     });
 
     test("missing value", [] {
@@ -69,7 +69,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data()));
         })
-            .to_throw<std::runtime_error>("Missing value for option 'value'.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: missing value for option 'value'.\nUse -? to list the command line options.\n");
     });
 
     test("long name", [] {
@@ -82,7 +82,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-value"}.data()));
         })
-            .to_throw<std::runtime_error>("Unmatched argument '-value'.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: unmatched argument '-value'.\nUse -? to list the command line options.\n");
     });
 
     test("type mismatch", [] {
@@ -90,7 +90,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         ::acommandline::CommandLine commandLine{stream};
 
         std::int64_t value = 0;
-        const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.";
+        const std::string exceptionText = "Unable to parse command line arguments: failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello' (type mismatch).\nUse -? to list the command line options.\n";
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
 
