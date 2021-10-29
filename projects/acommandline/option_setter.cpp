@@ -35,7 +35,7 @@ private:
     {
         if (++(*argument) == end)
         {
-            throw std::runtime_error{"Missing value for option '" + option.longName + "'."};
+            throw std::logic_error{"missing value for option '" + option.longName + '\''};
         }
     }
 
@@ -80,7 +80,7 @@ private:
         {
             const auto throwError = [&](auto &&boundValue) {
                 using BoundT = std::remove_pointer_t<std::decay_t<decltype(boundValue)>>;
-                throw std::runtime_error{std::string{"Failed to set option '"} + option.longName + "' (" + typeid(BoundT).name() + ") from value '" + value + "'."};
+                throw std::runtime_error{std::string{"failed to set option '"} + option.longName + "' (" + typeid(BoundT).name() + ") from value '" + value + "' (type mismatch)"};
             };
 
             std::visit(throwError, *option.boundValue);

@@ -27,7 +27,7 @@ static const auto S = suite("required", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.parse(1, std::array<const char *, 1>{"app"}.data()));
         })
-            .to_throw<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: option '[positional]' was set as required but did not match any arguments.\nUse -? to list the command line options.\n");
     });
 
     test("unmatched named", [] {
@@ -43,6 +43,6 @@ static const auto S = suite("required", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data()));
         })
-            .to_throw<std::runtime_error>("Option '[positional]' was set as required but did not match any arguments.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: option '[positional]' was set as required but did not match any arguments.\nUse -? to list the command line options.\n");
     });
 });

@@ -20,16 +20,6 @@ public:
         this->print_options(Printer::option_help_lines(options));
     }
 
-    auto print_help_hint() -> void
-    {
-        this->stream << "Use -? to list the command line options.\n";
-    }
-
-    auto print_parsing_error(const std::exception &error) -> void
-    {
-        this->stream << "ERROR: parsing command line arguments: " << error.what() << '\n';
-    }
-
 private:
     [[nodiscard]] static auto count_name_width(const std::vector<OptionHelpLine> &helpLines) -> int
     {

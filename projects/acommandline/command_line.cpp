@@ -177,8 +177,7 @@ public:
         }
         catch (const std::exception &error)
         {
-            this->print_parsing_error(error);
-            throw;
+            throw std::runtime_error{std::string{"Unable to parse command line arguments: "} + error.what() + ".\nUse -? to list the command line options.\n"};
         }
     }
 
@@ -209,7 +208,7 @@ private:
             }
         }
 
-        throw std::runtime_error{"Unmatched argument '" + argumentValue + "'."};
+        throw std::runtime_error{"unmatched argument '" + argumentValue + '\''};
     }
 
     auto match_arguments() -> void
@@ -248,7 +247,7 @@ private:
     {
         if (argc == 0)
         {
-            throw std::logic_error{"Missing mandatory first command line argument."};
+            throw std::logic_error{"missing mandatory first command line argument"};
         }
 
         this->cmd = *argv;
@@ -263,7 +262,7 @@ private:
             {
                 if (option.required)
                 {
-                    throw std::runtime_error{std::string{"Option '"} + option.longName + "' was set as required but did not match any arguments."};
+                    throw std::runtime_error{std::string{"option '"} + option.longName + "' was set as required but did not match any arguments"};
                 }
 
                 if (::acommandline::is_defaulted(option))
@@ -274,19 +273,13 @@ private:
         }
     }
 
-    auto print_parsing_error(const std::exception &error) -> void
-    {
-        this->printer.print_parsing_error(error);
-        this->printer.print_help_hint();
-    }
-
     auto pre_validate_options() -> void
     {
         for (Option &option : this->options)
         {
             if (!option.boundValue.has_value())
             {
-                throw std::runtime_error{std::string{"Bind value undefined for option '"} + option.longName + "'."};
+                throw std::runtime_error{std::string{"bind value undefined for option '"} + option.longName + '\''};
             }
 
             option.matched = false;

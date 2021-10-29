@@ -43,6 +43,6 @@ static const auto S = suite("positional", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "--long=hello"}.data()));
         })
-            .to_throw<std::runtime_error>("Bind value undefined for option 'long'.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: bind value undefined for option 'long'.\nUse -? to list the command line options.\n");
     });
 });

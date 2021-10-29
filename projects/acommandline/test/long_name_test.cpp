@@ -109,7 +109,7 @@ static const auto S = suite("long name", [] { // NOLINT(cert-err58-cpp)
         std::int64_t value = 0;
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
 
-        const std::string exceptionText = "Failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello'.";
+        const std::string exceptionText = "Unable to parse command line arguments: failed to set option 'value' (" + std::string{typeid(std::int64_t).name()} + ") from value 'hello' (type mismatch).\nUse -? to list the command line options.\n";
 
         expect([&] {
             static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v=hello"}.data()));
@@ -124,7 +124,7 @@ static const auto S = suite("long name", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.option().long_name("l"));
         })
-            .to_throw<std::runtime_error>("'l' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
+            .to_throw<std::logic_error>("'l' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
     });
 
     test("'1longName'", [] {
@@ -134,7 +134,7 @@ static const auto S = suite("long name", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.option().long_name("1longName"));
         })
-            .to_throw<std::runtime_error>("'1longName' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
+            .to_throw<std::logic_error>("'1longName' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
     });
 
     test("'long@Name'", [] {
@@ -144,6 +144,6 @@ static const auto S = suite("long name", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.option().long_name("long@Name"));
         })
-            .to_throw<std::runtime_error>("'long@Name' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
+            .to_throw<std::logic_error>("'long@Name' is not a valid option long name ([a-zA-Z][a-zA-Z\\d_-\\.]+).");
     });
 });
