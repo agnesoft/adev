@@ -37,7 +37,7 @@ static const auto S = suite("default value", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             commandLine.option().positional().default_value(std::int64_t{3}).description("").bind_to(&output);
         })
-            .to_throw<std::runtime_error>(std::string{"The option '[positional]' default value is set with incompatible type ("} + typeid(std::int64_t).name() + ") to the one it is being bound to (" + typeid(std::string).name() + ").");
+            .to_throw<std::logic_error>(std::string{"The option '[positional]' default value is set with incompatible type ("} + typeid(std::int64_t).name() + ") to the one it is being bound to (" + typeid(std::string).name() + ").");
     });
 
     test("missing bound variable", [] {
@@ -48,6 +48,6 @@ static const auto S = suite("default value", [] { // NOLINT(cert-err58-cpp)
         expect([&] {
             static_cast<void>(commandLine.parse(1, std::array<const char *, 1>{"./app"}.data()));
         })
-            .to_throw<std::runtime_error>(std::string{"Bind value undefined for option '[positional]'."});
+            .to_throw<std::runtime_error>(std::string{"Unable to parse command line arguments: bind value undefined for option '[positional]'.\nUse -? to list the command line options.\n"});
     });
 });

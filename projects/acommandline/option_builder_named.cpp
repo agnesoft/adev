@@ -26,7 +26,7 @@ private:
     {
         if (!::acommandline::is_short_name(name))
         {
-            throw std::runtime_error{std::string{"'"} + name + "' is not a valid option short name ([a-zA-Z])."};
+            throw std::logic_error{std::string{"'"} + name + "' is not a valid option short name ([a-zA-Z])."};
         }
 
         this->option().shortName = name;

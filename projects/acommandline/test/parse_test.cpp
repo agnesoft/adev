@@ -93,7 +93,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         expect([&] {
             static_cast<void>(commandLine.parse(0, std::array<const char *, 0>{}.data()));
         })
-            .to_throw<std::logic_error>("Missing mandatory first command line argument.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: missing mandatory first command line argument.\nUse -? to list the command line options.\n");
     });
 
     test("unmatched argument", [] {
@@ -103,6 +103,6 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         expect([&] {
             static_cast<void>(commandLine.parse(2, std::array<const char *, 2>{"./app", "-v"}.data()));
         })
-            .to_throw<std::runtime_error>("Unmatched argument '-v'.");
+            .to_throw<std::runtime_error>("Unable to parse command line arguments: unmatched argument '-v'.\nUse -? to list the command line options.\n");
     });
 });
