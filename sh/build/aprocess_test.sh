@@ -47,8 +47,8 @@ function build_gcc() {
 }
 
 buildMSVC="
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocesstest-set_path_unix.ifc\"    /Fo\"${buildDir}/aprocesstest-set_path_unix.obj\"    /c /TP \"${projectDir}/set_path_unix.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocesstest-set_path_windows.ifc\" /Fo\"${buildDir}/aprocesstest-set_path_windows.obj\" /c /TP \"${projectDir}/set_path_windows.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildDir}/windows\" /ifcSearchDir \"${buildDir}/unix\" /ifcOutput\"${buildDir}/aprocesstest-set_path_unix.ifc\"    /Fo\"${buildDir}/aprocesstest-set_path_unix.obj\"    /c /TP \"${projectDir}/set_path_unix.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildDir}/windows\" /ifcSearchDir \"${buildDir}/unix\" /ifcOutput\"${buildDir}/aprocesstest-set_path_windows.ifc\" /Fo\"${buildDir}/aprocesstest-set_path_windows.obj\" /c /TP \"${projectDir}/set_path_windows.cpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
@@ -66,6 +66,8 @@ lib.exe /NOLOGO ^
 cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/atest\" ^
        /ifcSearchDir \"${buildRoot}/aprocess\" ^
+       /ifcSearchDir \"${buildRoot}/aprocess/windows\" ^
+       /ifcSearchDir \"${buildRoot}/aprocess/unix\" ^
        /ifcSearchDir \"${buildDir}\" ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/aprocess_test.exe\" ^
