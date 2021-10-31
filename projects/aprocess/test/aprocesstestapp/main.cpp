@@ -11,7 +11,7 @@ auto main(int argc, char *argv[]) -> int
     {
         Inputs inputs;
 
-        acommandline::CommandLine parser;
+        ::acommandline::CommandLine parser;
         parser.option().long_name("exit-code").description("Exits with the given value").bind_to(&inputs.exitCode);
 
         if (parser.parse(argc, argv))
