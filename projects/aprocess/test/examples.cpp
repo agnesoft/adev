@@ -34,9 +34,9 @@ stream << process.read(); //make sure you get the rest of the output after the p
     test("input", [] {
         // clang-format off
 //! [[input]]
-::aprocess::Process process{{.command = "echo Hello && read name && echo $name"}};
-process.write("AProcess");
-process.wait();
+//::aprocess::Process process{{.command = "echo Hello && read name && echo $name"}};
+//process.write("AProcess");
+//process.wait();
 //! [[input]]
         // clang-format on
     });

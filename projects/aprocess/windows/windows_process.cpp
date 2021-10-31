@@ -35,7 +35,7 @@ public:
     {
         StartupInfo startupInfo{this->outPipe, this->inPipe};
         std::string commandLine = WindowsProcess::create_command_line(setup.command, setup.arguments);
-
+        std::cout << commandLine << std::endl;
         if (::CreateProcess(nullptr,
                             &commandLine.front(),
                             nullptr,
@@ -128,7 +128,7 @@ public:
 private:
     [[nodiscard]] static auto create_command_line(const std::string &executable, const std::vector<std::string> &arguments) -> std::string
     {
-        std::string command{executable};
+        std::string command{'"' + executable + '"'};
 
         for (const auto &arg : arguments)
         {

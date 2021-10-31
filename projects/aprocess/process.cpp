@@ -58,8 +58,8 @@ export class Process
 public:
     //! Starts the process defined by `setup`.
     explicit Process(ProcessSetup setup) :
-        processSetup{std::move(setup)},
-        process{setup}
+        process{setup},
+        processSetup{std::move(setup)}
     {
     }
 
@@ -152,11 +152,11 @@ public:
     auto operator=(Process &&other) noexcept -> Process & = default;
 
 private:
-    ProcessSetup processSetup;
 #ifdef _WIN32
     WindowsProcess process;
 #else
 
 #endif
+    ProcessSetup processSetup;
 };
 }
