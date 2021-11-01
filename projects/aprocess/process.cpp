@@ -15,11 +15,9 @@ namespace aprocess
 //! functions.
 //!
 //! You can use the blocking wait() method to wait
-//! for the process to finish. It optionally takes
-//! the `std::chrono::duration` argument as a
-//! timeout. The process can be stopped with
-//! terminate(), which will allow it to exit
-//! gracefully, or with kill() that will
+//! for the process to finish. The process can be
+//! stopped with terminate(), which will allow it
+//! to exit gracefully, or with kill() that will
 //! forcefully terminate it. You can check the
 //! status of the process with is_running() and
 //! detach() from the process so that it can
@@ -34,7 +32,8 @@ namespace aprocess
 //! is stopped) will always return all of the
 //! remaining output:
 //!
-//! \snippet aprocess/test/examples.cpp [synchronous process]
+//! \snippet aprocess/test/examples.cpp
+//! [synchronous process]
 //!
 //! NOTE: The `stdout` and `stderr` are combined
 //! in order to make the Process class consistent
@@ -47,7 +46,8 @@ namespace aprocess
 //! application if the spawned process never
 //! finishes):
 //!
-//! \snippet aprocess/test/examples.cpp [real time output]
+//! \snippet aprocess/test/examples.cpp [real time
+//! output]
 //!
 //! Finally you can send input into the process
 //! with write():
@@ -101,12 +101,17 @@ public:
     }
 
     //! Reads the output of the process since the
-    //! previous call to read(). If it is called
-    //! after the process exited it will read rest
-    //! of the output if there is any.
+    //! previous call to read() if any. If it is
+    //! called after the process exited it will
+    //! read rest of the output if there is any.
     [[nodiscard]] auto read() -> std::string
     {
         return this->process.read();
+    }
+
+    [[nodiscard]] auto read(std::chrono::milliseconds timeout) -> std::string
+    {
+        return this->process.read(timeout);
     }
 
     //! Returns the process setup that was used
@@ -124,24 +129,16 @@ public:
         static_cast<void>(this->processSetup);
     }
 
-    //! Waits indefinitely for the process to
-    //! finish.
-    auto wait() -> void
-    {
-        this->process.wait();
-    }
-
     //! Waits for `timeout` for the process to
-    //! finish. Returns `true` if the process
-    //! finished in time or `false` if it timed
-    //! out.
-    [[nodiscard]] auto wait([[maybe_unused]] std::chrono::milliseconds timeout) -> bool
+    //! finish. Throws an exception if the wait
+    //! times out.
+    auto wait(std::chrono::milliseconds timeout) -> void
     {
         return this->process.wait(timeout);
     }
 
     //! Writes `message` to the process.
-    auto write([[maybe_unused]] const std::string &message) -> void
+    auto write(const std::string &message) -> void
     {
         this->process.write(message);
     }

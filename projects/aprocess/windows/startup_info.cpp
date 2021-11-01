@@ -37,6 +37,8 @@ public:
             .hStdOutput = outPipe.write_handle(),
             .hStdError = outPipe.write_handle()}
     {
+        ::SetHandleInformation(inPipe.write_handle(), HANDLE_FLAG_INHERIT, 0);
+        ::SetHandleInformation(outPipe.read_handle(), HANDLE_FLAG_INHERIT, 0);
     }
 
     [[nodiscard]] constexpr auto get() noexcept -> ::STARTUPINFO &

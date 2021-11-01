@@ -8,14 +8,21 @@ using ::atest::test;
 static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
     test("0", [] {
         aprocess::Process process{{.command = "aprocesstestapp"}};
-        process.wait();
+        process.wait(std::chrono::milliseconds{1000});
         expect(process.exit_code()).to_be(0);
     });
 
     test("1", [] {
         aprocess::Process process{{.command = "aprocesstestapp",
                                    .arguments{"--exit-code", "1"}}};
-        process.wait();
+        process.wait(std::chrono::milliseconds{1000});
         expect(process.exit_code()).to_be(1);
+    });
+
+    test("-1", [] {
+        aprocess::Process process{{.command = "aprocesstestapp",
+                                   .arguments{"--exit-code", "-1"}}};
+        process.wait(std::chrono::milliseconds{1000});
+        expect(process.exit_code()).to_be(-1);
     });
 });
