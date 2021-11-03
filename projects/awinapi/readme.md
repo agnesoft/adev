@@ -14,7 +14,7 @@ The `awinapi` module is a convenience wrapper around Windows SDK. It converts `W
 
 -   C++ compiler
 -   [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
--   [astl](projects/astl/readme.md)
+-   [astl](/projects/astl/readme.md)
 
 ## Usage
 
@@ -27,7 +27,7 @@ std::string buffer(32767, char{});
 
 ## Build
 
-The build is the same as with [astl](projects/astl/readme.md#build) requiring first to convert the `windows.hpp` into a header unit and then compiling the module itself.
+The build is the same as with [astl](/projects/astl/readme.md#build) requiring first to convert the `windows.hpp` into a header unit and then compiling the module itself.
 
 ## MSVC Warnings
 
