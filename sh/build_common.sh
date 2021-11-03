@@ -86,9 +86,9 @@ msvcCompilerFlags="/nologo \
                    /O2 \
                    /W4 \
                    /WX \
+                   /wd4005 \
                    /wd5105 \
                    /wd5106 \
-                   /wd4005 \
                    /ifcSearchDir \"${buildRoot}/astl\" \
                    /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" \
                    /headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" "
