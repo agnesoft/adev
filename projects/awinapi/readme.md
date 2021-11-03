@@ -27,7 +27,7 @@ std::string buffer(32767, char{});
 
 ## Build
 
-The build is the same as with [astl](projects/astl/readme.md#build) requiring first to convert the `windows.hpp` into a header unit and then compiling the module itself.
+The build is the same as with [astl](/projects/astl/readme.md#build) requiring first to convert the `windows.hpp` into a header unit and then compiling the module itself.
 
 ## MSVC Warnings
 
