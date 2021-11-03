@@ -29,6 +29,7 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocess-security_attributes.ifc\"  /Fo\"${buildDir}/aprocess-security_attributes.obj\"  /c /TP \"${projectDir}/windows/security_attributes.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocess-windows_pipe.ifc\"         /Fo\"${buildDir}/aprocess-windows_pipe.obj\"         /c /TP \"${projectDir}/windows/windows_pipe.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocess-startup_info.ifc\"         /Fo\"${buildDir}/aprocess-startup_info.obj\"         /c /TP \"${projectDir}/windows/startup_info.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocess-async_reader.ifc\"         /Fo\"${buildDir}/aprocess-async_reader.obj\"         /c /TP \"${projectDir}/windows/async_reader.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocess-windows_process.ifc\"      /Fo\"${buildDir}/aprocess-windows_process.obj\"      /c /TP \"${projectDir}/windows/windows_process.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/aprocess-process.ifc\"              /Fo\"${buildDir}/aprocess-process.obj\"              /c /TP \"${projectDir}/process.cpp\" || exit 1
 
@@ -49,6 +50,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/aprocess-process_info.obj\" ^
         \"${buildDir}/aprocess-security_attributes.obj\" ^
         \"${buildDir}/aprocess-startup_info.obj\" ^
+        \"${buildDir}/aprocess-async_reader.obj\" ^
         \"${buildDir}/aprocess-windows_pipe.obj\" ^
         \"${buildDir}/aprocess-windows_process.obj\" ^
         \"${buildDir}/aprocess-process.obj\" || exit 1

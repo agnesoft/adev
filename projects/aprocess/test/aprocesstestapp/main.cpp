@@ -34,8 +34,8 @@ auto main(int argc, char *argv[]) -> int
 
                 while (value != "exit")
                 {
-                    std::cin >> value;
                     std::cout << value << std::flush;
+                    std::cin >> value;
                 }
             }
 

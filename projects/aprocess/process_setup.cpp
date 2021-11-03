@@ -5,6 +5,8 @@ export import : environment_variable;
 
 namespace aprocess
 {
+export class Process;
+
 //! ProcessSetup
 export struct ProcessSetup
 {
@@ -14,10 +16,20 @@ export struct ProcessSetup
     //! Arguments to the command
     std::vector<std::string> arguments;
 
-    //! Environment variables to set for the process
+    //! Environment variables to set for the
+    //! process
     std::vector<EnvironmentVariable> environment;
 
     //! Working directory of the process
     std::string workingDirectory = std::filesystem::current_path().string();
+
+    //! Callback invoked on process output. When
+    //! not specified the stdout/stderr pipe will
+    //! not be opened.
+    std::function<auto(std::string_view output, Process &)->void> read;
+
+    //! Whether to open stdin pipe to write to the
+    //! process.
+    bool write = false;
 };
 }

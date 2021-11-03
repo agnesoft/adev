@@ -9,7 +9,6 @@ module;
 #    pragma warning(disable : 4005)
 #    define WIN32_LEAN_AND_MEAN
 #    include <Windows.h>
-#    include <strsafe.h>
 #    pragma warning(pop)
 #endif
 

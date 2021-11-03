@@ -9,7 +9,6 @@ module;
 #    pragma warning(disable : 4005)
 #    define WIN32_LEAN_AND_MEAN
 #    include <Windows.h>
-#    include <strsafe.h>
 #    pragma warning(pop)
 #endif
 
@@ -29,25 +28,14 @@ namespace aprocess
 class StartupInfo
 {
 public:
-    StartupInfo(WindowsPipe &outPipe, WindowsPipe &inPipe) :
-        startupInfo{
-            .cb = sizeof(this->startupInfo),
-            .dwFlags = STARTF_USESTDHANDLES,
-            .hStdInput = inPipe.read_handle(),
-            .hStdOutput = outPipe.write_handle(),
-            .hStdError = outPipe.write_handle()}
-    {
-        ::SetHandleInformation(inPipe.write_handle(), HANDLE_FLAG_INHERIT, 0);
-        ::SetHandleInformation(outPipe.read_handle(), HANDLE_FLAG_INHERIT, 0);
-    }
-
     [[nodiscard]] constexpr auto get() noexcept -> ::STARTUPINFO &
     {
         return this->startupInfo;
     }
 
 private:
-    ::STARTUPINFO startupInfo;
+    ::STARTUPINFO startupInfo{
+        .cb = sizeof(this->startupInfo)};
 };
 }
 #endif

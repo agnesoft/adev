@@ -58,8 +58,8 @@ export class Process
 public:
     //! Starts the process defined by `setup`.
     explicit Process(ProcessSetup setup) :
-        process{setup},
-        processSetup{std::move(setup)}
+        processSetup{std::move(setup)},
+        process{this->processSetup, *this}
     {
     }
 
@@ -100,20 +100,6 @@ public:
         static_cast<void>(this->processSetup);
     }
 
-    //! Reads the output of the process since the
-    //! previous call to read() if any. If it is
-    //! called after the process exited it will
-    //! read rest of the output if there is any.
-    [[nodiscard]] auto read() -> std::string
-    {
-        return this->process.read();
-    }
-
-    [[nodiscard]] auto read(std::chrono::milliseconds timeout) -> std::string
-    {
-        return this->process.read(timeout);
-    }
-
     //! Returns the process setup that was used
     //! when constructing the process.
     [[nodiscard]] auto process_setup() const noexcept -> const ProcessSetup &
@@ -149,11 +135,11 @@ public:
     auto operator=(Process &&other) noexcept -> Process & = default;
 
 private:
+    ProcessSetup processSetup;
 #ifdef _WIN32
     WindowsProcess process;
 #else
 
 #endif
-    ProcessSetup processSetup;
 };
 }
