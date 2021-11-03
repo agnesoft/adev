@@ -6,6 +6,9 @@ export import astl;
 #ifdef _WIN32
 namespace awinapi
 {
+//! Uses the last error code reported from
+//! ::GetErrorCode() WinAPI function to extract
+//! and format its textual explanation.
 export [[nodiscard]] auto last_error_message() -> std::string
 {
     LPVOID message = nullptr;
