@@ -1,4 +1,3 @@
-export module astl;
+export module awinapi;
 
 export import "windows.hpp";
-export import astl;
