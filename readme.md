@@ -44,8 +44,9 @@ The binaries will be output to `build/<toolchain>`.
 | Name                                            | Path                                              | Description                                  |
 | ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------- |
 | [acommandline](projects/acommandline/readme.md) | [projects/acommandline/](/projects/acommandline/) | c++ command line parser                      |
-| [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
 | [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper |
+| [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
+| [awinapi](projects/awinapi/readme.md)           | [projects/awinapi/](/projects/awinapi/)           | c++ winapi module wrapper                    |
 
 ## Tools
 
@@ -109,3 +110,4 @@ There are two workflows:
 | Linux    | build    | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error.                                         | 31/08/2021 |
 | any      | coverage | llvm           | 12, 13  | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed | 29/09/2021 |
 | Windows  | docker   | Docker Desktop | 4.1     | It cannot be installed if there is an existing WSL 2 image. Docker Desktop must be installed when there are no other WSL 2 images        | 02/10/2021 |
+| Windows  | build    | msvc           | 16.11.5 | Including/importing `<Windows.h>` such as via `awinapi` project requires suppression of warnings 4005, 5105 and 5106.                    | 03/11/2021 |
