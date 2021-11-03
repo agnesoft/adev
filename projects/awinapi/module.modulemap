@@ -1,0 +1,4 @@
+module windows_hpp {
+    header "windows.hpp"
+    export *
+}
