@@ -11,7 +11,7 @@
 
 ## Overview
 
-The `astl` module is the convenience wrapper around all legacy C++ Standard Template Library (STL) headers. It effectively turns STL into a single module to be imported. By doing this it avoids the hassle of converting individual headers into header units. It also avoids clashes of multiply defined symbols that arise when using individual header units from STL.
+The `astl` module is a convenience wrapper around all legacy C++ Standard Template Library (STL) headers. It effectively turns STL into a single module to be imported. By doing this it avoids the hassle of converting individual headers into header units. It also avoids clashes of multiply defined symbols that arise when using individual header units from STL.
 
 ## Prerequisites
 
@@ -57,4 +57,4 @@ The header unit must be compiled first and the command will also produce the obj
 
 ## libc++
 
-The `libc++` used by clang does not yet implement the `source_location` standard header and most `concepts` (in latest release version as of 09/09/2021). If those are not that available `astl` will use its own implementation.
+The `libc++` used by clang does not yet implement the `source_location` standard header (as of 03/11/2021, LLVM 13) and `astl` uses its own implementation.
