@@ -1,11 +1,11 @@
 import atest;
 import awinapi;
 
+#ifdef _WIN32
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-#ifdef _WIN32
 static const auto S = suite("last_error_message()", [] { // NOLINT(cert-err58-cpp)
     test("no error", [] {
         expect(::awinapi::last_error_message()).to_be(std::string{});

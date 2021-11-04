@@ -1,12 +1,12 @@
 import atest;
 import awinapi;
 
+#ifdef _WIN32
 using ::atest::assert_;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-#ifdef _WIN32
 static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
     test("type traits", [] {
         expect(std::is_nothrow_default_constructible_v<::awinapi::Handle>).to_be(true);
