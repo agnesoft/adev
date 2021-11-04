@@ -28,7 +28,7 @@ The `atest` module is a C++20 testing framework. It is completely macro free and
     -   `concepts`
 -   RTTI
 -   Exceptions
--   [astl](projects/astl/readme.md)
+-   [astl](/projects/astl/readme.md)
 
 # Usage
 
@@ -279,7 +279,7 @@ The tests can be listed, selected or filtered using the optional command line ar
 
 The pattern supports only leading and trailing wildcard `*`, e.g.
 
--   `,y test` will match only test (or suite) that match exactly the pattern `my test`
+-   `my test` will match only test (or suite) that match exactly the pattern `my test`
 -   `test*` will match any test (or suite) that starts with the word `test`
 -   `*test` will match any test (or suite) that ends with the word `test`
 

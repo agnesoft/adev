@@ -13,7 +13,7 @@ Strongly typed command line parser that takes standard `main()` function argumen
 -   C++ compiler
 -   C++20
 -   Exceptions
--   [astl](projects/astl/readme.md)
+-   [astl](/projects/astl/readme.md)
 
 # Usage
 

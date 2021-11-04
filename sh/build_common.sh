@@ -14,7 +14,8 @@ clangCompilerFlagsCommon="-std=c++20 \
                           -fmodules \
                           -fimplicit-module-maps \
                           -fprebuilt-module-path=${buildRoot}/astl \
-                          -fmodule-map-file=projects/astl/module.modulemap"
+                          -fmodule-map-file=projects/astl/module.modulemap \
+                          -fmodule-map-file=projects/awinapi/module.modulemap"
 
 clangCompilerFlags="${clangCompilerFlagsCommon} \
                     -stdlib=libc++"
@@ -86,8 +87,12 @@ msvcCompilerFlags="/nologo \
                    /O2 \
                    /W4 \
                    /WX \
+                   /wd4005 \
+                   /wd5105 \
+                   /wd5106 \
                    /ifcSearchDir \"${buildRoot}/astl\" \
-                   /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" "
+                   /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" \
+                   /headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" "
 
 function build() {
     if [[ -f "${buildRoot}/${project}.done" ]]; then
