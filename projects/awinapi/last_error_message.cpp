@@ -1,7 +1,6 @@
 #ifndef __clang__
 export module awinapi : last_error_message;
 export import : buffer;
-export import astl;
 #endif
 
 #ifdef _WIN32
