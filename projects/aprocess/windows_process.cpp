@@ -1,28 +1,6 @@
 #ifndef __clang__
-module;
-#endif
-
-#if __has_include(<Windows.h>)
-#    pragma warning(push)
-#    pragma warning(disable : 5105)
-#    pragma warning(disable : 5106)
-#    pragma warning(disable : 4005)
-#    define WIN32_LEAN_AND_MEAN
-#    include <Windows.h>
-#    pragma warning(pop)
-#endif
-
-#ifndef __clang__
 module aprocess : windows_process;
-#    pragma warning(push)
-#    pragma warning(disable : 5105)
-#    pragma warning(disable : 5106)
-#    pragma warning(disable : 4005)
-import : process_setup;
-import : process_info;
-import : startup_info;
 import : async_reader;
-#    pragma warning(pop)
 #endif
 
 #ifdef _WIN32
@@ -45,11 +23,11 @@ public:
                             0,
                             nullptr,
                             setup.workingDirectory.c_str(),
-                            &this->startupInfo.get(),
-                            &this->processInfo.get())
+                            &this->startupInfo,
+                            &this->processInfo)
             == FALSE)
         {
-            throw std::runtime_error{"Failed to create process:\n  " + last_error_message()};
+            throw std::runtime_error{"Failed to create process:\n  " + ::awinapi::last_error_message()};
         }
     }
 
@@ -62,11 +40,11 @@ public:
     {
         int exitCode = 0;
 
-        if (::GetExitCodeProcess(this->processInfo.get().hProcess,
+        if (::GetExitCodeProcess(this->processInfo.hProcess,
                                  static_cast<LPDWORD>(static_cast<void *>(&exitCode)))
             == FALSE)
         {
-            throw std::runtime_error{"Failed to get exit code from ProcessWindows:\n  " + last_error_message()};
+            throw std::runtime_error{"Failed to get exit code from ProcessWindows:\n  " + ::awinapi::last_error_message()};
         }
 
         return exitCode;
@@ -115,12 +93,12 @@ private:
 
     auto do_wait(DWORD milliseconds) const -> bool
     {
-        switch (::WaitForSingleObject(this->processInfo.get().hProcess, milliseconds))
+        switch (::WaitForSingleObject(this->processInfo.hProcess, milliseconds))
         {
         case WAIT_OBJECT_0:
             return true;
         case WAIT_FAILED:
-            throw std::runtime_error{"Wait for process failed:\n  " + last_error_message()};
+            throw std::runtime_error{"Wait for process failed:\n  " + ::awinapi::last_error_message()};
         case WAIT_ABANDONED:
             [[fallthrough]];
         case WAIT_TIMEOUT:
@@ -141,7 +119,7 @@ private:
                         nullptr)
             == FALSE)
         {
-            throw std::runtime_error{"Failed to write to process:\n  " + last_error_message()};
+            throw std::runtime_error{"Failed to write to process:\n  " + ::awinapi::last_error_message()};
         }
     }
 
@@ -149,9 +127,9 @@ private:
     {
         if (setup.write)
         {
-            this->writePipe = std::make_unique<WindowsPipe>();
-            this->startupInfo.get().dwFlags = STARTF_USESTDHANDLES;
-            this->startupInfo.get().hStdInput = this->writePipe->read_handle();
+            this->writePipe = std::make_unique<::awinapi::Pipe>();
+            this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
+            this->startupInfo.hStdInput = this->writePipe->read_handle();
             ::SetHandleInformation(this->writePipe->write_handle(), HANDLE_FLAG_INHERIT, 0);
         }
     }
@@ -160,20 +138,20 @@ private:
     {
         if (setup.read != nullptr)
         {
-            this->readPipe = std::make_unique<WindowsPipe>();
-            this->startupInfo.get().dwFlags = STARTF_USESTDHANDLES;
-            this->startupInfo.get().hStdError = this->readPipe->write_handle();
-            this->startupInfo.get().hStdOutput = this->readPipe->write_handle();
+            this->readPipe = std::make_unique<::awinapi::Pipe>();
+            this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
+            this->startupInfo.hStdError = this->readPipe->write_handle();
+            this->startupInfo.hStdOutput = this->readPipe->write_handle();
             ::SetHandleInformation(this->readPipe->read_handle(), HANDLE_FLAG_INHERIT, 0);
             this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), setup, process);
         }
     }
 
-    StartupInfo startupInfo;
+    ::STARTUPINFO startupInfo{.cb = sizeof(this->startupInfo)};
+    ::PROCESS_INFORMATION processInfo{};
     std::unique_ptr<AsyncReader> asyncReader;
-    std::unique_ptr<WindowsPipe> readPipe;
-    std::unique_ptr<WindowsPipe> writePipe;
-    ProcessInfo processInfo;
+    std::unique_ptr<::awinapi::Pipe> readPipe;
+    std::unique_ptr<::awinapi::Pipe> writePipe;
 };
 }
 #endif

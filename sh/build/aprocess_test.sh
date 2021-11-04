@@ -66,6 +66,7 @@ lib.exe /NOLOGO ^
 cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/atest\" ^
        /ifcSearchDir \"${buildRoot}/aprocess\" ^
+       /ifcSearchDir \"${buildRoot}/awinapi\" ^
        /ifcSearchDir \"${buildDir}\" ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/aprocess_test.exe\" ^
@@ -74,6 +75,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/main.cpp\" \
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
+       \"${buildRoot}/awinapi/awinapi.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
        \"${buildRoot}/aprocess/aprocess.lib\" ^
        \"${buildRoot}/aprocess/test/aprocesstest.lib\" || exit 1
