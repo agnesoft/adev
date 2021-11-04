@@ -13,6 +13,7 @@ function build_clang() {
            "${projectDir}/buffer_test.cpp" \
            "${projectDir}/handle_test.cpp" \
            "${projectDir}/last_error_message_test.cpp" \
+           "${projectDir}/pipe_test.cpp" \
            "${buildRoot}/awinapi/awinapi.obj" \
            "${buildRoot}/acommandline/acommandline.obj" \
            "${buildRoot}/atest/atest.obj" \
@@ -26,6 +27,7 @@ function build_gcc() {
          "${projectDir}/buffer_test.cpp" \
          "${projectDir}/handle_test.cpp" \
          "${projectDir}/last_error_message_test.cpp" \
+         "${projectDir}/pipe_test.cpp" \
          "${buildRoot}/awinapi/awinapi.lib" \
          "${buildRoot}/acommandline/acommandline.obj" \
          "${buildRoot}/atest/atest.lib" \
@@ -42,6 +44,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/buffer_test.cpp\" \
        \"${projectDir}/handle_test.cpp\" \
        \"${projectDir}/last_error_message_test.cpp\" \
+       \"${projectDir}/pipe_test.cpp\" \
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
