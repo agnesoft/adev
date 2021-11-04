@@ -14,7 +14,8 @@ clangCompilerFlagsCommon="-std=c++20 \
                           -fmodules \
                           -fimplicit-module-maps \
                           -fprebuilt-module-path=${buildRoot}/astl \
-                          -fmodule-map-file=projects/astl/module.modulemap"
+                          -fmodule-map-file=projects/astl/module.modulemap \
+                          -fmodule-map-file=projects/awinapi/module.modulemap"
 
 clangCompilerFlags="${clangCompilerFlagsCommon} \
                     -stdlib=libc++"
