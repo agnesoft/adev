@@ -17,17 +17,17 @@ public:
 
     [[nodiscard]] constexpr auto file_name() const noexcept -> const char *
     {
-        return file;
+        return this->file;
     }
 
-    [[nodiscard]] constexpr auto line() const noexcept -> int
+    [[nodiscard]] constexpr auto line() const noexcept -> std::uint_least32_t
     {
-        return fileLine;
+        return this->fileLine;
     }
 
 private:
-    const char *file = "unknown";
-    int fileLine = -1;
+    const char *file = "";
+    std::uint_least32_t fileLine = 0;
 };
 }
 
