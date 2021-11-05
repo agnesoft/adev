@@ -67,7 +67,9 @@ else
                         -O3"
 fi
 
-if ! is_windows; then
+if is_windows; then
+    clangCompilerLinkerFlags="${clangCompilerFlags}"
+else
     clangCompilerLinkerFlags="${clangCompilerFlags} \
                               -lpthread"
 fi

@@ -8,7 +8,7 @@ function build_clang() {
     $clang $clangCompilerLinkerFlags \
            -fprebuilt-module-path=${buildRoot}/atest \
            -fprebuilt-module-path=${buildRoot}/awinapi \
-           -o "${binDir}/awinapi_test$executableSuffix" \
+           -o "${binDir}/awinapi_test${executableExtension}" \
            "${projectDir}/main.cpp" \
            "${projectDir}/buffer_test.cpp" \
            "${projectDir}/handle_test.cpp" \

@@ -144,7 +144,7 @@
 #    pragma message("<version> not available (C++20)")
 #endif
 
-#if __has_include(<source_location>)
+#if __has_include(<source_location>) && !defined(__clang__)
 #    include <source_location> //C++20
 #else
 #    pragma message("<source_location> not available (C++20)")

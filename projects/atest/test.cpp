@@ -1,12 +1,12 @@
 #ifndef __clang__
-module atest : test;
+export module atest : test;
 import : failure;
 #endif
 
 namespace atest
 {
 //! \private
-struct Test
+export struct Test
 {
     std::string name;
     auto (*body)() -> void = nullptr;
