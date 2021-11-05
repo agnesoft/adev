@@ -17,9 +17,12 @@ clangCompilerFlagsCommon="-std=c++20 \
                           -fmodule-map-file=projects/astl/module.modulemap \
                           -fmodule-map-file=projects/awinapi/module.modulemap"
 
-clangCompilerFlags="${clangCompilerFlagsCommon} \
-                    -stdlib=libc++"
-
+if is_windows; then
+    clangCompilerFlags="${clangCompilerFlagsCommon}"
+else
+    clangCompilerFlags="${clangCompilerFlagsCommon} \
+                        -stdlib=libc++"
+fi
 
 if [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
@@ -64,8 +67,10 @@ else
                         -O3"
 fi
 
-clangCompilerLinkerFlags="${clangCompilerFlags} \
-                          -lpthread"
+if ! is_windows; then
+    clangCompilerLinkerFlags="${clangCompilerFlags} \
+                              -lpthread"
+fi
 
 if [[ "${MEMORY_SANITIZER}" == "true" ]]; then
     clangCompilerLinkerFlags="${clangCompilerLinkerFlags} \
