@@ -20,7 +20,7 @@ public:
     //! bytes in a buffer all initialized to zero.
     explicit Buffer(DWORD size) :
         buffer{static_cast<LPTSTR>(::LocalAlloc(LMEM_ZEROINIT, size))},
-        bufferSize{size / sizeof(TCHAR)}
+        bufferSize{size / static_cast<DWORD>(sizeof(TCHAR))}
     {
     }
 
@@ -43,7 +43,7 @@ public:
     //! `tchar_size() * sizeof(TCHAR)`.
     [[nodiscard]] auto byte_size() const noexcept -> DWORD
     {
-        return this->bufferSize * sizeof(TCHAR);
+        return this->bufferSize * static_cast<DWORD>(sizeof(TCHAR));
     }
 
     //! Returns mutable internal buffer size in
