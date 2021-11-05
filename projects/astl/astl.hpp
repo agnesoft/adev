@@ -4,6 +4,9 @@
 #ifdef __clang__
 #    pragma clang diagnostic push
 #    pragma clang diagnostic ignored "-Wpedantic"
+#    ifdef _WIN32
+#        include <intrin.h>
+#    endif
 #endif
 
 // Concepts
