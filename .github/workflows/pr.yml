@@ -1,194 +1,241 @@
 name: pr
 
 on:
-  pull_request:
-    branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  diff:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        shell: bash
-        run: | 
-          source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh dockerfile"; then (echo "::set-output name=diff::true") fi
-          source sh/common.sh && if is_changed "dockerfile"; then (echo "::set-output name=diff_dockerfile::true") fi
-    outputs:
-      diff: ${{ steps.diff.outputs.diff }}
-      diff_dockerfile: ${{ steps.diff.outputs.diff_dockerfile }}
+    diff:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - id: diff
+              shell: bash
+              run: |
+                  source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh dockerfile"; then (echo "::set-output name=diff::true") fi
+                  source sh/common.sh && if is_changed "dockerfile"; then (echo "::set-output name=diff_dockerfile::true") fi
+        outputs:
+            diff: ${{ steps.diff.outputs.diff }}
+            diff_dockerfile: ${{ steps.diff.outputs.diff_dockerfile }}
 
-  docker:
-    runs-on: ubuntu-latest
-    needs: diff
-    steps:
-      - if: needs.diff.outputs.diff_dockerfile == 'true'
-        uses: actions/checkout@v2
-      - if: needs.diff.outputs.diff_dockerfile == 'true'
-        run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
-      - if: needs.diff.outputs.diff_dockerfile == 'true'
-        run: docker build . -t agnesoft/adev:pr${{ github.run_number }}
-      - if: needs.diff.outputs.diff_dockerfile == 'true'
-        run: docker push agnesoft/adev:pr${{ github.run_number }}
-      - id: image
-        run: |
-          if [[ '${{ needs.diff.outputs.diff_dockerfile }}' == 'true' ]]; then
-            echo "::set-output name=image::agnesoft/adev:pr${{ github.run_number }}"
-          else
-            echo "::set-output name=image::agnesoft/adev:latest"
-          fi
-    outputs:
-      image: ${{ steps.image.outputs.image }}
+    docker:
+        runs-on: ubuntu-latest
+        needs: diff
+        steps:
+            - if: needs.diff.outputs.diff_dockerfile == 'true'
+              uses: actions/checkout@v2
+            - if: needs.diff.outputs.diff_dockerfile == 'true'
+              run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
+            - if: needs.diff.outputs.diff_dockerfile == 'true'
+              run: docker build . -t agnesoft/adev:pr${{ github.run_number }}
+            - if: needs.diff.outputs.diff_dockerfile == 'true'
+              run: docker push agnesoft/adev:pr${{ github.run_number }}
+            - id: image
+              run: |
+                  if [[ '${{ needs.diff.outputs.diff_dockerfile }}' == 'true' ]]; then
+                    echo "::set-output name=image::agnesoft/adev:pr${{ github.run_number }}"
+                  else
+                    echo "::set-output name=image::agnesoft/adev:latest"
+                  fi
+        outputs:
+            image: ${{ steps.image.outputs.image }}
 
-  address_sanitizer:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build address-sanitizer
-      - run: ./adev.sh test clang
+    address_sanitizer:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build address-sanitizer
+            - run: ./adev.sh test clang
 
-  analysis:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - run: ./adev.sh build clang
-      - run: ./adev.sh analyse diff
+    analysis_linux:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - run: ./adev.sh build clang
+            - run: ./adev.sh analyse diff
 
-  coverage:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build coverage
-      - run: ./adev.sh coverage
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-pr-${{ github.run_number }}-coverage
-          path: build/coverage/
-          if-no-files-found: error
+    analysis_windows:
+        runs-on: windows-latest
+        needs: [diff]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - shell: bash
+              run: ./adev.sh build clang
+            - shell: bash
+              run: ./adev.sh analyse diff
 
-  documentation:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build docs
-      - uses: actions/upload-artifact@v2
-        with:
-          name: adev-pr-${{ github.run_number }}-documentation
-          path: build/docs/
-          if-no-files-found: error
+    coverage_linux:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build coverage
+            - run: ./adev.sh coverage
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-coverage-linux
+                  path: build/coverage/
+                  if-no-files-found: error
 
-  formatting:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - run: ./adev.sh format check diff
+    coverage_windows:
+        runs-on: windows-latest
+        needs: [diff]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - shell: bash
+              run: ./adev.sh build coverage
+            - shell: bash
+              run: ./adev.sh coverage
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-coverage-windows
+                  path: build/coverage/
+                  if-no-files-found: error
 
-  linux_clang13_x64:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build clang
-      - run: ./adev.sh test clang 100
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-pr-${{ github.run_number }}-linux_clang13_x64
-          path: build/clang/
-          if-no-files-found: error
+    documentation:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build docs
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-documentation
+                  path: build/docs/
+                  if-no-files-found: error
 
-  linux_gcc11_x64:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: false
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build gcc
-      - run: ./adev.sh test gcc 100
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-pr-${{ github.run_number }}-linux_gcc11_x64
-          path: build/gcc/
-          if-no-files-found: error
+    formatting:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - run: ./adev.sh format check diff
 
-  memory_sanitizer:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build memory-sanitizer
-      - run: ./adev.sh test clang
+    linux_clang_x64:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build clang
+            - run: ./adev.sh test clang 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-linux_clang_x64
+                  path: build/clang/
+                  if-no-files-found: error
 
-  thread_sanitizer:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build thread-sanitizer
-      - run: ./adev.sh test clang
+    linux_gcc_x64:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: false
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build gcc
+            - run: ./adev.sh test gcc 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-linux_gcc_x64
+                  path: build/gcc/
+                  if-no-files-found: error
 
-  undefined_sanitizer:
-    runs-on: ubuntu-latest
-    container: ${{ needs.docker.outputs.image }}
-    needs: [ diff, docker ]
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build undefined-sanitizer
-      - run: ./adev.sh test clang
+    memory_sanitizer:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build memory-sanitizer
+            - run: ./adev.sh test clang
 
-  windows_msvc2019_x64:
-    runs-on: windows-latest
-    needs: diff
-    if: needs.diff.outputs.diff == 'true'
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash
-        run: ./adev.sh build msvc
-      - shell: bash
-        run: ./adev.sh test msvc 100
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-pr-${{ github.run_number }}-windows_msvc2019_x64
-          path: build/msvc/
-          if-no-files-found: error
+    thread_sanitizer:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build thread-sanitizer
+            - run: ./adev.sh test clang
 
-  cleanup:
-    runs-on: ubuntu-latest
-    needs: [ diff, docker, analysis, coverage, documentation, formatting, linux_clang13_x64, linux_gcc11_x64 ]
-    if: always() && needs.diff.outputs.diff_dockerfile == 'true'
-    steps:
-      - run: |
-          token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ secrets.DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
-          curl -X DELETE -H "Authorization: JWT ${token}" "https://hub.docker.com/v2/repositories/agnesoft/adev/tags/pr${{ github.run_number }}/"
+    undefined_sanitizer:
+        runs-on: ubuntu-latest
+        container: ${{ needs.docker.outputs.image }}
+        needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build undefined-sanitizer
+            - run: ./adev.sh test clang
+
+    windows_clang_x64:
+        runs-on: windows-latest
+        needs: diff
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - shell: bash
+              run: ./adev.sh build clang
+            - shell: bash
+              run: ./adev.sh test clang 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-windows_clang_x64
+                  path: build/clang/
+                  if-no-files-found: error
+
+    windows_msvc_x64:
+        runs-on: windows-latest
+        needs: diff
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+            - shell: bash
+              run: ./adev.sh build msvc
+            - shell: bash
+              run: ./adev.sh test msvc 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-pr-${{ github.run_number }}-windows_msvc_x64
+                  path: build/msvc/
+                  if-no-files-found: error
+
+    cleanup:
+        runs-on: ubuntu-latest
+        needs: [diff, docker, analysis_linux, coverage_linux, documentation, formatting, linux_clang_x64, linux_gcc_x64]
+        if: always() && needs.diff.outputs.diff_dockerfile == 'true'
+        steps:
+            - run: |
+                  token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ secrets.DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
+                  curl -X DELETE -H "Authorization: JWT ${token}" "https://hub.docker.com/v2/repositories/agnesoft/adev/tags/pr${{ github.run_number }}/"

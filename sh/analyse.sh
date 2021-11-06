@@ -14,7 +14,7 @@ function analyse_source() {
     local source="${1}"
     local headerFilter="${2}"
     local log
-    log=$(${clangTidy} --quiet ${headerFilter} ${source} 2>&1)
+    log=$(${clangTidy} --quiet ${libCppModuleMap} ${headerFilter} ${source} 2>&1)
 
     if (( $? != 0 )); then
         echo "${log}"
@@ -102,6 +102,10 @@ function detect_clang_tidy() {
     if ! is_available "${clangTidy}"; then
         print_error "ERROR: ${clangTidy} is not available. Please install it with './adev.sh install llvm'."
     else
+        if is_linux; then
+            libCppModuleMap="--extra-arg=-fmodule-map-file=/usr/lib/llvm-13/include/c++/v1/module.modulemap"
+        fi
+
         "${clangTidy}" --version | head -n 2 | tail -n +2
     fi
 }

@@ -32,7 +32,7 @@ public:
 
     //! Sets the option as a positional (nameless)
     //! option.
-    [[nodiscard]] auto positional() noexcept -> OptionBuilderValue
+    [[nodiscard]] auto positional() -> OptionBuilderValue
     {
         this->option().longName = ::acommandline::POSITIONAL_LONG_NAME;
         return OptionBuilderValue{this->option()};

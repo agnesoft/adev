@@ -17,7 +17,13 @@ public:
 
     ~CoutRedirect()
     {
-        std::cout.rdbuf(coutbuf);
+        try
+        {
+            std::cout.rdbuf(coutbuf);
+        }
+        catch (...)
+        {
+        }
     }
 
     [[nodiscard]] auto buffer() noexcept -> std::stringstream &

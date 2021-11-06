@@ -8,7 +8,7 @@ function build_clang() {
     $clang $clangCompilerLinkerFlags \
            -fprebuilt-module-path=${buildRoot}/atest \
            -fprebuilt-module-path=${buildRoot}/acommandline \
-           -o "${binDir}/acommandline_test$executableSuffix" \
+           -o "${binDir}/acommandline_test${executableExtension}" \
            "${projectDir}/application_name_test.cpp" \
            "${projectDir}/command_line_test.cpp" \
            "${projectDir}/command_test.cpp" \

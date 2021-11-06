@@ -8,6 +8,7 @@ using ::atest::test;
 
 static const auto S = suite("last_error_message()", [] { // NOLINT(cert-err58-cpp)
     test("no error", [] {
+        ::SetLastError(0U);
         expect(::awinapi::last_error_message()).to_be(std::string{});
     });
 
