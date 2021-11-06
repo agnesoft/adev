@@ -11,7 +11,7 @@ function analyse() {
 }
 
 function analyse_source() {
-    wait_for_free_job $(nproc)
+    wait_for_free_job 8 # $(nproc)
     do_analyse_source $1 $2 &
 }
 
@@ -96,8 +96,7 @@ function detect_clang_tidy() {
         fi
 
         "${clangTidy}" --version | head -n 2 | tail -n +2
-        local proc=$(jobs -p | wc -w)
-        echo "Job limit: ${proc}"
+        echo "Job limit: $(nproc)"
     fi
 }
 
