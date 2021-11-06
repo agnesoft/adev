@@ -7,7 +7,7 @@ buildDir="${buildRoot}/astl/test"
 function build_clang() {
     $clang $clangCompilerLinkerFlags \
            -fprebuilt-module-path=${buildRoot}/atest \
-           -o "${binDir}/astl_test$executableSuffix" \
+           -o "${binDir}/astl_test${executableExtension}" \
            "${projectDir}/main.cpp" \
            "${projectDir}/source_location_test.cpp" \
            "${buildRoot}/atest/atest.obj" \

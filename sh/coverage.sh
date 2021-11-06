@@ -1,10 +1,18 @@
 source "sh/common.sh"
 
-ignoredSources="\/test\/"
 uncoveredFunctions="3"
-uncoveredLines="26"
-uncoveredRegions="28"
-uncoveredBranches="2"
+
+if is_windows; then
+    ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
+    uncoveredLines="29"
+    uncoveredRegions="29"
+    uncoveredBranches="3"
+else
+    ignoredSources="\/test\/"
+    uncoveredLines="26"
+    uncoveredRegions="28"
+    uncoveredBranches="2"
+fi
 
 function coverage() {
     detect_llvm_cov

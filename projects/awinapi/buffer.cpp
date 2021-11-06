@@ -20,7 +20,7 @@ public:
     //! bytes in a buffer all initialized to zero.
     explicit Buffer(DWORD size) :
         buffer{static_cast<LPTSTR>(::LocalAlloc(LMEM_ZEROINIT, size))},
-        bufferSize{size / sizeof(TCHAR)}
+        bufferSize{size / static_cast<DWORD>(sizeof(TCHAR))}
     {
     }
 
@@ -43,7 +43,7 @@ public:
     //! `tchar_size() * sizeof(TCHAR)`.
     [[nodiscard]] auto byte_size() const noexcept -> DWORD
     {
-        return this->bufferSize * sizeof(TCHAR);
+        return this->bufferSize * static_cast<DWORD>(sizeof(TCHAR));
     }
 
     //! Returns mutable internal buffer size in
@@ -61,17 +61,17 @@ public:
     }
 
     //! Deleted copy assignment operator.
-    Buffer &operator=(const Buffer &other) = delete;
+    auto operator=(const Buffer &other) -> Buffer & = delete;
 
     //! Move assignment operator.
-    Buffer &operator=(Buffer &&other) noexcept
+    auto operator=(Buffer &&other) noexcept -> Buffer &
     {
         if (this != &other)
         {
             this->buffer = other.buffer;
             this->bufferSize = other.bufferSize;
             other.buffer = nullptr;
-            other.bufferSize = 0u;
+            other.bufferSize = 0U;
         }
 
         return *this;
@@ -79,7 +79,7 @@ public:
 
 private:
     LPTSTR buffer = nullptr;
-    DWORD bufferSize = 0u;
+    DWORD bufferSize = 0U;
 };
 }
 #endif

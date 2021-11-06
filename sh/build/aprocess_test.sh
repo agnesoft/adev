@@ -9,7 +9,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/atest \
            -fprebuilt-module-path=${buildRoot}/aprocess \
            -fprebuilt-module-path=${buildRoot}/awinapi \
-           -o "${binDir}/aprocess_test$executableSuffix" \
+           -o "${binDir}/aprocess_test${executableExtension}" \
            "${projectDir}/examples.cpp" \
            "${projectDir}/exit_code.cpp" \
            "${projectDir}/main.cpp" \

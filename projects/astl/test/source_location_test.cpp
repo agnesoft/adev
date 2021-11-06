@@ -12,7 +12,7 @@ static const auto S = suite("source_location", [] { // NOLINT(cert-err58-cpp)
         std::string fileName = location.file_name();
 
         expect(fileName).to_be("");
-        expect(location.line()).to_be(0u);
+        expect(location.line()).to_be(0U);
     });
 
     test("current()", [] {
@@ -20,6 +20,6 @@ static const auto S = suite("source_location", [] { // NOLINT(cert-err58-cpp)
         std::string fileName = location.file_name();
 
         expect(fileName.ends_with("source_location_test.cpp")).to_be(true);
-        expect(location.line()).to_be(19u);
+        expect(location.line()).to_be(19U);
     });
 });

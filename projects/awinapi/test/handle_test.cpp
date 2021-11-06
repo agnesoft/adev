@@ -23,7 +23,7 @@ static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
 
     test("constructed with a handle", [] {
         int value = 1;
-        ::HANDLE handle = static_cast<::HANDLE>(&value);
+        auto *handle = static_cast<::HANDLE>(&value);
         ::awinapi::Handle wrapper{handle};
         expect(wrapper.get()).to_be(handle);
         wrapper.get() = nullptr;
@@ -31,7 +31,7 @@ static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
 
     test("assign a handle", [] {
         int value = 1;
-        ::HANDLE handle = static_cast<::HANDLE>(&value);
+        auto *handle = static_cast<::HANDLE>(&value);
         ::awinapi::Handle wrapper;
         assert_(wrapper.get()).to_be(nullptr);
         wrapper.get() = handle;
@@ -41,7 +41,7 @@ static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
 
     test("move constructor", [] {
         int value = 1;
-        ::HANDLE handle = static_cast<::HANDLE>(&value);
+        auto *handle = static_cast<::HANDLE>(&value);
         ::awinapi::Handle wrapper{handle};
         ::awinapi::Handle other{std::move(wrapper)};
         expect(other.get()).to_be(handle);
@@ -50,12 +50,22 @@ static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
 
     test("move assignment", [] {
         int value = 1;
-        ::HANDLE handle = static_cast<::HANDLE>(&value);
+        auto *handle = static_cast<::HANDLE>(&value);
         ::awinapi::Handle wrapper{handle};
         ::awinapi::Handle other;
         other = std::move(wrapper);
         expect(other.get()).to_be(handle);
         other.get() = nullptr;
+    });
+
+    test("move assignment to itself", [] {
+        int value = 1;
+        auto *handle = static_cast<::HANDLE>(&value);
+        ::awinapi::Handle wrapper{handle};
+        ::awinapi::Handle &other = wrapper;
+        wrapper = std::move(other);
+        expect(wrapper.get()).to_be(handle);
+        wrapper.get() = nullptr;
     });
 });
 #endif

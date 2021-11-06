@@ -17,9 +17,12 @@ clangCompilerFlagsCommon="-std=c++20 \
                           -fmodule-map-file=projects/astl/module.modulemap \
                           -fmodule-map-file=projects/awinapi/module.modulemap"
 
-clangCompilerFlags="${clangCompilerFlagsCommon} \
-                    -stdlib=libc++"
-
+if is_windows; then
+    clangCompilerFlags="${clangCompilerFlagsCommon}"
+else
+    clangCompilerFlags="${clangCompilerFlagsCommon} \
+                        -stdlib=libc++"
+fi
 
 if [[ "${ADDRESS_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
@@ -49,7 +52,6 @@ elif [[ "${MEMORY_SANITIZER}" == "true" ]]; then
                         -fsanitize-memory-use-after-dtor \
                         -nostdinc++ \
                         -I${libCppMsanRoot}/include/c++/v1"
-
 elif [[ "${THREAD_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -g \
@@ -64,8 +66,12 @@ else
                         -O3"
 fi
 
-clangCompilerLinkerFlags="${clangCompilerFlags} \
-                          -lpthread"
+if is_windows; then
+    clangCompilerLinkerFlags="${clangCompilerFlags}"
+else
+    clangCompilerLinkerFlags="${clangCompilerFlags} \
+                              -lpthread"
+fi
 
 if [[ "${MEMORY_SANITIZER}" == "true" ]]; then
     clangCompilerLinkerFlags="${clangCompilerLinkerFlags} \

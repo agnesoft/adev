@@ -1,12 +1,12 @@
 #ifndef __clang__
-module atest : test_context;
+export module atest : test_context;
 import : test_suite;
 #endif
 
 namespace atest
 {
 //! \private
-class TestContext
+export class TestContext
 {
     struct TestContextWrapper
     {
@@ -151,7 +151,7 @@ private:
 };
 
 //! \private
-[[nodiscard]] auto test_context() -> TestContext &
+export [[nodiscard]] auto test_context() -> TestContext &
 {
     return *TestContext::current().context;
 }

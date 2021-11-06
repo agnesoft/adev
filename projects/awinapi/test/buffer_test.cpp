@@ -18,33 +18,46 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
 
     test("default constructed", [] {
         ::awinapi::Buffer buffer;
-        expect(buffer.tchar_size()).to_be(0u);
-        expect(buffer.byte_size()).to_be(0u);
+        expect(buffer.tchar_size()).to_be(0U);
+        expect(buffer.byte_size()).to_be(0U);
         expect(buffer.str()).to_be(nullptr);
     });
 
     test("constructed with size", [] {
-        ::awinapi::Buffer buffer{8u};
-        expect(buffer.tchar_size()).to_be(8u);
-        expect(buffer.byte_size()).to_be(8u);
+        constexpr DWORD bufferSize = 8U;
+        ::awinapi::Buffer buffer{bufferSize};
+        expect(buffer.tchar_size()).to_be(bufferSize);
+        expect(buffer.byte_size()).to_be(bufferSize);
         expect_fail(buffer.str()).to_be(nullptr);
     });
 
     test("move constructor", [] {
-        ::awinapi::Buffer buffer{8u};
+        constexpr DWORD bufferSize = 8U;
+        ::awinapi::Buffer buffer{bufferSize};
         ::awinapi::Buffer other{std::move(buffer)};
-        expect(other.tchar_size()).to_be(8u);
-        expect(other.byte_size()).to_be(8u);
+        expect(other.tchar_size()).to_be(bufferSize);
+        expect(other.byte_size()).to_be(bufferSize);
         expect_fail(other.str()).to_be(nullptr);
     });
 
     test("move assignment", [] {
-        ::awinapi::Buffer buffer{8u};
+        constexpr DWORD bufferSize = 8U;
+        ::awinapi::Buffer buffer{bufferSize};
         ::awinapi::Buffer other;
         other = std::move(buffer);
-        expect(other.tchar_size()).to_be(8u);
-        expect(other.byte_size()).to_be(8u);
+        expect(other.tchar_size()).to_be(bufferSize);
+        expect(other.byte_size()).to_be(bufferSize);
         expect_fail(other.str()).to_be(nullptr);
+    });
+
+    test("move assignment to itself", [] {
+        constexpr DWORD bufferSize = 8U;
+        ::awinapi::Buffer buffer{bufferSize};
+        ::awinapi::Buffer &other = buffer;
+        buffer = std::move(other);
+        expect(buffer.tchar_size()).to_be(bufferSize);
+        expect(buffer.byte_size()).to_be(bufferSize);
+        expect_fail(buffer.str()).to_be(nullptr);
     });
 });
 #endif
