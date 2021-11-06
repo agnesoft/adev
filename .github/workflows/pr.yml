@@ -72,8 +72,10 @@ jobs:
             - uses: actions/checkout@v2
               with:
                   fetch-depth: 0
-            - run: ./adev.sh build clang
-            - run: ./adev.sh analyse diff
+            - shell: bash
+              run: ./adev.sh build clang
+            - shell: bash
+              run: ./adev.sh analyse diff
 
     coverage_linux:
         runs-on: ubuntu-latest
@@ -97,8 +99,10 @@ jobs:
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build coverage
-            - run: ./adev.sh coverage
+            - shell: bash
+              run: ./adev.sh build coverage
+            - shell: bash
+              run: ./adev.sh coverage
             - if: always()
               uses: actions/upload-artifact@v2
               with:
