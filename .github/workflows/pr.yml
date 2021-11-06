@@ -52,10 +52,21 @@ jobs:
             - run: ./adev.sh build address-sanitizer
             - run: ./adev.sh test clang
 
-    analysis:
+    analysis_linux:
         runs-on: ubuntu-latest
         container: ${{ needs.docker.outputs.image }}
         needs: [diff, docker]
+        if: needs.diff.outputs.diff == 'true'
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - run: ./adev.sh build clang
+            - run: ./adev.sh analyse diff
+
+    analysis_windows:
+        runs-on: windows-latest
+        needs: [diff]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2

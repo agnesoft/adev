@@ -38,6 +38,13 @@ jobs:
             - run: ./adev.sh build clang
             - run: ./adev.sh analyse
 
+    analysis:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build clang
+            - run: ./adev.sh analyse
+
     coverage_linux:
         runs-on: ubuntu-latest
         container: agnesoft/adev

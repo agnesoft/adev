@@ -61,17 +61,17 @@ public:
     }
 
     //! Deleted copy assignment operator.
-    Buffer &operator=(const Buffer &other) = delete;
+    auto operator=(const Buffer &other) -> Buffer & = delete;
 
     //! Move assignment operator.
-    Buffer &operator=(Buffer &&other) noexcept
+    auto operator=(Buffer &&other) noexcept -> Buffer &
     {
         if (this != &other)
         {
             this->buffer = other.buffer;
             this->bufferSize = other.bufferSize;
             other.buffer = nullptr;
-            other.bufferSize = 0u;
+            other.bufferSize = 0U;
         }
 
         return *this;
@@ -79,7 +79,7 @@ public:
 
 private:
     LPTSTR buffer = nullptr;
-    DWORD bufferSize = 0u;
+    DWORD bufferSize = 0U;
 };
 }
 #endif
