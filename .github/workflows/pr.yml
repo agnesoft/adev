@@ -211,7 +211,7 @@ jobs:
               uses: actions/upload-artifact@v2
               with:
                   name: adev-pr-${{ github.run_number }}-windows_clang_x64
-                  path: build/msvc/
+                  path: build/clang/
                   if-no-files-found: error
 
     windows_msvc_x64:
