@@ -1,149 +1,177 @@
 name: adev
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - id: diff
-        run: if [[ "$(git diff origin/main~1 --name-only -- dockerfile)" != "" ]]; then (echo "::set-output name=DIFF_DOCKERFILE::true") fi
-      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
-        run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
-      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
-        run: docker build . -t agnesoft/adev:latest
-      - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
-        run: docker push agnesoft/adev:latest
+    docker:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - id: diff
+              run: if [[ "$(git diff origin/main~1 --name-only -- dockerfile)" != "" ]]; then (echo "::set-output name=DIFF_DOCKERFILE::true") fi
+            - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+              run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
+            - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+              run: docker build . -t agnesoft/adev:latest
+            - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
+              run: docker push agnesoft/adev:latest
 
-  address_sanitizer:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build address-sanitizer
-      - run: ./adev.sh test clang
+    address_sanitizer:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build address-sanitizer
+            - run: ./adev.sh test clang
 
-  analysis:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build clang
-      - run: ./adev.sh analyse
+    analysis:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build clang
+            - run: ./adev.sh analyse
 
-  coverage:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build coverage
-      - run: ./adev.sh coverage
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-${{ github.run_number }}-coverage
-          path: build/coverage/
-          if-no-files-found: error
+    coverage_linux:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build coverage
+            - run: ./adev.sh coverage
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-coverage-linux
+                  path: build/coverage/
+                  if-no-files-found: error
 
-  documentation:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build docs
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-${{ github.run_number }}-documentation
-          path: build/docs/
-          if-no-files-found: error
+    coverage_windows:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build coverage
+            - run: ./adev.sh coverage
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-coverage-windows
+                  path: build/coverage/
+                  if-no-files-found: error
 
-  formatting:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh format check
+    documentation:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build docs
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-documentation
+                  path: build/docs/
+                  if-no-files-found: error
 
-  linux_clang12_x64:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build clang
-      - run: ./adev.sh test clang 100
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-${{ github.run_number }}-linux_clang12_x64
-          path: build/clang/
-          if-no-files-found: error
+    formatting:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh format check
 
-  linux_gcc11_x64:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    if: false
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build gcc
-      - run: ./adev.sh test gcc 100
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-${{ github.run_number }}-linux_gcc11_x64
-          path: build/gcc/
-          if-no-files-found: error
+    linux_clang_x64:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build clang
+            - run: ./adev.sh test clang 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-linux_clang_x64
+                  path: build/clang/
+                  if-no-files-found: error
 
-  memory_sanitizer:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build memory-sanitizer
-      - run: ./adev.sh test clang
+    linux_gcc_x64:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        if: false
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build gcc
+            - run: ./adev.sh test gcc 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-linux_gcc_x64
+                  path: build/gcc/
+                  if-no-files-found: error
 
-  thread_sanitizer:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build thread-sanitizer
-      - run: ./adev.sh test clang
+    memory_sanitizer:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build memory-sanitizer
+            - run: ./adev.sh test clang
 
-  undefined_sanitizer:
-    runs-on: ubuntu-latest
-    container: agnesoft/adev
-    needs: docker
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./adev.sh build undefined-sanitizer
-      - run: ./adev.sh test clang
+    thread_sanitizer:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build thread-sanitizer
+            - run: ./adev.sh test clang
 
-  windows_msvc2019_x64:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash
-        run: ./adev.sh build msvc
-      - shell: bash
-        run: ./adev.sh test msvc 100
-      - if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: adev-${{ github.run_number }}-windows_msvc2019_x64
-          path: build/msvc/
-          if-no-files-found: error
+    undefined_sanitizer:
+        runs-on: ubuntu-latest
+        container: agnesoft/adev
+        needs: docker
+        steps:
+            - uses: actions/checkout@v2
+            - run: ./adev.sh build undefined-sanitizer
+            - run: ./adev.sh test clang
+
+    windows_clang_x64:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            - shell: bash
+              run: ./adev.sh build clang
+            - shell: bash
+              run: ./adev.sh test clang 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-windows_clang_x64
+                  path: build/clang/
+                  if-no-files-found: error
+
+    windows_msvc_x64:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            - shell: bash
+              run: ./adev.sh build msvc
+            - shell: bash
+              run: ./adev.sh test msvc 100
+            - if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: adev-${{ github.run_number }}-windows_msvc_x64
+                  path: build/msvc/
+                  if-no-files-found: error
