@@ -46,5 +46,14 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
         expect(other.byte_size()).to_be(8u);
         expect_fail(other.str()).to_be(nullptr);
     });
+
+    test("move assignment to itself", [] {
+        ::awinapi::Buffer buffer{8u};
+        ::awinapi::Buffer &other = buffer;
+        buffer = std::move(other);
+        expect(buffer.tchar_size()).to_be(8u);
+        expect(buffer.byte_size()).to_be(8u);
+        expect_fail(buffer.str()).to_be(nullptr);
+    });
 });
 #endif

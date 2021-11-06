@@ -57,5 +57,15 @@ static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
         expect(other.get()).to_be(handle);
         other.get() = nullptr;
     });
+
+    test("move assignment to itself", [] {
+        int value = 1;
+        ::HANDLE handle = static_cast<::HANDLE>(&value);
+        ::awinapi::Handle wrapper{handle};
+        ::awinapi::Handle &other = wrapper;
+        wrapper = std::move(other);
+        expect(wrapper.get()).to_be(handle);
+        wrapper.get() = nullptr;
+    });
 });
 #endif

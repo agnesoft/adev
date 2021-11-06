@@ -52,7 +52,6 @@ elif [[ "${MEMORY_SANITIZER}" == "true" ]]; then
                         -fsanitize-memory-use-after-dtor \
                         -nostdinc++ \
                         -I${libCppMsanRoot}/include/c++/v1"
-
 elif [[ "${THREAD_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -g \
