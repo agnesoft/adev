@@ -75,7 +75,7 @@ jobs:
             - shell: bash
               run: ./adev.sh build clang
             - shell: bash
-              run: ./adev.sh analyse diff
+              run: ./adev.sh analyse
 
     coverage_linux:
         runs-on: ubuntu-latest
