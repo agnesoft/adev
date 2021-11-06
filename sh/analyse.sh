@@ -11,19 +11,8 @@ function analyse() {
 }
 
 function analyse_source() {
-    local source="${1}"
-    local headerFilter="${2}"
-    local log
-    log=$(${clangTidy} --quiet ${libCppModuleMap} ${headerFilter} ${source} 2>&1)
-
-    if (( $? != 0 )); then
-        echo "${log}"
-        print_error "[ FAILED ] ${source}"
-        exit 1
-    else
-        print_ok "[ PASSED ] ${source}"
-        exit 0
-    fi
+    wait_for_free_job $(nproc)
+    do_analyse_source $1 $2 &
 }
 
 function analyse_sources() {
@@ -32,7 +21,7 @@ function analyse_sources() {
 
     for source in $path/*.cpp; do
         if should_analyse "${diff}" "${source}"; then
-            analyse_source "${source}" &
+            analyse_source "${source}"
         fi
     done
 }
@@ -66,7 +55,7 @@ function analyse_project_module_source() {
     sources="${sources[@]}"
 
     if should_analyse "${diff}" "${sources}"; then
-        analyse_source "${source}" "-header-filter=.*" &
+        analyse_source "${source}" "-header-filter=.*"
     fi
 }
 
@@ -76,7 +65,7 @@ function analyse_project_main() {
     local source="projects/${project}/main.cpp"
 
     if [[ -f "${source}" ]] && should_analyse "${diff}" "${source}"; then
-        analyse_source "${source}" &
+        analyse_source "${source}"
     fi
 }
 
@@ -107,6 +96,24 @@ function detect_clang_tidy() {
         fi
 
         "${clangTidy}" --version | head -n 2 | tail -n +2
+        local proc=$(jobs -p | wc -w)
+        echo "Job limit: ${proc}"
+    fi
+}
+
+function do_analyse_source() {
+    local source="${1}"
+    local headerFilter="${2}"
+    local log
+    log=$(${clangTidy} --quiet ${libCppModuleMap} ${headerFilter} ${source} 2>&1)
+
+    if (( $? != 0 )); then
+        echo "${log}"
+        print_error "[ FAILED ] ${source}"
+        exit 1
+    else
+        print_ok "[ PASSED ] ${source}"
+        exit 0
     fi
 }
 
@@ -115,6 +122,10 @@ function should_analyse() {
     local sources="${2}"
 
     ( ! [[ "${diff}" == "diff" ]] || is_changed "${sources}" )
+}
+
+function wait_for_free_job() {
+    while test $(jobs -p | wc -w) -ge "$1"; do wait -n; done
 }
 
 detect_clang_tidy
