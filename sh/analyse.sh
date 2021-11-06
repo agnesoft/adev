@@ -96,7 +96,6 @@ function detect_clang_tidy() {
         fi
 
         "${clangTidy}" --version | head -n 2 | tail -n +2
-        echo "Job limit: $(nproc)"
     fi
 }
 
