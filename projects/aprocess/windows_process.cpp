@@ -108,7 +108,7 @@ private:
         return false;
     }
 
-    [[nodiscard]] auto do_write(const std::string &message) -> void
+    auto do_write(const std::string &message) -> void
     {
         DWORD bytesWritten = 0;
 

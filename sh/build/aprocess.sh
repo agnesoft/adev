@@ -6,8 +6,16 @@ buildDir="${buildRoot}/${project}"
 
 function build_clang() {
 
-    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/aprocess.pcm" -c "${projectDir}/aprocess.cpp"
-    $clang $clangCompilerFlags -o "${buildDir}/aprocess.obj" -c "${projectDir}/aprocess.cpp"
+    $clang $clangCompilerFlags \
+           -Xclang -emit-module-interface \
+           -fprebuilt-module-path=${buildRoot}/awinapi \
+           -o "${buildDir}/aprocess.pcm" \
+           -c "${projectDir}/aprocess.cpp"
+    
+    $clang $clangCompilerFlags \
+           -fprebuilt-module-path=${buildRoot}/awinapi \
+           -o "${buildDir}/aprocess.obj" \
+           -c "${projectDir}/aprocess.cpp"
 }
 
 function build_gcc() {
