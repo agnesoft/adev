@@ -11,7 +11,8 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/awinapi \
            -o "${binDir}/aprocess_test${executableExtension}" \
            "${projectDir}/examples.cpp" \
-           "${projectDir}/exit_code.cpp" \
+           "${projectDir}/exit_code_test.cpp" \
+           "${projectDir}/output_test.cpp" \
            "${projectDir}/main.cpp" \
            "${buildRoot}/aprocess/aprocess.obj" \
            "${buildRoot}/acommandline/acommandline.obj" \
@@ -24,7 +25,8 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/aprocess_test" \
          "${projectDir}/examples.cpp" \
-         "${projectDir}/exit_code.cpp" \
+         "${projectDir}/exit_code_test.cpp" \
+         "${projectDir}/output_test.cpp" \
          "${projectDir}/main.cpp" \
          "${buildRoot}/aprocess/aprocess.lib" \
          "${buildRoot}/acommandline/acommandline.obj" \
@@ -42,7 +44,9 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/aprocess_test.exe\" ^
        \"${projectDir}/examples.cpp\" ^
-       \"${projectDir}/exit_code.cpp\" ^
+       \"${projectDir}/exit_code_test.cpp\" ^
+       \"${projectDir}/output_test.cpp\" ^
+       \"${projectDir}/input_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^

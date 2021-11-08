@@ -65,7 +65,7 @@ public:
 
     auto write(const std::string &message) -> void
     {
-        if (this->writePipe == nullptr)
+        if (this->writePipe->write_handle() == nullptr)
         {
             throw std::logic_error{"The process does not have stdin pipe open."};
         }
@@ -125,25 +125,34 @@ private:
 
     auto setup_write_pipe(const ProcessSetup &setup) -> void
     {
-        if (setup.write)
+        this->writePipe = std::make_unique<::awinapi::Pipe>();
+        this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
+        this->startupInfo.hStdInput = this->writePipe->read_handle();
+        ::SetHandleInformation(this->writePipe->write_handle(), HANDLE_FLAG_INHERIT, 0);
+
+        if (!setup.write)
         {
-            this->writePipe = std::make_unique<::awinapi::Pipe>();
-            this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
-            this->startupInfo.hStdInput = this->writePipe->read_handle();
-            ::SetHandleInformation(this->writePipe->write_handle(), HANDLE_FLAG_INHERIT, 0);
+            ::CloseHandle(this->writePipe->write_handle());
+            this->writePipe->write_handle() = nullptr;
         }
     }
 
     auto setup_read_pipe(const ProcessSetup &setup, Process &process) -> void
     {
-        if (setup.read != nullptr)
+        this->readPipe = std::make_unique<::awinapi::Pipe>();
+        this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
+        this->startupInfo.hStdError = this->readPipe->write_handle();
+        this->startupInfo.hStdOutput = this->readPipe->write_handle();
+        ::SetHandleInformation(this->readPipe->read_handle(), HANDLE_FLAG_INHERIT, 0);
+
+        if (setup.read)
         {
-            this->readPipe = std::make_unique<::awinapi::Pipe>();
-            this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
-            this->startupInfo.hStdError = this->readPipe->write_handle();
-            this->startupInfo.hStdOutput = this->readPipe->write_handle();
-            ::SetHandleInformation(this->readPipe->read_handle(), HANDLE_FLAG_INHERIT, 0);
             this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), setup, process);
+        }
+        else
+        {
+            ::CloseHandle(this->readPipe->read_handle());
+            this->readPipe->read_handle() = nullptr;
         }
     }
 

@@ -26,7 +26,7 @@ export struct ProcessSetup
     //! Callback invoked on process output. When
     //! not specified the stdout/stderr pipe will
     //! not be opened.
-    std::function<auto(std::string_view output, Process &)->void> read;
+    std::function<auto(std::string_view output, Process &)->void> read{};
 
     //! Whether to open stdin pipe to write to the
     //! process.
