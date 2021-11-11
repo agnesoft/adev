@@ -15,6 +15,8 @@ function build_clang() {
            "${projectDir}/output_test.cpp" \
            "${projectDir}/input_test.cpp" \
            "${projectDir}/wait_test.cpp" \
+           "${projectDir}/terminate_test.cpp" \
+           "${projectDir}/kill_test.cpp" \
            "${projectDir}/main.cpp" \
            "${buildRoot}/aprocess/aprocess.obj" \
            "${buildRoot}/acommandline/acommandline.obj" \
@@ -32,6 +34,8 @@ function build_gcc() {
          "${projectDir}/input_test.cpp" \
          "${projectDir}/wait_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/terminate_test.cpp" \
+         "${projectDir}/kill_test.cpp" \
          "${buildRoot}/aprocess/aprocess.lib" \
          "${buildRoot}/acommandline/acommandline.obj" \
          "${buildRoot}/atest/atest.lib" \
@@ -53,6 +57,8 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/input_test.cpp\" ^
        \"${projectDir}/wait_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/terminate_test.cpp\" ^
+       \"${projectDir}/kill_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/awinapi/awinapi.lib\" ^

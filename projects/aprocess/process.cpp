@@ -97,7 +97,17 @@ public:
     //! Sends `SIGKILL` to the process.
     auto kill() -> void
     {
-        static_cast<void>(this->processSetup);
+        this->process.kill();
+    }
+
+    //! Returns the OS process identifier (PID).
+    //!
+    //! \warning The PID is valid only during the
+    //! process runtime and it can be reused by
+    //! another process once the original stops.
+    [[nodiscard]] auto pid() const noexcept -> std::int64_t
+    {
+        return this->process.pid();
     }
 
     //! Returns the process setup that was used
@@ -112,7 +122,7 @@ public:
     //! process to gracefully exit.
     auto terminate() -> void
     {
-        static_cast<void>(this->processSetup);
+        this->process.terminate();
     }
 
     //! Waits for `timeout` for the process to

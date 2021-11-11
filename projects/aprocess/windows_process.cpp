@@ -24,7 +24,7 @@ public:
                             nullptr,
                             setup.workingDirectory.c_str(),
                             &this->startupInfo,
-                            &this->processInfo)
+                            &this->processInformation)
             == FALSE)
         {
             throw std::runtime_error{"Failed to create process:\n  " + ::awinapi::last_error_message()};
@@ -34,13 +34,16 @@ public:
     WindowsProcess(const WindowsProcess &other) = delete;
     WindowsProcess(WindowsProcess &&other) noexcept = default;
 
-    ~WindowsProcess() = default;
+    ~WindowsProcess()
+    {
+        this->kill();
+    }
 
     [[nodiscard]] auto exit_code() const -> int
     {
         int exitCode = 0;
 
-        if (::GetExitCodeProcess(this->processInfo.hProcess,
+        if (::GetExitCodeProcess(this->processInformation.hProcess,
                                  static_cast<LPDWORD>(static_cast<void *>(&exitCode)))
             == FALSE)
         {
@@ -53,6 +56,21 @@ public:
     [[nodiscard]] auto is_running() const -> bool
     {
         return !this->do_wait(0);
+    }
+
+    auto kill() -> void
+    {
+        ::TerminateProcess(this->processInformation.hProcess, 1u);
+    }
+
+    [[nodiscard]] auto pid() const noexcept -> std::int64_t
+    {
+        return static_cast<std::int64_t>(this->processInformation.dwProcessId);
+    }
+
+    auto terminate() -> void
+    {
+        ::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
     }
 
     auto wait(std::chrono::milliseconds timeout) -> void
@@ -93,7 +111,7 @@ private:
 
     auto do_wait(DWORD milliseconds) const -> bool
     {
-        switch (::WaitForSingleObject(this->processInfo.hProcess, milliseconds))
+        switch (::WaitForSingleObject(this->processInformation.hProcess, milliseconds))
         {
         case WAIT_OBJECT_0:
             return true;
@@ -157,7 +175,7 @@ private:
     }
 
     ::STARTUPINFO startupInfo{.cb = sizeof(this->startupInfo)};
-    ::PROCESS_INFORMATION processInfo{};
+    ::PROCESS_INFORMATION processInformation{};
     std::unique_ptr<AsyncReader> asyncReader;
     std::unique_ptr<::awinapi::Pipe> readPipe;
     std::unique_ptr<::awinapi::Pipe> writePipe;

@@ -9,14 +9,14 @@ using ::atest::test;
 constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
 
 static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
-    test("immediate job", [] {
+    test("immediate process", [] {
         aprocess::Process process{{.command = "aprocesstestapp"}};
         expect(process.is_running()).to_be(true);
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         expect(process.is_running()).to_be(false);
     });
 
-    test("short job", [] {
+    test("short running process", [] {
         aprocess::Process process{{.command = "aprocesstestapp",
                                    .arguments = {"--echo=Hi", "--echo-delay=10"}}};
         expect(process.is_running()).to_be(true);
@@ -24,7 +24,7 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
         expect(process.is_running()).to_be(false);
     });
 
-    test("long job", [] {
+    test("long running process", [] {
         aprocess::Process process{{.command = "aprocesstestapp",
                                    .arguments = {"--echo=Hi", "--echo-delay=100"}}};
         expect(process.is_running()).to_be(true);
@@ -39,7 +39,7 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
         expect(process.is_running()).to_be(false);
     });
 
-    test("stopped job", [] {
+    test("stopped process", [] {
         aprocess::Process process{{.command = "aprocesstestapp"}};
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         assert_(process.is_running()).to_be(false);
