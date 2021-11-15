@@ -20,7 +20,7 @@ public:
                             nullptr,
                             nullptr,
                             TRUE,
-                            0,
+                            CREATE_NEW_PROCESS_GROUP,
                             nullptr,
                             setup.workingDirectory.c_str(),
                             &this->startupInfo,
@@ -37,6 +37,8 @@ public:
     ~WindowsProcess()
     {
         this->kill();
+        ::CloseHandle(this->processInformation.hProcess);
+        ::CloseHandle(this->processInformation.hThread);
     }
 
     [[nodiscard]] auto exit_code() const -> int
@@ -70,7 +72,8 @@ public:
 
     auto terminate() -> void
     {
-        ::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
+        //::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
+        ::GenerateConsoleCtrlEvent(CTRL_C_EVENT, this->processInformation.dwProcessId);
     }
 
     auto wait(std::chrono::milliseconds timeout) -> void

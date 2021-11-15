@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
+constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{100};
 
 static const auto S = suite("exit code", [] { // NOLINT(cert-err58-cpp)
     test("0", [] {

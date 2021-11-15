@@ -6,7 +6,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
+constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{100};
 
 static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
     test("empty input", [] {
