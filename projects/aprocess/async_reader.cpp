@@ -10,7 +10,7 @@ namespace aprocess
 class AsyncReader
 {
 public:
-    AsyncReader(::HANDLE &readHandle, const ProcessSetup &setup, Process &process) :
+    AsyncReader(::HANDLE &readHandle, const ProcessSetup &setup) :
         thread{[&] {
             constexpr std::size_t BUFFER_SIZE = 65536;
             std::string buffer(BUFFER_SIZE, char{});
@@ -23,7 +23,7 @@ public:
                               nullptr)
                    != FALSE)
             {
-                setup.read(std::string_view{buffer.data(), static_cast<std::size_t>(bytesRead)}, process);
+                setup.read(std::string_view{buffer.data(), static_cast<std::size_t>(bytesRead)});
             }
         }}
     {

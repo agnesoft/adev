@@ -10,27 +10,35 @@ constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
 
 static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
     test("immediate process", [] {
-        aprocess::Process process{{.command = "aprocesstestapp"}};
+        ::aprocess::Process process = ::aprocess::process()
+                                          .command("aprocesstestapp");
+
         expect(process.is_running()).to_be(true);
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         expect(process.is_running()).to_be(false);
     });
 
     test("short running process", [] {
-        aprocess::Process process{{.command = "aprocesstestapp",
-                                   .arguments = {"--echo=Hi", "--echo-delay=10"}}};
+        ::aprocess::Process process = ::aprocess::process()
+                                          .command("aprocesstestapp")
+                                          .arg("--echo=Hi")
+                                          .arg("--echo-delay=10");
+
         expect(process.is_running()).to_be(true);
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         expect(process.is_running()).to_be(false);
     });
 
     test("long running process", [] {
-        aprocess::Process process{{.command = "aprocesstestapp",
-                                   .arguments = {"--echo=Hi", "--echo-delay=100"}}};
+        ::aprocess::Process process = ::aprocess::process()
+                                          .command("aprocesstestapp")
+                                          .arg("--echo=Hi")
+                                          .arg("--echo-delay=10");
+
         expect(process.is_running()).to_be(true);
 
         expect([&] {
-            process.wait(std::chrono::milliseconds{10});
+            process.wait(std::chrono::milliseconds{1});
         })
             .to_throw<std::runtime_error>("Wait for process timed out.");
 
@@ -40,7 +48,9 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("stopped process", [] {
-        aprocess::Process process{{.command = "aprocesstestapp"}};
+        ::aprocess::Process process = ::aprocess::process()
+                                          .command("aprocesstestapp");
+
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         assert_(process.is_running()).to_be(false);
         process.wait(std::chrono::milliseconds{10});

@@ -5,8 +5,6 @@ export import : environment_variable;
 
 namespace aprocess
 {
-export class Process;
-
 //! ProcessSetup
 export struct ProcessSetup
 {
@@ -26,10 +24,14 @@ export struct ProcessSetup
     //! Callback invoked on process output. When
     //! not specified the stdout/stderr pipe will
     //! not be opened.
-    std::function<auto(std::string_view output, Process &)->void> read{};
+    std::function<auto(std::string_view output)->void> read{};
 
     //! Whether to open stdin pipe to write to the
     //! process.
     bool write = false;
+
+    bool gui = false;
+
+    bool detached = false;
 };
 }

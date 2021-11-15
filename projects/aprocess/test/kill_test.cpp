@@ -23,12 +23,14 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{50};
+constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
 
 static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
     test("running process", [] {
-        aprocess::Process process{{.command = "aprocesstestapp",
-                                   .arguments = {"--echo-input"}}};
+        ::aprocess::Process process = ::aprocess::process()
+                                          .command("aprocesstestapp")
+                                          .arg("--echo-input");
+
         assert_(process.is_running()).to_be(true);
         process.kill();
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
@@ -36,7 +38,9 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("stopped process", [] {
-        aprocess::Process process{{.command = "aprocesstestapp"}};
+        ::aprocess::Process process = ::aprocess::process()
+                                          .command("aprocesstestapp");
+
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         expect(process.is_running()).to_be(false);
         process.kill();
@@ -46,8 +50,10 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
         std::int64_t pid = 0;
 
         {
-            aprocess::Process process{{.command = "aprocesstestapp",
-                                       .arguments = {"--echo-input", "--echo-input-timeout=10000"}}};
+            ::aprocess::Process process = ::aprocess::process()
+                                              .command("aprocesstestapp")
+                                              .arguments({"--echo-input", "--echo-input-timeout=10000"});
+
             expect(process.is_running()).to_be(true);
             pid = process.pid();
         }

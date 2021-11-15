@@ -56,13 +56,127 @@ namespace aprocess
 export class Process
 {
 public:
-    //! Starts the process defined by `setup`.
-    explicit Process(ProcessSetup setup) :
-        processSetup{std::move(setup)},
-        process{this->processSetup, *this}
+    //! The Builder is a wrapper type for process
+    //! builder functions. It cannot be
+    //! constructed directly but rather via
+    //! ::aprocess::process() function that starts
+    //! the builder process.
+    class Builder
     {
-    }
+    public:
+        //! Adds `args` to the process arguments.
+        [[nodiscard]] auto arguments(const std::vector<std::string> &args) -> Builder &
+        {
+            this->setup.arguments.insert(this->setup.arguments.end(), args.begin(), args.end());
+            return *this;
+        }
 
+        //! Adds single `argument to the process
+        //! arguments.
+        [[nodiscard]] auto arg(std::string argument) -> Builder &
+        {
+            this->setup.arguments.emplace_back(std::move(argument));
+            return *this;
+        }
+
+        //! Sets the process command to `cmd` that
+        //! is the path of the executable to run.
+        [[nodiscard]] auto command(std::string cmd) -> Builder &
+        {
+            this->setup.command = std::move(cmd);
+            return *this;
+        }
+
+        //! Starts the process detached meaning it
+        //! can outlive its Process object.
+        [[nodiscard]] auto detached() -> Builder &
+        {
+            this->setup.detached = true;
+            return *this;
+        }
+
+        //! Adds `variables` to the process
+        //! environment variables.
+        [[nodiscard]] auto environment(const std::vector<EnvironmentVariable> &variables) -> Builder &
+        {
+            this->setup.environment.insert(this->setup.environment.end(), variables.begin(), variables.end());
+            return *this;
+        }
+
+        //! Adds `variable` to the process
+        //! environment variables.
+        [[nodiscard]] auto env(EnvironmentVariable variable) -> Builder &
+        {
+            this->setup.environment.emplace_back(std::move(variable));
+            return *this;
+        }
+
+        //! Sets the process to use GUI
+        //! application specific behaviors.
+        //!
+        //! On Windows this will set the right
+        //! flags for CreateProcess and send
+        //! WM_CLOSE on call to
+        //! Process::terminate().
+        [[nodiscard]] auto gui() -> Builder &
+        {
+            this->setup.gui = true;
+            return *this;
+        }
+
+        //! Sets the `callback` that is invoked on
+        //! any output of the process. If the
+        //! callback is not set the process will
+        //! not open the read pipe of the process.
+        [[nodiscard]] auto read(std::function<auto(std::string_view output)->void> callback) -> Builder &
+        {
+            this->setup.read = callback;
+            return *this;
+        }
+
+        //! Waits for `timeout` for the process to
+        //! finish. Throws an exception if the
+        //! wait times out. Returns the stopped
+        //! Process object if it succeeds.
+        auto wait(std::chrono::milliseconds timeout) -> Process
+        {
+            Process proc{std::move(this->setup)};
+            proc.wait(timeout);
+            return proc;
+        }
+
+        //! Sets working directory of the process
+        //! to `directory`.
+        [[nodiscard]] auto working_directory(std::string directory) -> Builder &
+        {
+            this->setup.workingDirectory = std::move(directory);
+            return *this;
+        }
+
+        //! Enables writing to the process. If
+        //! this is not enabled the process will
+        //! not open the write pipe.
+        [[nodiscard]] auto write() -> Builder &
+        {
+            this->setup.write = true;
+            return *this;
+        }
+
+        operator Process()
+        {
+            return Process{std::move(this->setup)};
+        }
+
+    private:
+        Builder() = default;
+
+        friend class Process;
+        friend auto process() -> Process::Builder;
+
+        ProcessSetup setup;
+    };
+
+    //! Deleted copy constructor.
     Process(const Process &other) = delete;
 
     //! Move constructor.
@@ -72,13 +186,6 @@ public:
     //! process is still running it is first
     //! killed by calling kill().
     ~Process() = default;
-
-    //! Detaches from the process so it can
-    //! outlive the parent process.
-    auto detach() -> void
-    {
-        static_cast<void>(this->processSetup);
-    }
 
     //! Returns the exit code of the process when
     //! it finishes otherwise returns `0`.
@@ -139,10 +246,18 @@ public:
         this->process.write(message);
     }
 
+    //! Deleted copy assignment.
     auto operator=(const Process &other) -> Process & = delete;
 
     //! Move assignment.
     auto operator=(Process &&other) noexcept -> Process & = default;
+
+private:
+    explicit Process(ProcessSetup setup) :
+        processSetup{std::move(setup)},
+        process{this->processSetup}
+    {
+    }
 
 private:
     ProcessSetup processSetup;
@@ -152,4 +267,10 @@ private:
 
 #endif
 };
+
+//! Starts the process composition.
+export [[nodiscard]] auto process() -> Process::Builder
+{
+    return Process::Builder{};
+}
 }

@@ -10,10 +10,14 @@ static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
         // clang-format off
 //! [[synchronous process]]
 std::string output;
-::aprocess::Process process{{.command = "aprocesstestapp",
-                             .arguments = {"--echo", "\"Hello, World!\""},
-                             .read = [&](std::string_view message, [[maybe_unused]] ::aprocess::Process &process) { output += message; } }};
-process.wait(std::chrono::milliseconds{1000});
+constexpr std::chrono::milliseconds timeout{1000};
+::aprocess::process()
+    .command("aprocesstestapp")
+    .arg("--echo")
+    .arg("\"Hello, World!\"")
+    .read([&](std::string_view message) { output += message; })
+    .wait(timeout);
+//output == "Hello, World!"
 //! [[synchronous process]]
         // clang-format on
 
@@ -24,10 +28,13 @@ process.wait(std::chrono::milliseconds{1000});
         // clang-format off
 //! [[real time output]]
 std::vector<std::string> output;
-::aprocess::Process process{{.command = "aprocesstestapp",
-                             .arguments = {"--echo-delay", "10", "--echo", "\"Hello\"", "--echo", "\"World\"", "--echo", "\"!\""},
-                             .read = [&](std::string_view message, [[maybe_unused]] ::aprocess::Process &process) { output.emplace_back(std::string{message}); } }};
-process.wait(std::chrono::milliseconds{1000});
+constexpr std::chrono::milliseconds timeout{1000};
+::aprocess::process()
+    .command("aprocesstestapp")
+    .arguments({"--echo-delay", "10", "--echo", "\"Hello\"", "--echo", "\"World\"", "--echo", "\"!\""})
+    .read([&](std::string_view message) { output.emplace_back(std::string{message}); })
+    .wait(timeout);
+//output == {"Hello", "World", "!"}
 //! [[real time output]]
         // clang-format on
 
@@ -36,26 +43,26 @@ process.wait(std::chrono::milliseconds{1000});
 
     test("input", [] {
         // clang-format off
-//! [[input]]
-std::vector<std::string> input{"exit", "!", "World"};
-std::vector<std::string> output;
-::aprocess::Process process{{.command = "aprocesstestapp",
-                             .arguments = {"--echo-input", "--echo=Hello"},
-                             .read = [&](std::string_view message, [[maybe_unused]] ::aprocess::Process &process) {
-                                 output.emplace_back(std::string{message});
+        //! [[input]]
+std::string output;
 
-                                 if (!input.empty())
-                                 {
-                                     process.write(input.back());
-                                     input.pop_back();
-                                 }
-                             },
-                             .write = true }};
+::aprocess::Process process = ::aprocess::process()
+                                    .command("aprocesstestapp")
+                                    .arg("--echo-input")
+                                    .read([&](std::string_view message) { output += message; })
+                                    .write();
+
+process.write("Hello\n");
+process.write(",\n");
+process.write("World\n");
+process.write("!\n");
+process.write("exit\n");
 
 process.wait(std::chrono::milliseconds{1000});
-//! [[input]]
+// output == "Hello, World!"
+        //! [[input]]
         // clang-format on
 
-        expect(output).to_be(std::vector<std::string>{"Hello", "World", "!"});
+        expect(output).to_be("Hello,World!");
     });
 });

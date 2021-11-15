@@ -9,9 +9,9 @@ namespace aprocess
 class WindowsProcess
 {
 public:
-    explicit WindowsProcess(const ProcessSetup &setup, Process &process)
+    explicit WindowsProcess(const ProcessSetup &setup)
     {
-        this->setup_read_pipe(setup, process);
+        this->setup_read_pipe(setup);
         this->setup_write_pipe(setup);
         std::string commandLine = WindowsProcess::create_command_line(setup.command, setup.arguments);
 
@@ -92,7 +92,6 @@ public:
         }
 
         this->do_write(message);
-        this->do_write("\n");
     }
 
     WindowsProcess &operator=(const WindowsProcess &other) = delete;
@@ -158,7 +157,7 @@ private:
         }
     }
 
-    auto setup_read_pipe(const ProcessSetup &setup, Process &process) -> void
+    auto setup_read_pipe(const ProcessSetup &setup) -> void
     {
         this->readPipe = std::make_unique<::awinapi::Pipe>();
         this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
@@ -168,7 +167,7 @@ private:
 
         if (setup.read)
         {
-            this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), setup, process);
+            this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), setup);
         }
         else
         {
