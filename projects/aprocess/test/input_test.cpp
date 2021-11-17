@@ -12,7 +12,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
     test("empty input", [] {
         std::string output;
 
-        ::aprocess::Process process = ::aprocess::process()
+        ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arg("--echo-input")
                                           .read([&](std::string_view message) { output += message; })
@@ -28,7 +28,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
     test("Hello, World!", [] {
         std::string output;
 
-        ::aprocess::Process process = ::aprocess::process()
+        ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arg("--echo-input")
                                           .read([&](std::string_view message) { output += message; })
@@ -47,7 +47,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
     test("large input", [] {
         std::string output;
 
-        ::aprocess::Process process = ::aprocess::process()
+        ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arg("--echo-input")
                                           .read([&](std::string_view message) { output += message; })
@@ -66,7 +66,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("write when input is disabled", [] {
-        ::aprocess::Process process = ::aprocess::process()
+        ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arguments({"--echo-delay", "10", "--echo", "\"Hello\"", "--echo", "\"World\"", "--echo", "\"!\""});
 
@@ -79,7 +79,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
     test("write to stopped process", [] {
         std::string output;
 
-        ::aprocess::Process process = ::aprocess::process()
+        ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .read([&](std::string_view message) { output += message; })
                                           .write()

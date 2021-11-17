@@ -7,8 +7,9 @@ struct Inputs
     std::vector<std::string> echo;
     std::vector<std::string> largeEcho;
     std::int64_t echoDelay = 0;
-    std::int64_t largeEchoSize = 0;
     std::int64_t echoInputTimeout = 0;
+    std::int64_t largeEchoSize = 0;
+    std::int64_t wait = 0;
     bool echoInput = false;
 };
 
@@ -57,6 +58,11 @@ auto input(const Inputs &inputs) -> void
     }
 }
 
+auto wait(const Inputs &inputs) -> void
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds{inputs.wait});
+}
+
 auto main(int argc, char *argv[]) -> int
 {
     Inputs inputs;
@@ -71,12 +77,15 @@ auto main(int argc, char *argv[]) -> int
         parser.option().long_name("echo-input-timeout").default_value(std::int64_t{100}).description("Print the values received on stanard input for <value> milliseconds").bind_to(&inputs.echoInputTimeout);
         parser.option().long_name("echo-large").description("A character to repeat in a large echo").bind_to(&inputs.largeEcho);
         parser.option().long_name("echo-large-size").description("Size of the large echo").bind_to(&inputs.largeEchoSize);
+        parser.option().long_name("echo-large-size").description("Size of the large echo").bind_to(&inputs.largeEchoSize);
+        parser.option().long_name("wait").default_value(std::int64_t{0}).description("Waits for <value> milliseconds").bind_to(&inputs.wait);
 
         if (parser.parse(argc, argv))
         {
             echo(inputs);
             large_echo(inputs);
             input(inputs);
+            wait(inputs);
             return static_cast<int>(inputs.exitCode);
         }
 

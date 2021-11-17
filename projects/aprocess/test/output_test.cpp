@@ -12,7 +12,7 @@ static const auto S = suite("output", [] { // NOLINT(cert-err58-cpp)
     test("no output", [] {
         std::string output;
 
-        ::aprocess::process()
+        ::aprocess::create_process()
             .command("aprocesstestapp")
             .read([&](std::string_view message) { output += message; })
             .wait(DEFAULT_WAIT_TIMEOUT);
@@ -23,7 +23,7 @@ static const auto S = suite("output", [] { // NOLINT(cert-err58-cpp)
     test("Hello, World!", [] {
         std::string output;
 
-        ::aprocess::process()
+        ::aprocess::create_process()
             .command("aprocesstestapp")
             .arguments({"--echo=Hello", "--echo=,", "--echo=World", "--echo=!"})
             .read([&](std::string_view message) { output += message; })
@@ -35,7 +35,7 @@ static const auto S = suite("output", [] { // NOLINT(cert-err58-cpp)
     test("large output", [] {
         std::string output;
 
-        ::aprocess::process()
+        ::aprocess::create_process()
             .command("aprocesstestapp")
             .arguments({"--echo-large=A", "--echo-large-size=1000000"})
             .read([&](std::string_view message) { output += message; })

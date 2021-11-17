@@ -9,20 +9,21 @@ namespace aprocess
 class WindowsProcess
 {
 public:
-    explicit WindowsProcess(const ProcessSetup &setup)
+    explicit WindowsProcess(const ProcessSetup &setup) :
+        setup{&setup}
     {
-        this->setup_read_pipe(setup);
-        this->setup_write_pipe(setup);
-        std::string commandLine = WindowsProcess::create_command_line(setup.command, setup.arguments);
+        this->setup_read_pipe();
+        this->setup_write_pipe();
+        std::string commandLine = this->create_command_line();
 
         if (::CreateProcess(nullptr,
                             &commandLine.front(),
                             nullptr,
                             nullptr,
                             TRUE,
-                            CREATE_NEW_PROCESS_GROUP,
+                            0,
                             nullptr,
-                            setup.workingDirectory.c_str(),
+                            this->setup->workingDirectory.c_str(),
                             &this->startupInfo,
                             &this->processInformation)
             == FALSE)
@@ -36,7 +37,11 @@ public:
 
     ~WindowsProcess()
     {
-        this->kill();
+        if (!this->setup->detached)
+        {
+            this->kill();
+        }
+
         ::CloseHandle(this->processInformation.hProcess);
         ::CloseHandle(this->processInformation.hThread);
     }
@@ -72,7 +77,7 @@ public:
 
     auto terminate() -> void
     {
-        //::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
+        ::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
         ::GenerateConsoleCtrlEvent(CTRL_C_EVENT, this->processInformation.dwProcessId);
     }
 
@@ -98,11 +103,11 @@ public:
     WindowsProcess &operator=(WindowsProcess &&other) noexcept = default;
 
 private:
-    [[nodiscard]] static auto create_command_line(const std::string &command, const std::vector<std::string> &arguments) -> std::string
+    [[nodiscard]] auto create_command_line() -> std::string
     {
-        std::string args = command;
+        std::string args = this->setup->command;
 
-        for (const std::string &arg : arguments)
+        for (const std::string &arg : this->setup->arguments)
         {
             args += ' ';
             args += arg;
@@ -143,21 +148,21 @@ private:
         }
     }
 
-    auto setup_write_pipe(const ProcessSetup &setup) -> void
+    auto setup_write_pipe() -> void
     {
         this->writePipe = std::make_unique<::awinapi::Pipe>();
         this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
         this->startupInfo.hStdInput = this->writePipe->read_handle();
         ::SetHandleInformation(this->writePipe->write_handle(), HANDLE_FLAG_INHERIT, 0);
 
-        if (!setup.write)
+        if (!this->setup->write)
         {
             ::CloseHandle(this->writePipe->write_handle());
             this->writePipe->write_handle() = nullptr;
         }
     }
 
-    auto setup_read_pipe(const ProcessSetup &setup) -> void
+    auto setup_read_pipe() -> void
     {
         this->readPipe = std::make_unique<::awinapi::Pipe>();
         this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
@@ -165,9 +170,9 @@ private:
         this->startupInfo.hStdOutput = this->readPipe->write_handle();
         ::SetHandleInformation(this->readPipe->read_handle(), HANDLE_FLAG_INHERIT, 0);
 
-        if (setup.read)
+        if (this->setup->read)
         {
-            this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), setup);
+            this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), *this->setup);
         }
         else
         {
@@ -176,6 +181,7 @@ private:
         }
     }
 
+    const ProcessSetup *setup = nullptr;
     ::STARTUPINFO startupInfo{.cb = sizeof(this->startupInfo)};
     ::PROCESS_INFORMATION processInformation{};
     std::unique_ptr<AsyncReader> asyncReader;

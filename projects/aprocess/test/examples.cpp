@@ -11,7 +11,7 @@ static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
 //! [[synchronous process]]
 std::string output;
 constexpr std::chrono::milliseconds timeout{1000};
-::aprocess::process()
+::aprocess::create_process()
     .command("aprocesstestapp")
     .arg("--echo")
     .arg("\"Hello, World!\"")
@@ -29,7 +29,7 @@ constexpr std::chrono::milliseconds timeout{1000};
 //! [[real time output]]
 std::vector<std::string> output;
 constexpr std::chrono::milliseconds timeout{1000};
-::aprocess::process()
+::aprocess::create_process()
     .command("aprocesstestapp")
     .arguments({"--echo-delay", "10", "--echo", "\"Hello\"", "--echo", "\"World\"", "--echo", "\"!\""})
     .read([&](std::string_view message) { output.emplace_back(std::string{message}); })
@@ -46,7 +46,7 @@ constexpr std::chrono::milliseconds timeout{1000};
         //! [[input]]
 std::string output;
 
-::aprocess::Process process = ::aprocess::process()
+::aprocess::Process process = ::aprocess::create_process()
                                     .command("aprocesstestapp")
                                     .arg("--echo-input")
                                     .read([&](std::string_view message) { output += message; })

@@ -1,6 +1,7 @@
 #ifndef __clang__
 export module aprocess : process;
-export import : process_setup;
+export import : environment_variable;
+import : process_setup;
 import : windows_process;
 #endif
 
@@ -111,19 +112,6 @@ public:
             return *this;
         }
 
-        //! Sets the process to use GUI
-        //! application specific behaviors.
-        //!
-        //! On Windows this will set the right
-        //! flags for CreateProcess and send
-        //! WM_CLOSE on call to
-        //! Process::terminate().
-        [[nodiscard]] auto gui() -> Builder &
-        {
-            this->setup.gui = true;
-            return *this;
-        }
-
         //! Sets the `callback` that is invoked on
         //! any output of the process. If the
         //! callback is not set the process will
@@ -168,11 +156,6 @@ public:
         }
 
     private:
-        Builder() = default;
-
-        friend class Process;
-        friend auto process() -> Process::Builder;
-
         ProcessSetup setup;
     };
 
@@ -259,7 +242,6 @@ private:
     {
     }
 
-private:
     ProcessSetup processSetup;
 #ifdef _WIN32
     WindowsProcess process;
@@ -269,7 +251,7 @@ private:
 };
 
 //! Starts the process composition.
-export [[nodiscard]] auto process() -> Process::Builder
+export [[nodiscard]] auto create_process() -> Process::Builder
 {
     return Process::Builder{};
 }
