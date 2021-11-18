@@ -13,7 +13,6 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp");
 
-        expect(process.command()).to_be("aprocesstestapp");
         assert_(process.is_running()).to_be(true);
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         expect(process.is_running()).to_be(false);
@@ -25,7 +24,6 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
                                           .arg("--echo=Hi")
                                           .arg("--echo-delay=10");
 
-        expect(process.command()).to_be("aprocesstestapp");
         assert_(process.is_running()).to_be(true);
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         expect(process.is_running()).to_be(false);
@@ -37,7 +35,6 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
                                           .arg("--echo=Hi")
                                           .arg("--echo-delay=10");
 
-        expect(process.command()).to_be("aprocesstestapp");
         assert_(process.is_running()).to_be(true);
 
         expect([&] {
@@ -54,7 +51,6 @@ static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp");
 
-        expect(process.command()).to_be("aprocesstestapp");
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
         assert_(process.is_running()).to_be(false);
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
