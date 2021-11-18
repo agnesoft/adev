@@ -10,13 +10,12 @@ static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
         // clang-format off
 //! [[synchronous process]]
 std::string output;
-constexpr std::chrono::milliseconds timeout{1000};
 ::aprocess::create_process()
     .command("aprocesstestapp")
     .arg("--echo")
     .arg("\"Hello, World!\"")
     .read([&](std::string_view message) { output += message; })
-    .wait(timeout);
+    .wait(std::chrono::seconds{1});
 //output == "Hello, World!"
 //! [[synchronous process]]
         // clang-format on
@@ -28,12 +27,11 @@ constexpr std::chrono::milliseconds timeout{1000};
         // clang-format off
 //! [[real time output]]
 std::vector<std::string> output;
-constexpr std::chrono::milliseconds timeout{1000};
 ::aprocess::create_process()
     .command("aprocesstestapp")
     .arguments({"--echo-delay", "10", "--echo", "\"Hello\"", "--echo", "\"World\"", "--echo", "\"!\""})
     .read([&](std::string_view message) { output.emplace_back(std::string{message}); })
-    .wait(timeout);
+    .wait(std::chrono::seconds{1});
 //output == {"Hello", "World", "!"}
 //! [[real time output]]
         // clang-format on
@@ -58,7 +56,7 @@ process.write("World\n");
 process.write("!\n");
 process.write("exit\n");
 
-process.wait(std::chrono::milliseconds{1000});
+process.wait(std::chrono::seconds{1});
 // output == "Hello, World!"
         //! [[input]]
         // clang-format on

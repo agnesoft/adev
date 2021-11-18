@@ -66,9 +66,9 @@ public:
         return !this->do_wait(0);
     }
 
-    auto kill() -> void
+    auto kill() const -> void
     {
-        ::TerminateProcess(this->processInformation.hProcess, 1u);
+        ::TerminateProcess(this->processInformation.hProcess, 1U);
     }
 
     [[nodiscard]] auto pid() const noexcept -> std::int64_t
@@ -76,7 +76,7 @@ public:
         return static_cast<std::int64_t>(this->processInformation.dwProcessId);
     }
 
-    auto terminate() -> void
+    auto terminate() const -> void
     {
         ::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
         ::GenerateConsoleCtrlEvent(CTRL_C_EVENT, this->processInformation.dwProcessId);
@@ -100,8 +100,8 @@ public:
         this->do_write(message);
     }
 
-    WindowsProcess &operator=(const WindowsProcess &other) = delete;
-    WindowsProcess &operator=(WindowsProcess &&other) noexcept = default;
+    auto operator=(const WindowsProcess &other) -> WindowsProcess & = delete;
+    auto operator=(WindowsProcess &&other) noexcept -> WindowsProcess & = default;
 
 private:
     [[nodiscard]] auto create_command_line() -> std::string
@@ -129,7 +129,7 @@ private:
             + '\0';
     }
 
-    auto do_wait(DWORD milliseconds) const -> bool
+    [[nodiscard]] auto do_wait(DWORD milliseconds) const -> bool
     {
         switch (::WaitForSingleObject(this->processInformation.hProcess, milliseconds))
         {
@@ -166,13 +166,13 @@ private:
         std::string envString;
 
         LPTCH env = ::GetEnvironmentStrings();
-        auto var = static_cast<LPTSTR>(env);
+        auto *var = static_cast<LPTSTR>(env);
 
         while (*var != '\0')
         {
             auto size = static_cast<std::size_t>(::lstrlen(var));
             envString.append(var, size + 1);
-            var += size + 1;
+            var += size + 1; //NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
 
         ::FreeEnvironmentStrings(env);

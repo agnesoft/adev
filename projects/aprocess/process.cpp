@@ -118,7 +118,7 @@ public:
         //! not open the read pipe of the process.
         [[nodiscard]] auto read(std::function<auto(std::string_view output)->void> callback) -> Builder &
         {
-            this->setup.read = callback;
+            this->setup.read = std::move(callback);
             return *this;
         }
 
@@ -262,7 +262,7 @@ public:
     //! Returns `true` if the process was created
     //! with writing enabled and is running or
     //! `false` otherwise.
-    [[nodiscard]] auto writable() const noexcept -> bool
+    [[nodiscard]] auto writable() const -> bool
     {
         return this->is_running() && this->setup.write;
     }

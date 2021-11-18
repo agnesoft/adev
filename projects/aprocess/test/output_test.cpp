@@ -41,8 +41,8 @@ static const auto S = suite("output", [] { // NOLINT(cert-err58-cpp)
             .read([&](std::string_view message) { output += message; })
             .wait(DEFAULT_WAIT_TIMEOUT);
 
-        constexpr std::size_t LARGE_SIZE = 1'000'000;
-        assert_(output.size()).to_be(LARGE_SIZE);
-        expect(output == std::string(LARGE_SIZE, 'A')).to_be(true);
+        constexpr std::size_t largeSize = 1'000'000;
+        assert_(output.size()).to_be(largeSize);
+        expect(output == std::string(largeSize, 'A')).to_be(true);
     });
 });

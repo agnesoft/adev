@@ -12,13 +12,13 @@ class AsyncReader
 public:
     AsyncReader(::HANDLE &readHandle, const ProcessSetup &setup) :
         thread{[&] {
-            constexpr std::size_t BUFFER_SIZE = 65536;
-            std::string buffer(BUFFER_SIZE, char{});
+            constexpr std::size_t bufferSize = 65536;
+            std::string buffer(bufferSize, char{});
             DWORD bytesRead = 0;
 
             while (::ReadFile(readHandle,
                               static_cast<LPVOID>(buffer.data()),
-                              static_cast<DWORD>(BUFFER_SIZE),
+                              static_cast<DWORD>(bufferSize),
                               &bytesRead,
                               nullptr)
                    != FALSE)

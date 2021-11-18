@@ -55,8 +55,8 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
                                           .read([&](std::string_view message) { output += message; })
                                           .write();
 
-        constexpr std::size_t LARGE_SIZE = 1'000'000;
-        std::string input(LARGE_SIZE, 'A');
+        constexpr std::size_t largeSize = 1'000'000;
+        std::string input(largeSize, 'A');
 
         assert_(process.writable()).to_be(true);
         process.write(input);
@@ -64,7 +64,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
         process.write("exit\n");
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
 
-        expect(output.size()).to_be(LARGE_SIZE);
+        expect(output.size()).to_be(largeSize);
         expect(output == input).to_be(true);
     });
 
