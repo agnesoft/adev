@@ -23,7 +23,7 @@ static const auto S = suite("working directory", [] { // NOLINT(cert-err58-cpp)
 
     test("custom", [] {
         std::string output;
-        const std::filesystem::path dir = std::filesystem::canonical(std::filesystem::current_path().root_directory());
+        const std::filesystem::path dir = std::filesystem::canonical(std::filesystem::temp_directory_path());
 
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")

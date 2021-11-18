@@ -22,11 +22,15 @@ function coverage() {
 
     local objectArgs=""
     local profData=""
+    local dir=$(pwd)
 
     for test in build/clang/bin/*_test${executableExtension}; do
         objectArgs="${objectArgs} -object=${test}"
-        export LLVM_PROFILE_FILE="${test}.profraw"
-        "${test}">/dev/null
+        
+        LLVM_PROFILE_FILE="${dir}/${test}.profraw" ${test}>/dev/null
+        if (( $? != 0 )); then
+            result=2
+        fi
         "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
         profData="${profData} ${test}.profdata"
     done
@@ -90,6 +94,8 @@ function print_summary() {
 
     if (( $result == 1 )); then
         print_error "ERROR: insufficient code coverage:"
+    elif (( $result == 2 )); then
+        print_error "ERROR: tests failed:"
     else
         print_ok "Code coverage OK"
     fi
