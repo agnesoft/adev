@@ -13,8 +13,8 @@ class AsyncReader
 {
 public:
 #ifdef _WIN32
-    AsyncReader(::HANDLE &readHandle, const ProcessSetup &setup) :
-        thread{[&] {
+    AsyncReader(::HANDLE readHandle, const ProcessSetup &setup) :
+        thread{[readHandle, setup] {
             constexpr std::size_t bufferSize = 65536;
             std::string buffer(bufferSize, char{});
             DWORD bytesRead = 0;
@@ -33,7 +33,7 @@ public:
     }
 #else
     AsyncReader(int readFileDescriptor, const ProcessSetup &setup) :
-        thread{[&] {
+        thread{[readFileDescriptor, setup] {
             constexpr std::size_t bufferSize = 65536;
             std::string buffer(bufferSize, char{});
             std::size_t bytesRead = 0;

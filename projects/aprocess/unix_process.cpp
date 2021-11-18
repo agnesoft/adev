@@ -3,7 +3,6 @@ module aprocess : unix_process;
 import : process_setup;
 import : pipe;
 import : async_reader;
-//import<signal.h>;
 import<wait.h>;
 #endif
 
@@ -45,7 +44,7 @@ public:
             }
         }
         
-        return this->status;
+        return WEXITSTATUS(this->status);
     }
 
     [[nodiscard]] auto is_running() -> bool
@@ -149,7 +148,7 @@ private:
         while (*env != nullptr)
         {
             this->environment.emplace_back(*env);
-            env += this->environment.back().size() + 1; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            ++env;
         }
 
         std::vector<char *> envPtr;
@@ -161,6 +160,7 @@ private:
         }
 
         envPtr.push_back(nullptr);
+
         return envPtr;
     }
 
@@ -235,13 +235,6 @@ private:
         {
             this->writePipe.close_write();
         }
-    }
-
-    [[nodiscard]] static auto waitForFinished(pid_t pid) -> int
-    {
-        int status = 0;
-        ::waitpid(pid, &status, 0);
-        return WEXITSTATUS(status);
     }
 
     ProcessSetup *setup = nullptr;

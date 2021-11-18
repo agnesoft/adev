@@ -14,7 +14,7 @@ std::string output;
     .command("aprocesstestapp")
     .arg("--echo")
     .arg("\"Hello, World!\"")
-    .read([&](std::string_view message) { output += message; })
+    .read([&]([[maybe_unused]]std::string_view message) { output += message; })
     .wait(std::chrono::seconds{1});
 //output == "Hello, World!"
 //! [[process]]
