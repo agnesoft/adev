@@ -8,10 +8,10 @@ if is_windows; then
     uncoveredBranches="9"
 else
     ignoredSources="\/test\/"
-    uncoveredFunctions="3"
-    uncoveredLines="26"
-    uncoveredRegions="28"
-    uncoveredBranches="2"
+    uncoveredFunctions="4"
+    uncoveredLines="27"
+    uncoveredRegions="30"
+    uncoveredBranches="5"
 fi
 
 function coverage() {
