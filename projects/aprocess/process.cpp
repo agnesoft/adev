@@ -217,14 +217,14 @@ public:
 
     //! Returns the exit code of the process when
     //! it finishes otherwise returns `0`.
-    [[nodiscard]] auto exit_code() const -> int
+    [[nodiscard]] auto exit_code() -> int
     {
         return this->process.exit_code();
     }
 
     //! Returns `true` if the process is still
     //! running or `false` otherwise.
-    [[nodiscard]] auto is_running() const -> bool
+    [[nodiscard]] auto is_running() -> bool
     {
         return this->process.is_running();
     }
@@ -274,7 +274,7 @@ public:
     //! Returns `true` if the process was created
     //! with writing enabled and is running or
     //! `false` otherwise.
-    [[nodiscard]] auto writable() const -> bool
+    [[nodiscard]] auto writable() -> bool
     {
         return this->is_running() && this->setup.write;
     }

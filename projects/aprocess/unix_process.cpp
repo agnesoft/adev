@@ -3,7 +3,7 @@ module aprocess : unix_process;
 import : process_setup;
 import : pipe;
 import : async_reader;
-import<signal.h>;
+//import<signal.h>;
 import<wait.h>;
 #endif
 
@@ -14,7 +14,7 @@ namespace aprocess
 class UnixProcess
 {
 public:
-    explicit UnixProcess(const ProcessSetup &setup) :
+    explicit UnixProcess(ProcessSetup &setup) :
         setup{&setup}
     {
         this->processId = ::fork();
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    [[nodiscard]] auto exit_code() const -> int
+    [[nodiscard]] auto exit_code() -> int
     {
         if (this->running)
         {
@@ -39,9 +39,9 @@ public:
             {
                 this->running = false;
             }
-            else if (code == -1 && ::errno != ECHILD)
+            else if (code == -1 && errno != ECHILD)
             {
-                throw std::runtime_error{"Failed to get exit code of process: " + std::to_string(::errno)};
+                throw std::runtime_error{"Failed to get exit code of process: " + std::to_string(errno)};
             }
         }
         
@@ -63,7 +63,7 @@ public:
         ::kill(-this->processId, SIGTERM);
     }
 
-    [[nodiscard]] auto pid() const noexcept const noexcept -> std::int64_t
+    [[nodiscard]] auto pid() const noexcept -> std::int64_t
     {
         return this->processId;
     }
@@ -100,16 +100,16 @@ public:
 
         if (::write(this->writePipe.write_end(), message.data(), message.size()) == -1)
         {
-            throw std::runtime_error{"Failed to write to process: " + std::to_string(::errno)};
+            throw std::runtime_error{"Failed to write to process: " + std::to_string(errno)};
         }
     }
 
 private:
     auto change_directory() -> void
     {
-        if (::chdir(this->setup.workingDirectory.c_str()) == -1)
+        if (::chdir(this->setup->workingDirectory.c_str()) == -1)
         {
-            std::exit(::errno);
+            std::exit(errno);
         }
     }
 
@@ -119,16 +119,16 @@ private:
         this->setup_child_write_pipe();
         this->change_directory();
         this->exec();
-        std::exit(::errno);
+        std::exit(errno);
     }
 
-    [[nodiscard]] auto create_arguments() -> std::vector<const char *>
+    [[nodiscard]] auto create_arguments() -> std::vector<char *>
     {
-        std::vector<const char *> args;
-        args.reserve(this->setup->arguments->size() + 2);
-        args.push_back(this->setup->command->data());
+        std::vector<char *> args;
+        args.reserve(this->setup->arguments.size() + 2);
+        args.push_back(this->setup->command.data());
 
-        for (const std::string &arg : this->setup->arguments)
+        for (std::string &arg : this->setup->arguments)
         {
             args.push_back(arg.data());
         }
@@ -137,10 +137,8 @@ private:
         return args;
     }
 
-    [[nodiscard]] auto create_environment() -> std::vector<const char *>
+    [[nodiscard]] auto create_environment() -> std::vector<char *>
     {
-        this->environment.reserve(/*environ.size()*/ +this->setup.environment.size());
-
         for (const EnvironmentVariable &envVar : this->setup->environment)
         {
             this->environment.push_back(envVar.name + '=' + envVar.value);
@@ -148,16 +146,16 @@ private:
 
         char **env = ::environ;
 
-        while (*env != '\0')
+        while (*env != nullptr)
         {
-            this->environment.emplace_back(env);
+            this->environment.emplace_back(*env);
             env += this->environment.back().size() + 1; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
 
-        std::vector<const char *> envPtr;
+        std::vector<char *> envPtr;
         envPtr.reserve(this->environment.size());
 
-        for (const std::string &var : this->environment)
+        for (std::string &var : this->environment)
         {
             envPtr.push_back(var.data());
         }
@@ -170,14 +168,14 @@ private:
     {
         if (this->setup->environment.empty())
         {
-            ::execvp(this->setup.command->c_str(), this->create_arguments().data());
+            ::execvp(this->setup->command.c_str(), this->create_arguments().data());
         }
         else
         {
-            ::execvpe(this->setup.command->c_str(), this->create_arguments().data(), this->create_environment().data())
+            ::execvpe(this->setup->command.c_str(), this->create_arguments().data(), this->create_environment().data());
         }
 
-        std::exit(::errno);
+        std::exit(errno);
     }
 
     auto parent_process() -> void
@@ -190,7 +188,7 @@ private:
     {
         this->readPipe.close_read();
 
-        if (this->setup.read)
+        if (this->setup->read)
         {
             ::dup2(this->readPipe.write_end(), STDOUT_FILENO);
             ::dup2(STDOUT_FILENO, STDERR_FILENO);
@@ -205,7 +203,7 @@ private:
     {
         this->writePipe.close_write();
 
-        if (this->setup.write)
+        if (this->setup->write)
         {
             ::dup2(this->writePipe.read_end(), STDIN_FILENO);
         }
@@ -219,7 +217,7 @@ private:
     {
         this->readPipe.close_write();
 
-        if (this->setup.read)
+        if (this->setup->read)
         {
             this->asyncReader = std::make_unique<AsyncReader>(this->readPipe.read_end(), *this->setup);
         }
@@ -233,7 +231,7 @@ private:
     {
         this->writePipe.close_read();
 
-        if (!this->setup.write)
+        if (!this->setup->write)
         {
             this->writePipe.close_write();
         }
@@ -246,8 +244,8 @@ private:
         return WEXITSTATUS(status);
     }
 
-    const ProcessSetup *setup = nullptr;
-    std::size_t processId = 0;
+    ProcessSetup *setup = nullptr;
+    int processId = 0;
     int status = 0;
     std::vector<std::string> environment;
     std::unique_ptr<AsyncReader> asyncReader;

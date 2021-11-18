@@ -6,7 +6,7 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
-    test("synchronous process", [] {
+    test("process", [] {
         // clang-format off
 //! [[process]]
 std::string output;

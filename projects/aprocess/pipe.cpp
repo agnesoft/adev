@@ -24,15 +24,15 @@ public:
 
     ~Pipe()
     {
-        this->closeRead();
-        this->closeWrite();
+        this->close_read();
+        this->close_write();
     }
 
     auto close_read() -> void
     {
         if (this->pipes[Pipe::READ] != Pipe::INVALID_DESCRIPTOR)
         {
-            close(this->pipes[Pipe::READ]);
+            ::close(this->pipes[Pipe::READ]);
             this->pipes[Pipe::READ] = Pipe::INVALID_DESCRIPTOR;
         }
     }
@@ -41,7 +41,7 @@ public:
     {
         if (this->pipes[Pipe::WRITE] != Pipe::INVALID_DESCRIPTOR)
         {
-            close(this->pipes[Pipe::WRITE]);
+            ::close(this->pipes[Pipe::WRITE]);
             this->pipes[Pipe::WRITE] = Pipe::INVALID_DESCRIPTOR;
         }
     }

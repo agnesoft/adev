@@ -15,7 +15,8 @@ clangCompilerFlagsCommon="-std=c++20 \
                           -fimplicit-module-maps \
                           -fprebuilt-module-path=${buildRoot}/astl \
                           -fmodule-map-file=projects/astl/module.modulemap \
-                          -fmodule-map-file=projects/awinapi/module.modulemap"
+                          -fmodule-map-file=projects/awinapi/module.modulemap \
+                          -fmodule-map-file=projects/aprocess/module.modulemap"
 
 if is_windows; then
     clangCompilerFlags="${clangCompilerFlagsCommon}"
