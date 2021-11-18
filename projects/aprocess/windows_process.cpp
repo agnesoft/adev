@@ -125,8 +125,8 @@ private:
             return {};
         }
 
-        return WindowsProcess::existing_environment()
-            + this->new_environment_variables()
+        return this->new_environment_variables()
+            + WindowsProcess::existing_environment()
             + '\0';
     }
 

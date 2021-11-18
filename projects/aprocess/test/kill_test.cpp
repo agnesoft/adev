@@ -46,7 +46,7 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
 
         while (std::chrono::system_clock::now() < end && ::is_process_running(pid))
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds{1});
+            std::this_thread::sleep_for(std::chrono::nanoseconds{1});
         }
 
         expect(::is_process_running(pid)).to_be(false);
