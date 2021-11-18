@@ -1,14 +1,14 @@
 source "sh/common.sh"
 
-uncoveredFunctions="3"
-
 if is_windows; then
     ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
-    uncoveredLines="29"
-    uncoveredRegions="29"
-    uncoveredBranches="3"
+    uncoveredFunctions="4"
+    uncoveredLines="43"
+    uncoveredRegions="35"
+    uncoveredBranches="9"
 else
     ignoredSources="\/test\/"
+    uncoveredFunctions="3"
     uncoveredLines="26"
     uncoveredRegions="28"
     uncoveredBranches="2"
