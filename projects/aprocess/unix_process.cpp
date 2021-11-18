@@ -6,6 +6,7 @@ import : process_setup;
 #ifndef _WIN32
 namespace aprocess
 {
+//! \private
 class UnixProcess
 {
 public:

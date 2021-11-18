@@ -9,11 +9,10 @@ namespace aprocess
 {
 //! The Process is a cross platform representation
 //! of system process. The new process is spawned
-//! in the constructor and started asynchronously,
-//! similar to the `std::thread`. The arguments
-//! are not treated in any way before they are
-//! passed to the underlying operating system
-//! functions.
+//! on construction and is started asynchronously
+//! similar to the `std::thread`. To create a new
+//! process start the builder sequence via
+//! create_process() function.
 //!
 //! You can use the blocking wait() method to wait
 //! for the process to finish. The process can be
@@ -22,58 +21,64 @@ namespace aprocess
 //! forcefully terminate it. You can check the
 //! status of the process with is_running() and
 //! detach() from the process so that it can
-//! outlive its parent. If the process is not
+//! outlive its parent. The process can also be
+//! created detached. If the process is not
 //! detached the destructor will always call
 //! kill() if the process is still running to
 //! forcefully stop it.
 //!
-//! In order to capture the output call read().
-//! Calling it after successful wait(),
-//! terminate() or kill() (e.g. after the process
-//! is stopped) will always return all of the
-//! remaining output:
+//! In order to capture the output set a read
+//! callback during process creation.
 //!
-//! \snippet aprocess/test/examples.cpp
-//! [synchronous process]
+//! Immediately awaited process with arguments and
+//! capturing output:
 //!
-//! NOTE: The `stdout` and `stderr` are combined
+//! \snippet aprocess/test/examples.cpp [process]
+//!
+//! **NOTE:** The `stdout` and `stderr` are combined
 //! in order to make the Process class consistent
 //! across platforms. Many applications ignore
 //! this distinction or use it inconsistently.
 //!
-//! You can achieve real time output of the
-//! process with a busy loop (consider offloading
-//! it to another thread as it may deadlock your
-//! application if the spawned process never
-//! finishes):
-//!
-//! \snippet aprocess/test/examples.cpp [real time
-//! output]
-//!
-//! Finally you can send input into the process
-//! with write():
+//! To communicate with the process you can enable
+//! writing to it during construction. Afterwards
+//! you can call write() method to send messages
+//! to the process:
 //!
 //! \snippet aprocess/test/examples.cpp [input]
+//!
+//! **NOTE:** Depending on the implementation in the
+//! process you may need to append the delimiter
+//! character for the message to be correctly read
+//! on the other side. For example when reading
+//! with `std::cin` the default delimiter
+//! character is `\n`.
 export class Process
 {
 public:
     //! The Builder is a wrapper type for process
     //! builder functions. It cannot be
     //! constructed directly but rather via
-    //! ::aprocess::process() function that starts
-    //! the builder process.
+    //! create_process() function that starts the
+    //! builder process.
     class Builder
     {
     public:
         //! Adds `args` to the process arguments.
+        //! The arguments are not treated in any
+        //! way before they are passed to the
+        //! underlying operating system functions.
         [[nodiscard]] auto arguments(const std::vector<std::string> &args) -> Builder &
         {
             this->setup.arguments.insert(this->setup.arguments.end(), args.begin(), args.end());
             return *this;
         }
 
-        //! Adds single `argument to the process
-        //! arguments.
+        //! Adds single `argument` to the process
+        //! arguments. The arguments are not
+        //! treated in any way before they are
+        //! passed to the underlying operating
+        //! system functions.
         [[nodiscard]] auto arg(std::string argument) -> Builder &
         {
             this->setup.arguments.emplace_back(std::move(argument));
@@ -150,6 +155,10 @@ public:
             return *this;
         }
 
+        //! Implicitly converts the Builder to the
+        //! Process object by moving from itself.
+        //! The Builder object is unusable
+        //! afterwards.
         operator Process()
         {
             return Process{std::move(this->setup)};
@@ -220,7 +229,9 @@ public:
         return this->process.is_running();
     }
 
-    //! Sends `SIGKILL` to the process.
+    //! Forcefully kills the process by sending
+    //! `SIGKILL` on Unix and calling
+    //! `TerminateProcess` on Windows.
     auto kill() -> void
     {
         this->process.kill();
@@ -236,9 +247,10 @@ public:
         return this->process.pid();
     }
 
-    //! Sends `SIGTERM` to the process. You should
-    //! follow this by call to wait() to allow the
-    //! process to gracefully exit.
+    //! Sends `SIGTERM` to the process on Unix or
+    //! `WM_CLOSE` and `CTRL_C_EVENT` on Windows.
+    //! You should follow this by call to wait()
+    //! to allow the process to gracefully exit.
     auto terminate() -> void
     {
         this->process.terminate();
@@ -267,7 +279,11 @@ public:
         return this->is_running() && this->setup.write;
     }
 
-    //! Writes `message` to the process.
+    //! Writes `message` to the process. You may
+    //! need to write the delimiter character for
+    //! the message to be correctly received on
+    //! the other end depending on the
+    //! implementation of the run application.
     auto write(const std::string &message) -> void
     {
         this->process.write(message);

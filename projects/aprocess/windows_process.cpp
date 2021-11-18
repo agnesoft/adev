@@ -6,6 +6,7 @@ import : async_reader;
 #ifdef _WIN32
 namespace aprocess
 {
+//! \private
 class WindowsProcess
 {
 public:
@@ -38,7 +39,7 @@ public:
 
     ~WindowsProcess()
     {
-        if (!this->setup->detached)
+        if (!this->setup->detached && this->is_running())
         {
             this->kill();
         }
