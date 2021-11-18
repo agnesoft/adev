@@ -1,14 +1,14 @@
 source "sh/common.sh"
 
-uncoveredFunctions="3"
-
 if is_windows; then
     ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
-    uncoveredLines="29"
-    uncoveredRegions="29"
-    uncoveredBranches="3"
+    uncoveredFunctions="4"
+    uncoveredLines="43"
+    uncoveredRegions="35"
+    uncoveredBranches="9"
 else
     ignoredSources="\/test\/"
+    uncoveredFunctions="3"
     uncoveredLines="26"
     uncoveredRegions="28"
     uncoveredBranches="2"
@@ -22,13 +22,19 @@ function coverage() {
 
     local objectArgs=""
     local profData=""
+    local dir=$(pwd)
 
     for test in build/clang/bin/*_test${executableExtension}; do
-        objectArgs="${objectArgs} -object=${test}"
-        export LLVM_PROFILE_FILE="${test}.profraw"
-        "${test}">/dev/null
-        "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
-        profData="${profData} ${test}.profdata"
+        if [[ "${test}" != "build/clang/bin/aprocess_test" ]]; then
+            objectArgs="${objectArgs} -object=${test}"
+            
+            LLVM_PROFILE_FILE="${dir}/${test}.profraw" ${test}>/dev/null
+            if (( $? != 0 )); then
+                result=2
+            fi
+            "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
+            profData="${profData} ${test}.profdata"
+        fi
     done
 
     generate_report "${objectArgs}" "${profData}"
@@ -90,6 +96,8 @@ function print_summary() {
 
     if (( $result == 1 )); then
         print_error "ERROR: insufficient code coverage:"
+    elif (( $result == 2 )); then
+        print_error "ERROR: tests failed:"
     else
         print_ok "Code coverage OK"
     fi

@@ -90,6 +90,7 @@ gccCompilerFlags="-std=c++20 \
 msvcCompilerFlags="/nologo \
                    /std:c++latest \
                    /EHsc \
+                   /MT \
                    /O2 \
                    /W4 \
                    /WX \

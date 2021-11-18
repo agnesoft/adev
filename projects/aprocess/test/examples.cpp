@@ -1,43 +1,51 @@
 import atest;
 import aprocess;
 
-// using ::atest::expect;
+using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("examples", [] { // NOLINT(cert-err58-cpp)
     test("synchronous process", [] {
         // clang-format off
-//! [[synchronous process]]
-aprocess::Process process{{.command = "echo Hello World"}};
-process.wait();
-const std::string output = process.read();
-static_cast<void>(output);
-//! [[synchronous process]]
+//! [[process]]
+std::string output;
+::aprocess::create_process()
+    .command("aprocesstestapp")
+    .arg("--echo")
+    .arg("\"Hello, World!\"")
+    .read([&](std::string_view message) { output += message; })
+    .wait(std::chrono::seconds{1});
+//output == "Hello, World!"
+//! [[process]]
         // clang-format on
-    });
 
-    test("real time output", [] {
-        // clang-format off
-//! [[real time output]]
-aprocess::Process process{{.command = "echo Hello World"}};
-std::stringstream stream;
-while (process.is_running()) //beware of possible deadlock, consider offloading this to a new thread
-{
-    stream << process.read();
-}
-stream << process.read(); //make sure you get the rest of the output after the process stopped
-//! [[real time output]]
-        // clang-format on
+        expect(output).to_be("Hello, World!");
     });
 
     test("input", [] {
         // clang-format off
-//! [[input]]
-aprocess::Process process{{.command = "echo Hello && read name && echo $name"}};
-process.write("AProcess");
-process.wait();
-//! [[input]]
+        //! [[input]]
+std::string output;
+
+::aprocess::Process process = 
+    ::aprocess::create_process()
+        .command("aprocesstestapp")
+        .arg("--echo-input")
+        .read([&](std::string_view message) { output += message; })
+        .write();
+
+process.write("Hello\n");
+process.write(",\n");
+process.write("World\n");
+process.write("!\n");
+process.write("exit\n");
+
+process.wait(std::chrono::seconds{1});
+// output == "Hello, World!"
+        //! [[input]]
         // clang-format on
+
+        expect(output).to_be("Hello,World!");
     });
 });

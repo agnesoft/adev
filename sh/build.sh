@@ -11,7 +11,7 @@ function build_project() {
         print_error "ERROR: Project '${project}' does not exist."
         echo "
 Available projects:"
-        listProjects
+        list_projects
         exit 1;
     fi
 }
