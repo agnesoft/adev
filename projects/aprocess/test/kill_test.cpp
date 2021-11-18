@@ -49,6 +49,6 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
             std::this_thread::sleep_for(std::chrono::milliseconds{1});
         }
 
-        expect(is_process_running(pid)).to_be(false);
+        expect(::is_process_running(pid)).to_be(false);
     });
 });

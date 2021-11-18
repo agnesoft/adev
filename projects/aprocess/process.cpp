@@ -1,7 +1,7 @@
 #ifndef __clang__
 export module aprocess : process;
 export import : environment_variable;
-import : process_setup;
+import : unix_process;
 import : windows_process;
 #endif
 
@@ -290,7 +290,7 @@ private:
 #ifdef _WIN32
     WindowsProcess process;
 #else
-
+    UnixProcess process;
 #endif
 };
 

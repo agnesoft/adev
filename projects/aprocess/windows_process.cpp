@@ -172,7 +172,7 @@ private:
         {
             auto size = static_cast<std::size_t>(::lstrlen(var));
             envString.append(var, size + 1);
-            var += size + 1; //NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            var += size + 1; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
 
         ::FreeEnvironmentStrings(env);

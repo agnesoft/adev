@@ -31,7 +31,10 @@ struct Inputs
     return value;
 }
 #else
-using get_env = std::getenv;
+[[nodiscard]] auto get_env(const char *key) -> std::string
+{
+    return std::getenv(key);
+}
 #endif
 
 auto echo(const Inputs &inputs) -> void
