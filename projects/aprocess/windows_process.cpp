@@ -15,6 +15,7 @@ public:
         this->setup_read_pipe();
         this->setup_write_pipe();
         std::string commandLine = this->create_command_line();
+        std::string environment = this->create_environment();
 
         if (::CreateProcess(nullptr,
                             &commandLine.front(),
@@ -22,7 +23,7 @@ public:
                             nullptr,
                             TRUE,
                             0,
-                            nullptr,
+                            environment.empty() ? nullptr : environment.data(),
                             this->setup->workingDirectory.c_str(),
                             &this->startupInfo,
                             &this->processInformation)
@@ -116,16 +117,28 @@ private:
         return args;
     }
 
+    [[nodiscard]] auto create_environment() -> std::string
+    {
+        if (this->setup->environment.empty())
+        {
+            return {};
+        }
+
+        return WindowsProcess::existing_environment()
+            + this->new_environment_variables()
+            + '\0';
+    }
+
     auto do_wait(DWORD milliseconds) const -> bool
     {
         switch (::WaitForSingleObject(this->processInformation.hProcess, milliseconds))
         {
         case WAIT_OBJECT_0:
             return true;
-        case WAIT_FAILED:
-            throw std::runtime_error{"Wait for process failed:\n  " + ::awinapi::last_error_message()};
         case WAIT_ABANDONED:
             [[fallthrough]];
+        case WAIT_FAILED:
+            throw std::runtime_error{"Wait for process failed:\n  " + ::awinapi::last_error_message()};
         case WAIT_TIMEOUT:
             break;
         }
@@ -146,6 +159,37 @@ private:
         {
             throw std::runtime_error{"Failed to write to process:\n  " + ::awinapi::last_error_message()};
         }
+    }
+
+    [[nodiscard]] static auto existing_environment() -> std::string
+    {
+        std::string envString;
+
+        LPTCH env = ::GetEnvironmentStrings();
+        auto var = static_cast<LPTSTR>(env);
+
+        while (*var != '\0')
+        {
+            auto size = static_cast<std::size_t>(::lstrlen(var));
+            envString.append(var, size + 1);
+            var += size + 1;
+        }
+
+        ::FreeEnvironmentStrings(env);
+
+        return envString;
+    }
+
+    [[nodiscard]] auto new_environment_variables() -> std::string
+    {
+        std::string variables;
+
+        for (const EnvironmentVariable &envVar : this->setup->environment)
+        {
+            variables.append(envVar.name + '=' + envVar.value + '\0');
+        }
+
+        return variables;
     }
 
     auto setup_write_pipe() -> void

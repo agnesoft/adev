@@ -170,6 +170,42 @@ public:
     //! killed by calling kill().
     ~Process() = default;
 
+    //! Returns the arguments that were used to
+    //! create the process.
+    [[nodiscard]] auto arguments() const noexcept -> const std::vector<std::string> &
+    {
+        return this->setup.arguments;
+    }
+
+    //! Returns the command that was used to
+    //! create the process.
+    [[nodiscard]] auto command() const noexcept -> const std::string &
+    {
+        return this->setup.command;
+    }
+
+    //! Detach from the running process allowing
+    //! it to outlive the Process object.
+    auto detach() -> void
+    {
+        this->setup.detached = true;
+    }
+
+    //! Returns `true` if the process has been
+    //! created detached (capable of outliving the
+    //! Process object) or `false` otherwise.
+    [[nodiscard]] auto detached() const noexcept -> bool
+    {
+        return this->setup.detached;
+    }
+
+    //! Returns the extra environment variables
+    //! that were used to create the process.
+    [[nodiscard]] auto environment() const noexcept -> const std::vector<EnvironmentVariable> &
+    {
+        return this->setup.environment;
+    }
+
     //! Returns the exit code of the process when
     //! it finishes otherwise returns `0`.
     [[nodiscard]] auto exit_code() const -> int
@@ -200,13 +236,6 @@ public:
         return this->process.pid();
     }
 
-    //! Returns the process setup that was used
-    //! when constructing the process.
-    [[nodiscard]] auto process_setup() const noexcept -> const ProcessSetup &
-    {
-        return this->processSetup;
-    }
-
     //! Sends `SIGTERM` to the process. You should
     //! follow this by call to wait() to allow the
     //! process to gracefully exit.
@@ -223,6 +252,21 @@ public:
         return this->process.wait(timeout);
     }
 
+    //! Returns the working directory that was
+    //! used to create the process.
+    [[nodiscard]] auto working_directory() const noexcept -> const std::string &
+    {
+        return this->setup.workingDirectory;
+    }
+
+    //! Returns `true` if the process was created
+    //! with writing enabled and is running or
+    //! `false` otherwise.
+    [[nodiscard]] auto writable() const noexcept -> bool
+    {
+        return this->is_running() && this->setup.write;
+    }
+
     //! Writes `message` to the process.
     auto write(const std::string &message) -> void
     {
@@ -237,12 +281,12 @@ public:
 
 private:
     explicit Process(ProcessSetup setup) :
-        processSetup{std::move(setup)},
-        process{this->processSetup}
+        setup{std::move(setup)},
+        process{this->setup}
     {
     }
 
-    ProcessSetup processSetup;
+    ProcessSetup setup;
 #ifdef _WIN32
     WindowsProcess process;
 #else

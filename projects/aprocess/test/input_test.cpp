@@ -18,6 +18,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
                                           .read([&](std::string_view message) { output += message; })
                                           .write();
 
+        assert_(process.writable()).to_be(true);
         process.write("\n");
         process.write("exit\n");
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
@@ -34,6 +35,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
                                           .read([&](std::string_view message) { output += message; })
                                           .write();
 
+        assert_(process.writable()).to_be(true);
         process.write("Hello\n");
         process.write(",\n");
         process.write("World\n");
@@ -56,6 +58,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
         constexpr std::size_t LARGE_SIZE = 1'000'000;
         std::string input(LARGE_SIZE, 'A');
 
+        assert_(process.writable()).to_be(true);
         process.write(input);
         process.write("\n");
         process.write("exit\n");
@@ -70,6 +73,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
                                           .command("aprocesstestapp")
                                           .arguments({"--echo-delay", "10", "--echo", "\"Hello\"", "--echo", "\"World\"", "--echo", "\"!\""});
 
+        assert_(process.writable()).to_be(false);
         expect([&] {
             process.write("message");
         })
@@ -87,6 +91,7 @@ static const auto S = suite("input", [] { // NOLINT(cert-err58-cpp)
 
         process.write("message\n");
 
+        assert_(process.writable()).to_be(false);
         expect(output).to_be(std::string{});
     });
 });
