@@ -8,10 +8,10 @@ if is_windows; then
     uncoveredBranches="9"
 else
     ignoredSources="\/test\/"
-    uncoveredFunctions="4"
-    uncoveredLines="27"
-    uncoveredRegions="30"
-    uncoveredBranches="5"
+    uncoveredFunctions="3"
+    uncoveredLines="26"
+    uncoveredRegions="28"
+    uncoveredBranches="2"
 fi
 
 function coverage() {
@@ -25,14 +25,16 @@ function coverage() {
     local dir=$(pwd)
 
     for test in build/clang/bin/*_test${executableExtension}; do
-        objectArgs="${objectArgs} -object=${test}"
-        
-        LLVM_PROFILE_FILE="${dir}/${test}.profraw" ${test}>/dev/null
-        if (( $? != 0 )); then
-            result=2
+        if [[ "${test}" != "build/clang/bin/aprocess_test" ]]; then
+            objectArgs="${objectArgs} -object=${test}"
+            
+            LLVM_PROFILE_FILE="${dir}/${test}.profraw" ${test}>/dev/null
+            if (( $? != 0 )); then
+                result=2
+            fi
+            "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
+            profData="${profData} ${test}.profdata"
         fi
-        "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
-        profData="${profData} ${test}.profdata"
     done
 
     generate_report "${objectArgs}" "${profData}"
