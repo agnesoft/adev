@@ -25,12 +25,12 @@ static const auto S = suite("exit code", [] { // NOLINT(cert-err58-cpp)
             .to_be(1);
     });
 
-    test("-1", [] {
+    test("4", [] {
         expect(::aprocess::create_process()
                    .command("aprocesstestapp")
-                   .arg("--exit-code=-1")
+                   .arg("--exit-code=4")
                    .wait(DEFAULT_WAIT_TIMEOUT)
                    .exit_code())
-            .to_be(-1);
+            .to_be(4);
     });
 });

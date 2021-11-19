@@ -79,7 +79,7 @@ auto input(const Inputs &inputs) -> void
         const auto end = std::chrono::system_clock::now() + std::chrono::milliseconds{inputs.echoInputTimeout};
 
         std::atomic_bool stop{false};
-        std::thread thread = std::thread([&] {
+        std::thread([&] {
             std::string value;
 
             while (std::chrono::system_clock::now() < end
@@ -90,7 +90,7 @@ auto input(const Inputs &inputs) -> void
             }
 
             stop.store(true);
-        });
+        }).detach();
 
         while (!stop.load() && std::chrono::system_clock::now() < end)
         {

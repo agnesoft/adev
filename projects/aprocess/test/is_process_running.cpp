@@ -12,9 +12,11 @@ import awinapi;
 }
 #else
 import astl;
+import<wait.h>;
 
-[[nodiscard]] auto is_process_running([[maybe_unused]] std::int64_t pid) -> bool
+[[nodiscard]] auto is_process_running(std::int64_t pid) -> bool
 {
-    return false;
+    int status = 0;
+    return ::waitpid(pid, &status, WNOHANG) == 0;
 }
 #endif

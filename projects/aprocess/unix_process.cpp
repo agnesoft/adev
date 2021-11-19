@@ -28,6 +28,17 @@ public:
         }
     }
 
+    ~UnixProcess()
+    {
+        if (!this->setup->detached)
+        {
+            this->kill();
+        }
+    }
+
+    UnixProcess(const UnixProcess &other) = delete;
+    UnixProcess(UnixProcess &&other) noexcept = default;
+
     [[nodiscard]] auto exit_code() -> int
     {
         if (this->running)
@@ -59,7 +70,7 @@ public:
 
     auto kill() const -> void
     {
-        ::kill(-this->processId, SIGTERM);
+        ::kill(this->processId, SIGKILL);
     }
 
     [[nodiscard]] auto pid() const noexcept -> std::int64_t
@@ -70,6 +81,7 @@ public:
     auto terminate() const -> void
     {
         ::kill(-this->processId, SIGINT);
+        ::kill(-this->processId, SIGTERM);
     }
 
     auto wait(std::chrono::milliseconds timeout) -> void
@@ -97,11 +109,17 @@ public:
             throw std::logic_error{"The process does not have stdin pipe open."};
         }
 
-        if (::write(this->writePipe.write_end(), message.data(), message.size()) == -1)
+        if (this->is_running())
         {
-            throw std::runtime_error{"Failed to write to process: " + std::to_string(errno)};
+            if (::write(this->writePipe.write_end(), message.data(), message.size()) == -1)
+            {
+                throw std::runtime_error{"Failed to write to process: " + std::to_string(errno)};
+            }
         }
     }
+
+    auto operator=(const UnixProcess &other) -> UnixProcess & = delete;
+    auto operator=(UnixProcess &&other) noexcept -> UnixProcess & = default;
 
 private:
     auto change_directory() -> void
@@ -187,30 +205,14 @@ private:
     auto setup_child_read_pipe() -> void
     {
         this->readPipe.close_read();
-
-        if (this->setup->read)
-        {
-            ::dup2(this->readPipe.write_end(), STDOUT_FILENO);
-            ::dup2(STDOUT_FILENO, STDERR_FILENO);
-        }
-        else
-        {
-            this->readPipe.close_write();
-        }
+        ::dup2(this->readPipe.write_end(), STDOUT_FILENO);
+        ::dup2(STDOUT_FILENO, STDERR_FILENO);
     }
 
     auto setup_child_write_pipe() -> void
     {
         this->writePipe.close_write();
-
-        if (this->setup->write)
-        {
-            ::dup2(this->writePipe.read_end(), STDIN_FILENO);
-        }
-        else
-        {
-            this->writePipe.close_read();
-        }
+        ::dup2(this->writePipe.read_end(), STDIN_FILENO);
     }
 
     auto setup_parent_read_pipe() -> void
