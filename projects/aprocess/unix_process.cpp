@@ -142,6 +142,17 @@ private:
         this->exec();
     }
 
+    auto clone_existing_environment() -> void
+    {
+        char **env = ::environ;
+
+        while (*env != nullptr)
+        {
+            this->environment.emplace_back(*env);
+            ++env;
+        }
+    }
+
     [[nodiscard]] auto create_arguments() -> std::vector<char *>
     {
         std::vector<char *> args;
@@ -159,19 +170,13 @@ private:
 
     [[nodiscard]] auto create_environment() -> std::vector<char *>
     {
-        for (const EnvironmentVariable &envVar : this->setup->environment)
-        {
-            this->environment.push_back(envVar.name + '=' + envVar.value);
-        }
+        this->set_new_environment_variables();
+        this->clone_existing_environment();
+        return this->create_environment_pointers();
+    }
 
-        char **env = ::environ;
-
-        while (*env != nullptr)
-        {
-            this->environment.emplace_back(*env);
-            ++env;
-        }
-
+    [[nodiscard]] auto create_environment_pointers() -> std::vector<char *>
+    {
         std::vector<char *> envPtr;
         envPtr.reserve(this->environment.size());
 
@@ -205,6 +210,14 @@ private:
         this->setup_parent_read_pipe();
         this->setup_parent_write_pipe();
         this->wait_for_started();
+    }
+
+    auto set_new_environment_variables() -> void
+    {
+        for (const EnvironmentVariable &envVar : this->setup->environment)
+        {
+            this->environment.push_back(envVar.name + '=' + envVar.value);
+        }
     }
 
     auto setup_child_monitor_pipe() -> void
