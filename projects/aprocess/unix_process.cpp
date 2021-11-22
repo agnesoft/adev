@@ -3,7 +3,9 @@ module aprocess : unix_process;
 import : process_setup;
 import : pipe;
 import : async_reader;
+#    ifndef _WIN32
 import<wait.h>;
+#    endif
 #endif
 
 #ifndef _WIN32

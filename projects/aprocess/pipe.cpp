@@ -1,8 +1,10 @@
 #ifndef __clang__
 module aprocess : pipe;
 import astl;
+#    ifndef _WIN32
 import<fcntl.h>;
 import<unistd.h>;
+#    endif
 #endif
 
 #ifndef _WIN32
