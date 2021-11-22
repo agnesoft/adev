@@ -1,3 +1,8 @@
+module fcntl_h {
+    header "/usr/include/fcntl.h"
+    export *
+}
+
 module unistd_h {
     header "/usr/include/unistd.h"
     export *

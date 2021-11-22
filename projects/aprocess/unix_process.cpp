@@ -16,6 +16,7 @@ public:
     explicit UnixProcess(ProcessSetup &setup) :
         setup{&setup}
     {
+        this->monitorPipe.close_on_exec();
         this->processId = ::fork();
 
         if (this->processId == 0)
@@ -44,7 +45,7 @@ public:
         if (this->running)
         {
             const int code = ::waitpid(this->processId, &this->status, WNOHANG);
-            
+
             if (code == this->processId)
             {
                 this->running = false;
@@ -54,7 +55,7 @@ public:
                 throw std::runtime_error{"Failed to get exit code of process: " + std::to_string(errno)};
             }
         }
-        
+
         return WEXITSTATUS(this->status);
     }
 
@@ -126,17 +127,17 @@ private:
     {
         if (::chdir(this->setup->workingDirectory.c_str()) == -1)
         {
-            std::exit(errno);
+            this->signal_error();
         }
     }
 
     auto child_process() -> void
     {
+        this->setup_child_monitor_pipe();
         this->setup_child_read_pipe();
         this->setup_child_write_pipe();
         this->change_directory();
         this->exec();
-        std::exit(errno);
     }
 
     [[nodiscard]] auto create_arguments() -> std::vector<char *>
@@ -193,13 +194,20 @@ private:
             ::execvpe(this->setup->command.c_str(), this->create_arguments().data(), this->create_environment().data());
         }
 
-        std::exit(errno);
+        this->signal_error();
     }
 
     auto parent_process() -> void
     {
+        this->setup_parent_monitor_pipe();
         this->setup_parent_read_pipe();
         this->setup_parent_write_pipe();
+        this->wait_for_started();
+    }
+
+    auto setup_child_monitor_pipe() -> void
+    {
+        this->monitorPipe.close_read();
     }
 
     auto setup_child_read_pipe() -> void
@@ -213,6 +221,11 @@ private:
     {
         this->writePipe.close_write();
         ::dup2(this->writePipe.read_end(), STDIN_FILENO);
+    }
+
+    auto setup_parent_monitor_pipe() -> void
+    {
+        this->monitorPipe.close_write();
     }
 
     auto setup_parent_read_pipe() -> void
@@ -239,6 +252,23 @@ private:
         }
     }
 
+    auto signal_error() -> void
+    {
+        const int e = errno;
+        ::write(this->monitorPipe.write_end(), &e, sizeof(e));
+        std::exit(e);
+    }
+
+    auto wait_for_started() -> void
+    {
+        int e = 0;
+
+        if (::read(this->monitorPipe.read_end(), &e, sizeof(e)) != 0)
+        {
+            throw std::runtime_error{"Failed to create process: " + std::to_string(e)};
+        }
+    }
+
     ProcessSetup *setup = nullptr;
     int processId = 0;
     int status = 0;
@@ -246,6 +276,7 @@ private:
     std::unique_ptr<AsyncReader> asyncReader;
     Pipe readPipe;
     Pipe writePipe;
+    Pipe monitorPipe;
     bool running = true;
 };
 }

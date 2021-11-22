@@ -18,6 +18,7 @@ function build_clang() {
 }
 
 function build_gcc() {
+    $gcc $gccCompilerFlags -x c++-system-header "fcntl.h"
     $gcc $gccCompilerFlags -x c++-system-header "unistd.h"
     $gcc $gccCompilerFlags -x c++-system-header "wait.h"
 

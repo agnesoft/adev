@@ -1,6 +1,7 @@
 #ifndef __clang__
 module aprocess : pipe;
 import astl;
+import<fcntl.h>;
 import<unistd.h>;
 #endif
 
@@ -26,6 +27,12 @@ public:
     {
         this->close_read();
         this->close_write();
+    }
+
+    auto close_on_exec() -> void
+    {
+        ::fcntl(this->pipes[Pipe::READ], F_SETFD, FD_CLOEXEC);
+        ::fcntl(this->pipes[Pipe::WRITE], F_SETFD, FD_CLOEXEC);
     }
 
     auto close_read() -> void
