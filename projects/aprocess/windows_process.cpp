@@ -39,13 +39,19 @@ public:
 
     ~WindowsProcess()
     {
-        if (!this->setup->detached && this->is_running())
+        try
         {
-            this->kill();
-        }
+            if (!this->setup->detached && this->is_running())
+            {
+                this->kill();
+            }
 
-        ::CloseHandle(this->processInformation.hProcess);
-        ::CloseHandle(this->processInformation.hThread);
+            ::CloseHandle(this->processInformation.hProcess);
+            ::CloseHandle(this->processInformation.hThread);
+        }
+        catch (...)
+        {
+        }
     }
 
     [[nodiscard]] auto exit_code() const -> int
