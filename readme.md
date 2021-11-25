@@ -31,7 +31,7 @@ To build simply run any of:
 
 Available toolchains are:
 
--   **clang\***
+-   **clang**
 -   **gcc\*** (default, Linux only)
 -   **msvc** (default, Windows only)
 
