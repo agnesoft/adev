@@ -33,7 +33,7 @@ public:
 
     ~UnixProcess()
     {
-        if (!this->setup->detached)
+        if (!this->setup->detached && this->is_running())
         {
             this->kill();
         }

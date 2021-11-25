@@ -9,6 +9,7 @@ import<unistd.h>;
 
 namespace aprocess
 {
+//! \private
 class AsyncReader
 {
 public:

@@ -21,9 +21,9 @@ namespace aprocess
 //! forcefully terminate it. You can check the
 //! status of the process with is_running() and
 //! detach() from the process so that it can
-//! outlive its parent. The process can also be
-//! created detached. If the process is not
-//! detached the destructor will always call
+//! outlive the Process object. The process can
+//! also be created detached. If the process is
+//! not detached the destructor will always call
 //! kill() if the process is still running to
 //! forcefully stop it.
 //!
@@ -35,10 +35,11 @@ namespace aprocess
 //!
 //! \snippet aprocess/test/examples.cpp [process]
 //!
-//! **NOTE:** The `stdout` and `stderr` are combined
-//! in order to make the Process class consistent
-//! across platforms. Many applications ignore
-//! this distinction or use it inconsistently.
+//! **NOTE:** The `stdout` and `stderr` are
+//! combined in order to make the Process class
+//! consistent across platforms. Many applications
+//! ignore this distinction or use it
+//! inconsistently.
 //!
 //! To communicate with the process you can enable
 //! writing to it during construction. Afterwards
@@ -47,12 +48,12 @@ namespace aprocess
 //!
 //! \snippet aprocess/test/examples.cpp [input]
 //!
-//! **NOTE:** Depending on the implementation in the
-//! process you may need to append the delimiter
-//! character for the message to be correctly read
-//! on the other side. For example when reading
-//! with `std::cin` the default delimiter
-//! character is `\n`.
+//! **NOTE:** Depending on the implementation in
+//! the process you may need to append the
+//! delimiter character for the message to be
+//! correctly read on the other side. For example
+//! when reading with `std::cin` the default
+//! delimiter character is `\n`.
 export class Process
 {
 public:
@@ -247,10 +248,11 @@ public:
         return this->process.pid();
     }
 
-    //! Sends `SIGTERM` to the process on Unix or
-    //! `WM_CLOSE` and `CTRL_C_EVENT` on Windows.
-    //! You should follow this by call to wait()
-    //! to allow the process to gracefully exit.
+    //! Sends `SIGINT and `SIGTERM` to the process
+    //! on Unix or `WM_CLOSE` and `CTRL_C_EVENT`
+    //! on Windows. You should follow this by call
+    //! to wait() to allow the process to
+    //! gracefully exit.
     auto terminate() -> void
     {
         this->process.terminate();

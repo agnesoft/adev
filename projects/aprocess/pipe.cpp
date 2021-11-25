@@ -8,6 +8,7 @@ import<unistd.h>;
 #endif
 
 #ifndef _WIN32
+//! \private
 class Pipe
 {
 public:
