@@ -34,8 +34,8 @@ public:
 
     auto close_on_exec() -> void
     {
-        ::fcntl(this->pipes[Pipe::READ], F_SETFD, FD_CLOEXEC); //NOLINT(cppcoreguidelines-pro-type-vararg)
-        ::fcntl(this->pipes[Pipe::WRITE], F_SETFD, FD_CLOEXEC); //NOLINT(cppcoreguidelines-pro-type-vararg)
+        ::fcntl(this->pipes[Pipe::READ], F_SETFD, FD_CLOEXEC); // NOLINT(cppcoreguidelines-pro-type-vararg)
+        ::fcntl(this->pipes[Pipe::WRITE], F_SETFD, FD_CLOEXEC); // NOLINT(cppcoreguidelines-pro-type-vararg)
     }
 
     auto close_read() -> void
