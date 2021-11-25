@@ -31,7 +31,7 @@ To build simply run any of:
 
 Available toolchains are:
 
--   **clang\***
+-   **clang**
 -   **gcc\*** (default, Linux only)
 -   **msvc** (default, Windows only)
 
@@ -44,6 +44,7 @@ The binaries will be output to `build/<toolchain>`.
 | Name                                            | Path                                              | Description                                  |
 | ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------- |
 | [acommandline](projects/acommandline/readme.md) | [projects/acommandline/](/projects/acommandline/) | c++ command line parser                      |
+| [aprocess](projects/aprocess/readme.md)         | [projects/aprocess/](/projects/aprocess/)         | c++ process management library               |
 | [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper |
 | [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
 | [awinapi](projects/awinapi/readme.md)           | [projects/awinapi/](/projects/awinapi/)           | c++ winapi module wrapper                    |
@@ -104,9 +105,11 @@ There are two workflows:
 
 ## Known Issues
 
-| Platform | Action   | Tool           | Version | Description                                                                                                                                | Date       |
-| -------- | -------- | -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| Linux    | build    | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error.                                           | 31/08/2021 |
-| any      | coverage | llvm           | 12, 13  | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed   | 29/09/2021 |
-| Windows  | docker   | Docker Desktop | 4.1     | It cannot be installed if there is an existing WSL 2 image. Docker Desktop must be installed when there are no other WSL 2 images          | 02/10/2021 |
-| Windows  | build    | msvc           | 16.11.5 | Using `<Windows.h>` as a header unit requires suppression of warnings 4005, 5105 and 5106 transitively (i.e. all uses even indirect ones). | 03/11/2021 |
+| Platform | Action   | Tool           | Version | Description                                                                                                                                                             | Date       |
+| -------- | -------- | -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| any      | coverage | llvm           | 12, 13  | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed                                | 29/09/2021 |
+| Linux    | build    | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error.                                                                        | 31/08/2021 |
+| Linux    | analysis | llvm           | 13      | `clang-tidy` has difficulties using Unix headers such as `wait.h` as header units even with correct `module.modulemap`. The build si fine.                              | 25/11/2021 |
+| Linux    | coverage | llvm           | 13      | LLVM source code based coverage has difficulties with code using `fork()`. The resulting `profraw` file is reported as corrupted and cannot be used by `llvm-profdata`. | 25/11/2021 |
+| Windows  | docker   | Docker Desktop | 4.1     | It cannot be installed if there is an existing WSL 2 image. Docker Desktop must be installed when there are no other WSL 2 images                                       | 02/10/2021 |
+| Windows  | build    | msvc           | 16.11.5 | Using `<Windows.h>` as a header unit requires suppression of warnings 4005, 5105 and 5106 transitively (i.e. all uses even indirect ones).                              | 03/11/2021 |
