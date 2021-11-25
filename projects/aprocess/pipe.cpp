@@ -13,7 +13,7 @@ class Pipe
 public:
     Pipe()
     {
-        if (::pipe(this->pipes) != 0)
+        if (::pipe(this->pipes.data()) != 0)
         {
             throw std::runtime_error{"Failed to create pipe for the child process."};
         }
@@ -33,8 +33,8 @@ public:
 
     auto close_on_exec() -> void
     {
-        ::fcntl(this->pipes[Pipe::READ], F_SETFD, FD_CLOEXEC);
-        ::fcntl(this->pipes[Pipe::WRITE], F_SETFD, FD_CLOEXEC);
+        ::fcntl(this->pipes[Pipe::READ], F_SETFD, FD_CLOEXEC); //NOLINT(cppcoreguidelines-pro-type-vararg)
+        ::fcntl(this->pipes[Pipe::WRITE], F_SETFD, FD_CLOEXEC); //NOLINT(cppcoreguidelines-pro-type-vararg)
     }
 
     auto close_read() -> void
@@ -86,6 +86,6 @@ private:
     static constexpr size_t READ = 0;
     static constexpr size_t WRITE = 1;
     static constexpr int INVALID_DESCRIPTOR = -1;
-    int pipes[2] = {Pipe::INVALID_DESCRIPTOR, Pipe::INVALID_DESCRIPTOR};
+    std::array<int, 2> pipes = {Pipe::INVALID_DESCRIPTOR, Pipe::INVALID_DESCRIPTOR};
 };
 #endif

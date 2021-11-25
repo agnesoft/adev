@@ -5,9 +5,9 @@ export import : process;
 #else
 import awinapi;
 #    ifndef _WIN32
-import<fcntl.h>;
-import<unistd.h>;
-import<wait.h>;
+import fcntl_h;
+import unistd_h;
+import wait_h;
 #    endif
 // clang-format off
 #include "environment_variable.cpp" //NOLINT(bugprone-suspicious-include)

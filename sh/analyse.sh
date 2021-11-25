@@ -55,7 +55,7 @@ function analyse_project_module_source() {
     sources="${sources[@]}"
 
     if should_analyse "${diff}" "${sources}"; then
-        analyse_source "${source}" "-header-filter=.*"
+        analyse_source "${source}" "-header-filter=.*\\.cpp"
     fi
 }
 

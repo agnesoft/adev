@@ -19,7 +19,7 @@ public:
         setup{&setup}
     {
         this->monitorPipe.close_on_exec();
-        this->processId = ::fork();
+        this->processId = ::fork(); //NOLINT(cppcoreguidelines-prefer-member-initializer)
 
         if (this->processId == 0)
         {
@@ -58,7 +58,7 @@ public:
             }
         }
 
-        return WEXITSTATUS(this->status);
+        return WEXITSTATUS(this->status); //NOLINT(hicpp-signed-bitwise)
     }
 
     [[nodiscard]] auto is_running() -> bool
@@ -149,7 +149,7 @@ private:
         while (*env != nullptr)
         {
             this->environment.emplace_back(*env);
-            ++env;
+            ++env; //NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         }
     }
 
@@ -271,7 +271,9 @@ private:
     {
         const int e = errno;
         ::write(this->monitorPipe.write_end(), &e, sizeof(e));
-        std::exit(e);
+        std::mutex mutex;
+        const std::lock_guard<std::mutex> lock(mutex);
+        std::exit(e); //NOLINT(concurrency-mt-unsafe)
     }
 
     auto wait_for_started() -> void

@@ -61,7 +61,6 @@ elif [[ "${THREAD_SANITIZER}" == "true" ]]; then
 elif [[ "${UNDEFINED_SANITIZER}" == "true" ]]; then
     clangCompilerFlags="${clangCompilerFlags} \
                         -fsanitize=undefined"
-
 else
     clangCompilerFlags="${clangCompilerFlags} \
                         -O3"
