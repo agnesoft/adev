@@ -12,3 +12,8 @@ module wait_h {
     header "/usr/include/wait.h"
     export *
 }
+
+module poll_h {
+    header "/usr/include/poll.h"
+    export *
+}

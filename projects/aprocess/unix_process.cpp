@@ -2,8 +2,8 @@
 module aprocess : unix_process;
 import : process_setup;
 import : pipe;
-import : async_reader;
 #    ifndef _WIN32
+import<poll.h>;
 import<wait.h>;
 #    endif
 #endif
@@ -81,6 +81,16 @@ public:
         return this->processId;
     }
 
+    [[nodiscard]] auto read(std::chrono::milliseconds timeout) -> std::string
+    {
+        if (this->wait_for_data_to_read(timeout))
+        {
+            return this->do_read();
+        }
+
+        return {};
+    }
+
     auto terminate() const -> void
     {
         ::kill(-this->processId, SIGINT);
@@ -107,17 +117,9 @@ public:
 
     auto write(const std::string &message) -> void
     {
-        if (!this->setup->write)
+        if (!this->do_write(message))
         {
-            throw std::logic_error{"The process does not have stdin pipe open."};
-        }
-
-        if (this->is_running())
-        {
-            if (::write(this->writePipe.write_end(), message.data(), message.size()) == -1)
-            {
-                throw std::runtime_error{"Failed to write to process: " + std::to_string(errno)};
-            }
+            throw std::runtime_error{"Failed to write to process: " + std::to_string(errno)};
         }
     }
 
@@ -135,6 +137,8 @@ private:
 
     auto child_process() -> void
     {
+        this->reset_ignore_sigpipe_signal();
+        this->setup_child_if_detached();
         this->setup_child_monitor_pipe();
         this->setup_child_read_pipe();
         this->setup_child_write_pipe();
@@ -190,6 +194,29 @@ private:
         return envPtr;
     }
 
+    [[nodiscard]] auto do_read() -> std::string
+    {
+        constexpr std::size_t bufferSize = 65'536;
+        std::string buffer(bufferSize, char{});
+        std::size_t bytesRead = 0;
+        std::stringstream output;
+
+        do
+        {
+            bytesRead = ::read(this->readPipe.read_end(), buffer.data(), buffer.size());
+            output << std::string_view{buffer.data(), bytesRead};
+        }
+        while (bytesRead == buffer.size());
+
+        return output.str();
+    }
+
+    [[nodiscard]] auto do_write(const std::string &message) -> bool
+    {
+        const ::ssize_t result = ::write(this->writePipe.write_end(), message.data(), message.size());
+        return result != -1 && static_cast<std::size_t>(result) == message.size();
+    }
+
     auto exec() -> void
     {
         if (this->setup->environment.empty())
@@ -204,12 +231,33 @@ private:
         this->signal_error();
     }
 
+    static auto ignore_sigpipe_signal() -> void
+    {
+        ::signal(SIGPIPE, SIG_IGN);
+    }
+
+    [[nodiscard]] auto wait_for_data_to_read(std::chrono::milliseconds timeout) -> bool
+    {
+        std::array<::pollfd, 1> fds{
+            ::pollfd{
+                .fd = this->readPipe.read_end(),
+                .events = POLLIN}};
+
+        return ::poll(fds.data(), 1, timeout.count()) == 1;
+    }
+
     auto parent_process() -> void
     {
+        this->ignore_sigpipe_signal();
         this->setup_parent_monitor_pipe();
         this->setup_parent_read_pipe();
         this->setup_parent_write_pipe();
         this->wait_for_started();
+    }
+
+    static auto reset_ignore_sigpipe_signal() -> void
+    {
+        ::signal(SIGPIPE, SIG_DFL);
     }
 
     auto set_new_environment_variables() -> void
@@ -217,6 +265,14 @@ private:
         for (const EnvironmentVariable &envVar : this->setup->environment)
         {
             this->environment.push_back(envVar.name + '=' + envVar.value);
+        }
+    }
+
+    auto setup_child_if_detached() -> void
+    {
+        if (this->setup->detached)
+        {
+            ::setsid();
         }
     }
 
@@ -246,25 +302,11 @@ private:
     auto setup_parent_read_pipe() -> void
     {
         this->readPipe.close_write();
-
-        if (this->setup->read)
-        {
-            this->asyncReader = std::make_unique<AsyncReader>(this->readPipe.read_end(), *this->setup);
-        }
-        else
-        {
-            this->readPipe.close_read();
-        }
     }
 
     auto setup_parent_write_pipe() -> void
     {
         this->writePipe.close_read();
-
-        if (!this->setup->write)
-        {
-            this->writePipe.close_write();
-        }
     }
 
     auto signal_error() -> void
@@ -290,7 +332,6 @@ private:
     int processId = 0;
     int status = 0;
     std::vector<std::string> environment;
-    std::unique_ptr<AsyncReader> asyncReader;
     Pipe readPipe;
     Pipe writePipe;
     Pipe monitorPipe;

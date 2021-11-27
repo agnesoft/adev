@@ -27,23 +27,4 @@ static const auto S = suite("detached", [] { // NOLINT(cert-err58-cpp)
         std::this_thread::sleep_for(DEFAULT_WAIT_TIMEOUT);
         expect(::is_process_running(pid)).to_be(true);
     });
-
-    test("detach after construction", [] {
-        std::int64_t pid = 0;
-
-        {
-            ::aprocess::Process process = ::aprocess::create_process()
-                                              .command("aprocesstestapp")
-                                              .arg("--wait=50");
-
-            assert_(process.detached()).to_be(false);
-            process.detach();
-            assert_(process.detached()).to_be(true);
-            assert_(process.is_running()).to_be(true);
-            pid = process.pid();
-        }
-
-        std::this_thread::sleep_for(DEFAULT_WAIT_TIMEOUT);
-        expect(::is_process_running(pid)).to_be(true);
-    });
 });

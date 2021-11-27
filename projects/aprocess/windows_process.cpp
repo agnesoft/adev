@@ -1,6 +1,7 @@
 #ifndef __clang__
 module aprocess : windows_process;
-import : async_reader;
+import : process_setup;
+import awinapi;
 #endif
 
 #ifdef _WIN32
