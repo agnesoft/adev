@@ -137,7 +137,7 @@ private:
 
     auto child_process() -> void
     {
-        this->reset_ignore_sigpipe_signal();
+        UnixProcess::reset_ignore_sigpipe_signal();
         this->setup_child_if_detached();
         this->setup_child_monitor_pipe();
         this->setup_child_read_pipe();
@@ -233,7 +233,7 @@ private:
 
     static auto ignore_sigpipe_signal() -> void
     {
-        ::signal(SIGPIPE, SIG_IGN);
+        ::signal(SIGPIPE, SIG_IGN); //NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
     }
 
     [[nodiscard]] auto wait_for_data_to_read(std::chrono::milliseconds timeout) -> bool
@@ -243,12 +243,12 @@ private:
                 .fd = this->readPipe.read_end(),
                 .events = POLLIN}};
 
-        return ::poll(fds.data(), 1, timeout.count()) == 1;
+        return ::poll(fds.data(), 1, static_cast<int>(timeout.count())) == 1;
     }
 
     auto parent_process() -> void
     {
-        this->ignore_sigpipe_signal();
+        UnixProcess::ignore_sigpipe_signal();
         this->setup_parent_monitor_pipe();
         this->setup_parent_read_pipe();
         this->setup_parent_write_pipe();

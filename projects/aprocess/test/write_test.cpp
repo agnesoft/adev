@@ -1,7 +1,6 @@
 import atest;
 import aprocess;
 
-using ::atest::assert_;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
