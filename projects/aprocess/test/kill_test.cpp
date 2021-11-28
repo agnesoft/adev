@@ -26,7 +26,7 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
                                           .command("aprocesstestapp");
 
         process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
-        expect(process.is_running()).to_be(false);
+        assert_(process.is_running()).to_be(false);
         process.kill();
     });
 
@@ -38,7 +38,7 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
                                               .command("aprocesstestapp")
                                               .arguments({"--echo-input", "--echo-input-timeout=10000"});
 
-            expect(process.is_running()).to_be(true);
+            assert_(process.is_running()).to_be(true);
             pid = process.pid();
         }
 
@@ -46,7 +46,7 @@ static const auto S = suite("kill", [] { // NOLINT(cert-err58-cpp)
 
         while (std::chrono::system_clock::now() < end && ::is_process_running(pid))
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds{1});
+            std::this_thread::sleep_for(std::chrono::nanoseconds{1});
         }
 
         expect(::is_process_running(pid)).to_be(false);

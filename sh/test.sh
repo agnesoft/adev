@@ -43,7 +43,7 @@ function run_tests() {
 
     if [[ -d "${testDir}" ]]; then
         for test in $testDir/*_test$executableExtension; do
-            if [[ -f "${test}" && "${test}" != "build/clang/bin/aprocess_test" ]]; then
+            if [[ -f "${test}" ]]; then
                 run_test "${test}"
             fi
         done

@@ -1,6 +1,7 @@
 #ifndef __clang__
 module aprocess : windows_process;
-import : async_reader;
+import : process_setup;
+import awinapi;
 #endif
 
 #ifdef _WIN32
@@ -23,15 +24,17 @@ public:
                             nullptr,
                             nullptr,
                             TRUE,
-                            0,
+                            this->process_flags(),
                             environment.empty() ? nullptr : environment.data(),
-                            this->setup->workingDirectory.c_str(),
+                            this->setup->workingDirectory.string().c_str(),
                             &this->startupInfo,
                             &this->processInformation)
             == FALSE)
         {
             throw std::runtime_error{"Failed to create process:\n  " + ::awinapi::last_error_message()};
         }
+
+        this->close_unused_handles();
     }
 
     WindowsProcess(const WindowsProcess &other) = delete;
@@ -39,13 +42,25 @@ public:
 
     ~WindowsProcess()
     {
-        if (!this->setup->detached && this->is_running())
+        try
         {
-            this->kill();
-        }
+            if (!this->setup->detached && this->is_running())
+            {
+                this->kill();
+            }
 
-        ::CloseHandle(this->processInformation.hProcess);
-        ::CloseHandle(this->processInformation.hThread);
+            ::CloseHandle(this->processInformation.hProcess);
+            ::CloseHandle(this->processInformation.hThread);
+        }
+        catch (...)
+        {
+        }
+    }
+
+    auto close_unused_handles() -> void
+    {
+        this->readPipe.close_write();
+        this->writePipe.close_read();
     }
 
     [[nodiscard]] auto exit_code() const -> int
@@ -77,6 +92,37 @@ public:
         return static_cast<std::int64_t>(this->processInformation.dwProcessId);
     }
 
+    [[nodiscard]] auto read(std::chrono::milliseconds timeout) -> std::string
+    {
+        std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now() + timeout;
+
+        do
+        {
+            DWORD bytesAvailable = 0;
+            ::PeekNamedPipe(this->readPipe.read_handle(),
+                            nullptr,
+                            0,
+                            nullptr,
+                            &bytesAvailable,
+                            nullptr);
+
+            if (bytesAvailable != 0)
+            {
+                std::string buffer = std::string(bytesAvailable, char{});
+                DWORD bytesRead = 0;
+                ::ReadFile(this->readPipe.read_handle(),
+                           static_cast<LPVOID>(buffer.data()),
+                           bytesAvailable,
+                           &bytesRead,
+                           nullptr);
+                return buffer;
+            }
+        }
+        while (this->is_running() && std::chrono::system_clock::now() < end);
+
+        return {};
+    }
+
     auto terminate() const -> void
     {
         ::PostThreadMessage(this->processInformation.dwThreadId, WM_CLOSE, 0, 0);
@@ -93,12 +139,23 @@ public:
 
     auto write(const std::string &message) -> void
     {
-        if (this->writePipe->write_handle() == nullptr)
+        if (!this->is_running())
         {
-            throw std::logic_error{"The process does not have stdin pipe open."};
+            throw std::runtime_error{"Failed to write to process:\n  The process is not running."};
         }
 
-        this->do_write(message);
+        DWORD bytesWritten = 0;
+
+        if (::WriteFile(this->writePipe.write_handle(),
+                        message.c_str(),
+                        static_cast<DWORD>(message.size()),
+                        &bytesWritten,
+                        nullptr)
+                == FALSE
+            || bytesWritten != message.size())
+        {
+            throw std::runtime_error{"Failed to write to process: (" + std::to_string(bytesWritten) + " of " + std::to_string(message.size()) + " written)\n" + ::awinapi::last_error_message()};
+        }
     }
 
     auto operator=(const WindowsProcess &other) -> WindowsProcess & = delete;
@@ -125,8 +182,8 @@ private:
             return {};
         }
 
-        return WindowsProcess::existing_environment()
-            + this->new_environment_variables()
+        return this->new_environment_variables()
+            + WindowsProcess::existing_environment()
             + '\0';
     }
 
@@ -145,21 +202,6 @@ private:
         }
 
         return false;
-    }
-
-    auto do_write(const std::string &message) -> void
-    {
-        DWORD bytesWritten = 0;
-
-        if (::WriteFile(this->writePipe->write_handle(),
-                        message.c_str(),
-                        static_cast<DWORD>(message.size()),
-                        &bytesWritten,
-                        nullptr)
-            == FALSE)
-        {
-            throw std::runtime_error{"Failed to write to process:\n  " + ::awinapi::last_error_message()};
-        }
     }
 
     [[nodiscard]] static auto existing_environment() -> std::string
@@ -193,45 +235,36 @@ private:
         return variables;
     }
 
+    [[nodiscard]] auto process_flags() const noexcept -> DWORD
+    {
+        if (this->setup->detached)
+        {
+            return static_cast<DWORD>(CREATE_NEW_PROCESS_GROUP) | static_cast<DWORD>(DETACHED_PROCESS);
+        }
+
+        return 0;
+    }
+
     auto setup_write_pipe() -> void
     {
-        this->writePipe = std::make_unique<::awinapi::Pipe>();
         this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
-        this->startupInfo.hStdInput = this->writePipe->read_handle();
-        ::SetHandleInformation(this->writePipe->write_handle(), HANDLE_FLAG_INHERIT, 0);
-
-        if (!this->setup->write)
-        {
-            ::CloseHandle(this->writePipe->write_handle());
-            this->writePipe->write_handle() = nullptr;
-        }
+        this->startupInfo.hStdInput = this->writePipe.read_handle();
+        ::SetHandleInformation(this->writePipe.write_handle(), HANDLE_FLAG_INHERIT, 0);
     }
 
     auto setup_read_pipe() -> void
     {
-        this->readPipe = std::make_unique<::awinapi::Pipe>();
         this->startupInfo.dwFlags = STARTF_USESTDHANDLES;
-        this->startupInfo.hStdError = this->readPipe->write_handle();
-        this->startupInfo.hStdOutput = this->readPipe->write_handle();
-        ::SetHandleInformation(this->readPipe->read_handle(), HANDLE_FLAG_INHERIT, 0);
-
-        if (this->setup->read)
-        {
-            this->asyncReader = std::make_unique<AsyncReader>(this->readPipe->read_handle(), *this->setup);
-        }
-        else
-        {
-            ::CloseHandle(this->readPipe->read_handle());
-            this->readPipe->read_handle() = nullptr;
-        }
+        this->startupInfo.hStdError = this->readPipe.write_handle();
+        this->startupInfo.hStdOutput = this->readPipe.write_handle();
+        ::SetHandleInformation(this->readPipe.read_handle(), HANDLE_FLAG_INHERIT, 0);
     }
 
     const ProcessSetup *setup = nullptr;
     ::STARTUPINFO startupInfo{.cb = sizeof(this->startupInfo)};
     ::PROCESS_INFORMATION processInformation{};
-    std::unique_ptr<AsyncReader> asyncReader;
-    std::unique_ptr<::awinapi::Pipe> readPipe;
-    std::unique_ptr<::awinapi::Pipe> writePipe;
+    ::awinapi::Pipe readPipe;
+    ::awinapi::Pipe writePipe;
 };
 }
 #endif

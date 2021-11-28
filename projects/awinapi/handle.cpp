@@ -35,9 +35,16 @@ public:
     //! Destructor that closes the handle.
     ~Handle()
     {
+        this->close();
+    }
+
+    //! Closes the handle on demand.
+    auto close() -> void
+    {
         if (this->handle != nullptr)
         {
             ::CloseHandle(this->handle);
+            this->handle = nullptr;
         }
     }
 

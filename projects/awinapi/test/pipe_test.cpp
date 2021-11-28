@@ -21,5 +21,19 @@ static const auto S = suite("Pipe", [] { // NOLINT(cert-err58-cpp)
         expect_fail(pipe.read_handle()).to_be(nullptr);
         expect_fail(pipe.write_handle()).to_be(nullptr);
     });
+
+    test("close read", [] {
+        ::awinapi::Pipe pipe;
+        pipe.close_read();
+        expect(pipe.read_handle()).to_be(nullptr);
+        expect_fail(pipe.write_handle()).to_be(nullptr);
+    });
+
+    test("close write", [] {
+        ::awinapi::Pipe pipe;
+        pipe.close_write();
+        expect_fail(pipe.read_handle()).to_be(nullptr);
+        expect(pipe.write_handle()).to_be(nullptr);
+    });
 });
 #endif

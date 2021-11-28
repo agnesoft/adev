@@ -13,3 +13,4 @@
 -fprebuilt-module-path=build/clang/awinapi
 -fmodule-map-file=projects/astl/module.modulemap
 -fmodule-map-file=projects/awinapi/module.modulemap
+-fmodule-map-file=projects/aprocess/module.modulemap

@@ -23,45 +23,36 @@ constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
 
 static const auto S = suite("environment", [] { // NOLINT(cert-err58-cpp)
     test("variable", [] {
-        std::string output;
-
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arguments({"--echo-env=aprocesstest_envvar"})
                                           .env({"aprocesstest_envvar", "somevalue1"})
-                                          .read([&](std::string_view message) { output += message; })
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
         expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{{"aprocesstest_envvar", "somevalue1"}});
-        expect(output).to_be(std::string{"somevalue1"});
+        expect(process.read()).to_be("somevalue1");
     });
 
     test("variables", [] {
-        std::string output;
-
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arg("--echo-env=aprocesstestenvvar")
                                           .arg("--echo-env=aprocesstestenvvar2")
                                           .environment({{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}})
-                                          .read([&](std::string_view message) { output += message; })
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
         expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}});
-        expect(output).to_be(std::string{"somevalue1somevalue2"});
+        expect(process.read()).to_be("somevalue1somevalue2");
     });
 
     test("PATH", [] {
-        std::string output;
-
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arg("--echo-env=PATH")
                                           .environment({{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}})
-                                          .read([&](std::string_view message) { output += message; })
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
         expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}});
-        expect(output.empty()).to_be(false);
+        expect(process.read().empty()).to_be(false);
     });
 });

@@ -11,9 +11,7 @@ struct ProcessSetup
     std::string command;
     std::vector<std::string> arguments;
     std::vector<EnvironmentVariable> environment;
-    std::string workingDirectory = std::filesystem::current_path().string();
-    std::function<auto(std::string_view output)->void> read{};
-    bool write = false;
+    std::filesystem::path workingDirectory = std::filesystem::current_path();
     bool detached = false;
 };
 }

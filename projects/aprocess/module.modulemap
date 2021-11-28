@@ -1,0 +1,19 @@
+module fcntl_h {
+    header "/usr/include/fcntl.h"
+    export *
+}
+
+module unistd_h {
+    header "/usr/include/unistd.h"
+    export *
+}
+
+module wait_h {
+    header "/usr/include/wait.h"
+    export *
+}
+
+module poll_h {
+    header "/usr/include/poll.h"
+    export *
+}

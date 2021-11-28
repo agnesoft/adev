@@ -16,14 +16,14 @@ function build_clang() {
            "${projectDir}/environment_test.cpp" \
            "${projectDir}/examples.cpp" \
            "${projectDir}/exit_code_test.cpp" \
-           "${projectDir}/input_test.cpp" \
            "${projectDir}/is_process_running.cpp" \
            "${projectDir}/kill_test.cpp" \
-           "${projectDir}/output_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/read_test.cpp" \
            "${projectDir}/terminate_test.cpp" \
            "${projectDir}/wait_test.cpp" \
            "${projectDir}/working_directory_test.cpp" \
+           "${projectDir}/write_test.cpp" \
            "${buildRoot}/aprocess/aprocess.obj" \
            "${buildRoot}/acommandline/acommandline.obj" \
            "${buildRoot}/atest/atest.obj" \
@@ -40,19 +40,20 @@ function build_gcc() {
          "${projectDir}/environment_test.cpp" \
          "${projectDir}/examples.cpp" \
          "${projectDir}/exit_code_test.cpp" \
-         "${projectDir}/input_test.cpp" \
          "${projectDir}/is_process_running.cpp" \
          "${projectDir}/kill_test.cpp" \
-         "${projectDir}/output_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/read_test.cpp" \
          "${projectDir}/terminate_test.cpp" \
          "${projectDir}/wait_test.cpp" \
+         "${projectDir}/working_directory_test.cpp" \
+         "${projectDir}/write_test.cpp" \
          "${projectDir}/working_directory_test.cpp" \
          "${buildRoot}/aprocess/aprocess.lib" \
          "${buildRoot}/acommandline/acommandline.obj" \
          "${buildRoot}/atest/atest.lib" \
-         "${buildRoot}/awinapi/awinapi.obj" \
-         "${buildRoot}/astl/astl.obj"
+         "${buildRoot}/awinapi/awinapi.lib" \
+         "${buildRoot}/astl/astl.lib"
 }
 
 buildMSVC="
@@ -69,14 +70,14 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/environment_test.cpp\" ^
        \"${projectDir}/examples.cpp\" ^
        \"${projectDir}/exit_code_test.cpp\" ^
-       \"${projectDir}/input_test.cpp\" ^
        \"${projectDir}/is_process_running.cpp\" ^
        \"${projectDir}/kill_test.cpp\" ^
-       \"${projectDir}/output_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/read_test.cpp\" ^
        \"${projectDir}/terminate_test.cpp\" ^
        \"${projectDir}/wait_test.cpp\" ^
        \"${projectDir}/working_directory_test.cpp\" ^
+       \"${projectDir}/write_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/awinapi/awinapi.lib\" ^

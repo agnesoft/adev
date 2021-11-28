@@ -12,9 +12,15 @@ import awinapi;
 }
 #else
 import astl;
+#    ifdef __clang__
+import wait_h;
+#    else
+import<wait.h>;
+#    endif
 
-[[nodiscard]] auto is_process_running([[maybe_unused]] std::int64_t pid) -> bool
+[[nodiscard]] auto is_process_running(std::int64_t pid) -> bool
 {
-    return false;
+    int status = 0;
+    return ::waitpid(static_cast<int>(pid), &status, WNOHANG) == 0;
 }
 #endif
