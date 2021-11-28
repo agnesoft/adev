@@ -293,8 +293,12 @@ public:
     //! settings and `std::cin`.
     //!
     //! When the message could not be written in
-    //! full for any reason the
-    //! `std::runtime_error` is thrown.
+    //! full `std::runtime_error` is thrown.
+    //!
+    //! \warning If the run program does not read
+    //! on the STDIN pipe this function might
+    //! block until the program ends and the pipe
+    //! is closed.
     auto write(const std::string &message) -> void
     {
         this->process.write(message);
