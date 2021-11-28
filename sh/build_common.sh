@@ -3,14 +3,7 @@ source "sh/common.sh"
 toolchain="${1}"
 buildRoot="build/${toolchain}"
 binDir="${buildRoot}/bin"
-
-if [[ -d "${HOME}/libc++-msan" ]]; then
-    libCppMsanRoot="${HOME}/libc++-msan"
-elif [[ -d "/root/libc++-msan" ]]; then
-    libCppMsanRoot="/root/libc++-msan"
-else
-    libCppMsanRoot="/libc++-msan"
-fi
+libCppMsanRoot="${HOME}/libc++-msan"
 
 clangCompilerFlagsCommon="-std=c++20 \
                           -Wall \

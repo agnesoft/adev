@@ -3,7 +3,7 @@ source "sh/common.sh"
 if is_windows; then
     ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
     uncoveredFunctions="4"
-    uncoveredLines="40"
+    uncoveredLines="38"
     uncoveredRegions="34"
     uncoveredBranches="8"
 else
