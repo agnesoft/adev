@@ -9,16 +9,6 @@ using ::atest::test;
 constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
 
 static const auto S = suite("wait", [] { // NOLINT(cert-err58-cpp)
-    test("immediate process", [] {
-        ::aprocess::Process process =
-            ::aprocess::create_process()
-                .command("aprocesstestapp");
-
-        assert_(process.is_running()).to_be(true);
-        process.wait(std::chrono::milliseconds{DEFAULT_WAIT_TIMEOUT});
-        expect(process.is_running()).to_be(false);
-    });
-
     test("short running process", [] {
         ::aprocess::Process process =
             ::aprocess::create_process()
