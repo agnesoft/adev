@@ -239,12 +239,10 @@ private:
     {
         if (this->setup->detached)
         {
-            return CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS;
+            return static_cast<DWORD>(CREATE_NEW_PROCESS_GROUP) | static_cast<DWORD>(DETACHED_PROCESS);
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     auto setup_write_pipe() -> void
