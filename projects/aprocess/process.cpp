@@ -141,7 +141,7 @@ public:
 
         //! Sets working directory of the process
         //! to `directory`.
-        [[nodiscard]] auto working_directory(std::string directory) -> Builder &
+        [[nodiscard]] auto working_directory(std::filesystem::path directory) -> Builder &
         {
             this->setup.workingDirectory = std::move(directory);
             return *this;
@@ -276,7 +276,7 @@ public:
 
     //! Returns the working directory that was
     //! used to create the process.
-    [[nodiscard]] auto working_directory() const noexcept -> const std::string &
+    [[nodiscard]] auto working_directory() const noexcept -> const std::filesystem::path &
     {
         return this->setup.workingDirectory;
     }

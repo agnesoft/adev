@@ -129,7 +129,7 @@ public:
 private:
     auto change_directory() -> void
     {
-        if (::chdir(this->setup->workingDirectory.c_str()) == -1)
+        if (::chdir(this->setup->workingDirectory.string().c_str()) == -1)
         {
             this->signal_error();
         }

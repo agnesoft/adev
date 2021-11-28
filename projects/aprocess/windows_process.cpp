@@ -26,7 +26,7 @@ public:
                             TRUE,
                             this->process_flags(),
                             environment.empty() ? nullptr : environment.data(),
-                            this->setup->workingDirectory.c_str(),
+                            this->setup->workingDirectory.string().c_str(),
                             &this->startupInfo,
                             &this->processInformation)
             == FALSE)
