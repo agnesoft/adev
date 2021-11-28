@@ -233,7 +233,7 @@ private:
 
     static auto ignore_sigpipe_signal() -> void
     {
-        ::signal(SIGPIPE, SIG_IGN); //NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+        ::signal(SIGPIPE, SIG_IGN); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
     }
 
     [[nodiscard]] auto wait_for_data_to_read(std::chrono::milliseconds timeout) -> bool
