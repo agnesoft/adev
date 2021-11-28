@@ -3,7 +3,7 @@ source "sh/common.sh"
 toolchain="${1}"
 buildRoot="build/${toolchain}"
 binDir="${buildRoot}/bin"
-libCppMsanRoot="${HOME}/libc++-msan"
+libCppMsanRoot="${home}/libc++-msan"
 
 clangCompilerFlagsCommon="-std=c++20 \
                           -Wall \

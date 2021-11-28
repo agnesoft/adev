@@ -19,16 +19,16 @@ function detect_ninja () {
 }
 
 function get_llvm_sources() {
-    if [[ ! -d "${HOME}/llvm" ]]; then
-        git clone --depth=1 -b llvmorg-13.0.0 https://github.com/llvm/llvm-project.git "${HOME}/llvm"
+    if [[ ! -d "${home}/llvm" ]]; then
+        git clone --depth=1 -b llvmorg-13.0.0 https://github.com/llvm/llvm-project.git "${home}/llvm"
     fi
 
-    mkdir -p "${HOME}/llvm/build_msan/"
-    mkdir -p "${HOME}/libc++-msan/"
+    mkdir -p "${home}/llvm/build_msan/"
+    mkdir -p "${home}/libc++-msan/"
 }
 
 function build() {
-    cd ${HOME}/llvm/build_msan/
+    cd ${home}/llvm/build_msan/
 
     cmake -G Ninja \
           ../llvm \
@@ -37,7 +37,7 @@ function build() {
           -D CMAKE_C_COMPILER=clang-${llvmVersion} \
           -D CMAKE_CXX_COMPILER=${clang} \
           -D LLVM_USE_SANITIZER=MemoryWithOrigins \
-          -D CMAKE_INSTALL_PREFIX="${HOME}/libc++-msan/"
+          -D CMAKE_INSTALL_PREFIX="${home}/libc++-msan/"
 
     cmake --build . -- cxx cxxabi
     cmake --build . -- install-cxx install-cxxabi
