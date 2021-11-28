@@ -33,6 +33,8 @@ public:
         {
             throw std::runtime_error{"Failed to create process:\n  " + ::awinapi::last_error_message()};
         }
+
+        this->close_unused_handles();
     }
 
     WindowsProcess(const WindowsProcess &other) = delete;
@@ -53,6 +55,12 @@ public:
         catch (...)
         {
         }
+    }
+
+    auto close_unused_handles() -> void
+    {
+        this->readPipe.close_write();
+        this->writePipe.close_read();
     }
 
     [[nodiscard]] auto exit_code() const -> int
@@ -146,7 +154,7 @@ public:
                 == FALSE
             || bytesWritten != message.size())
         {
-            throw std::runtime_error{"Failed to write to process:\n  " + ::awinapi::last_error_message()};
+            throw std::runtime_error{"Failed to write to process: (" + std::to_string(bytesWritten) + " of " + std::to_string(message.size()) + " written)\n" + ::awinapi::last_error_message()};
         }
     }
 

@@ -82,8 +82,7 @@ static const auto S = suite("write", [] { // NOLINT(cert-err58-cpp)
         ::aprocess::Process process =
             ::aprocess::create_process()
                 .command("aprocesstestapp")
-                .arg("--wait=100")
-                .detached();
+                .arg("--wait=100");
 
         constexpr std::size_t largeSize = 1'000'000;
         std::string input(largeSize, 'A');

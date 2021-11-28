@@ -7,9 +7,13 @@ export import : last_error_message;
 #ifdef _WIN32
 namespace awinapi
 {
+//! The Pipe is a wrapper around Windows anonymous
+//! pipes.
 export class Pipe
 {
 public:
+    //! Creates a new anonymous pipe with
+    //! `CreatePipe`.
     Pipe()
     {
         if (::CreatePipe(&this->readHandle.get(),
@@ -22,12 +26,28 @@ public:
         }
     }
 
-    [[nodiscard]] constexpr auto read_handle() noexcept -> HANDLE &
+    //! Closes the read handle of the pipe.
+    auto close_read() -> void
+    {
+        this->readHandle.close();
+    }
+
+    //! Closes the write handle of the pipe.
+    auto close_write() -> void
+    {
+        this->writeHandle.close();
+    }
+
+    //! Returns the underlying read handle of the
+    //! pipe.
+    [[nodiscard]] constexpr auto read_handle() noexcept -> HANDLE
     {
         return this->readHandle.get();
     }
 
-    [[nodiscard]] constexpr auto write_handle() noexcept -> HANDLE &
+    //! Returns the underlying write handle of the
+    //! pipe.
+    [[nodiscard]] constexpr auto write_handle() noexcept -> HANDLE
     {
         return this->writeHandle.get();
     }

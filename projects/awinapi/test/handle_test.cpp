@@ -39,6 +39,15 @@ static const auto S = suite("Handle", [] { // NOLINT(cert-err58-cpp)
         wrapper.get() = nullptr;
     });
 
+    test("close a handle", [] {
+        int value = 1;
+        auto *handle = static_cast<::HANDLE>(&value);
+        ::awinapi::Handle wrapper{handle};
+        expect(wrapper.get()).to_be(handle);
+        wrapper.close();
+        expect(wrapper.get()).to_be(nullptr);
+    });
+
     test("move constructor", [] {
         int value = 1;
         auto *handle = static_cast<::HANDLE>(&value);
