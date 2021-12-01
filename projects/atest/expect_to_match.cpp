@@ -40,7 +40,7 @@ public:
     //! stringification of the error output.
     ExpectToMatch(const ExpressionT &expression, const ValueT &value, const std::source_location &sourceLocation) :
         ExpectBase<ExpressionT, expectationType, resultHandlingPolicy>{expression, sourceLocation},
-        value{value}
+        expected{value}
     {
         try
         {
@@ -52,11 +52,11 @@ public:
         }
         catch (const std::exception &exception)
         {
-            this->fail(Failure{::atest::stringify("Unexpected exception thrown (", typeid(exception).name(), "): ", exception.what())});
+            this->fail(Failure{.what = ::atest::stringify("Unexpected exception thrown (", typeid(exception).name(), "): ", exception.what())});
         }
         catch (...)
         {
-            this->fail(Failure{"Unexpected exception thrown"});
+            this->fail(Failure{.what = "Unexpected exception thrown"});
         }
     }
 
@@ -73,20 +73,23 @@ private:
         }
     }
 
-    auto match(const auto &left) -> void
+    auto match(const auto &actual) -> void
     {
         MatcherT matcher;
 
-        if (matcher(left, this->value))
+        if (matcher(actual, this->expected))
         {
             this->handle_success();
         }
         else
         {
-            this->handle_failure(Failure{matcher.describe(), matcher.expected(left, this->value), matcher.actual(left, this->value)});
+            this->handle_failure(Failure{.what = matcher.describe(),
+                                         .expected = matcher.expected(actual, this->expected),
+                                         .actual = matcher.actual(actual, this->expected),
+                                         .hint = matcher.hint(actual, this->expected)});
         }
     }
 
-    const ValueT &value;
+    const ValueT &expected;
 };
 }

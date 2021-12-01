@@ -11,6 +11,7 @@ struct Failure
     std::string what;
     std::string expected;
     std::string actual;
+    std::string hint;
     std::source_location sourceLocation;
 };
 }

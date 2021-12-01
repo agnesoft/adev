@@ -12,6 +12,7 @@ function build_clang() {
            "${projectDir}/throwing_test_test.cpp" \
            "${projectDir}/throwing_suites_test.cpp" \
            "${projectDir}/expect_to_be_test.cpp" \
+           "${projectDir}/expect_to_be_string_test.cpp" \
            "${projectDir}/expect_to_contain_test.cpp" \
            "${projectDir}/expect_to_match_test.cpp" \
            "${projectDir}/expect_to_throw_test.cpp" \
@@ -33,6 +34,7 @@ function build_gcc() {
          "${projectDir}/throwing_test_test.cpp" \
          "${projectDir}/throwing_suites_test.cpp" \
          "${projectDir}/expect_to_be_test.cpp" \
+         "${projectDir}/expect_to_be_string_test.cpp" \
          "${projectDir}/expect_to_contain_test.cpp" \
          "${projectDir}/expect_to_match_test.cpp" \
          "${projectDir}/expect_to_throw_test.cpp" \
@@ -56,6 +58,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/throwing_test_test.cpp\" ^
        \"${projectDir}/throwing_suites_test.cpp\" ^
        \"${projectDir}/expect_to_be_test.cpp\" ^
+       \"${projectDir}/expect_to_be_string_test.cpp\" ^
        \"${projectDir}/expect_to_contain_test.cpp\" ^
        \"${projectDir}/expect_to_match_test.cpp\" ^
        \"${projectDir}/expect_to_throw_test.cpp\" ^

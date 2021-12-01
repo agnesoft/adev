@@ -161,6 +161,7 @@ private:
         this->print(::atest::stringify("at ", Printer::yellow(Printer::source_location_to_string(failure.sourceLocation))), failure.what);
         this->print("  Expected: ", failure.expected);
         this->print("  Actual  : ", failure.actual);
+        this->print("            ", failure.hint);
     }
 
     auto print_test_failures(const Test &test) -> void

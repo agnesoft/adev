@@ -68,7 +68,8 @@ public:
         try
         {
             this->expression()();
-            this->handle_failure(Failure{"No exception thrown", ::atest::stringify(typeid(ExceptionT).name(), " '", this->value, '\''), ""});
+            this->handle_failure(Failure{.what = "No exception thrown",
+                                         .expected = ::atest::stringify(typeid(ExceptionT).name(), " '", this->value, '\'')});
         }
         catch ([[maybe_unused]] const FailedAssertion &exception)
         {
@@ -93,7 +94,9 @@ private:
         }
         else
         {
-            this->handle_failure(Failure{"Exception value mismatch", ::atest::stringify(this->value), this->exception_to_string(exception)});
+            this->handle_failure(Failure{.what = "Exception value mismatch",
+                                         .expected = ::atest::stringify(this->value),
+                                         .actual = this->exception_to_string(exception)});
         }
     }
 
@@ -117,11 +120,15 @@ private:
         }
         catch (const std::exception &exception)
         {
-            this->handle_failure(Failure{"Exception type mismatch", typeid(ExceptionT).name(), typeid(exception).name()});
+            this->handle_failure(Failure{.what = "Exception type mismatch",
+                                         .expected = typeid(ExceptionT).name(),
+                                         .actual = typeid(exception).name()});
         }
         catch (...)
         {
-            this->handle_failure(Failure{"Exception type mismatch", typeid(ExceptionT).name(), "Unknown exception"});
+            this->handle_failure(Failure{.what = "Exception type mismatch",
+                                         .expected = typeid(ExceptionT).name(),
+                                         .actual = "Unknown exception"});
         }
     }
 
@@ -145,7 +152,9 @@ private:
         }
         else
         {
-            this->handle_failure(Failure{"Exception type mismatch", typeid(ExceptionT).name(), typeid(exception).name()});
+            this->handle_failure(Failure{.what = "Exception type mismatch",
+                                         .expected = typeid(ExceptionT).name(),
+                                         .actual = typeid(exception).name()});
         }
     }
 
