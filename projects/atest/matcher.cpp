@@ -7,7 +7,8 @@ namespace atest
 {
 //! The Matcher class is the implementation of an
 //! atest matcher. It uses `operator==` to match
-//! the values.
+//! the values. It also provides extended diff
+//! reporting for string convertible values.
 export class Matcher : public MatcherBase
 {
 public:
