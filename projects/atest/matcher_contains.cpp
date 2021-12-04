@@ -25,7 +25,7 @@ public:
     {
         if constexpr (StringConvertible<ActualValueT>)
         {
-            return std::string{actualValue}.find(expectedValue) != std::string::npos;
+            return ::atest::stringify(actualValue).find(expectedValue) != std::string::npos;
         }
         else
         {

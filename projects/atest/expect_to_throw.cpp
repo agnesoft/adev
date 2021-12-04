@@ -104,7 +104,7 @@ private:
     {
         if constexpr (HasWhat<ExceptionT>)
         {
-            return exception.what();
+            return ::atest::stringify(exception.what());
         }
         else
         {

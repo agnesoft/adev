@@ -20,7 +20,7 @@ public:
     template<typename ActualValueT, typename ExpectedValueT>
     [[nodiscard]] static auto actual(const ActualValueT &actualValue, const ExpectedValueT &expectedValue) -> std::string
     {
-        if constexpr (::atest::StringConvertible<ActualValueT> && ::atest::StringConvertible<ExpectedValueT>)
+        if constexpr (Matcher::is_string_convertible<ActualValueT, ExpectedValueT>())
         {
             return Matcher::printable_value(actualValue, expectedValue);
         }
@@ -38,7 +38,7 @@ public:
     template<typename ActualValueT, typename ExpectedValueT>
     [[nodiscard]] static auto expected(const ActualValueT &actualValue, const ExpectedValueT &expectedValue) -> std::string
     {
-        if constexpr (::atest::StringConvertible<ActualValueT> && ::atest::StringConvertible<ExpectedValueT>)
+        if constexpr (Matcher::is_string_convertible<ActualValueT, ExpectedValueT>())
         {
             return Matcher::printable_value(expectedValue, actualValue);
         }
@@ -55,17 +55,9 @@ public:
     template<typename ActualValueT, typename ExpectedValueT>
     [[nodiscard]] static auto hint(const ActualValueT &actualValue, const ExpectedValueT &expectedValue) -> std::string
     {
-        if constexpr (::atest::StringConvertible<ActualValueT> && ::atest::StringConvertible<ExpectedValueT>)
+        if constexpr (Matcher::is_string_convertible<ActualValueT, ExpectedValueT>())
         {
-            const std::string actualString{actualValue};
-            const std::string expectedString{expectedValue};
-            const std::size_t diffPos = Matcher::diff_pos(actualString, expectedString);
-            const std::size_t padding = Matcher::left_padding(actualString.size(), expectedString.size());
-            const std::size_t pivot = Matcher::diff_pivot(actualString, diffPos, padding);
-
-            std::stringstream out;
-            out << std::setw(pivot) << '^' << diffPos;
-            return out.str();
+            return Matcher::printable_hint(actualValue, expectedValue);
         }
         else
         {
@@ -88,11 +80,12 @@ private:
             return 1;
         }
 
+        constexpr std::size_t base = 10;
         std::size_t digits = 0;
 
         while (number != 0)
         {
-            number /= 10;
+            number /= base;
             ++digits;
         }
 
@@ -114,14 +107,14 @@ private:
         return limit;
     }
 
-    [[nodiscard]] static auto diff_pivot(const std::string &actualString, std::size_t diffPos, std::size_t padding) -> std::size_t
+    [[nodiscard]] static auto diff_pivot(std::size_t diffPos, std::size_t padding) -> std::size_t
     {
-        std::size_t pivot = Matcher::printable_string_size(actualString).size() + padding + 1;
+        std::size_t pivot = padding;
 
-        if (diffPos > Matcher::maxStringSize)
+        if (diffPos > Matcher::MAX_STRING_SIZE)
         {
             const std::size_t start = Matcher::diff_start(diffPos);
-            return pivot + Matcher::left_ellipsis(start).size() + Matcher::halfMaxStringSize;
+            return pivot + Matcher::left_ellipsis(start).size() + Matcher::HALF_MAX_STRING_SIZE;
         }
 
         return pivot + diffPos;
@@ -129,12 +122,12 @@ private:
 
     [[nodiscard]] static auto diff_start(std::size_t diffPos) -> std::size_t
     {
-        if (diffPos < Matcher::halfMaxStringSize)
+        if (diffPos < Matcher::HALF_MAX_STRING_SIZE)
         {
             return 0;
         }
 
-        return diffPos - Matcher::halfMaxStringSize;
+        return diffPos - Matcher::HALF_MAX_STRING_SIZE;
     }
 
     [[nodiscard]] static auto left_ellipsis(std::size_t start) -> std::string
@@ -170,6 +163,23 @@ private:
         return 0;
     }
 
+    template<typename ActualT, typename ExpectedT>
+    [[nodiscard]] constexpr static auto is_string_convertible() -> bool
+    {
+        return ::atest::StringConvertible<ActualT> && ::atest::StringConvertible<ExpectedT> && !(std::is_pointer_v<ActualT> && std::is_pointer_v<ExpectedT>);
+    }
+
+    template<typename ActualT, typename ExpectedT>
+    [[nodiscard]] static auto printable_hint(const ActualT &actualValue, const ExpectedT &expectedValue) -> std::string
+    {
+        const std::string actualString = ::atest::stringify(actualValue);
+        const std::string expectedString = ::atest::stringify(expectedValue);
+        const std::size_t diffPos = Matcher::diff_pos(actualString, expectedString);
+        const std::size_t padding = Matcher::printable_string_size(actualString).size() + Matcher::left_padding(actualString.size(), expectedString.size());
+        const std::size_t pivot = Matcher::diff_pivot(diffPos, padding);
+        return std::string(pivot, ' ') + '^' + std::to_string(diffPos);
+    }
+
     [[nodiscard]] static auto printable_string(const std::string &value, std::size_t diffPos, std::size_t padding) -> std::string
     {
         return Matcher::printable_string_size(value) + std::string(padding, ' ') + Matcher::printable_string_value(value, diffPos);
@@ -182,29 +192,27 @@ private:
 
     [[nodiscard]] static auto printable_string_value(const std::string &value, std::size_t diffPos) -> std::string
     {
-        if (value.size() < Matcher::maxStringSize)
+        if (value.size() < Matcher::MAX_STRING_SIZE)
         {
             return value;
         }
-        else
-        {
-            return Matcher::printable_string_value_long(value, diffPos);
-        }
+
+        return Matcher::printable_string_value_long(value, diffPos);
     }
 
     [[nodiscard]] static auto printable_string_value_long(const std::string &value, std::size_t diffPos) -> std::string
     {
         const std::size_t start = Matcher::diff_start(diffPos);
         return Matcher::left_ellipsis(start)
-            + value.substr(start, Matcher::maxStringSize)
+            + value.substr(start, Matcher::MAX_STRING_SIZE)
             + Matcher::right_ellipsis(start, value.size());
     }
 
     template<typename ValueT, typename CompareValueT>
     [[nodiscard]] static auto printable_value(const ValueT &value, const CompareValueT &comparedValue) -> std::string
     {
-        const std::string valueString{value};
-        const std::string compareString{comparedValue};
+        const std::string valueString = ::atest::stringify(value);
+        const std::string compareString = ::atest::stringify(comparedValue);
         const std::size_t diffPos = Matcher::diff_pos(valueString, compareString);
         const std::size_t padding = Matcher::left_padding(valueString.size(), compareString.size());
         return Matcher::printable_string(valueString, diffPos, padding);
@@ -212,17 +220,15 @@ private:
 
     [[nodiscard]] static auto right_ellipsis(std::size_t start, std::size_t end) -> std::string
     {
-        if ((start + Matcher::maxStringSize) < end)
+        if ((start + Matcher::MAX_STRING_SIZE) < end)
         {
             return " [...]";
         }
-        else
-        {
-            return {};
-        }
+
+        return {};
     }
 
-    constexpr static std::size_t maxStringSize = 80;
-    constexpr static std::size_t halfMaxStringSize = (Matcher::maxStringSize / 2);
+    constexpr static std::size_t MAX_STRING_SIZE = 80;
+    constexpr static std::size_t HALF_MAX_STRING_SIZE = (Matcher::MAX_STRING_SIZE / 2);
 };
 }
