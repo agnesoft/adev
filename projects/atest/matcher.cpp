@@ -163,14 +163,14 @@ private:
         return 0;
     }
 
-    template<typename ActualT, typename ExpectedT>
+    template<typename ActualValueT, typename ExpectedValueT>
     [[nodiscard]] constexpr static auto is_string_convertible() -> bool
     {
-        return ::atest::StringConvertible<ActualT> && ::atest::StringConvertible<ExpectedT> && !(std::is_pointer_v<ActualT> && std::is_pointer_v<ExpectedT>);
+        return ::atest::StringConvertible<ActualValueT> && ::atest::StringConvertible<ExpectedValueT> && !(std::is_pointer_v<ActualValueT> && std::is_pointer_v<ExpectedValueT>);
     }
 
-    template<typename ActualT, typename ExpectedT>
-    [[nodiscard]] static auto printable_hint(const ActualT &actualValue, const ExpectedT &expectedValue) -> std::string
+    template<typename ActualValueT, typename ExpectedValueT>
+    [[nodiscard]] static auto printable_hint(const ActualValueT &actualValue, const ExpectedValueT &expectedValue) -> std::string
     {
         const std::string actualString = ::atest::stringify(actualValue);
         const std::string expectedString = ::atest::stringify(expectedValue);
