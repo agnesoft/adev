@@ -8,9 +8,9 @@ if is_windows; then
     uncoveredBranches="8"
 else
     ignoredSources="\/test\/"
-    uncoveredFunctions="3"
-    uncoveredLines="26"
-    uncoveredRegions="28"
+    uncoveredFunctions="4"
+    uncoveredLines="31"
+    uncoveredRegions="32"
     uncoveredBranches="2"
 fi
 
