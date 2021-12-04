@@ -8,7 +8,7 @@ namespace atest
 //! The MatcherContains class is the
 //! implementation of an atest matcher. It uses
 //! `find` algorithm to match the values.
-export class MatcherContains : public atest::MatcherBase
+export class MatcherContains : public MatcherBase
 {
 public:
     //! Returns the description of the operation
