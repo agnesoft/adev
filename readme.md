@@ -107,7 +107,8 @@ There are two workflows:
 
 | Platform | Action   | Tool           | Version | Description                                                                                                                                                             | Date       |
 | -------- | -------- | -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| any      | coverage | llvm           | 12, 13  | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed                                | 29/09/2021 |
+| any      | coverage | llvm           | 13      | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed                                | 29/09/2021 |
+| any      | analysis | llvm           | 13      | `clang-tidy` cannot use TemplateParameterCase style parameter along with other style checks citing "invalid style"                                                      | 02/10/2021 |
 | Linux    | build    | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error.                                                                        | 31/08/2021 |
 | Linux    | analysis | llvm           | 13      | `clang-tidy` has difficulties using Unix headers such as `wait.h` as header units even with correct `module.modulemap`. The build si fine.                              | 25/11/2021 |
 | Linux    | coverage | llvm           | 13      | LLVM source code based coverage has difficulties with code using `fork()`. The resulting `profraw` file is reported as corrupted and cannot be used by `llvm-profdata`. | 25/11/2021 |
