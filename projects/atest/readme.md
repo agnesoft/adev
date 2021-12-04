@@ -124,15 +124,17 @@ template<typename V>
 auto to_be(const V &value) -> ExpectToMatch
 ```
 
-Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function rather than a standalone function for ADL (Argument Dependent Lookup) to find it.
+Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function or its namespace for ADL (Argument Dependent Lookup) to find it.
 
 Examples:
 
 ```
 ::atest::expect(1 + 1).to_be(2); //matching values
-::atest::expect([] { return 1 + 1; }).toBe(2); //matching result of a callable and a value
-::atest::assert_(1 + 1).toBe(2);
+::atest::expect([] { return 1 + 1; }).to_be(2); //matching result of a callable and a value
+::atest::assert_(1 + 1).to_be(2);
 ```
+
+Default matcher provides extended diff capabilities for string convertible values (e.g. `std::string`, `const char *` etc.). For these types the differ will find the first difference position and it will print a caret beneath the actual value at the right position to help identifying the difference. The differ also provides length and it will truncate long strings (over 80) to the area around the first difference.
 
 ### to_match()
 
@@ -214,8 +216,8 @@ Modifies the expectation or assertion to reverse the result. If the expectation/
 Example:
 
 ```
-::atest::expect_fail(1).toBe(2); //passes despite failing
-::atest::assert_fail([] {}).toThrow<int>(); //passes despite failing
+::atest::expect_fail(1).to_be(2); //passes despite failing
+::atest::assert_fail([] {}).to_throw<int>(); //passes despite failing
 ```
 
 ## Test Runner

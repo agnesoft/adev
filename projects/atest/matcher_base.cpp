@@ -12,6 +12,15 @@ namespace atest
 export class MatcherBase
 {
 public:
+    //! Returns the actual value received. The
+    //! default implementation returns stringified
+    //! `actualValue`.
+    template<typename ActualValueT, typename ExpectedValueT>
+    [[nodiscard]] static auto actual(const ActualValueT &actualValue, [[maybe_unused]] const ExpectedValueT &expectedValue) -> std::string
+    {
+        return ::atest::stringify(actualValue);
+    }
+
     //! Returns the description of the operation
     //! the matcher performs.
     [[nodiscard]] static auto describe() -> std::string
@@ -20,20 +29,18 @@ public:
     }
 
     //! Returns the expected value. The default
-    //! implementation returns stringified `left`.
-    template<typename LeftValueT, typename RightValueT>
-    [[nodiscard]] static auto expected([[maybe_unused]] const LeftValueT &left, const RightValueT &right) -> std::string
+    //! implementation returns stringified `expectedValue`.
+    template<typename ActualValueT, typename ExpectedValueT>
+    [[nodiscard]] static auto expected([[maybe_unused]] const ActualValueT &actualValue, const ExpectedValueT &expectedValue) -> std::string
     {
-        return ::atest::stringify(right);
+        return ::atest::stringify(expectedValue);
     }
 
-    //! Returns the actual value received. The
-    //! default implementation returns stringified
-    //! `right`.
-    template<typename LeftValueT, typename RightValueT>
-    [[nodiscard]] static auto actual(const LeftValueT &left, [[maybe_unused]] const RightValueT &right) -> std::string
+    //! Returns optional hint on the `actualValue`.
+    template<typename ActualValueT, typename ExpectedValueT>
+    [[nodiscard]] static auto hint([[maybe_unused]] const ActualValueT &actualValue, [[maybe_unused]] const ExpectedValueT &expectedValue) -> std::string
     {
-        return ::atest::stringify(left);
+        return {};
     }
 };
 }

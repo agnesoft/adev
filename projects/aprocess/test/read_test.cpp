@@ -1,7 +1,6 @@
 import atest;
 import aprocess;
 
-using ::atest::assert_;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
@@ -46,8 +45,7 @@ static const auto S = suite("read", [] { // NOLINT(cert-err58-cpp)
         output += process.read();
 
         constexpr std::size_t largeSize = 1'000'000;
-        assert_(output.size()).to_be(largeSize);
-        expect(output == std::string(largeSize, 'A')).to_be(true);
+        expect(output).to_be(std::string(largeSize, 'A'));
     });
 
     test("partial output", [] {

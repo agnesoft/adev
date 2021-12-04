@@ -162,11 +162,13 @@ private:
         }
         catch (std::exception &exception)
         {
-            test.failures.emplace_back(Failure{::atest::stringify("Unexpected exception thrown: ", exception.what()), "", "", test.sourceLocation});
+            test.failures.emplace_back(Failure{.what = ::atest::stringify("Unexpected exception thrown: ", exception.what()),
+                                               .sourceLocation = test.sourceLocation});
         }
         catch (...)
         {
-            test.failures.emplace_back(Failure{"Unexpected exception thrown", "", "", test.sourceLocation});
+            test.failures.emplace_back(Failure{.what = "Unexpected exception thrown",
+                                               .sourceLocation = test.sourceLocation});
         }
     }
 

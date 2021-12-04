@@ -5,7 +5,7 @@ using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
-class MyMatcher : public atest::MatcherBase
+class MyMatcher : public ::atest::MatcherBase
 {
 public:
     [[nodiscard]] static auto describe() -> std::string

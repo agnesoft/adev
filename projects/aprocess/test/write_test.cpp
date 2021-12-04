@@ -62,8 +62,7 @@ static const auto S = suite("write", [] { // NOLINT(cert-err58-cpp)
         process.write("exit\n");
         thread.join();
 
-        expect(output.size()).to_be(largeSize);
-        expect(output == input).to_be(true);
+        expect(output).to_be(input);
     });
 
     test("write to stopped process", [] {

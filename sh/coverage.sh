@@ -2,15 +2,15 @@ source "sh/common.sh"
 
 if is_windows; then
     ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
-    uncoveredFunctions="4"
-    uncoveredLines="38"
-    uncoveredRegions="34"
+    uncoveredFunctions="5"
+    uncoveredLines="43"
+    uncoveredRegions="38"
     uncoveredBranches="8"
 else
     ignoredSources="\/test\/"
-    uncoveredFunctions="3"
-    uncoveredLines="26"
-    uncoveredRegions="28"
+    uncoveredFunctions="4"
+    uncoveredLines="31"
+    uncoveredRegions="32"
     uncoveredBranches="2"
 fi
 

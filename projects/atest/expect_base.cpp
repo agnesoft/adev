@@ -53,7 +53,7 @@ protected:
     {
         if constexpr (resultHandlingPolicy == ResultHandlingPolicy::Reverse)
         {
-            this->fail(Failure{"Expected a failure but the expectation passed."});
+            this->fail(Failure{.what = "Expected a failure but the expectation passed."});
         }
     }
 
