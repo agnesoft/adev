@@ -60,7 +60,8 @@ public:
             const std::string actualString{actualValue};
             const std::string expectedString{expectedValue};
             const std::size_t diffPos = Matcher::diff_pos(actualString, expectedString);
-            const std::size_t pivot = Matcher::diff_pivot(actualString, diffPos);
+            const std::size_t padding = Matcher::left_padding(actualString.size(), expectedString.size());
+            const std::size_t pivot = Matcher::diff_pivot(actualString, diffPos, padding);
 
             std::stringstream out;
             out << std::setw(pivot) << '^' << diffPos;
@@ -80,6 +81,24 @@ public:
     }
 
 private:
+    [[nodiscard]] static auto digit_count(std::size_t number) noexcept -> std::size_t
+    {
+        if (number == 0)
+        {
+            return 1;
+        }
+
+        std::size_t digits = 0;
+
+        while (number != 0)
+        {
+            number /= 10;
+            ++digits;
+        }
+
+        return digits;
+    }
+
     [[nodiscard]] static auto diff_pos(const std::string &left, const std::string &right) -> std::size_t
     {
         const std::size_t limit = std::min(left.size(), right.size());
@@ -95,19 +114,17 @@ private:
         return limit;
     }
 
-    [[nodiscard]] static auto diff_pivot(const std::string &value, std::size_t diffPos) -> std::size_t
+    [[nodiscard]] static auto diff_pivot(const std::string &actualString, std::size_t diffPos, std::size_t padding) -> std::size_t
     {
-        std::size_t pivot = Matcher::printable_string_size(value).size() + 1;
+        std::size_t pivot = Matcher::printable_string_size(actualString).size() + padding + 1;
 
-        if (value.size() > Matcher::maxStringSize)
+        if (diffPos > Matcher::maxStringSize)
         {
             const std::size_t start = Matcher::diff_start(diffPos);
             return pivot + Matcher::left_ellipsis(start).size() + Matcher::halfMaxStringSize;
         }
-        else
-        {
-            return pivot + diffPos;
-        }
+
+        return pivot + diffPos;
     }
 
     [[nodiscard]] static auto diff_start(std::size_t diffPos) -> std::size_t
@@ -116,10 +133,8 @@ private:
         {
             return 0;
         }
-        else
-        {
-            return diffPos - Matcher::halfMaxStringSize;
-        }
+
+        return diffPos - Matcher::halfMaxStringSize;
     }
 
     [[nodiscard]] static auto left_ellipsis(std::size_t start) -> std::string
@@ -128,15 +143,36 @@ private:
         {
             return "[...] ";
         }
-        else
-        {
-            return {};
-        }
+
+        return {};
     }
 
-    [[nodiscard]] static auto printable_string(const std::string &value, std::size_t diffPos) -> std::string
+    [[nodiscard]] static auto left_padding(std::size_t valueSize, std::size_t otherSize) -> std::size_t
     {
-        return Matcher::printable_string_size(value) + Matcher::printable_string_value(value, diffPos);
+        if (valueSize == otherSize)
+        {
+            return 0;
+        }
+
+        return Matcher::left_padding_unequal(valueSize, otherSize);
+    }
+
+    [[nodiscard]] static auto left_padding_unequal(std::size_t valueSize, std::size_t otherSize) -> std::size_t
+    {
+        const std::size_t stringValueSize = Matcher::digit_count(valueSize);
+        const std::size_t stringOtherSize = Matcher::digit_count(otherSize);
+
+        if (stringValueSize < stringOtherSize)
+        {
+            return stringOtherSize - stringValueSize;
+        }
+
+        return 0;
+    }
+
+    [[nodiscard]] static auto printable_string(const std::string &value, std::size_t diffPos, std::size_t padding) -> std::string
+    {
+        return Matcher::printable_string_size(value) + std::string(padding, ' ') + Matcher::printable_string_value(value, diffPos);
     }
 
     [[nodiscard]] static auto printable_string_size(const std::string &value) -> std::string
@@ -146,13 +182,13 @@ private:
 
     [[nodiscard]] static auto printable_string_value(const std::string &value, std::size_t diffPos) -> std::string
     {
-        if (value.size() > Matcher::maxStringSize)
+        if (value.size() < Matcher::maxStringSize)
         {
-            return Matcher::printable_string_value_long(value, diffPos);
+            return value;
         }
         else
         {
-            return value;
+            return Matcher::printable_string_value_long(value, diffPos);
         }
     }
 
@@ -170,7 +206,8 @@ private:
         const std::string valueString{value};
         const std::string compareString{comparedValue};
         const std::size_t diffPos = Matcher::diff_pos(valueString, compareString);
-        return Matcher::printable_string(valueString, diffPos);
+        const std::size_t padding = Matcher::left_padding(valueString.size(), compareString.size());
+        return Matcher::printable_string(valueString, diffPos, padding);
     }
 
     [[nodiscard]] static auto right_ellipsis(std::size_t start, std::size_t end) -> std::string
