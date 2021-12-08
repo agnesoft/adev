@@ -45,7 +45,7 @@ function build_gcc() {
          "${projectDir}/short_name_test.cpp" \
          "${buildRoot}/acommandline/acommandline.lib" \
          "${buildRoot}/atest/atest.lib" \
-         "${buildRoot}/astl/astl.obj"
+         "${buildRoot}/astl/astl.lib"
 }
 
 buildMSVC="
