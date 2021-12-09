@@ -12,6 +12,8 @@ export import astl;
 
 namespace abuild
 {
+//! Converts `source` to an ordered list of
+//! supported tokens.
 export [[nodiscard]] auto tokenize([[maybe_unused]] const std::string &source) -> std::vector<Token>
 {
     return {};
