@@ -40,7 +40,15 @@ function analyse_project() {
 function analyse_project_module() {
     local project="${1}"
     local diff="${2}"
-    local source="projects/${project}/${project}.cpp"
+
+    if [[ "${project}" == */* ]]; then
+        local ar=(${project//\// })
+        local fileName=${ar[1]}
+    else
+        local fileName=${project}
+    fi
+
+    local source="projects/${project}/${fileName}.cpp"
 
     if [[ -f "${source}" ]]; then
         analyse_project_module_source "${source}" "${project}" "${diff}"
@@ -83,7 +91,22 @@ function analyse_projects() {
     local diff="${1}"
 
     for project in projects/*; do
-        analyse_project "${project:9}" "${diff}"
+        if [[ -d "${project}" ]]; then
+            analyse_project "${project:9}" "${diff}"
+            analyse_subprojects "${project}" "${diff}"
+        fi
+    done
+}
+
+function analyse_subprojects() {
+    local project="${1}"
+    local diff="${2}"
+    local size=${#project}+1
+    
+    for subproject in "${project}"/*; do
+        if [[ -d "${subproject}" ]] && ! [[ "${subproject}" == */test ]]; then
+            analyse_project "${project:9}/${subproject:${size}}" "${diff}"
+        fi
     done
 }
 

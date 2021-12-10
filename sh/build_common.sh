@@ -127,7 +127,7 @@ function build() {
     fi
 
     if (( $status == 0 )); then
-        touch "${buildRoot}/${project}.done"
+        echo "${satus}" > "${buildRoot}/${project}.done"
     fi
 
     exit $status
