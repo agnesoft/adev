@@ -54,7 +54,7 @@ The binaries will be output to `build/<toolchain>`.
 | Windows                                                                | Installation                | Note                                                                |
 | ---------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------- |
 | [(Git) Bash](https://git-scm.com/download/win)                         | -                           |                                                                     |
-| [Visual Studio 2019](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                     |
+| [Visual Studio 2022](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                     |
 | [clang 13](https://llvm.org/)                                          | `./adev.sh install llvm`    |                                                                     |
 | [gcc 11\*](https://gcc.gnu.org/)                                       | `./adev.sh install gcc`     | See [Known Issues](#known-issues)                                   |
 | [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./adev.sh install llvm`    |                                                                     |
