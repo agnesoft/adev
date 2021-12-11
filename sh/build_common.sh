@@ -151,25 +151,25 @@ function detect_msvc_env_script() {
     if [[ "${msvcEnvScript}" != "" ]]; then
         return
     fi
-    
-    msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+
+    msvcEnvScript="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
         
     if [[ -f "${msvcEnvScript}" ]]; then
         return
     fi
 
-    msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Auxiliary/Build/vcvars64.bat"
-    
+    msvcEnvScript="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Auxiliary/Build/vcvars64.bat"
+        
     if [[ -f "${msvcEnvScript}" ]]; then
         return
     fi
 
-    msvcEnvScript="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
-    
+    msvcEnvScript="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Auxiliary/Build/vcvars64.bat"
+        
     if [[ -f "${msvcEnvScript}" ]]; then
         return
     fi
 
-    print_error "ERROR: Visual Studio 2019 environment script not found."
+    print_error "ERROR: Visual Studio 2022 environment script not found."
     exit 1
 }
