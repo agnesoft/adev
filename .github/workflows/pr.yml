@@ -65,7 +65,7 @@ jobs:
             - run: ./adev.sh analyse diff
 
     analysis_windows:
-        runs-on: windows-latest
+        runs-on: windows-2022
         needs: [diff]
         if: needs.diff.outputs.diff == 'true'
         steps:
@@ -94,7 +94,7 @@ jobs:
                   if-no-files-found: error
 
     coverage_windows:
-        runs-on: windows-latest
+        runs-on: windows-2022
         needs: [diff]
         if: needs.diff.outputs.diff == 'true'
         steps:
@@ -198,7 +198,7 @@ jobs:
             - run: ./adev.sh test clang
 
     windows_clang_x64:
-        runs-on: windows-latest
+        runs-on: windows-2022
         needs: diff
         if: needs.diff.outputs.diff == 'true'
         steps:
@@ -215,7 +215,7 @@ jobs:
                   if-no-files-found: error
 
     windows_msvc_x64:
-        runs-on: windows-latest
+        runs-on: windows-2022
         needs: diff
         if: needs.diff.outputs.diff == 'true'
         steps:
