@@ -26,6 +26,10 @@ public:
                     return true;
                 }
             }
+            else
+            {
+                this->skip_line();
+            }
         }
 
         return false;

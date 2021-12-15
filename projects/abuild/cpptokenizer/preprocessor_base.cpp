@@ -35,7 +35,7 @@ protected:
             {
                 this->skip_line();
             }
-            else if (this->current_char() != '\n' && this->is_current_char_space())
+            else if (this->is_current_char_space())
             {
                 this->advance();
             }
