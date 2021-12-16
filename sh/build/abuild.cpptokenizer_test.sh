@@ -12,6 +12,7 @@ function build_clang() {
            -o "${binDir}/abuild.cpptokenizer_test${executableExtension}" \
            "${projectDir}/define_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/tokenizer_test.cpp" \
            "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.obj" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/astl/astl.obj" \
@@ -22,7 +23,8 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/acommandline_test" \
          "${projectDir}/define_test.cpp" \
-         "${projectDir}/main.cpp"
+         "${projectDir}/main.cpp" \
+         "${projectDir}/tokenizer_test.cpp" \
          "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/astl/astl.lib" \
@@ -38,6 +40,7 @@ cl.exe ${msvcCompilerFlags} ^
        /Fe\"${binDir}/abuild.cpptokenizer_test.exe\" ^
        \"${projectDir}/define_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/tokenizer_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^

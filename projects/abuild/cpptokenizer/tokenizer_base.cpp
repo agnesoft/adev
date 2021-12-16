@@ -102,23 +102,23 @@ protected:
         while (!this->at_end());
     }
 
-    // auto skip_string() -> void
-    // {
-    //     do
-    //     {
-    //         this->advance();
+    auto skip_string() -> void
+    {
+        do
+        {
+            this->advance();
 
-    //         if (this->current_char() == '"')
-    //         {
-    //             if (this->previous_character() != '\\')
-    //             {
-    //                 this->advance();
-    //                 return;
-    //             }
-    //         }
-    //     }
-    //     while (!this->at_end());
-    // }
+            if (this->current_char() == '"')
+            {
+                if (this->previous_character() != '\\')
+                {
+                    this->advance();
+                    return;
+                }
+            }
+        }
+        while (!this->at_end());
+    }
 
     [[nodiscard]] auto source() const noexcept -> std::string_view
     {

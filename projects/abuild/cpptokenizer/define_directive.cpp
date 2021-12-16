@@ -32,8 +32,31 @@ private:
     [[nodiscard]] auto extract_value() -> std::string_view
     {
         const std::size_t begin = this->pos();
-        this->skip_line();
+
+        if (this->current_char() == '"')
+        {
+            this->skip_string();
+        }
+        else
+        {
+            this->skip_value();
+        }
+
         return TokenizerBase::trim(std::string_view(&this->char_at(begin), this->pos() - begin));
+    }
+
+    auto skip_value() -> void
+    {
+        while (!this->at_end())
+        {
+            this->advance();
+
+            if (this->current_char() == '\\' || this->current_char() == '\n')
+            {
+                this->advance();
+                break;
+            }
+        }
     }
 };
 }
