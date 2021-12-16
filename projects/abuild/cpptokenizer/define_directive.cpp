@@ -33,7 +33,7 @@ private:
     {
         const std::size_t begin = this->pos();
         this->skip_line();
-        return TokenizerBase::trim(std::string_view(&this->source()[begin], this->pos() - begin));
+        return TokenizerBase::trim(std::string_view(&this->char_at(begin), this->pos() - begin));
     }
 };
 }

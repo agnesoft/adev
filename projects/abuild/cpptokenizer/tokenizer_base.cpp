@@ -17,7 +17,7 @@ public:
 protected:
     [[nodiscard]] auto at_end() const noexcept -> bool
     {
-        return this->position >= this->sourceView.size();
+        return this->pos() >= this->source().size();
     }
 
     auto advance() -> void
@@ -30,14 +30,19 @@ protected:
         this->position += count;
     }
 
+    [[nodiscard]] auto char_at(std::size_t pos) const noexcept -> const char &
+    {
+        return this->source()[pos];
+    }
+
     [[nodiscard]] auto current_char() const noexcept -> const char &
     {
-        return this->sourceView[this->position];
+        return this->char_at(this->pos());
     }
 
     [[nodiscard]] auto current_view(std::size_t count) const noexcept -> std::string_view
     {
-        return std::string_view(&this->sourceView[this->position], std::min(count, this->sourceView.size() - this->position));
+        return std::string_view(&this->current_char(), std::min(count, this->source().size() - this->pos()));
     }
 
     [[nodiscard]] auto is_current_char_space() const -> bool
@@ -50,9 +55,9 @@ protected:
         return this->position;
     }
 
-    [[nodiscard]] auto previous_character() const noexcept -> char
+    [[nodiscard]] auto previous_character() const noexcept -> const char &
     {
-        return this->sourceView[this->position - 1];
+        return this->char_at(this->pos() - 1);
     }
 
     auto skip_line() -> void

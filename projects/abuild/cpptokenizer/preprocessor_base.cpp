@@ -20,7 +20,7 @@ protected:
             this->advance();
         }
 
-        return std::string_view(&this->source()[begin], this->pos() - begin);
+        return std::string_view(&this->char_at(begin), this->pos() - begin);
     }
 
     auto skip_whitespace_comment_and_macro_newline() -> void
