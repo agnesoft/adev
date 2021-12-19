@@ -66,7 +66,7 @@ private:
         const std::string_view value = this->value();
         this->skip_space_and_comment();
 
-        if (this->at_end() || this->is_end_of_line())
+        if (this->is_end_of_line() || this->at_end())
         {
             this->push_token(DefineToken{
                 .name = std::string(defineName.data(), defineName.size()),
@@ -164,14 +164,9 @@ private:
 
     auto skip_identifier() -> void
     {
-        while (!this->at_end())
+        while (!this->at_end() && !this->is_whitespace())
         {
             this->advance();
-
-            if (this->is_whitespace())
-            {
-                return;
-            }
         }
     }
 
