@@ -5,6 +5,7 @@ import : token;
 
 namespace abuild
 {
+//! \private
 class Tokenizer
 {
 public:
