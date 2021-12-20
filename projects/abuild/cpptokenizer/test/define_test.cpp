@@ -155,4 +155,10 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
 
         expect(tokens.size()).to_be(0U);
     });
+
+    test("define in string", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("const std::string str = \"#define MY_MACRO\"");
+
+        expect(tokens.size()).to_be(0U);
+    });
 });
