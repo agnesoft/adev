@@ -13,7 +13,7 @@ export struct DefineToken
     std::string name;
 
     //! Define value
-    std::string value = "1";
+    std::string value;
 };
 
 //! Represents an import statement of an external
@@ -108,6 +108,14 @@ export struct ModuleToken
     bool exported = false;
 };
 
+//! Represents a preprocessor token `#undefine`.
+//! E.g. `#undefine MY_MACRO`.
+export struct UndefineToken
+{
+    //! Define name
+    std::string name;
+};
+
 //! Token is a variant type combining all possible
 //! token types.
 export using Token = std::variant<
@@ -120,5 +128,6 @@ export using Token = std::variant<
     IncludeExternalToken,
     IncludeLocalToken,
     ModulePartitionToken,
-    ModuleToken>;
+    ModuleToken,
+    UndefineToken>;
 }

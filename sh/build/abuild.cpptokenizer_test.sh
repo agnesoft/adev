@@ -10,7 +10,9 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/acommandline \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
            -o "${binDir}/abuild.cpptokenizer_test${executableExtension}" \
+           "${projectDir}/define_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/tokenizer_test.cpp" \
            "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.obj" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/astl/astl.obj" \
@@ -20,7 +22,9 @@ function build_clang() {
 function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/acommandline_test" \
-         "${projectDir}/main.cpp"
+         "${projectDir}/define_test.cpp" \
+         "${projectDir}/main.cpp" \
+         "${projectDir}/tokenizer_test.cpp" \
          "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/astl/astl.lib" \
@@ -34,7 +38,9 @@ cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cpptokenizer_test.exe\" ^
+       \"${projectDir}/define_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/tokenizer_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^

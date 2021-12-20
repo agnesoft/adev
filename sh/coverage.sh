@@ -5,13 +5,13 @@ if is_windows; then
     uncoveredFunctions="5"
     uncoveredLines="43"
     uncoveredRegions="38"
-    uncoveredBranches="8"
+    uncoveredBranches="16"
 else
     ignoredSources="\/test\/"
     uncoveredFunctions="4"
     uncoveredLines="31"
     uncoveredRegions="32"
-    uncoveredBranches="2"
+    uncoveredBranches="10"
 fi
 
 function coverage() {
