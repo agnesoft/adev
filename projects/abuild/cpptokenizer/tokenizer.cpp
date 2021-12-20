@@ -24,6 +24,10 @@ public:
             {
                 this->preprocessor();
             }
+            else if (this->current_char() == '"')
+            {
+                this->skip_string();
+            }
             else if (!this->at_end())
             {
                 this->advance();
