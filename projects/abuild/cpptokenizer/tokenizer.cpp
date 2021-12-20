@@ -126,7 +126,7 @@ private:
 
     [[nodiscard]] auto lexeme() const noexcept -> std::string_view
     {
-        return std::string_view(&this->at(this->lexemeBegin), this->pos - this->lexemeBegin);
+        return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
     }
 
     [[nodiscard]] auto peek() const noexcept -> const char &
@@ -164,7 +164,10 @@ private:
 
     auto skip_identifier() -> void
     {
-        while (!this->at_end() && !this->is_whitespace())
+        while (!this->at_end()
+               && !this->is_whitespace()
+               && !this->is_line_comment()
+               && !this->is_multiline_comment())
         {
             this->advance();
         }
