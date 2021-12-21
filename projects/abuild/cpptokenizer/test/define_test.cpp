@@ -126,6 +126,28 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         expect(token2.value).to_be("5");
     });
 
+    test("define in raw string", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("const std::string str = R\"asd(const char c = '\"';\n#define MY_MACRO)asd\"\n#define MY_OTHER_MACRO");
+
+        expect(tokens.size()).to_be(1U);
+
+        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+
+        expect(token.name).to_be("MY_OTHER_MACRO");
+        expect(token.value).to_be("");
+    });
+
+    test("define in raw string with no sequence", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("const std::string str = R\"(const char c = '\"';\n#define MY_MACRO)\"\n#define MY_OTHER_MACRO");
+
+        expect(tokens.size()).to_be(1U);
+
+        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+
+        expect(token.name).to_be("MY_OTHER_MACRO");
+        expect(token.value).to_be("");
+    });
+
     test("commented", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("//#define MY_MACRO");
 
@@ -157,7 +179,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("define in string", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("const std::string str = \"#define MY_MACRO\"");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("const std::string str = \"#define MY_MACRO\";");
 
         expect(tokens.size()).to_be(0U);
     });

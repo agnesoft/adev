@@ -83,6 +83,25 @@ private:
         }
     }
 
+    [[nodiscard]] auto extract_skip_sequence() noexcept -> std::string_view
+    {
+        this->lexemeBegin = this->pos + 1;
+
+        while (!this->at_end())
+        {
+            this->advance();
+
+            if (this->current_char() == '(')
+            {
+                std::string_view sequence = this->lexeme();
+                this->advance();
+                return sequence;
+            }
+        }
+
+        return {};
+    }
+
     [[nodiscard]] auto identifier() noexcept -> std::string_view
     {
         this->lexemeBegin = this->pos;
@@ -134,6 +153,12 @@ private:
         return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
     }
 
+    [[nodiscard]] auto match_sequence(std::string_view sequence) const noexcept -> bool
+    {
+        return this->at(this->pos - sequence.size() - 1) == ')'
+            && std::string_view{&this->at(this->pos - sequence.size()), sequence.size()} == sequence;
+    }
+
     [[nodiscard]] auto peek() const noexcept -> const char &
     {
         return this->at(this->pos + 1);
@@ -154,6 +179,11 @@ private:
 
     [[nodiscard]] auto previous_character() const noexcept -> const char &
     {
+        if (this->pos == 0)
+        {
+            return this->at(0);
+        }
+
         return this->at(this->pos - 1);
     }
 
@@ -317,7 +347,23 @@ private:
         }
     }
 
-    auto skip_string() noexcept -> void
+    auto skip_raw_string() noexcept -> void
+    {
+        std::string_view skipSequence = this->extract_skip_sequence();
+
+        while (!this->at_end())
+        {
+            if (this->is_quote() && this->match_sequence(skipSequence))
+            {
+                this->skip_quote();
+                return;
+            }
+
+            this->advance();
+        }
+    }
+
+    auto skip_regular_string() noexcept -> void
     {
         this->skip_quote();
 
@@ -330,6 +376,18 @@ private:
             }
 
             this->advance();
+        }
+    }
+
+    auto skip_string() noexcept -> void
+    {
+        if (this->previous_character() == 'R')
+        {
+            this->skip_raw_string();
+        }
+        else
+        {
+            this->skip_regular_string();
         }
     }
 
