@@ -2,10 +2,10 @@ source "sh/common.sh"
 
 if is_windows; then
     ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
-    uncoveredFunctions="5"
-    uncoveredLines="43"
-    uncoveredRegions="38"
-    uncoveredBranches="16"
+    uncoveredFunctions="4"
+    uncoveredLines="34"
+    uncoveredRegions="33"
+    uncoveredBranches="11"
 else
     ignoredSources="\/test\/"
     uncoveredFunctions="4"
@@ -25,7 +25,7 @@ function coverage() {
     local dir=$(pwd)
 
     for test in build/clang/bin/*_test${executableExtension}; do
-        if [[ "${test}" != "build/clang/bin/aprocess_test" ]]; then
+        if [[ "${test}" != "build/clang/bin/aprocess_test${executableExtension}" ]]; then
             objectArgs="${objectArgs} -object=${test}"
             
             LLVM_PROFILE_FILE="${dir}/${test}.profraw" ${test}>/dev/null
