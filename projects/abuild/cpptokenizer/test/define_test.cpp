@@ -13,7 +13,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("1");
@@ -25,7 +25,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("");
@@ -37,7 +37,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("1");
@@ -49,7 +49,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("\"some string\"");
@@ -61,7 +61,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("\"111\"");
@@ -73,7 +73,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("");
@@ -86,12 +86,12 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[1])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("");
 
-        const ::abuild::DefineToken token2 = std::get<::abuild::DefineToken>(tokens[1]);
+        const auto &token2 = std::get<::abuild::DefineToken>(tokens[1]);
 
         expect(token2.name).to_be("MY_OTHER_MACRO");
         expect(token2.value).to_be("123");
@@ -103,7 +103,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(1U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("");
@@ -114,13 +114,14 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
 
         assert_(tokens.size()).to_be(2U);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::DefineToken>(tokens[1])).to_be(true);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_MACRO");
         expect(token.value).to_be("123");
 
-        const ::abuild::DefineToken token2 = std::get<::abuild::DefineToken>(tokens[1]);
+        const auto &token2 = std::get<::abuild::DefineToken>(tokens[1]);
 
         expect(token2.name).to_be("MY_OTHER_MACRO");
         expect(token2.value).to_be("5");
@@ -131,7 +132,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
 
         expect(tokens.size()).to_be(1U);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_OTHER_MACRO");
         expect(token.value).to_be("");
@@ -142,7 +143,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
 
         expect(tokens.size()).to_be(1U);
 
-        const ::abuild::DefineToken token = std::get<::abuild::DefineToken>(tokens[0]);
+        const auto &token = std::get<::abuild::DefineToken>(tokens[0]);
 
         expect(token.name).to_be("MY_OTHER_MACRO");
         expect(token.value).to_be("");

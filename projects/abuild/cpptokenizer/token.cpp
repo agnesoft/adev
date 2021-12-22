@@ -110,7 +110,7 @@ export struct ModuleToken
 
 //! Represents a preprocessor token `#undefine`.
 //! E.g. `#undefine MY_MACRO`.
-export struct UndefineToken
+export struct UndefToken
 {
     //! Define name
     std::string name;
@@ -129,5 +129,5 @@ export using Token = std::variant<
     IncludeLocalToken,
     ModulePartitionToken,
     ModuleToken,
-    UndefineToken>;
+    UndefToken>;
 }

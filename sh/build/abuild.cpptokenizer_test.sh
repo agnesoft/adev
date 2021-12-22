@@ -13,6 +13,7 @@ function build_clang() {
            "${projectDir}/define_test.cpp" \
            "${projectDir}/main.cpp" \
            "${projectDir}/tokenizer_test.cpp" \
+           "${projectDir}/undef_test.cpp" \
            "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.obj" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/astl/astl.obj" \
@@ -25,6 +26,7 @@ function build_gcc() {
          "${projectDir}/define_test.cpp" \
          "${projectDir}/main.cpp" \
          "${projectDir}/tokenizer_test.cpp" \
+         "${projectDir}/undef_test.cpp" \
          "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/astl/astl.lib" \
@@ -41,6 +43,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/define_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${projectDir}/tokenizer_test.cpp\" ^
+       \"${projectDir}/undef_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
