@@ -175,6 +175,10 @@ private:
         {
             this->define();
         }
+        else if (type == "undef")
+        {
+            this->undef();
+        }
     }
 
     [[nodiscard]] auto previous_character() const noexcept -> const char &
@@ -389,6 +393,15 @@ private:
         {
             this->skip_regular_string();
         }
+    }
+
+    auto undef() -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->identifier();
+        this->skip_space_and_comment();
+        this->push_token(UndefToken{
+            .name = std::string(defineName.data(), defineName.size())});
     }
 
     [[nodiscard]] auto value() noexcept -> std::string_view
