@@ -1,6 +1,6 @@
 #ifndef __clang__
 export module abuild.cpptokenizer : token;
-export import : condition;
+export import : if_token;
 #endif
 
 namespace abuild
@@ -119,7 +119,8 @@ export struct UndefToken
 //! Token is a variant type combining all possible
 //! token types.
 export using Token = std::variant<
-    ConditionToken,
+    IfToken,
+    EndIfToken,
     DefineToken,
     ImportIncludeExternalToken,
     ImportIncludeLocalToken,

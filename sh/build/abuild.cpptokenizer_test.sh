@@ -11,6 +11,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
            -o "${binDir}/abuild.cpptokenizer_test${executableExtension}" \
            "${projectDir}/define_test.cpp" \
+           "${projectDir}/ifdef_test.cpp" \
            "${projectDir}/main.cpp" \
            "${projectDir}/tokenizer_test.cpp" \
            "${projectDir}/undef_test.cpp" \
@@ -24,6 +25,7 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/acommandline_test" \
          "${projectDir}/define_test.cpp" \
+         "${projectDir}/ifdef_test.cpp" \
          "${projectDir}/main.cpp" \
          "${projectDir}/tokenizer_test.cpp" \
          "${projectDir}/undef_test.cpp" \
@@ -41,6 +43,7 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cpptokenizer_test.exe\" ^
        \"${projectDir}/define_test.cpp\" ^
+       \"${projectDir}/ifdef_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${projectDir}/tokenizer_test.cpp\" ^
        \"${projectDir}/undef_test.cpp\" ^

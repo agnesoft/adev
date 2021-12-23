@@ -102,6 +102,26 @@ private:
         return {};
     }
 
+    auto ifdef() -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->identifier();
+        this->skip_space_and_comment();
+        this->push_token(IfToken{
+            .elements = {DefinedToken{
+                .name = std::string(defineName.data(), defineName.size())}}});
+    }
+
+    auto ifndef() -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->identifier();
+        this->skip_space_and_comment();
+        this->push_token(IfToken{
+            .elements = {NotDefinedToken{
+                .name = std::string(defineName.data(), defineName.size())}}});
+    }
+
     [[nodiscard]] auto identifier() noexcept -> std::string_view
     {
         this->lexemeBegin = this->pos;
@@ -178,6 +198,14 @@ private:
         else if (type == "undef")
         {
             this->undef();
+        }
+        else if (type == "ifdef")
+        {
+            this->ifdef();
+        }
+        else if (type == "ifndef")
+        {
+            this->ifndef();
         }
     }
 
