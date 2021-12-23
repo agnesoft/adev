@@ -10,8 +10,9 @@ static const auto S = suite("ifdef", [] { // NOLINT(cert-err58-cpp)
     test("ifdef", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#ifdef MY_MACRO\n#endif");
 
-        assert_(tokens.size()).to_be(1U);
+        assert_(tokens.size()).to_be(2U);
         assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
 
         const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
 
@@ -26,8 +27,9 @@ static const auto S = suite("ifdef", [] { // NOLINT(cert-err58-cpp)
     test("ifndef", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#ifndef MY_MACRO\n#endif");
 
-        assert_(tokens.size()).to_be(1U);
+        assert_(tokens.size()).to_be(2U);
         assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
 
         const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
 
