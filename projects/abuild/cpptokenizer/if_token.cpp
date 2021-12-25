@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.cpptokenizer : condition;
+export module abuild.cpptokenizer : if_token;
 export import astl;
 #endif
 
@@ -23,6 +23,15 @@ export struct LeftBracketToken
 //! Right bracket `)`.
 export struct RightBracketToken
 {
+};
+
+//! Conditional token checking that a particular
+//! define is set. E.g. `#ifdef MY_MACRO` or
+//! `#if defined(MY_MACRO)`
+export struct DefinedToken
+{
+    //! Define name.
+    std::string name;
 };
 
 //! Conditional token checking that a particular
@@ -111,14 +120,15 @@ export struct LessThanOrEqualsToken
     std::string value;
 };
 
-//! ConditionElement is a variant type combining
-//! all possible condition token types.
-export using ConditionElement = std::variant<
+//! IfElement is a variant type combining all
+//! possible condition token types.
+export using IfElement = std::variant<
+    DefinedToken,
+    NotDefinedToken,
     AndToken,
     OrToken,
     LeftBracketToken,
     RightBracketToken,
-    NotDefinedToken,
     EqualsToken,
     NotEqualsToken,
     GreaterThanToken,
@@ -126,11 +136,16 @@ export using ConditionElement = std::variant<
     LessThanToken,
     LessThanOrEqualsToken>;
 
-//! ConditionToken represents a condition as an
-//! ordered list of ConditionElements.
-export struct ConditionToken
+//! IfToken represents a condition as an
+//! ordered list of IfElements.
+export struct IfToken
 {
     //! Condition elements.
-    std::vector<ConditionElement> elements;
+    std::vector<IfElement> elements;
+};
+
+//! EndIfToken represents an end of a condition.
+export struct EndIfToken
+{
 };
 }

@@ -83,6 +83,12 @@ private:
         }
     }
 
+    auto endif() -> void
+    {
+        this->push_token(EndIfToken{});
+        this->skip_space_and_comment();
+    }
+
     [[nodiscard]] auto extract_skip_sequence() noexcept -> std::string_view
     {
         this->lexemeBegin = this->pos + 1;
@@ -100,6 +106,26 @@ private:
         }
 
         return {};
+    }
+
+    auto ifdef() -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->identifier();
+        this->push_token(IfToken{
+            .elements = {DefinedToken{
+                .name = std::string(defineName.data(), defineName.size())}}});
+        this->skip_space_and_comment();
+    }
+
+    auto ifndef() -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->identifier();
+        this->push_token(IfToken{
+            .elements = {NotDefinedToken{
+                .name = std::string(defineName.data(), defineName.size())}}});
+        this->skip_space_and_comment();
     }
 
     [[nodiscard]] auto identifier() noexcept -> std::string_view
@@ -178,6 +204,18 @@ private:
         else if (type == "undef")
         {
             this->undef();
+        }
+        else if (type == "ifdef")
+        {
+            this->ifdef();
+        }
+        else if (type == "ifndef")
+        {
+            this->ifndef();
+        }
+        else if (type == "endif")
+        {
+            this->endif();
         }
     }
 
@@ -399,9 +437,9 @@ private:
     {
         this->skip_space_comment_and_macro_newline();
         const std::string_view defineName = this->identifier();
-        this->skip_space_and_comment();
         this->push_token(UndefToken{
             .name = std::string(defineName.data(), defineName.size())});
+        this->skip_space_and_comment();
     }
 
     [[nodiscard]] auto value() noexcept -> std::string_view
