@@ -101,6 +101,7 @@ private:
             }
         }
 
+        this->skip_macro();
         return {};
     }
 
