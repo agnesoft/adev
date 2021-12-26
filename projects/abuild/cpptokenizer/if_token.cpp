@@ -10,34 +10,10 @@ export struct AndToken
 {
 };
 
-//! Logical operator `||`.
-export struct OrToken
-{
-};
-
-//! Left bracket `(`.
-export struct LeftBracketToken
-{
-};
-
-//! Right bracket `)`.
-export struct RightBracketToken
-{
-};
-
 //! Conditional token checking that a particular
-//! define is set. E.g. `#ifdef MY_MACRO` or
-//! `#if defined(MY_MACRO)`
+//! define is set. E.g. `#ifdef MY_MACRO` or `#if
+//! defined(MY_MACRO)`.
 export struct DefinedToken
-{
-    //! Define name.
-    std::string name;
-};
-
-//! Conditional token checking that a particular
-//! define is not set. E.g. `#ifndef MY_MACRO` or
-//! `#if !defined(MY_MACRO)`
-export struct NotDefinedToken
 {
     //! Define name.
     std::string name;
@@ -57,28 +33,9 @@ export struct EqualsToken
     std::string value;
 };
 
-//! Conditional token checking that a particular
-//! define is not set to certain value.
-export struct NotEqualsToken
+//! Left bracket `(`.
+export struct LeftBracketToken
 {
-    //! Define name.
-    std::string name;
-
-    //! Not expected define value.
-    std::string value;
-};
-
-//! Conditional token checking that a particular
-//! define is set to a value greater than a
-//! threshold. The threshold can be a name of a
-//! define.
-export struct GreaterThanToken
-{
-    //! Define name.
-    std::string name;
-
-    //! Threshold value.
-    std::string value;
 };
 
 //! Conditional token checking that a particular
@@ -95,10 +52,10 @@ export struct GreaterThanOrEqualsToken
 };
 
 //! Conditional token checking that a particular
-//! define is set to a value lower than a
+//! define is set to a value greater than a
 //! threshold. The threshold can be a name of a
 //! define.
-export struct LessThanToken
+export struct GreaterThanToken
 {
     //! Define name.
     std::string name;
@@ -120,11 +77,52 @@ export struct LessThanOrEqualsToken
     std::string value;
 };
 
+//! Conditional token checking that a particular
+//! define is set to a value lower than a
+//! threshold. The threshold can be a name of a
+//! define.
+export struct LessThanToken
+{
+    //! Define name.
+    std::string name;
+
+    //! Threshold value.
+    std::string value;
+};
+
+//! Conditional token representing negation of the
+//! following token (e.g. `#ifndef MY_MACRO` or
+//! `#if !defined(MY_MACRO)`).
+export struct NotToken
+{
+};
+
+//! Conditional token checking that a particular
+//! define is not set to certain value.
+export struct NotEqualsToken
+{
+    //! Define name.
+    std::string name;
+
+    //! Not expected define value.
+    std::string value;
+};
+
+//! Logical operator `||`.
+export struct OrToken
+{
+};
+
+//! Right bracket `)`.
+export struct RightBracketToken
+{
+};
+
 //! IfElement is a variant type combining all
 //! possible condition token types.
 export using IfElement = std::variant<
+    NotToken,
     DefinedToken,
-    NotDefinedToken,
     AndToken,
     OrToken,
     LeftBracketToken,

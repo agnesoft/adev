@@ -30,7 +30,7 @@ public:
             }
             else if (!this->at_end())
             {
-                this->advance();
+                this->skip_one();
             }
         }
 
@@ -38,16 +38,6 @@ public:
     }
 
 private:
-    auto advance() noexcept -> void
-    {
-        this->advance(1);
-    }
-
-    auto advance(std::size_t count) noexcept -> void
-    {
-        this->pos += count;
-    }
-
     [[nodiscard]] auto at_end() const noexcept -> bool
     {
         return this->pos == this->source.size();
@@ -83,6 +73,38 @@ private:
         }
     }
 
+    auto defined(IfToken &token) -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->defined_identifier();
+        token.elements.emplace_back(DefinedToken{
+            .name = std::string(defineName.data(), defineName.size())});
+    }
+
+    [[nodiscard]] auto defined_identifier() noexcept -> std::string_view
+    {
+        if (this->current_char() == '(')
+        {
+            this->skip_bracket();
+            this->skip_space_comment_and_macro_newline();
+
+            const std::string_view defineName = this->identifier();
+
+            this->skip_space_comment_and_macro_newline();
+
+            if (this->current_char() == ')')
+            {
+                this->skip_bracket();
+                this->skip_space_and_comment();
+
+                return defineName;
+            }
+        }
+
+        this->skip_macro();
+        return {};
+    }
+
     auto endif() -> void
     {
         this->push_token(EndIfToken{});
@@ -95,17 +117,48 @@ private:
 
         while (!this->at_end())
         {
-            this->advance();
+            this->skip_one();
 
             if (this->current_char() == '(')
             {
                 std::string_view sequence = this->lexeme();
-                this->advance();
+                this->skip_one();
                 return sequence;
             }
         }
 
         return {};
+    }
+
+    auto if_directive() -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+
+        IfToken token;
+
+        while (!this->at_end() && !this->is_end_of_line())
+        {
+            this->if_directive_element(token);
+        }
+
+        this->push_token(std::move(token));
+    }
+
+    auto if_directive_element(IfToken &token) -> void
+    {
+        if (this->current_char() == '!')
+        {
+            this->macro_negation(token);
+        }
+        else
+        {
+            const std::string_view type = this->identifier();
+
+            if (type == "defined")
+            {
+                this->defined(token);
+            }
+        }
     }
 
     auto ifdef() -> void
@@ -123,8 +176,9 @@ private:
         this->skip_space_comment_and_macro_newline();
         const std::string_view defineName = this->identifier();
         this->push_token(IfToken{
-            .elements = {NotDefinedToken{
-                .name = std::string(defineName.data(), defineName.size())}}});
+            .elements = {NotToken{},
+                         DefinedToken{
+                             .name = std::string(defineName.data(), defineName.size())}}});
         this->skip_space_and_comment();
     }
 
@@ -138,6 +192,12 @@ private:
     [[nodiscard]] auto is_end_of_line() const noexcept -> bool
     {
         return this->current_char() == '\n';
+    }
+
+    [[nodiscard]] auto is_identifier() const noexcept -> bool
+    {
+        const auto c = static_cast<unsigned char>(this->current_char());
+        return c == '_' || std::isalnum(c) != 0;
     }
 
     [[nodiscard]] auto is_line_comment() const noexcept -> bool
@@ -179,6 +239,13 @@ private:
         return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
     }
 
+    auto macro_negation(IfToken &token) -> void
+    {
+        token.elements.emplace_back(NotToken{});
+        this->skip_one();
+        this->skip_space_comment_and_macro_newline();
+    }
+
     [[nodiscard]] auto match_sequence(std::string_view sequence) const noexcept -> bool
     {
         return this->at(this->pos - sequence.size() - 1) == ')'
@@ -217,6 +284,10 @@ private:
         {
             this->endif();
         }
+        else if (type == "if")
+        {
+            this->if_directive();
+        }
     }
 
     [[nodiscard]] auto previous_character() const noexcept -> const char &
@@ -234,35 +305,42 @@ private:
         this->tokens.emplace_back(std::move(token));
     }
 
+    auto skip(std::size_t count) noexcept -> void
+    {
+        this->pos += count;
+    }
+
+    auto skip_bracket() noexcept -> void
+    {
+        this->skip_one();
+    }
+
     auto skip_hash() noexcept -> void
     {
-        this->advance();
+        this->skip_one();
     }
 
     auto skip_identifier() -> void
     {
-        while (!this->at_end()
-               && !this->is_whitespace()
-               && !this->is_line_comment()
-               && !this->is_multiline_comment())
+        while (!this->at_end() && this->is_identifier())
         {
-            this->advance();
+            this->skip_one();
         }
     }
 
     auto skip_line() noexcept -> void
     {
-        this->advance();
+        this->skip_one();
 
         while (!this->at_end())
         {
             if (this->is_end_of_line())
             {
-                this->advance();
+                this->skip_one();
                 return;
             }
 
-            this->advance();
+            this->skip_one();
         };
     }
 
@@ -284,7 +362,7 @@ private:
             }
             else
             {
-                this->advance();
+                this->skip_one();
             }
         }
     }
@@ -301,23 +379,28 @@ private:
                 return;
             }
 
-            this->advance();
+            this->skip_one();
         }
     }
 
     auto skip_multiline_quote_end() noexcept -> void
     {
-        this->advance(2);
+        this->skip(2);
     }
 
     auto skip_multiline_quote_start() noexcept -> void
     {
-        this->advance(2);
+        this->skip(2);
+    }
+
+    auto skip_one() noexcept -> void
+    {
+        this->skip(1);
     }
 
     auto skip_quote() noexcept -> void
     {
-        this->advance();
+        this->skip_one();
     }
 
     auto skip_space_and_comment() noexcept -> void
@@ -334,7 +417,7 @@ private:
             }
             else if (this->is_space())
             {
-                this->advance();
+                this->skip_one();
             }
             else
             {
@@ -357,7 +440,7 @@ private:
             }
             else if (this->is_whitespace())
             {
-                this->advance();
+                this->skip_one();
             }
             else
             {
@@ -380,7 +463,7 @@ private:
             }
             else if (this->is_space())
             {
-                this->advance();
+                this->skip_one();
             }
             else
             {
@@ -401,7 +484,7 @@ private:
                 return;
             }
 
-            this->advance();
+            this->skip_one();
         }
     }
 
@@ -417,7 +500,7 @@ private:
                 return;
             }
 
-            this->advance();
+            this->skip_one();
         }
     }
 
