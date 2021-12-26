@@ -73,13 +73,19 @@ private:
         }
     }
 
-    auto defined(bool negate) -> void
+    auto defined(IfToken &token) -> void
     {
         this->skip_space_comment_and_macro_newline();
+        const std::string_view defineName = this->defined_identifier();
+        token.elements.emplace_back(DefinedToken{
+            .name = std::string(defineName.data(), defineName.size())});
+    }
 
+    [[nodiscard]] auto defined_identifier() noexcept -> std::string_view
+    {
         if (this->current_char() == '(')
         {
-            this->skip_one();
+            this->skip_bracket();
             this->skip_space_comment_and_macro_newline();
 
             const std::string_view defineName = this->identifier();
@@ -88,23 +94,14 @@ private:
 
             if (this->current_char() == ')')
             {
-                if (negate)
-                {
-                    this->push_token(IfToken{
-                        .elements = {NotDefinedToken{
-                            .name = std::string(defineName.data(), defineName.size())}}});
-                }
-                else
-                {
-                    this->push_token(IfToken{
-                        .elements = {DefinedToken{
-                            .name = std::string(defineName.data(), defineName.size())}}});
-                }
-
-                this->skip_one();
+                this->skip_bracket();
                 this->skip_space_and_comment();
+
+                return defineName;
             }
         }
+
+        return {};
     }
 
     auto endif() -> void
@@ -136,13 +133,30 @@ private:
     {
         this->skip_space_comment_and_macro_newline();
 
-        bool negate = this->macro_negation();
+        IfToken token;
 
-        const std::string_view type = this->identifier();
-
-        if (type == "defined")
+        while (!this->at_end() && !this->is_end_of_line())
         {
-            this->defined(negate);
+            this->if_directive_element(token);
+        }
+
+        this->push_token(std::move(token));
+    }
+
+    auto if_directive_element(IfToken &token) -> void
+    {
+        if (this->current_char() == '!')
+        {
+            this->macro_negation(token);
+        }
+        else
+        {
+            const std::string_view type = this->identifier();
+
+            if (type == "defined")
+            {
+                this->defined(token);
+            }
         }
     }
 
@@ -161,8 +175,9 @@ private:
         this->skip_space_comment_and_macro_newline();
         const std::string_view defineName = this->identifier();
         this->push_token(IfToken{
-            .elements = {NotDefinedToken{
-                .name = std::string(defineName.data(), defineName.size())}}});
+            .elements = {NotToken{},
+                         DefinedToken{
+                             .name = std::string(defineName.data(), defineName.size())}}});
         this->skip_space_and_comment();
     }
 
@@ -223,16 +238,11 @@ private:
         return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
     }
 
-    [[nodiscard]] auto macro_negation() noexcept -> bool
+    auto macro_negation(IfToken &token) -> void
     {
-        if (this->current_char() != '!')
-        {
-            return false;
-        }
-
+        token.elements.emplace_back(NotToken{});
         this->skip_one();
         this->skip_space_comment_and_macro_newline();
-        return true;
     }
 
     [[nodiscard]] auto match_sequence(std::string_view sequence) const noexcept -> bool
@@ -297,6 +307,11 @@ private:
     auto skip(std::size_t count) noexcept -> void
     {
         this->pos += count;
+    }
+
+    auto skip_bracket() noexcept -> void
+    {
+        this->skip_one();
     }
 
     auto skip_hash() noexcept -> void

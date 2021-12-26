@@ -33,10 +33,11 @@ static const auto S = suite("ifdef", [] { // NOLINT(cert-err58-cpp)
 
         const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
 
-        assert_(condition.elements.size()).to_be(1U);
-        assert_(std::holds_alternative<::abuild::NotDefinedToken>(condition.elements[0])).to_be(true);
+        assert_(condition.elements.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::DefinedToken>(condition.elements[1])).to_be(true);
 
-        const auto &token = std::get<::abuild::NotDefinedToken>(condition.elements[0]);
+        const auto &token = std::get<::abuild::DefinedToken>(condition.elements[1]);
 
         expect(token.name).to_be("MY_MACRO");
     });
