@@ -196,7 +196,7 @@ private:
 
     [[nodiscard]] auto is_identifier() const noexcept -> bool
     {
-        const unsigned char c = static_cast<unsigned char>(this->current_char());
+        const auto c = static_cast<unsigned char>(this->current_char());
         return c == '_' || std::isalnum(c) != 0;
     }
 

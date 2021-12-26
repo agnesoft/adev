@@ -24,7 +24,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test("if \\ defined \\ ( \\  \\ )", [] {
+    test(R"(if \ defined \ ( \  \ ))", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if \\\n defined \\\n ( \\\n MY_MACRO \\\n )\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -59,7 +59,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test("if \\ ! \\ defined \\ ( \\  \\ )", [] {
+    test(R"(if \ ! \ defined \ ( \  \ ))", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if \\\n ! \\\n defined \\\n ( \\\n MY_MACRO \\\n )\n#endif");
 
         assert_(tokens.size()).to_be(2U);
