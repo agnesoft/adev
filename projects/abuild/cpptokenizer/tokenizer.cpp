@@ -150,13 +150,117 @@ private:
         {
             this->macro_negation(token);
         }
+        else if (this->current_char() == '(')
+        {
+            this->skip_one();
+            this->skip_space_comment_and_macro_newline();
+            token.elements.emplace_back(LeftBracketToken{});
+        }
+        else if (this->current_char() == ')')
+        {
+            this->skip_one();
+            this->skip_space_comment_and_macro_newline();
+            token.elements.emplace_back(RightBracketToken{});
+        }
+        else if (this->is_logical_and())
+        {
+            this->skip(2);
+            this->skip_space_comment_and_macro_newline();
+            token.elements.emplace_back(AndToken{});
+        }
+        else if (this->is_logical_or())
+        {
+            this->skip(2);
+            this->skip_space_comment_and_macro_newline();
+            token.elements.emplace_back(OrToken{});
+        }
         else
         {
-            const std::string_view type = this->identifier();
+            const std::string_view name = this->identifier();
 
-            if (type == "defined")
+            if (name == "defined")
             {
                 this->defined(token);
+            }
+            else
+            {
+                this->skip_space_comment_and_macro_newline();
+
+                if (this->is_equals_equals())
+                {
+                    this->skip(2);
+                    this->skip_space_comment_and_macro_newline();
+                    const std::string_view value = this->identifier_or_value();
+                    this->skip_space_comment_and_macro_newline();
+
+                    token.elements.emplace_back(EqualsToken{
+                        .name = std::string(name.data(), name.size()),
+                        .value = std::string(value.data(), value.size())});
+                }
+                else if (this->is_not_equals())
+                {
+                    this->skip(2);
+                    this->skip_space_comment_and_macro_newline();
+                    const std::string_view value = this->identifier_or_value();
+                    this->skip_space_comment_and_macro_newline();
+
+                    token.elements.emplace_back(NotToken{});
+                    token.elements.emplace_back(EqualsToken{
+                        .name = std::string(name.data(), name.size()),
+                        .value = std::string(value.data(), value.size())});
+                }
+                else if (this->current_char() == '<')
+                {
+                    this->skip_one();
+
+                    if (this->current_char() == '=')
+                    {
+                        this->skip_one();
+                        this->skip_space_comment_and_macro_newline();
+                        const std::string_view value = this->identifier_or_value();
+                        this->skip_space_comment_and_macro_newline();
+                        token.elements.emplace_back(LessThanOrEqualsToken{
+                            .name = std::string(name.data(), name.size()),
+                            .value = std::string(value.data(), value.size())});
+                    }
+                    else
+                    {
+                        this->skip_space_comment_and_macro_newline();
+                        const std::string_view value = this->identifier_or_value();
+                        this->skip_space_comment_and_macro_newline();
+                        token.elements.emplace_back(LessThanToken{
+                            .name = std::string(name.data(), name.size()),
+                            .value = std::string(value.data(), value.size())});
+                    }
+                }
+                else if (this->current_char() == '>')
+                {
+                    this->skip_one();
+
+                    if (this->current_char() == '=')
+                    {
+                        this->skip_one();
+                        this->skip_space_comment_and_macro_newline();
+                        const std::string_view value = this->identifier_or_value();
+                        this->skip_space_comment_and_macro_newline();
+                        token.elements.emplace_back(GreaterThanOrEqualsToken{
+                            .name = std::string(name.data(), name.size()),
+                            .value = std::string(value.data(), value.size())});
+                    }
+                    else
+                    {
+                        this->skip_space_comment_and_macro_newline();
+                        const std::string_view value = this->identifier_or_value();
+                        this->skip_space_comment_and_macro_newline();
+                        token.elements.emplace_back(GreaterThanToken{
+                            .name = std::string(name.data(), name.size()),
+                            .value = std::string(value.data(), value.size())});
+                    }
+                }
+                else
+                {
+                    this->skip_macro();
+                }
             }
         }
     }
@@ -189,9 +293,30 @@ private:
         return this->lexeme();
     }
 
+    [[nodiscard]] auto identifier_or_value() noexcept -> std::string_view
+    {
+        this->lexemeBegin = this->pos;
+
+        if (this->current_char() == '"')
+        {
+            this->skip_string();
+        }
+        else
+        {
+            this->skip_identifier();
+        }
+
+        return this->lexeme();
+    }
+
     [[nodiscard]] auto is_end_of_line() const noexcept -> bool
     {
         return this->current_char() == '\n';
+    }
+
+    [[nodiscard]] auto is_equals_equals() const noexcept -> bool
+    {
+        return this->current_char() == '=' && this->peek() == '=';
     }
 
     [[nodiscard]] auto is_identifier() const noexcept -> bool
@@ -205,6 +330,16 @@ private:
         return this->current_char() == '/' && this->peek() == '/';
     }
 
+    [[nodiscard]] auto is_logical_and() const noexcept -> bool
+    {
+        return this->current_char() == '&' && this->peek() == '&';
+    }
+
+    [[nodiscard]] auto is_logical_or() const noexcept -> bool
+    {
+        return this->current_char() == '|' && this->peek() == '|';
+    }
+
     [[nodiscard]] auto is_multiline_comment() const noexcept -> bool
     {
         return this->current_char() == '/' && this->peek() == '*';
@@ -213,6 +348,11 @@ private:
     [[nodiscard]] auto is_multiline_comment_end() const noexcept -> bool
     {
         return this->current_char() == '*' && this->peek() == '/';
+    }
+
+    [[nodiscard]] auto is_not_equals() const noexcept -> bool
+    {
+        return this->current_char() == '!' && this->peek() == '=';
     }
 
     [[nodiscard]] auto is_quote() const noexcept -> bool

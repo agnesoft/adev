@@ -33,11 +33,6 @@ export struct EqualsToken
     std::string value;
 };
 
-//! Left bracket `(`.
-export struct LeftBracketToken
-{
-};
-
 //! Conditional token checking that a particular
 //! define is set to a value greater than or equal
 //! to a threshold. The threshold can be a name of
@@ -62,6 +57,11 @@ export struct GreaterThanToken
 
     //! Threshold value.
     std::string value;
+};
+
+//! Left bracket `(`.
+export struct LeftBracketToken
+{
 };
 
 //! Conditional token checking that a particular
@@ -97,17 +97,6 @@ export struct NotToken
 {
 };
 
-//! Conditional token checking that a particular
-//! define is not set to certain value.
-export struct NotEqualsToken
-{
-    //! Define name.
-    std::string name;
-
-    //! Not expected define value.
-    std::string value;
-};
-
 //! Logical operator `||`.
 export struct OrToken
 {
@@ -128,7 +117,6 @@ export using IfElement = std::variant<
     LeftBracketToken,
     RightBracketToken,
     EqualsToken,
-    NotEqualsToken,
     GreaterThanToken,
     GreaterThanOrEqualsToken,
     LessThanToken,
