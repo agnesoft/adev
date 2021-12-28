@@ -12,6 +12,28 @@ public:
     using TokenizerCommon::TokenizerCommon;
 
 protected:
+    [[nodiscard]] auto macro_bracket_value() noexcept -> std::string_view
+    {
+        this->skip_space_comment_macronewline();
+
+        if (this->current_char() == '(')
+        {
+            this->skip_one();
+            const std::string_view val = this->macro_value();
+
+            if (this->current_char() == ')')
+            {
+                this->skip_one();
+                this->skip_space_comment();
+
+                return val;
+            }
+        }
+
+        this->skip_macro();
+        return {};
+    }
+
     [[nodiscard]] auto macro_identifier() noexcept -> std::string_view
     {
         this->skip_space_comment_macronewline();
