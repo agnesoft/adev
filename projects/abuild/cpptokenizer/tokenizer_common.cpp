@@ -9,8 +9,10 @@ namespace abuild
 class TokenizerCommon
 {
 public:
-    explicit TokenizerCommon(std::string_view source) :
-        source{source}
+    explicit TokenizerCommon(std::string_view source, std::size_t &pos, std::vector<Token> &tokens) :
+        source{source},
+        pos{pos},
+        tokens{tokens}
     {
     }
 
@@ -74,6 +76,11 @@ protected:
             || this->current_char() == '\r'
             || this->current_char() == '\v'
             || this->current_char() == '\f';
+    }
+
+    [[nodiscard]] auto pos_ref() noexcept -> std::size_t &
+    {
+        return this->pos;
     }
 
     auto push_token(Token token) -> void
@@ -158,9 +165,14 @@ protected:
         }
     }
 
-    [[nodiscard]] auto take_tokens() noexcept -> std::vector<Token>
+    [[nodiscard]] auto source_view() const noexcept -> std::string_view
     {
-        return std::move(this->tokens);
+        return this->source;
+    }
+
+    [[nodiscard]] auto tokens_ref() noexcept -> std::vector<Token> &
+    {
+        return this->tokens;
     }
 
     [[nodiscard]] auto value() noexcept -> std::string_view
@@ -271,7 +283,7 @@ private:
 
     auto skip_raw_string() noexcept -> void
     {
-        std::string_view skipSequence = this->extract_skip_sequence();
+        const std::string_view skipSequence = this->extract_skip_sequence();
 
         while (!this->at_end())
         {
@@ -303,7 +315,7 @@ private:
 
     std::string_view source;
     std::size_t lexemeBegin = 0;
-    std::size_t pos = 0;
-    std::vector<Token> tokens;
+    std::size_t &pos;
+    std::vector<Token> &tokens;
 };
 }
