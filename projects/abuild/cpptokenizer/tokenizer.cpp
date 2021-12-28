@@ -152,116 +152,23 @@ private:
         }
         else if (this->current_char() == '(')
         {
-            this->skip_one();
-            this->skip_space_comment_and_macro_newline();
-            token.elements.emplace_back(LeftBracketToken{});
+            this->macro_left_bracket(token);
         }
         else if (this->current_char() == ')')
         {
-            this->skip_one();
-            this->skip_space_comment_and_macro_newline();
-            token.elements.emplace_back(RightBracketToken{});
+            this->macro_right_bracket(token);
         }
         else if (this->is_logical_and())
         {
-            this->skip(2);
-            this->skip_space_comment_and_macro_newline();
-            token.elements.emplace_back(AndToken{});
+            this->macro_logical_and(token);
         }
         else if (this->is_logical_or())
         {
-            this->skip(2);
-            this->skip_space_comment_and_macro_newline();
-            token.elements.emplace_back(OrToken{});
+            this->macro_logical_or(token);
         }
         else
         {
-            const std::string_view left = this->identifier_or_value();
-
-            if (left == "defined")
-            {
-                this->defined(token);
-            }
-            else
-            {
-                this->skip_space_comment_and_macro_newline();
-
-                if (this->is_equals_equals())
-                {
-                    this->skip(2);
-                    this->skip_space_comment_and_macro_newline();
-                    const std::string_view right = this->identifier_or_value();
-                    this->skip_space_comment_and_macro_newline();
-
-                    token.elements.emplace_back(EqualsToken{
-                        .left = std::string(left.data(), left.size()),
-                        .right = std::string(right.data(), right.size())});
-                }
-                else if (this->is_not_equals())
-                {
-                    this->skip(2);
-                    this->skip_space_comment_and_macro_newline();
-                    const std::string_view right = this->identifier_or_value();
-                    this->skip_space_comment_and_macro_newline();
-
-                    token.elements.emplace_back(NotToken{});
-                    token.elements.emplace_back(EqualsToken{
-                        .left = std::string(left.data(), left.size()),
-                        .right = std::string(right.data(), right.size())});
-                }
-                else if (this->current_char() == '<')
-                {
-                    this->skip_one();
-
-                    if (this->current_char() == '=')
-                    {
-                        this->skip_one();
-                        this->skip_space_comment_and_macro_newline();
-                        const std::string_view right = this->identifier_or_value();
-                        this->skip_space_comment_and_macro_newline();
-                        token.elements.emplace_back(LessThanOrEqualsToken{
-                            .left = std::string(left.data(), left.size()),
-                            .right = std::string(right.data(), right.size())});
-                    }
-                    else
-                    {
-                        this->skip_space_comment_and_macro_newline();
-                        const std::string_view right = this->identifier_or_value();
-                        this->skip_space_comment_and_macro_newline();
-                        token.elements.emplace_back(LessThanToken{
-                            .left = std::string(left.data(), left.size()),
-                            .right = std::string(right.data(), right.size())});
-                    }
-                }
-                else if (this->current_char() == '>')
-                {
-                    this->skip_one();
-
-                    if (this->current_char() == '=')
-                    {
-                        this->skip_one();
-                        this->skip_space_comment_and_macro_newline();
-                        const std::string_view right = this->identifier_or_value();
-                        this->skip_space_comment_and_macro_newline();
-                        token.elements.emplace_back(GreaterThanOrEqualsToken{
-                            .left = std::string(left.data(), left.size()),
-                            .right = std::string(right.data(), right.size())});
-                    }
-                    else
-                    {
-                        this->skip_space_comment_and_macro_newline();
-                        const std::string_view right = this->identifier_or_value();
-                        this->skip_space_comment_and_macro_newline();
-                        token.elements.emplace_back(GreaterThanToken{
-                            .left = std::string(left.data(), left.size()),
-                            .right = std::string(right.data(), right.size())});
-                    }
-                }
-                else
-                {
-                    this->skip_macro();
-                }
-            }
+            this->macro_condition(token);
         }
     }
 
@@ -379,11 +286,124 @@ private:
         return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
     }
 
+    auto macro_condition(IfToken &token) -> void
+    {
+        const std::string_view left = this->identifier_or_value();
+
+        if (left == "defined")
+        {
+            this->defined(token);
+        }
+        else
+        {
+            this->macro_expression(left, token);
+        }
+    }
+
+    template<typename T>
+    auto macro_expression(std::string_view left, IfToken &token) -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+        const std::string_view right = this->identifier_or_value();
+        this->skip_space_comment_and_macro_newline();
+        token.elements.emplace_back(T{
+            .left = std::string(left.data(), left.size()),
+            .right = std::string(right.data(), right.size())});
+    }
+
+    auto macro_expression_equals(std::string_view left, IfToken &token) -> void
+    {
+        this->skip(2);
+        this->macro_expression<EqualsToken>(left, token);
+    }
+
+    auto macro_expression_not_equals(std::string_view left, IfToken &token) -> void
+    {
+        token.elements.emplace_back(NotToken{});
+        this->macro_expression_equals(left, token);
+    }
+
+    template<typename T>
+    auto macro_expression_or_equals(std::string_view left, IfToken &token) -> void
+    {
+        this->skip_one();
+        this->macro_expression<T>(left, token);
+    }
+
+    template<typename T, typename TOrEquals>
+    auto macro_expression(std::string_view left, IfToken &token) -> void
+    {
+        this->skip_one();
+
+        if (this->current_char() == '=')
+        {
+            this->macro_expression_or_equals<TOrEquals>(left, token);
+        }
+        else
+        {
+            this->macro_expression<T>(left, token);
+        }
+    }
+
+    auto macro_expression(std::string_view left, IfToken &token) -> void
+    {
+        this->skip_space_comment_and_macro_newline();
+
+        if (this->is_equals_equals())
+        {
+            this->macro_expression_equals(left, token);
+        }
+        else if (this->is_not_equals())
+        {
+            this->macro_expression_not_equals(left, token);
+        }
+        else if (this->current_char() == '<')
+        {
+            this->macro_expression<LessThanToken, LessThanOrEqualsToken>(left, token);
+        }
+        else if (this->current_char() == '>')
+        {
+            this->macro_expression<GreaterThanToken, GreaterThanOrEqualsToken>(left, token);
+        }
+        else
+        {
+            this->skip_macro();
+        }
+    }
+
+    auto macro_left_bracket(IfToken &token) -> void
+    {
+        this->skip_one();
+        this->skip_space_comment_and_macro_newline();
+        token.elements.emplace_back(LeftBracketToken{});
+    }
+
+    auto macro_logical_and(IfToken &token) -> void
+    {
+        this->skip(2);
+        this->skip_space_comment_and_macro_newline();
+        token.elements.emplace_back(AndToken{});
+    }
+
+    auto macro_logical_or(IfToken &token) -> void
+    {
+        this->skip(2);
+        this->skip_space_comment_and_macro_newline();
+        token.elements.emplace_back(OrToken{});
+    }
+
     auto macro_negation(IfToken &token) -> void
     {
         token.elements.emplace_back(NotToken{});
         this->skip_one();
         this->skip_space_comment_and_macro_newline();
+    }
+
+    auto macro_right_bracket(IfToken &token) -> void
+    {
+        this->skip_one();
+        this->skip_space_comment_and_macro_newline();
+        token.elements.emplace_back(RightBracketToken{});
     }
 
     [[nodiscard]] auto match_sequence(std::string_view sequence) const noexcept -> bool
