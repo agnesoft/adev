@@ -1,15 +1,15 @@
 #ifndef __clang__
 module abuild.cpptokenizer : preprocessor_tokenizer;
-import : tokenizer_common;
+import : preprocessor_tokenizer_common;
 #endif
 
 namespace abuild
 {
 //! \private
-class PreprocessorTokenizer : public TokenizerCommon
+class PreprocessorTokenizer : public PreprocessorTokenizerCommon
 {
 public:
-    using TokenizerCommon::TokenizerCommon;
+    using PreprocessorTokenizerCommon::PreprocessorTokenizerCommon;
 
     auto tokenize() -> void
     {
@@ -188,9 +188,7 @@ private:
     template<typename T>
     auto macro_expression(std::string_view left, IfToken &token) -> void
     {
-        this->skip_space_comment_macronewline();
-        const std::string_view right = this->value();
-        this->skip_space_comment_macronewline();
+        const std::string_view right = this->macro_value();
         token.elements.emplace_back(T{
             .left = std::string(left.data(), left.size()),
             .right = std::string(right.data(), right.size())});
@@ -208,13 +206,6 @@ private:
         this->macro_expression_equals(left, token);
     }
 
-    template<typename T>
-    auto macro_expression_or_equals(std::string_view left, IfToken &token) -> void
-    {
-        this->skip_one();
-        this->macro_expression<T>(left, token);
-    }
-
     template<typename T, typename TOrEquals>
     auto macro_expression(std::string_view left, IfToken &token) -> void
     {
@@ -222,7 +213,8 @@ private:
 
         if (this->current_char() == '=')
         {
-            this->macro_expression_or_equals<TOrEquals>(left, token);
+            this->skip_one();
+            this->macro_expression<TOrEquals>(left, token);
         }
         else
         {
@@ -254,14 +246,6 @@ private:
         {
             this->skip_macro();
         }
-    }
-
-    auto macro_identifier() noexcept -> std::string_view
-    {
-        this->skip_space_comment_macronewline();
-        std::string_view name = this->identifier();
-        this->skip_space_comment_macronewline();
-        return name;
     }
 
     auto preprocessor() -> void
@@ -298,75 +282,6 @@ private:
         else
         {
             this->skip_macro();
-        }
-    }
-
-    auto skip_macro() noexcept -> void
-    {
-        while (!this->at_end())
-        {
-            if (this->is_line_comment() || this->current_char() == '\\')
-            {
-                this->skip_line();
-            }
-            else if (this->is_multiline_comment())
-            {
-                this->skip_multiline_comment();
-            }
-            else if (this->is_end_of_line())
-            {
-                return;
-            }
-            else
-            {
-                this->skip_one();
-            }
-        }
-    }
-
-    auto skip_space_comment() noexcept -> void
-    {
-        while (!this->at_end())
-        {
-            if (this->is_line_comment())
-            {
-                this->skip_line();
-            }
-            else if (this->is_multiline_comment())
-            {
-                this->skip_multiline_comment();
-            }
-            else if (this->is_space())
-            {
-                this->skip_one();
-            }
-            else
-            {
-                return;
-            }
-        }
-    }
-
-    auto skip_space_comment_macronewline() noexcept -> void
-    {
-        while (!this->at_end())
-        {
-            if (this->is_line_comment() || this->current_char() == '\\')
-            {
-                this->skip_line();
-            }
-            else if (this->is_multiline_comment())
-            {
-                this->skip_multiline_comment();
-            }
-            else if (this->is_space())
-            {
-                this->skip_one();
-            }
-            else
-            {
-                return;
-            }
         }
     }
 
