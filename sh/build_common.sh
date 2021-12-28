@@ -91,7 +91,7 @@ msvcCompilerFlags="/nologo \
                    /std:c++latest \
                    /EHsc \
                    /MT \
-                   /Z7 \
+                   /O2 \
                    /W4 \
                    /WX \
                    /wd4005 \

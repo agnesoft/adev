@@ -176,9 +176,9 @@ private:
         }
         else
         {
-            const std::string_view name = this->identifier();
+            const std::string_view left = this->identifier_or_value();
 
-            if (name == "defined")
+            if (left == "defined")
             {
                 this->defined(token);
             }
@@ -190,24 +190,24 @@ private:
                 {
                     this->skip(2);
                     this->skip_space_comment_and_macro_newline();
-                    const std::string_view value = this->identifier_or_value();
+                    const std::string_view right = this->identifier_or_value();
                     this->skip_space_comment_and_macro_newline();
 
                     token.elements.emplace_back(EqualsToken{
-                        .name = std::string(name.data(), name.size()),
-                        .value = std::string(value.data(), value.size())});
+                        .left = std::string(left.data(), left.size()),
+                        .right = std::string(right.data(), right.size())});
                 }
                 else if (this->is_not_equals())
                 {
                     this->skip(2);
                     this->skip_space_comment_and_macro_newline();
-                    const std::string_view value = this->identifier_or_value();
+                    const std::string_view right = this->identifier_or_value();
                     this->skip_space_comment_and_macro_newline();
 
                     token.elements.emplace_back(NotToken{});
                     token.elements.emplace_back(EqualsToken{
-                        .name = std::string(name.data(), name.size()),
-                        .value = std::string(value.data(), value.size())});
+                        .left = std::string(left.data(), left.size()),
+                        .right = std::string(right.data(), right.size())});
                 }
                 else if (this->current_char() == '<')
                 {
@@ -217,20 +217,20 @@ private:
                     {
                         this->skip_one();
                         this->skip_space_comment_and_macro_newline();
-                        const std::string_view value = this->identifier_or_value();
+                        const std::string_view right = this->identifier_or_value();
                         this->skip_space_comment_and_macro_newline();
                         token.elements.emplace_back(LessThanOrEqualsToken{
-                            .name = std::string(name.data(), name.size()),
-                            .value = std::string(value.data(), value.size())});
+                            .left = std::string(left.data(), left.size()),
+                            .right = std::string(right.data(), right.size())});
                     }
                     else
                     {
                         this->skip_space_comment_and_macro_newline();
-                        const std::string_view value = this->identifier_or_value();
+                        const std::string_view right = this->identifier_or_value();
                         this->skip_space_comment_and_macro_newline();
                         token.elements.emplace_back(LessThanToken{
-                            .name = std::string(name.data(), name.size()),
-                            .value = std::string(value.data(), value.size())});
+                            .left = std::string(left.data(), left.size()),
+                            .right = std::string(right.data(), right.size())});
                     }
                 }
                 else if (this->current_char() == '>')
@@ -241,20 +241,20 @@ private:
                     {
                         this->skip_one();
                         this->skip_space_comment_and_macro_newline();
-                        const std::string_view value = this->identifier_or_value();
+                        const std::string_view right = this->identifier_or_value();
                         this->skip_space_comment_and_macro_newline();
                         token.elements.emplace_back(GreaterThanOrEqualsToken{
-                            .name = std::string(name.data(), name.size()),
-                            .value = std::string(value.data(), value.size())});
+                            .left = std::string(left.data(), left.size()),
+                            .right = std::string(right.data(), right.size())});
                     }
                     else
                     {
                         this->skip_space_comment_and_macro_newline();
-                        const std::string_view value = this->identifier_or_value();
+                        const std::string_view right = this->identifier_or_value();
                         this->skip_space_comment_and_macro_newline();
                         token.elements.emplace_back(GreaterThanToken{
-                            .name = std::string(name.data(), name.size()),
-                            .value = std::string(value.data(), value.size())});
+                            .left = std::string(left.data(), left.size()),
+                            .right = std::string(right.data(), right.size())});
                     }
                 }
                 else

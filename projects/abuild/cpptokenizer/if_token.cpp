@@ -26,11 +26,11 @@ export struct DefinedToken
 //! equivalent to `#if MY_MACRO == 1`.
 export struct EqualsToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Expected define value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token checking that a particular
@@ -39,11 +39,11 @@ export struct EqualsToken
 //! a define.
 export struct GreaterThanOrEqualsToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token checking that a particular
@@ -52,11 +52,11 @@ export struct GreaterThanOrEqualsToken
 //! define.
 export struct GreaterThanToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Left bracket `(`.
@@ -70,11 +70,11 @@ export struct LeftBracketToken
 //! a define.
 export struct LessThanOrEqualsToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token checking that a particular
@@ -83,11 +83,11 @@ export struct LessThanOrEqualsToken
 //! define.
 export struct LessThanToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token representing negation of the

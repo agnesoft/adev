@@ -21,8 +21,8 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::EqualsToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("2");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("2");
     });
 
     test("#if MY_MACRO != 2", [] {
@@ -40,8 +40,8 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::EqualsToken>(condition.elements[1]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("2");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("2");
     });
 
     test("#if MY_MACRO < 2", [] {
@@ -58,8 +58,8 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::LessThanToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("3");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("3");
     });
 
     test("#if MY_MACRO <= 2", [] {
@@ -76,8 +76,8 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::LessThanOrEqualsToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("3");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("3");
     });
 
     test("#if MY_MACRO > 2", [] {
@@ -94,8 +94,8 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::GreaterThanToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("3");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("3");
     });
 
     test("#if MY_MACRO >= 2", [] {
@@ -112,8 +112,26 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::GreaterThanOrEqualsToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("3");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("3");
+    });
+
+    test("string on left hand side", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if \"some string\" == MY_MACRO\n#endif");
+
+        assert_(tokens.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
+
+        const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
+
+        assert_(condition.elements.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[0])).to_be(true);
+
+        const auto &token = std::get<::abuild::EqualsToken>(condition.elements[0]);
+
+        expect(token.left).to_be("\"some string\"");
+        expect(token.right).to_be("MY_MACRO");
     });
 
     test("#if MY_MACRO < 3 && MY_OTHER_MACRO > 5", [] {
@@ -132,13 +150,13 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::LessThanToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("3");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("3");
 
         const auto &token2 = std::get<::abuild::GreaterThanToken>(condition.elements[2]);
 
-        expect(token2.name).to_be("MY_OTHER_MACRO");
-        expect(token2.value).to_be("5");
+        expect(token2.left).to_be("MY_OTHER_MACRO");
+        expect(token2.right).to_be("5");
     });
 
     test("#if MY_MACRO < 3 || MY_OTHER_MACRO > 5", [] {
@@ -157,12 +175,12 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::LessThanToken>(condition.elements[0]);
 
-        expect(token.name).to_be("MY_MACRO");
-        expect(token.value).to_be("3");
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("3");
 
         const auto &token2 = std::get<::abuild::GreaterThanToken>(condition.elements[2]);
 
-        expect(token2.name).to_be("MY_OTHER_MACRO");
-        expect(token2.value).to_be("5");
+        expect(token2.left).to_be("MY_OTHER_MACRO");
+        expect(token2.right).to_be("5");
     });
 });
