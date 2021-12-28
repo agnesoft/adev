@@ -8,6 +8,7 @@ export import astl;
 // clang-format off
 #include "if_token.cpp" //NOLINT(bugprone-suspicious-include)
 #include "token.cpp" //NOLINT(bugprone-suspicious-include)
+#include "tokenizer_common.cpp" //NOLINT(bugprone-suspicious-include)
 #include "tokenizer.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on
 #endif
