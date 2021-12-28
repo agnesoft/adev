@@ -45,11 +45,17 @@ public:
     }
 
 private:
+    template<typename T>
+    auto push_if_element(IfToken &token) -> void
+    {
+        this->skip_one();
+        this->skip_space_comment_macronewline();
+        token.elements.emplace_back(T{});
+    }
+
     auto define() -> void
     {
-        this->skip_space_comment_macronewline();
-        const std::string_view defineName = this->identifier();
-        this->skip_space_comment_macronewline();
+        const std::string_view defineName = this->macro_identifier();
         const std::string_view value = this->value();
         this->skip_space_comment();
 
@@ -67,7 +73,6 @@ private:
 
     auto defined(IfToken &token) -> void
     {
-        this->skip_space_comment_macronewline();
         const std::string_view defineName = this->defined_identifier();
         token.elements.emplace_back(DefinedToken{
             .name = std::string(defineName.data(), defineName.size())});
@@ -75,14 +80,12 @@ private:
 
     [[nodiscard]] auto defined_identifier() noexcept -> std::string_view
     {
+        this->skip_space_comment_macronewline();
+
         if (this->current_char() == '(')
         {
             this->skip_one();
-            this->skip_space_comment_macronewline();
-
-            const std::string_view defineName = this->identifier();
-
-            this->skip_space_comment_macronewline();
+            const std::string_view defineName = this->macro_identifier();
 
             if (this->current_char() == ')')
             {
@@ -121,23 +124,25 @@ private:
     {
         if (this->current_char() == '!')
         {
-            this->macro_negation(token);
+            this->push_if_element<NotToken>(token);
         }
         else if (this->current_char() == '(')
         {
-            this->macro_left_bracket(token);
+            this->push_if_element<LeftBracketToken>(token);
         }
         else if (this->current_char() == ')')
         {
-            this->macro_right_bracket(token);
+            this->push_if_element<RightBracketToken>(token);
         }
         else if (this->is_logical_and())
         {
-            this->macro_logical_and(token);
+            this->skip_one();
+            this->push_if_element<AndToken>(token);
         }
         else if (this->is_logical_or())
         {
-            this->macro_logical_or(token);
+            this->skip_one();
+            this->push_if_element<OrToken>(token);
         }
         else
         {
@@ -251,39 +256,12 @@ private:
         }
     }
 
-    auto macro_left_bracket(IfToken &token) -> void
+    auto macro_identifier() noexcept -> std::string_view
     {
-        this->skip_one();
         this->skip_space_comment_macronewline();
-        token.elements.emplace_back(LeftBracketToken{});
-    }
-
-    auto macro_logical_and(IfToken &token) -> void
-    {
-        this->skip(2);
+        std::string_view name = this->identifier();
         this->skip_space_comment_macronewline();
-        token.elements.emplace_back(AndToken{});
-    }
-
-    auto macro_logical_or(IfToken &token) -> void
-    {
-        this->skip(2);
-        this->skip_space_comment_macronewline();
-        token.elements.emplace_back(OrToken{});
-    }
-
-    auto macro_negation(IfToken &token) -> void
-    {
-        token.elements.emplace_back(NotToken{});
-        this->skip_one();
-        this->skip_space_comment_macronewline();
-    }
-
-    auto macro_right_bracket(IfToken &token) -> void
-    {
-        this->skip_one();
-        this->skip_space_comment_macronewline();
-        token.elements.emplace_back(RightBracketToken{});
+        return name;
     }
 
     auto preprocessor() -> void
@@ -316,6 +294,10 @@ private:
         else if (type == "if")
         {
             this->if_directive();
+        }
+        else
+        {
+            this->skip_macro();
         }
     }
 
