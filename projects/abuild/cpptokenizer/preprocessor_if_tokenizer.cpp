@@ -123,7 +123,10 @@ private:
         }
         else
         {
-            this->skip_macro();
+            this->token.elements.emplace_back(NotToken{});
+            this->token.elements.emplace_back(EqualsToken{
+                .left = std::string(left.data(), left.size()),
+                .right = std::string("0")});
         }
     }
 
