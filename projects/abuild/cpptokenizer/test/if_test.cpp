@@ -193,7 +193,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
 
-        assert_(condition.elements.size()).to_be(5U);
+        assert_(condition.elements.size()).to_be(5U); // NOLINT(readability-magic-numbers)
         assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
         assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
         assert_(std::holds_alternative<::abuild::AndToken>(condition.elements[2])).to_be(true);
@@ -277,7 +277,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
 
         const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
 
-        assert_(condition.elements.size()).to_be(5U);
+        assert_(condition.elements.size()).to_be(5U); // NOLINT(readability-magic-numbers)
         assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
         assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
         assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[2])).to_be(true);

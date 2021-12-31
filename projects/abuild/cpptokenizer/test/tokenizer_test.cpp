@@ -38,7 +38,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("unended string", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("\"some string\\\"");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize(R"("some string\")");
 
         expect(tokens.size()).to_be(0U);
     });
