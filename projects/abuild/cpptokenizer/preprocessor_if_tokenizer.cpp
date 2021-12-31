@@ -121,6 +121,10 @@ private:
         {
             this->conditional_expression<GreaterThanToken, GreaterThanOrEqualsToken>(left);
         }
+        else if (left.empty())
+        {
+            this->skip_macro();
+        }
         else
         {
             this->token.elements.emplace_back(NotToken{});

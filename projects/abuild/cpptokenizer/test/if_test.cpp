@@ -210,4 +210,106 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token2.left).to_be("MY_OTHER_MACRO");
         expect(token2.right).to_be("0");
     });
+
+    test("#if MY_MACRO = 2", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO = 2\n#endif");
+
+        assert_(tokens.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
+
+        const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
+
+        assert_(condition.elements.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
+
+        const auto &token = std::get<::abuild::EqualsToken>(condition.elements[1]);
+
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("0");
+    });
+
+    test("#if MY_MACRO & 2", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO & 2\n#endif");
+
+        assert_(tokens.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
+
+        const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
+
+        assert_(condition.elements.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
+
+        const auto &token = std::get<::abuild::EqualsToken>(condition.elements[1]);
+
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("0");
+    });
+
+    test("#if MY_MACRO | 3", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO | 3\n#endif");
+
+        assert_(tokens.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
+
+        const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
+
+        assert_(condition.elements.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
+
+        const auto &token = std::get<::abuild::EqualsToken>(condition.elements[1]);
+
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("0");
+    });
+
+    test("#if MY_MACRO ! 3", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO ! 3\n#endif");
+
+        assert_(tokens.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[1])).to_be(true);
+
+        const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
+
+        assert_(condition.elements.size()).to_be(5U);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[2])).to_be(true);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[3])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[4])).to_be(true);
+
+        const auto &token = std::get<::abuild::EqualsToken>(condition.elements[1]);
+
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("0");
+
+        const auto &token2 = std::get<::abuild::EqualsToken>(condition.elements[4]);
+
+        expect(token2.left).to_be("3");
+        expect(token2.right).to_be("0");
+    });
+
+    test("#if MY_MACRO | 3 //comment", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO | 3 //end of bad macro");
+
+        assert_(tokens.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::IfToken>(tokens[0])).to_be(true);
+
+        const auto &condition = std::get<::abuild::IfToken>(tokens[0]);
+
+        assert_(condition.elements.size()).to_be(2U);
+        assert_(std::holds_alternative<::abuild::NotToken>(condition.elements[0])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EqualsToken>(condition.elements[1])).to_be(true);
+
+        const auto &token = std::get<::abuild::EqualsToken>(condition.elements[1]);
+
+        expect(token.left).to_be("MY_MACRO");
+        expect(token.right).to_be("0");
+    });
 });
