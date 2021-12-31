@@ -8,7 +8,7 @@ using ::atest::test;
 
 static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
     test("fake comment", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("/ * /* / */");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("/ * /* /* */");
 
         expect(tokens.size()).to_be(0U);
     });
@@ -20,7 +20,7 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("bad preprocessor", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("# ");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("# \r\f\v");
 
         expect(tokens.size()).to_be(0U);
     });
@@ -38,19 +38,25 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("unended string", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("\"some string");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize(R"("some string\")");
 
         expect(tokens.size()).to_be(0U);
     });
 
     test("bad raw string", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("Rasd(\"\"");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("R\"asd(\"");
 
         expect(tokens.size()).to_be(0U);
     });
 
     test("unended raw string sequence", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("R\"asd");
+
+        expect(tokens.size()).to_be(0U);
+    });
+
+    test("unmatched raw string sequence", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("R\"asd()dsa\"");
 
         expect(tokens.size()).to_be(0U);
     });

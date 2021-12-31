@@ -26,16 +26,11 @@ export struct DefinedToken
 //! equivalent to `#if MY_MACRO == 1`.
 export struct EqualsToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Expected define value.
-    std::string value;
-};
-
-//! Left bracket `(`.
-export struct LeftBracketToken
-{
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token checking that a particular
@@ -44,11 +39,11 @@ export struct LeftBracketToken
 //! a define.
 export struct GreaterThanOrEqualsToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token checking that a particular
@@ -57,11 +52,16 @@ export struct GreaterThanOrEqualsToken
 //! define.
 export struct GreaterThanToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
+};
+
+//! Left bracket `(`.
+export struct LeftBracketToken
+{
 };
 
 //! Conditional token checking that a particular
@@ -70,11 +70,11 @@ export struct GreaterThanToken
 //! a define.
 export struct LessThanOrEqualsToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token checking that a particular
@@ -83,11 +83,11 @@ export struct LessThanOrEqualsToken
 //! define.
 export struct LessThanToken
 {
-    //! Define name.
-    std::string name;
+    //! Left value.
+    std::string left;
 
-    //! Threshold value.
-    std::string value;
+    //! Right value.
+    std::string right;
 };
 
 //! Conditional token representing negation of the
@@ -95,17 +95,6 @@ export struct LessThanToken
 //! `#if !defined(MY_MACRO)`).
 export struct NotToken
 {
-};
-
-//! Conditional token checking that a particular
-//! define is not set to certain value.
-export struct NotEqualsToken
-{
-    //! Define name.
-    std::string name;
-
-    //! Not expected define value.
-    std::string value;
 };
 
 //! Logical operator `||`.
@@ -128,7 +117,6 @@ export using IfElement = std::variant<
     LeftBracketToken,
     RightBracketToken,
     EqualsToken,
-    NotEqualsToken,
     GreaterThanToken,
     GreaterThanOrEqualsToken,
     LessThanToken,
