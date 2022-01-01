@@ -70,6 +70,10 @@ private:
         {
             this->defined();
         }
+        else if (left == "__has_include")
+        {
+            this->has_include();
+        }
         else
         {
             this->conditional_expression(left);
@@ -148,9 +152,45 @@ private:
 
     auto defined() -> void
     {
-        const std::string_view defineName = this->macro_bracket_value();
+        this->skip_space_comment_macronewline();
+        std::string_view defineName;
+
+        if (this->current_char() == '(')
+        {
+            defineName = this->macro_bracket_value();
+        }
+        else
+        {
+            defineName = this->identifier();
+        }
+
+        this->skip_space_comment();
+
         this->token.elements.emplace_back(DefinedToken{
             .name = std::string(defineName.data(), defineName.size())});
+    }
+
+    auto has_include() -> void
+    {
+        std::string_view include = this->macro_bracket_include();
+
+        if (!include.empty())
+        {
+            if (include.front() == '"')
+            {
+                this->token.elements.emplace_back(HasIncludeLocalToken{
+                    .include = std::string(&include[1], include.size() - 2)});
+            }
+            else
+            {
+                this->token.elements.emplace_back(HasIncludeExternalToken{
+                    .include = std::string(&include[1], include.size() - 2)});
+            }
+        }
+        else
+        {
+            this->skip_macro();
+        }
     }
 
     IfToken token;

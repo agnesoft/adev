@@ -120,6 +120,7 @@ export struct UndefToken
 //! token types.
 export using Token = std::variant<
     IfToken,
+    ElseToken,
     EndIfToken,
     DefineToken,
     ImportIncludeExternalToken,

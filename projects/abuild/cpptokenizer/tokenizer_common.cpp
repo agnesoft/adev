@@ -27,6 +27,25 @@ protected:
         return this->at(this->pos);
     }
 
+    [[nodiscard]] auto external_include() noexcept -> std::string_view
+    {
+        this->lexemeBegin = this->pos;
+        this->skip_one();
+
+        while (!this->at_end() && !this->is_end_of_line())
+        {
+            if (this->current_char() == '>')
+            {
+                this->skip_one();
+                return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
+            }
+
+            this->skip_one();
+        }
+
+        return {};
+    }
+
     [[nodiscard]] auto identifier() noexcept -> std::string_view
     {
         this->lexemeBegin = this->pos;
@@ -76,6 +95,13 @@ protected:
             || this->current_char() == '\r'
             || this->current_char() == '\v'
             || this->current_char() == '\f';
+    }
+
+    [[nodiscard]] auto local_include() noexcept -> std::string_view
+    {
+        this->lexemeBegin = this->pos;
+        this->skip_regular_string();
+        return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
     }
 
     [[nodiscard]] auto pos_ref() noexcept -> std::size_t &

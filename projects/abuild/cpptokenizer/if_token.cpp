@@ -90,6 +90,22 @@ export struct LessThanToken
     std::string right;
 };
 
+//! Conditional token checking that a `include`
+//! path is available locally.
+export struct HasIncludeLocalToken
+{
+    //! Include file path.
+    std::string include;
+};
+
+//! Conditional token checking that a `include`
+//! path is available externally.
+export struct HasIncludeExternalToken
+{
+    //! Include file path.
+    std::string include;
+};
+
 //! Conditional token representing negation of the
 //! following token (e.g. `#ifndef MY_MACRO` or
 //! `#if !defined(MY_MACRO)`).
@@ -110,17 +126,19 @@ export struct RightBracketToken
 //! IfElement is a variant type combining all
 //! possible condition token types.
 export using IfElement = std::variant<
-    NotToken,
-    DefinedToken,
     AndToken,
-    OrToken,
-    LeftBracketToken,
-    RightBracketToken,
+    DefinedToken,
     EqualsToken,
-    GreaterThanToken,
     GreaterThanOrEqualsToken,
+    GreaterThanToken,
+    HasIncludeExternalToken,
+    HasIncludeLocalToken,
+    LeftBracketToken,
+    LessThanOrEqualsToken,
     LessThanToken,
-    LessThanOrEqualsToken>;
+    OrToken,
+    NotToken,
+    RightBracketToken>;
 
 //! IfToken represents a condition as an
 //! ordered list of IfElements.
@@ -128,6 +146,12 @@ export struct IfToken
 {
     //! Condition elements.
     std::vector<IfElement> elements;
+};
+
+//! ElseToken represents an preprocessor `#else`
+//! including `#elif`, `#elifdef` and `#elifndef`.
+export struct ElseToken
+{
 };
 
 //! EndIfToken represents an end of a condition.
