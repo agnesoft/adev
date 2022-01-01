@@ -174,15 +174,15 @@ private:
     {
         std::string_view include = this->macro_bracket_include();
 
-        if (!include.empty() && include.size() != 1)
+        if (!include.empty())
         {
-            if (include.front() == '"' && include.back() == '"')
+            if (include.front() == '"')
             {
                 this->token.elements.emplace_back(HasIncludeLocalToken{
                     .include = std::string(&include[1], include.size() - 2)});
                 return;
             }
-            else if (include.front() == '<' && include.back() == '>')
+            else
             {
                 this->token.elements.emplace_back(HasIncludeExternalToken{
                     .include = std::string(&include[1], include.size() - 2)});
