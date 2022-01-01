@@ -65,7 +65,8 @@ protected:
         {
             return this->local_include();
         }
-        else if (this->current_char() == '<')
+
+        if (this->current_char() == '<')
         {
             return this->external_include();
         }

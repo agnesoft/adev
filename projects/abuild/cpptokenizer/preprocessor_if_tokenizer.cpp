@@ -180,17 +180,17 @@ private:
             {
                 this->token.elements.emplace_back(HasIncludeLocalToken{
                     .include = std::string(&include[1], include.size() - 2)});
-                return;
             }
             else
             {
                 this->token.elements.emplace_back(HasIncludeExternalToken{
                     .include = std::string(&include[1], include.size() - 2)});
-                return;
             }
         }
-
-        this->skip_macro();
+        else
+        {
+            this->skip_macro();
+        }
     }
 
     IfToken token;
