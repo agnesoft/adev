@@ -16,7 +16,7 @@ public:
     //! Sets the option description to
     //! `description`. Setting a description is
     //! mandatory but it can be empty.
-    [[nodiscard]] auto description(std::string description) noexcept -> OptionBuilderDescribed
+    [[nodiscard]] auto description(std::string description) -> OptionBuilderDescribed
     {
         this->option().description = std::move(description);
         return OptionBuilderDescribed{this->option()};

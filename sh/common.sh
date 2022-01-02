@@ -73,15 +73,6 @@ function set_toolchain() {
     echo "Toolchain: ${toolchain}"
 }
 
-function wait_for_jobs() {
-    result=0
-
-    for job in $(jobs -p)
-    do
-        wait $job || ((result=1))
-    done
-}
-
 shopt -s globstar
 
 if is_windows; then
