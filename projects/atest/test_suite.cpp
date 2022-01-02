@@ -6,7 +6,7 @@ import : test;
 namespace atest
 {
 //! \private
-export struct TestSuite
+export struct TestSuite // NOLINT(bugprone-exception-escape)
 {
     std::string name;
     std::source_location sourceLocation;

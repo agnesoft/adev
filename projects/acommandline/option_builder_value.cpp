@@ -18,7 +18,7 @@ public:
     //! command line arguments.
     //!
     //! It is mutually exclusive with required().
-    [[nodiscard]] auto default_value(DefaultValue value) noexcept -> OptionBuilderDefined
+    [[nodiscard]] auto default_value(DefaultValue value) -> OptionBuilderDefined
     {
         this->option().defaultValue = std::move(value);
         return OptionBuilderDefined{this->option()};
