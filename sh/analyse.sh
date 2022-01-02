@@ -1,5 +1,7 @@
 source sh/common.sh
 
+pids=()
+
 function analyse() {
     local parameter="${1}"
 
@@ -13,6 +15,7 @@ function analyse() {
 function analyse_source() {
     wait_for_free_job 8 # $(nproc)
     do_analyse_source $1 $2 &
+    pids+=($!)
 }
 
 function analyse_sources() {
@@ -149,14 +152,23 @@ function wait_for_free_job() {
     while test $(jobs -p | wc -w) -ge "$1"; do wait -n; done
 }
 
+function wait_for_jobs() {
+    result=0
+
+    for job in ${pids[@]}
+    do
+        wait $job || result=1
+    done
+}
+
 detect_clang_tidy
 analyse "${1}"
 wait_for_jobs
 
-if (( $result == 1 )); then
-    print_error "ERROR: analysis found issues (see above)"
-else
+if (( $result == 0 )); then
     print_ok "Analysis OK"
+else
+    print_error "ERROR: analysis found issues (see above)"
 fi
 
 exit $result

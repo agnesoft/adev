@@ -7,7 +7,7 @@ export import astl;
 namespace aprocess
 {
 //! EnvironmentVariable
-export struct EnvironmentVariable
+export struct EnvironmentVariable // NOLINT(bugprone-exception-escape)
 {
     //! Name of the environment variable
     std::string name;
