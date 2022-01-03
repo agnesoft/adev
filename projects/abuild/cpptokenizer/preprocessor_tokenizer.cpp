@@ -22,6 +22,25 @@ public:
         {
             this->define();
         }
+        else if (type == "else")
+        {
+            this->push_token(ElseToken{});
+        }
+        else if (type == "elif")
+        {
+            this->push_token(ElseToken{});
+            PreprocessorIfTokenizer{this->source_view(), this->pos_ref(), this->tokens_ref()}.tokenize();
+        }
+        else if (type == "elifdef")
+        {
+            this->push_token(ElseToken{});
+            this->ifdef();
+        }
+        else if (type == "elifndef")
+        {
+            this->push_token(ElseToken{});
+            this->ifndef();
+        }
         else if (type == "endif")
         {
             this->endif();

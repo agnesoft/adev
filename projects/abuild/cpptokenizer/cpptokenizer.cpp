@@ -16,10 +16,28 @@ export import astl;
 // clang-format on
 #endif
 
+//! abuild namespace
 namespace abuild
 {
 //! Converts `source` to an ordered list of
-//! supported tokens.
+//! supported C++ source code tokens. Supported
+//! tokens:
+//!
+//! - \#if
+//! - \#ifdef
+//! - \#ifndef
+//! - \#elif
+//! - \#elifdef
+//! - \#elifndef
+//! - \#define
+//! - \#include <>
+//! - \#include ""
+//! - (export) module mymodule;
+//! - (export) module mymodule : mypartition;
+//! - (export) import <>;
+//! - (export) import "";
+//! - (export) import mymodule;
+//! - (export) import : mypartition;
 export [[nodiscard]] auto tokenize(std::string_view source) -> std::vector<Token>
 {
     return Tokenizer{source}.tokenize();

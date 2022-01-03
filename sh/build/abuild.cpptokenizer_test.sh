@@ -13,6 +13,7 @@ function build_clang() {
            "${projectDir}/define_test.cpp" \
            "${projectDir}/if_bracket_test.cpp" \
            "${projectDir}/if_defined_test.cpp" \
+           "${projectDir}/if_else_test.cpp" \
            "${projectDir}/if_has_include_test.cpp" \
            "${projectDir}/if_test.cpp" \
            "${projectDir}/ifdef_test.cpp" \
@@ -31,6 +32,7 @@ function build_gcc() {
          "${projectDir}/define_test.cpp" \
          "${projectDir}/if_bracket_test.cpp" \
          "${projectDir}/if_defined_test.cpp" \
+         "${projectDir}/if_else_test.cpp" \
          "${projectDir}/if_has_include_test.cpp" \
          "${projectDir}/if_test.cpp" \
          "${projectDir}/ifdef_test.cpp" \
@@ -53,6 +55,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/define_test.cpp\" ^
        \"${projectDir}/if_bracket_test.cpp\" ^
        \"${projectDir}/if_defined_test.cpp\" ^
+       \"${projectDir}/if_else_test.cpp\" ^
        \"${projectDir}/if_has_include_test.cpp\" ^
        \"${projectDir}/if_test.cpp\" ^
        \"${projectDir}/ifdef_test.cpp\" ^
