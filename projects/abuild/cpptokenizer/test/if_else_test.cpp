@@ -47,7 +47,7 @@ static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
         assert_(std::holds_alternative<::abuild::ElseToken>(tokens[2])).to_be(true);
         assert_(std::holds_alternative<::abuild::IfToken>(tokens[3])).to_be(true);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[4])).to_be(true);
-        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[5])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[5])).to_be(true); // NOLINT(readability-magic-numbers)
 
         const auto &condition1 = std::get<::abuild::IfToken>(tokens[0]);
 
@@ -88,7 +88,7 @@ static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
         assert_(std::holds_alternative<::abuild::ElseToken>(tokens[2])).to_be(true);
         assert_(std::holds_alternative<::abuild::IfToken>(tokens[3])).to_be(true);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[4])).to_be(true);
-        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[5])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[5])).to_be(true); // NOLINT(readability-magic-numbers)
 
         const auto &condition1 = std::get<::abuild::IfToken>(tokens[0]);
 
@@ -128,7 +128,7 @@ static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
         assert_(std::holds_alternative<::abuild::ElseToken>(tokens[2])).to_be(true);
         assert_(std::holds_alternative<::abuild::IfToken>(tokens[3])).to_be(true);
         assert_(std::holds_alternative<::abuild::DefineToken>(tokens[4])).to_be(true);
-        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[5])).to_be(true);
+        assert_(std::holds_alternative<::abuild::EndIfToken>(tokens[5])).to_be(true); // NOLINT(readability-magic-numbers)
 
         const auto &condition1 = std::get<::abuild::IfToken>(tokens[0]);
 
