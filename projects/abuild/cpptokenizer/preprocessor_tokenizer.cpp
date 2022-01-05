@@ -57,6 +57,10 @@ public:
         {
             this->ifndef();
         }
+        else if (type == "include")
+        {
+            this->include();
+        }
         else if (type == "undef")
         {
             this->undef();
@@ -111,6 +115,36 @@ private:
                          DefinedToken{
                              .name = std::string(defineName.data(), defineName.size())}}});
         this->skip_space_comment();
+    }
+
+    template<typename T>
+    auto do_include(std::string_view value) -> void
+    {
+        if (!value.empty())
+        {
+            this->push_token(T{
+                .name = std::string(&value[0], value.size())});
+        }
+
+        this->skip_space_comment();
+    }
+
+    auto include() -> void
+    {
+        this->skip_space_comment_macronewline();
+
+        if (this->current_char() == '"')
+        {
+            this->do_include<IncludeLocalToken>(this->local_include());
+        }
+        else if (this->current_char() == '<')
+        {
+            this->do_include<IncludeExternalToken>(this->external_include());
+        }
+        else
+        {
+            this->skip_macro();
+        }
     }
 
     auto undef() -> void
