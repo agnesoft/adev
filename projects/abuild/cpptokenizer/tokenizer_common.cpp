@@ -29,7 +29,7 @@ protected:
 
     [[nodiscard]] auto external_include() noexcept -> std::string_view
     {
-        this->lexemeBegin = this->pos;
+        this->lexemeBegin = this->pos + 1;
         this->skip_one();
 
         while (!this->at_end() && !this->is_end_of_line())
@@ -37,7 +37,7 @@ protected:
             if (this->current_char() == '>')
             {
                 this->skip_one();
-                return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
+                return TokenizerCommon::trim({&this->at(this->lexemeBegin), this->pos - this->lexemeBegin - 1});
             }
 
             this->skip_one();
@@ -99,9 +99,21 @@ protected:
 
     [[nodiscard]] auto local_include() noexcept -> std::string_view
     {
-        this->lexemeBegin = this->pos;
-        this->skip_regular_string();
-        return {&this->at(this->lexemeBegin), this->pos - this->lexemeBegin};
+        this->lexemeBegin = this->pos + 1;
+        this->skip_one();
+
+        while (!this->at_end() && !this->is_end_of_line())
+        {
+            if (this->is_quote())
+            {
+                this->skip_one();
+                return TokenizerCommon::trim({&this->at(this->lexemeBegin), this->pos - this->lexemeBegin - 1});
+            }
+
+            this->skip_one();
+        }
+
+        return {};
     }
 
     [[nodiscard]] auto pos_ref() noexcept -> std::size_t &
@@ -337,6 +349,24 @@ private:
 
             this->skip_one();
         }
+    }
+
+    [[nodiscard]] static auto trim(std::string_view str) noexcept -> std::string_view
+    {
+        size_t prefix = 0;
+        size_t suffix = str.size();
+
+        while (std::isspace(str[prefix]) != 0)
+        {
+            prefix++;
+        }
+
+        while (0 < suffix && std::isspace(str[suffix - 1]) != 0)
+        {
+            suffix--;
+        }
+
+        return {&str[prefix], suffix - prefix};
     }
 
     std::string_view source;

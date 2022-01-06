@@ -12,30 +12,6 @@ public:
     using TokenizerCommon::TokenizerCommon;
 
 protected:
-    [[nodiscard]] auto macro_bracket_include() noexcept -> std::string_view
-    {
-        this->skip_space_comment_macronewline();
-
-        if (this->current_char() == '(')
-        {
-            this->skip_one();
-            this->skip_space_comment_macronewline();
-
-            std::string_view include = this->macro_include();
-
-            this->skip_space_comment_macronewline();
-
-            if (this->current_char() == ')')
-            {
-                this->skip_one();
-                return include;
-            }
-        }
-
-        this->skip_macro();
-        return {};
-    }
-
     [[nodiscard]] auto macro_bracket_value() noexcept -> std::string_view
     {
         this->skip_one();
@@ -57,21 +33,6 @@ protected:
         std::string_view name = this->identifier();
         this->skip_space_comment_macronewline();
         return name;
-    }
-
-    [[nodiscard]] auto macro_include() noexcept -> std::string_view
-    {
-        if (this->current_char() == '"')
-        {
-            return this->local_include();
-        }
-
-        if (this->current_char() == '<')
-        {
-            return this->external_include();
-        }
-
-        return {};
     }
 
     [[nodiscard]] auto macro_value() noexcept -> std::string_view

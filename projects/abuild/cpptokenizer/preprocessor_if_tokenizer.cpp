@@ -170,21 +170,43 @@ private:
             .name = std::string(defineName.data(), defineName.size())});
     }
 
+    template<typename T>
+    auto do_has_include(std::string_view include) -> void
+    {
+        this->skip_space_comment_macronewline();
+
+        if (this->current_char() == ')')
+        {
+            this->skip_one();
+            this->token.elements.emplace_back(T{
+                .include = std::string(include.data(), include.size())});
+        }
+        else
+        {
+            this->skip_macro();
+        }
+    }
+
     auto has_include() -> void
     {
-        std::string_view include = this->macro_bracket_include();
+        this->skip_space_comment_macronewline();
 
-        if (!include.empty())
+        if (this->current_char() == '(')
         {
-            if (include.front() == '"')
+            this->skip_one();
+            this->skip_space_comment_macronewline();
+
+            if (this->current_char() == '"')
             {
-                this->token.elements.emplace_back(HasIncludeLocalToken{
-                    .include = std::string(&include[1], include.size() - 2)});
+                this->do_has_include<HasIncludeLocalToken>(this->local_include());
+            }
+            else if (this->current_char() == '<')
+            {
+                this->do_has_include<HasIncludeExternalToken>(this->external_include());
             }
             else
             {
-                this->token.elements.emplace_back(HasIncludeExternalToken{
-                    .include = std::string(&include[1], include.size() - 2)});
+                this->skip_macro();
             }
         }
         else
