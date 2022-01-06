@@ -356,12 +356,12 @@ private:
         size_t prefix = 0;
         size_t suffix = str.size();
 
-        while (std::isspace(str[prefix]))
+        while (std::isspace(str[prefix]) != 0)
         {
             prefix++;
         }
 
-        while (0 < suffix && std::isspace(str[suffix - 1]))
+        while (0 < suffix && std::isspace(str[suffix - 1]) != 0)
         {
             suffix--;
         }
