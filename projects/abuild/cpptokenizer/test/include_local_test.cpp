@@ -86,6 +86,12 @@ static const auto S = suite("include local", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("missing opening quote", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#include \"aaa");
+
+        assert_(tokens.size()).to_be(0U);
+    });
+
+    test("missing opening quote with another include", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#include \"header.hpp\n#include \"otherheader.hpp\"");
 
         assert_(tokens.size()).to_be(1U);
