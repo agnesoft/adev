@@ -200,7 +200,8 @@ protected:
                 this->skip_one();
                 return;
             }
-            else if (this->is_line_comment())
+
+            if (this->is_line_comment())
             {
                 this->skip_line();
             }
