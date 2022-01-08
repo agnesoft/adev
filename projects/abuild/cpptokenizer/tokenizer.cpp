@@ -90,29 +90,50 @@ private:
 
     auto extract_module(bool exported) -> void
     {
-        std::string_view name = this->extract_module_name();
-
-        if (!name.empty())
-        {
-            this->push_token(ModuleToken{
-                .name = std::string{name.data(), name.size()},
-                .exported = exported});
-        }
-    }
-
-    [[nodiscard]] auto extract_module_name() noexcept -> std::string_view
-    {
-        this->skip_space_comment_newline();
-        std::string_view name = this->identifier();
-        this->skip_space_comment_newline();
+        std::string_view name = this->extract_module_token();
 
         if (this->current_char() == ';')
         {
             this->skip_one();
-            return name;
+            this->push_token(ModuleToken{
+                .name = std::string{name.data(), name.size()},
+                .exported = exported});
         }
+        else if (this->current_char() == ':')
+        {
+            this->extract_module_partition(name, exported);
+        }
+        else
+        {
+            this->skip_semicolon_newline();
+        }
+    }
 
-        return {};
+    auto extract_module_partition(std::string_view moduleName, bool exported) -> void
+    {
+        this->skip_one();
+        std::string_view partition = this->extract_module_token();
+
+        if (this->current_char() == ';')
+        {
+            this->skip_one();
+            this->push_token(ModulePartitionToken{
+                .mod = std::string{moduleName.data(), moduleName.size()},
+                .name = std::string{partition.data(), partition.size()},
+                .exported = exported});
+        }
+        else
+        {
+            this->skip_semicolon_newline();
+        }
+    }
+
+    [[nodiscard]] auto extract_module_token() noexcept -> std::string_view
+    {
+        this->skip_space_comment_newline();
+        std::string_view name = this->identifier();
+        this->skip_space_comment_newline();
+        return name;
     }
 
     std::size_t pos = 0;

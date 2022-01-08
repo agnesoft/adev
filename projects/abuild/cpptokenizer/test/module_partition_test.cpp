@@ -72,19 +72,6 @@ static const auto S = suite("module partition", [] { // NOLINT(cert-err58-cpp)
         expect(token.exported).to_be(false);
     });
 
-    test("missing semicolon with end of line", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule : mypartition\n\nmodule mymodule : otherpartition;");
-
-        assert_(tokens.size()).to_be(1U);
-        assert_(std::holds_alternative<::abuild::ModulePartitionToken>(tokens[0])).to_be(true);
-
-        const auto &token = std::get<::abuild::ModulePartitionToken>(tokens[0]);
-
-        expect(token.mod).to_be("mymodule");
-        expect(token.name).to_be("my_partition");
-        expect(token.exported).to_be(false);
-    });
-
     test("export regular", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("export module mymodule : my_partition;");
 
@@ -135,6 +122,12 @@ static const auto S = suite("module partition", [] { // NOLINT(cert-err58-cpp)
         expect(token.mod).to_be("mymodule");
         expect(token.name).to_be("my_partition");
         expect(token.exported).to_be(true);
+    });
+
+    test("missing semicolon with end of line", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule : mypartition\n\nmodule mymodule : otherpartition;");
+
+        assert_(tokens.size()).to_be(0U);
     });
 
     test("missing semicolon", [] {

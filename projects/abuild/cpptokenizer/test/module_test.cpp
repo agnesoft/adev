@@ -90,11 +90,7 @@ static const auto S = suite("module", [] { // NOLINT(cert-err58-cpp)
     test("missing semicolon with end of line", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule\n\nmodule othermodule;");
 
-        assert_(tokens.size()).to_be(1U);
-        assert_(std::holds_alternative<::abuild::ModuleToken>(tokens[0])).to_be(true);
-
-        expect(std::get<::abuild::ModuleToken>(tokens[0]).name).to_be("othermodule");
-        expect(std::get<::abuild::ModuleToken>(tokens[0]).exported).to_be(false);
+        assert_(tokens.size()).to_be(0U);
     });
 
     test("missing semicolon", [] {
