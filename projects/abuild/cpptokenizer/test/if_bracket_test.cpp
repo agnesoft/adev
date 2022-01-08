@@ -7,7 +7,7 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("if ()", [] { // NOLINT(cert-err58-cpp)
-    test("if MY_MACRO == 3 && (MY_OTHER_MACRO == 5 || defined(YET_ANOTHER))", [] {
+    test("multiple conditions", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO == 3 && (MY_OTHER_MACRO < 5 || defined(YET_ANOTHER))\n#endif");
 
         assert_(tokens.size()).to_be(2U);

@@ -7,7 +7,7 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
-    test("#if MY_MACRO == 2", [] {
+    test("equals", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO == 2\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -25,7 +25,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("2");
     });
 
-    test("#if MY_MACRO != 2", [] {
+    test("not equals", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO != 2\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -44,7 +44,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("2");
     });
 
-    test("#if MY_MACRO < 2", [] {
+    test("less than", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO < 3\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -62,7 +62,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("3");
     });
 
-    test("#if MY_MACRO <= 2", [] {
+    test("less than or equals", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO <= 3\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -80,7 +80,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("3");
     });
 
-    test("#if MY_MACRO > 2", [] {
+    test("greater than", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO > 3\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -98,7 +98,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("3");
     });
 
-    test("#if MY_MACRO >= 2", [] {
+    test("greater than or equals", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO >= 3\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -134,7 +134,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("MY_MACRO");
     });
 
-    test("#if MY_MACRO < 3 && MY_OTHER_MACRO > 5", [] {
+    test("multiple conditions and", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO < 3 && MY_OTHER_MACRO > 5\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -159,7 +159,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token2.right).to_be("5");
     });
 
-    test("#if MY_MACRO < 3 || MY_OTHER_MACRO > 5", [] {
+    test("multiple conditions or", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO < 3 || MY_OTHER_MACRO > 5\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -184,7 +184,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token2.right).to_be("5");
     });
 
-    test("if MY_MACRO && MY_OTHER_MACRO", [] {
+    test("multiple defined and", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO && MY_OTHER_MACRO\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -211,7 +211,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token2.right).to_be("0");
     });
 
-    test("#if MY_MACRO = 2", [] {
+    test("single equal sign", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO = 2\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -230,7 +230,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("0");
     });
 
-    test("#if MY_MACRO & 2", [] {
+    test("single and", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO & 2\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -249,7 +249,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("0");
     });
 
-    test("#if MY_MACRO | 3", [] {
+    test("single or", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO | 3\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -268,7 +268,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token.right).to_be("0");
     });
 
-    test("#if MY_MACRO ! 3", [] {
+    test("not sign", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO ! 3\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -295,7 +295,7 @@ static const auto S = suite("if", [] { // NOLINT(cert-err58-cpp)
         expect(token2.right).to_be("0");
     });
 
-    test("#if MY_MACRO | 3 //comment", [] {
+    test("single or with comment", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if MY_MACRO | 3 //end of bad macro");
 
         assert_(tokens.size()).to_be(1U);

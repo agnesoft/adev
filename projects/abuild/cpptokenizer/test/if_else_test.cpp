@@ -7,7 +7,7 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
-    test("#else", [] {
+    test("else", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#ifndef MY_MACRO\n#define MY_MACRO\n#else\n#define MY_OTHER_MACRO\n#endif");
 
         assert_(tokens.size()).to_be(5U); // NOLINT(readability-magic-numbers)
@@ -38,7 +38,7 @@ static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
         expect(define2.value).to_be("");
     });
 
-    test("#elif", [] {
+    test("elif", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#ifndef MY_MACRO\n#define MY_MACRO\n#elif MY_MACRO == 2\n#define MY_OTHER_MACRO\n#endif");
 
         assert_(tokens.size()).to_be(6U); // NOLINT(readability-magic-numbers)
@@ -79,7 +79,7 @@ static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
         expect(define2.value).to_be("");
     });
 
-    test("#elifdef", [] {
+    test("elifdef", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#ifndef MY_MACRO\n#define MY_MACRO\n#elifdef MY_MACRO\n#define MY_OTHER_MACRO\n#endif");
 
         assert_(tokens.size()).to_be(6U); // NOLINT(readability-magic-numbers)
@@ -119,7 +119,7 @@ static const auto S = suite("if else", [] { // NOLINT(cert-err58-cpp)
         expect(define2.value).to_be("");
     });
 
-    test("#elifndef", [] {
+    test("elifndef", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#ifndef MY_MACRO\n#define MY_MACRO\n#elifndef MY_MACRO\n#define MY_OTHER_MACRO\n#endif");
 
         assert_(tokens.size()).to_be(6U); // NOLINT(readability-magic-numbers)

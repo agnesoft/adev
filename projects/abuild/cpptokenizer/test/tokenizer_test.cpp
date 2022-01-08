@@ -71,4 +71,10 @@ static const auto S = suite("define", [] { // NOLINT(cert-err58-cpp)
 
         assert_(condition.elements.size()).to_be(0U);
     });
+
+    test("unknown token", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("class C //comment\n/* some other\nmultiline\ncomment */");
+
+        assert_(tokens.size()).to_be(0U);
+    });
 });

@@ -24,7 +24,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test(R"(if \ defined \ ( \  \ ))", [] {
+    test("multiline", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if \\\n defined \\\n ( \\\n MY_MACRO \\\n )\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -41,7 +41,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test("if !defined", [] {
+    test("not defined", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if !defined(MY_MACRO)\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -59,7 +59,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test(R"(if \ ! \ defined \ ( \  \ ))", [] {
+    test("multiline not defined", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if \\\n ! \\\n defined \\\n ( \\\n MY_MACRO \\\n )\n#endif");
 
         assert_(tokens.size()).to_be(2U);
@@ -77,7 +77,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test("if defined MY_MACRO", [] {
+    test("no brackets", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if defined MY_MACRO");
 
         assert_(tokens.size()).to_be(1U);
@@ -93,7 +93,7 @@ static const auto S = suite("if defined", [] { // NOLINT(cert-err58-cpp)
         expect(token.name).to_be("MY_MACRO");
     });
 
-    test(R"(if \\n ! \\n defined \\n MY_MACRO)", [] {
+    test("multiline no brackets", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if \\\n ! \\\n defined \\\n MY_MACRO \n#endif");
 
         assert_(tokens.size()).to_be(2U);

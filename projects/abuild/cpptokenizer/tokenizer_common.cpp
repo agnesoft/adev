@@ -191,6 +191,35 @@ protected:
         }
     }
 
+    auto skip_semicolon_newline() noexcept -> void
+    {
+        while (!this->at_end())
+        {
+            if (this->current_char() == ';' || this->is_end_of_line())
+            {
+                this->skip_one();
+                return;
+            }
+
+            if (this->is_line_comment())
+            {
+                this->skip_line();
+            }
+            else if (this->is_multiline_comment())
+            {
+                this->skip_multiline_comment();
+            }
+            else if (this->is_quote())
+            {
+                this->skip_string();
+            }
+            else
+            {
+                this->skip_one();
+            }
+        }
+    }
+
     auto skip_string() noexcept -> void
     {
         if (this->previous_character() == 'R')
