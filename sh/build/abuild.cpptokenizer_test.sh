@@ -20,6 +20,7 @@ function build_clang() {
            "${projectDir}/include_external_test.cpp" \
            "${projectDir}/include_local_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/module_test.cpp" \
            "${projectDir}/tokenizer_test.cpp" \
            "${projectDir}/undef_test.cpp" \
            "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.obj" \
@@ -41,6 +42,7 @@ function build_gcc() {
          "${projectDir}/include_external_test.cpp" \
          "${projectDir}/include_local_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/module_test.cpp" \
          "${projectDir}/tokenizer_test.cpp" \
          "${projectDir}/undef_test.cpp" \
          "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib" \
@@ -66,6 +68,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/include_external_test.cpp\" ^
        \"${projectDir}/include_local_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/module_test.cpp\" ^
        \"${projectDir}/tokenizer_test.cpp\" ^
        \"${projectDir}/undef_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^

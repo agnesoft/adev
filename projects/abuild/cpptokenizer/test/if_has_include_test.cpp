@@ -7,7 +7,7 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
-    test("if __has_include(\"\")", [] {
+    test("local include", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if __has_include(\"my_header.hpp\")");
 
         assert_(tokens.size()).to_be(1U);
@@ -23,7 +23,7 @@ static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
         expect(token.include).to_be("my_header.hpp");
     });
 
-    test("if __has_include(<>)", [] {
+    test("external include", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if __has_include(<my_header.hpp>)");
 
         assert_(tokens.size()).to_be(1U);
@@ -39,7 +39,7 @@ static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
         expect(token.include).to_be("my_header.hpp");
     });
 
-    test("if __has_include(\"\")", [] {
+    test("empty include", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#if __has_include(\"\")\n#endif");
 
         assert_(tokens.size()).to_be(2U);
