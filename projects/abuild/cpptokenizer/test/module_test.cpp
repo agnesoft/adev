@@ -87,6 +87,16 @@ static const auto S = suite("include local", [] { // NOLINT(cert-err58-cpp)
         expect(std::get<::abuild::ModuleToken>(tokens[0]).exported).to_be(true);
     });
 
+    test("missing semicolon with end of line", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule\n\nmodule othermodule;");
+
+        assert_(tokens.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::ModuleToken>(tokens[0])).to_be(true);
+
+        expect(std::get<::abuild::ModuleToken>(tokens[0]).name).to_be("othermodule");
+        expect(std::get<::abuild::ModuleToken>(tokens[0]).exported).to_be(false);
+    });
+
     test("missing semicolon", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule");
 
@@ -99,13 +109,27 @@ static const auto S = suite("include local", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(0U);
     });
 
-    test("missing semicolon with end of line", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule\n\nmodule othermodule;");
+    test("non export token", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("extern \"C\" { }");
 
-        assert_(tokens.size()).to_be(1U);
-        assert_(std::holds_alternative<::abuild::ModuleToken>(tokens[0])).to_be(true);
+        assert_(tokens.size()).to_be(0U);
+    });
 
-        expect(std::get<::abuild::ModuleToken>(tokens[0]).name).to_be("othermodule");
-        expect(std::get<::abuild::ModuleToken>(tokens[0]).exported).to_be(true);
+    test("export function", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("export my_class;");
+
+        assert_(tokens.size()).to_be(0U);
+    });
+
+    test("export function", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("export void foo();");
+
+        assert_(tokens.size()).to_be(0U);
+    });
+
+    test("non module token", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("class my_class;");
+
+        assert_(tokens.size()).to_be(0U);
     });
 });
