@@ -6,7 +6,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("include local", [] { // NOLINT(cert-err58-cpp)
+static const auto S = suite("module", [] { // NOLINT(cert-err58-cpp)
     test("regular", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule;");
 
