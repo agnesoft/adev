@@ -198,4 +198,10 @@ static const auto S = suite("import include external", [] { // NOLINT(cert-err58
 
         assert_(tokens.size()).to_be(0U);
     });
+
+    test("empty import", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("import <>;");
+
+        assert_(tokens.size()).to_be(0U);
+    });
 });
