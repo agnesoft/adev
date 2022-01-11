@@ -108,4 +108,10 @@ static const auto S = suite("import module", [] { // NOLINT(cert-err58-cpp)
 
         assert_(tokens.size()).to_be(0U);
     });
+
+    test("missing semicolon", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("import mymodule");
+
+        assert_(tokens.size()).to_be(0U);
+    });
 });
