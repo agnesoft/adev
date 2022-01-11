@@ -93,6 +93,18 @@ static const auto S = suite("module", [] { // NOLINT(cert-err58-cpp)
         assert_(tokens.size()).to_be(0U);
     });
 
+    test("global module fragment", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module;");
+
+        assert_(tokens.size()).to_be(0U);
+    });
+
+    test("empty module name", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module ;");
+
+        assert_(tokens.size()).to_be(0U);
+    });
+
     test("missing semicolon", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule");
 
