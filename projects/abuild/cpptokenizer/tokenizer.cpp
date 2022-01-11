@@ -108,6 +108,28 @@ private:
         {
             this->import_include<ImportIncludeExternalToken>(this->external_include(), exported);
         }
+        else if (this->current_char() == ';')
+        {
+            this->skip_one();
+        }
+        else
+        {
+            this->extract_import_module(exported);
+        }
+    }
+
+    auto extract_import_module(bool exported) -> void
+    {
+        std::string_view moduleName = this->identifier();
+
+        this->skip_space_comment_newline();
+
+        if (this->current_char() == ';')
+        {
+            this->push_token(ImportModuleToken{
+                .name = std::string{moduleName.data(), moduleName.size()},
+                .exported = exported});
+        }
     }
 
     auto extract_export() -> void
@@ -148,10 +170,13 @@ private:
 
         if (this->current_char() == ';')
         {
-            this->skip_one();
-            this->push_token(ModuleToken{
-                .name = std::string{name.data(), name.size()},
-                .exported = exported});
+            if (!name.empty())
+            {
+                this->skip_one();
+                this->push_token(ModuleToken{
+                    .name = std::string{name.data(), name.size()},
+                    .exported = exported});
+            }
         }
         else if (this->current_char() == ':')
         {
@@ -171,10 +196,14 @@ private:
         if (this->current_char() == ';')
         {
             this->skip_one();
-            this->push_token(ModulePartitionToken{
-                .mod = std::string{moduleName.data(), moduleName.size()},
-                .name = std::string{partition.data(), partition.size()},
-                .exported = exported});
+
+            if (!partition.empty())
+            {
+                this->push_token(ModulePartitionToken{
+                    .mod = std::string{moduleName.data(), moduleName.size()},
+                    .name = std::string{partition.data(), partition.size()},
+                    .exported = exported});
+            }
         }
         else
         {

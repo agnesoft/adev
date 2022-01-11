@@ -141,4 +141,16 @@ static const auto S = suite("module partition", [] { // NOLINT(cert-err58-cpp)
 
         assert_(tokens.size()).to_be(0U);
     });
+
+    test("empty partition name", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule :;");
+
+        assert_(tokens.size()).to_be(0U);
+    });
+
+    test("empty partition name with space", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule : ;");
+
+        assert_(tokens.size()).to_be(0U);
+    });
 });
