@@ -68,6 +68,21 @@ private:
         }
     }
 
+    template<typename T>
+    auto extract_import_module(bool exported) -> void
+    {
+        std::string_view name = this->identifier();
+
+        this->skip_space_comment_newline();
+
+        if (this->current_char() == ';')
+        {
+            this->push_token(T{
+                .name = std::string{name.data(), name.size()},
+                .exported = exported});
+        }
+    }
+
     auto extract_e() -> void
     {
         std::string_view word = this->identifier();
@@ -108,28 +123,25 @@ private:
         {
             this->import_include<ImportIncludeExternalToken>(this->external_include(), exported);
         }
+        else if (this->current_char() == ':')
+        {
+            this->extract_import_module_partition(exported);
+        }
         else if (this->current_char() == ';')
         {
             this->skip_one();
         }
         else
         {
-            this->extract_import_module(exported);
+            this->extract_import_module<ImportModuleToken>(exported);
         }
     }
 
-    auto extract_import_module(bool exported) -> void
+    auto extract_import_module_partition(bool exported) -> void
     {
-        std::string_view moduleName = this->identifier();
-
+        this->skip_one();
         this->skip_space_comment_newline();
-
-        if (this->current_char() == ';')
-        {
-            this->push_token(ImportModuleToken{
-                .name = std::string{moduleName.data(), moduleName.size()},
-                .exported = exported});
-        }
+        this->extract_import_module<ImportModulePartitionToken>(exported);
     }
 
     auto extract_export() -> void

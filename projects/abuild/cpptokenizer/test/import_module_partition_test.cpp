@@ -99,7 +99,7 @@ static const auto S = suite("import module partition", [] { // NOLINT(cert-err58
 
         const auto &token = std::get<::abuild::ImportModulePartitionToken>(tokens[0]);
 
-        expect(token.name).to_be("nmypartition");
+        expect(token.name).to_be("mypartition");
         expect(token.exported).to_be(true);
     });
 
