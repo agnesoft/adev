@@ -32,6 +32,10 @@ public:
             {
                 this->extract_e();
             }
+            else if (this->current_char() == 'i')
+            {
+                this->extract_i(false);
+            }
             else if (this->current_char() == 'm')
             {
                 this->extract_m(false);
@@ -46,6 +50,24 @@ public:
     }
 
 private:
+    template<typename T>
+    auto import_include(std::string_view name, bool exported) -> void
+    {
+        this->skip_space_comment_newline();
+
+        if (this->current_char() == ';' && !name.empty())
+        {
+            this->skip_one();
+            this->push_token(T{
+                .name = std::string(&name[0], name.size()),
+                .exported = exported});
+        }
+        else
+        {
+            this->skip_space_comment();
+        }
+    }
+
     auto extract_e() -> void
     {
         std::string_view word = this->identifier();
@@ -60,11 +82,43 @@ private:
         }
     }
 
+    auto extract_i(bool exported) -> void
+    {
+        std::string_view word = this->identifier();
+
+        if (word == "import")
+        {
+            this->extract_import(exported);
+        }
+        else
+        {
+            this->skip_semicolon_newline();
+        }
+    }
+
+    auto extract_import(bool exported) -> void
+    {
+        this->skip_space_comment_newline();
+
+        if (this->current_char() == '"')
+        {
+            this->import_include<ImportIncludeLocalToken>(this->local_include(), exported);
+        }
+        else if (this->current_char() == '<')
+        {
+            this->import_include<ImportIncludeExternalToken>(this->external_include(), exported);
+        }
+    }
+
     auto extract_export() -> void
     {
         this->skip_space_comment_newline();
 
-        if (this->current_char() == 'm')
+        if (this->current_char() == 'i')
+        {
+            this->extract_i(true);
+        }
+        else if (this->current_char() == 'm')
         {
             this->extract_m(true);
         }

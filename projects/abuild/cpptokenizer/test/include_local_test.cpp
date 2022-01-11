@@ -80,13 +80,13 @@ static const auto S = suite("include local", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("missing closing quote", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#include aaa\"");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#include \"aaa");
 
         assert_(tokens.size()).to_be(0U);
     });
 
     test("missing opening quote", [] {
-        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#include \"aaa");
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("#include aaa\"");
 
         assert_(tokens.size()).to_be(0U);
     });

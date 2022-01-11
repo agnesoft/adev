@@ -66,29 +66,6 @@ protected:
         }
     }
 
-    auto skip_space_comment() noexcept -> void
-    {
-        while (!this->at_end())
-        {
-            if (this->is_line_comment())
-            {
-                this->skip_line();
-            }
-            else if (this->is_multiline_comment())
-            {
-                this->skip_multiline_comment();
-            }
-            else if (this->is_space())
-            {
-                this->skip_one();
-            }
-            else
-            {
-                return;
-            }
-        }
-    }
-
     auto skip_space_comment_macronewline() noexcept -> void
     {
         while (!this->at_end())

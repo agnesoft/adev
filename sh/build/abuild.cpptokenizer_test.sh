@@ -17,6 +17,8 @@ function build_clang() {
            "${projectDir}/if_has_include_test.cpp" \
            "${projectDir}/if_test.cpp" \
            "${projectDir}/ifdef_test.cpp" \
+           "${projectDir}/import_include_external_test.cpp" \
+           "${projectDir}/import_include_local_test.cpp" \
            "${projectDir}/include_external_test.cpp" \
            "${projectDir}/include_local_test.cpp" \
            "${projectDir}/main.cpp" \
@@ -40,6 +42,8 @@ function build_gcc() {
          "${projectDir}/if_has_include_test.cpp" \
          "${projectDir}/if_test.cpp" \
          "${projectDir}/ifdef_test.cpp" \
+         "${projectDir}/import_include_external_test.cpp" \
+         "${projectDir}/import_include_local_test.cpp" \
          "${projectDir}/include_external_test.cpp" \
          "${projectDir}/include_local_test.cpp" \
          "${projectDir}/main.cpp" \
@@ -66,6 +70,8 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/if_else_test.cpp\" ^
        \"${projectDir}/if_has_include_test.cpp\" ^
        \"${projectDir}/if_test.cpp\" ^
+       \"${projectDir}/import_include_external_test.cpp\" ^
+       \"${projectDir}/import_include_local_test.cpp\" ^
        \"${projectDir}/ifdef_test.cpp\" ^
        \"${projectDir}/include_external_test.cpp\" ^
        \"${projectDir}/include_local_test.cpp\" ^
