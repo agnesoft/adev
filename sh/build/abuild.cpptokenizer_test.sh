@@ -19,6 +19,7 @@ function build_clang() {
            "${projectDir}/ifdef_test.cpp" \
            "${projectDir}/import_include_external_test.cpp" \
            "${projectDir}/import_include_local_test.cpp" \
+           "${projectDir}/import_module_partition_test.cpp" \
            "${projectDir}/import_module_test.cpp" \
            "${projectDir}/include_external_test.cpp" \
            "${projectDir}/include_local_test.cpp" \
@@ -45,6 +46,7 @@ function build_gcc() {
          "${projectDir}/ifdef_test.cpp" \
          "${projectDir}/import_include_external_test.cpp" \
          "${projectDir}/import_include_local_test.cpp" \
+         "${projectDir}/import_module_partition_test.cpp" \
          "${projectDir}/import_module_test.cpp" \
          "${projectDir}/include_external_test.cpp" \
          "${projectDir}/include_local_test.cpp" \
@@ -74,6 +76,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/if_test.cpp\" ^
        \"${projectDir}/import_include_external_test.cpp\" ^
        \"${projectDir}/import_include_local_test.cpp\" ^
+       \"${projectDir}/import_module_partition_test.cpp\" ^
        \"${projectDir}/import_module_test.cpp\" ^
        \"${projectDir}/ifdef_test.cpp\" ^
        \"${projectDir}/include_external_test.cpp\" ^
