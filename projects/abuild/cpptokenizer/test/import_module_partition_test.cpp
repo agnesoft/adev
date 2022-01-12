@@ -115,6 +115,18 @@ static const auto S = suite("import module partition", [] { // NOLINT(cert-err58
         expect(token.exported).to_be(true);
     });
 
+    test("partition with dot", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("import : my.partition;");
+
+        assert_(tokens.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::ImportModulePartitionToken>(tokens[0])).to_be(true);
+
+        const auto &token = std::get<::abuild::ImportModulePartitionToken>(tokens[0]);
+
+        expect(token.name).to_be("my.partition");
+        expect(token.exported).to_be(false);
+    });
+
     test("missing semicolon", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("import : mypartition");
 

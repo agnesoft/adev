@@ -36,7 +36,7 @@ function build_clang() {
 
 function build_gcc() {
     $gcc $gccCompilerFlags \
-         -o "${binDir}/acommandline_test" \
+         -o "${binDir}/abuild.cpptokenizer_test" \
          "${projectDir}/define_test.cpp" \
          "${projectDir}/if_bracket_test.cpp" \
          "${projectDir}/if_defined_test.cpp" \

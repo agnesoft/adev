@@ -87,6 +87,16 @@ static const auto S = suite("module", [] { // NOLINT(cert-err58-cpp)
         expect(std::get<::abuild::ModuleToken>(tokens[0]).exported).to_be(true);
     });
 
+    test("name with dot", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module my.module;");
+
+        assert_(tokens.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::ModuleToken>(tokens[0])).to_be(true);
+
+        expect(std::get<::abuild::ModuleToken>(tokens[0]).name).to_be("my.module");
+        expect(std::get<::abuild::ModuleToken>(tokens[0]).exported).to_be(false);
+    });
+
     test("missing semicolon with end of line", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule\n\nmodule othermodule;");
 

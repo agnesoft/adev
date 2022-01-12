@@ -124,6 +124,19 @@ static const auto S = suite("module partition", [] { // NOLINT(cert-err58-cpp)
         expect(token.exported).to_be(true);
     });
 
+    test("names with dots", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module my.module : my_part.ition;");
+
+        assert_(tokens.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::ModulePartitionToken>(tokens[0])).to_be(true);
+
+        const auto &token = std::get<::abuild::ModulePartitionToken>(tokens[0]);
+
+        expect(token.mod).to_be("my.module");
+        expect(token.name).to_be("my_part.ition");
+        expect(token.exported).to_be(false);
+    });
+
     test("missing semicolon with end of line", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("module mymodule : mypartition\n\nmodule mymodule : otherpartition;");
 
