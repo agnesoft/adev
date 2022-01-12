@@ -1,5 +1,5 @@
-import acommandline;
 import awinapi;
+import acommandline;
 
 struct Inputs
 {
