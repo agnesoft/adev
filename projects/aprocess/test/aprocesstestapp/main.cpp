@@ -1,5 +1,5 @@
-import acommandline;
 import awinapi;
+import acommandline;
 
 struct Inputs
 {
@@ -116,7 +116,7 @@ auto main(int argc, char *argv[]) -> int
         parser.option().long_name("echo-delay").description("Delay each echo by <value> milliseconds").bind_to(&inputs.echoDelay);
         parser.option().long_name("echo-env").description("Print the value of the environment variable <value>").bind_to(&inputs.env);
         parser.option().long_name("echo-input").description("Print the values received on stanard input").bind_to(&inputs.echoInput);
-        parser.option().long_name("echo-input-timeout").default_value(std::int64_t{300}).description("Print the values received on stanard input for <value> milliseconds").bind_to(&inputs.echoInputTimeout);
+        parser.option().long_name("echo-input-timeout").default_value(std::int64_t{500}).description("Print the values received on stanard input for <value> milliseconds").bind_to(&inputs.echoInputTimeout);
         parser.option().long_name("echo-large").description("A character to repeat in a large echo").bind_to(&inputs.largeEcho);
         parser.option().long_name("echo-large-size").description("Size of the large echo").bind_to(&inputs.largeEchoSize);
         parser.option().long_name("echo-working-directory").description("Prints working directory").bind_to(&inputs.echoWorkingDirectory);
