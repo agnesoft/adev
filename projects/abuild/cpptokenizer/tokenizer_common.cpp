@@ -309,7 +309,7 @@ private:
     [[nodiscard]] auto is_identifier() const noexcept -> bool
     {
         const auto c = static_cast<unsigned char>(this->current_char());
-        return c == '_' || std::isalnum(c) != 0;
+        return c == '_' || c == '.' || std::isalnum(c) != 0;
     }
 
     [[nodiscard]] auto is_multiline_comment_end() const noexcept -> bool
@@ -353,7 +353,7 @@ private:
         return this->at(this->pos - 1);
     }
 
-    auto skip_identifier() -> void
+    auto skip_identifier() noexcept -> void
     {
         while (!this->at_end() && this->is_identifier())
         {

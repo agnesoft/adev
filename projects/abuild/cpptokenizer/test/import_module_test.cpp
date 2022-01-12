@@ -103,6 +103,18 @@ static const auto S = suite("import module", [] { // NOLINT(cert-err58-cpp)
         expect(token.exported).to_be(true);
     });
 
+    test("module with dot", [] {
+        const std::vector<::abuild::Token> tokens = ::abuild::tokenize("import my.module;");
+
+        assert_(tokens.size()).to_be(1U);
+        assert_(std::holds_alternative<::abuild::ImportModuleToken>(tokens[0])).to_be(true);
+
+        const auto &token = std::get<::abuild::ImportModuleToken>(tokens[0]);
+
+        expect(token.name).to_be("my.module");
+        expect(token.exported).to_be(false);
+    });
+
     test("empty module name", [] {
         const std::vector<::abuild::Token> tokens = ::abuild::tokenize("import ;");
 
