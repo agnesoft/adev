@@ -91,6 +91,8 @@ async function run() {
                     await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${latestCommitImageId}`);
                 }
             }
+
+            core.setOutput("created", true);
         }
 
         core.setOutput("image", image);

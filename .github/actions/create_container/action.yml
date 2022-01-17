@@ -7,7 +7,10 @@ description: >
     input. If there is such an image under
     `username` it will set the output to that
     value otherwise it will rebuild the container
-    and push it to the GitHub registry.
+    and push it to the GitHub registry. On `main``
+    branch the container will additionally be
+    tagged latest and previous latest will be
+    deleted.
 
 author: agnesoft
 
@@ -43,6 +46,11 @@ outputs:
         description: >
             Tagged image name that was found or
             created.
+
+    created:
+        description: >
+            Indicates that the container has been
+            created rather than found and reused.
 
 runs:
     using: "node12"
