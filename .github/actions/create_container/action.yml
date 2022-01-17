@@ -1,0 +1,22 @@
+name: Create Container
+
+description: >
+    Checks if there is a container with a tag
+    equal to a short commit hash of the last
+    commit that modified `containerfile` in the
+    root of the repository. If there is such an
+    image it will set the output to that value
+    otherwise it will rebuild the container and
+    push it to the GitHub registry.
+
+author: agnesoft
+
+outputs:
+    image:
+        description: >
+            Tagged image name that was
+            found or created.
+
+runs:
+    using: "node12"
+    main: "dist/index.js"
