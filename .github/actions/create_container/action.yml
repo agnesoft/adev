@@ -20,7 +20,7 @@ inputs:
             Package name under which the images
             are stored under the username.
             Repository name by default.
-        required: ${{ github.repository }}
+        default: ${{ github.repository }}
 
     username:
         description: >
@@ -39,7 +39,7 @@ inputs:
             Personal access token with rights to
             write packages under the user. The
             GITHUB_TOKEN by default.
-        default: ${{ secrets.GITHUB_TOKEN }}
+        default: ${{ github.token }}
 
 outputs:
     image:
