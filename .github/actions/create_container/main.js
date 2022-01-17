@@ -25,16 +25,9 @@ async function exec(command) {
     return output;
 }
 
-function latest_image_commit_id(versions) {
-    for (const version of versions) {
-        for (const versionTag of version["metadata"]["container"]["tags"]) {
-            if (versionTag == "latest") {
-                return version["id"];
-            }
-        }
-    }
-
-    return "";
+function image_base_name(name) {
+    const ar = name.split("/");
+    return ar[ar.length - 1];
 }
 
 function is_main_branch() {
@@ -57,14 +50,26 @@ async function last_file_commit(file) {
     return await exec(`git log -n 1 --pretty=format:%h -- ${file}`);
 }
 
+function latest_image_commit_id(versions) {
+    for (const version of versions) {
+        for (const versionTag of version["metadata"]["container"]["tags"]) {
+            if (versionTag == "latest") {
+                return version["id"];
+            }
+        }
+    }
+
+    return "";
+}
+
 async function run() {
     try {
+        const username = core.getInput("username");
         const repository = "ghcr.io";
-        const username = "agnesoft";
-        const imageName = "adev";
-        const containerFile = "containerfile";
+        const imageName = image_base_name(core.getInput("name"));
+        const containerFile = core.getInput("containerFile");
         const containerPath = ".";
-        const token = process.env.GITHUB_TOKEN;
+        const token = core.getInput("token");
 
         const octokit = new Octokit({ auth: token });
         const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
@@ -83,7 +88,7 @@ async function run() {
                 await exec(`docker push ${imageLatest}`);
 
                 if (latestCommitImageId != "") {
-                    octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${latestCommitImageId}`);
+                    await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${latestCommitImageId}`);
                 }
             }
         }

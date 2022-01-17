@@ -1,21 +1,48 @@
 name: Create Container
 
 description: >
-    Checks if there is a container with a tag
-    equal to a short commit hash of the last
-    commit that modified `containerfile` in the
-    root of the repository. If there is such an
-    image it will set the output to that value
-    otherwise it will rebuild the container and
-    push it to the GitHub registry.
+    Checks if there is a container with the `name`
+    and tag equal to a short commit hash of the
+    last commit that modified `containerFile`
+    input. If there is such an image under
+    `username` it will set the output to that
+    value otherwise it will rebuild the container
+    and push it to the GitHub registry.
 
 author: agnesoft
+
+inputs:
+    name:
+        description: >
+            Package name under which the images
+            are stored under the username.
+            Repository name by default.
+        required: ${{ github.repository }}
+
+    username:
+        description: >
+            Username under which the images
+            (packages) are stored.
+        default: agnesoft
+
+    containerFile:
+        description: >
+            File to use for building the image.
+            `containerfile` by default.
+        default: containerfile
+
+    token:
+        description: >
+            Personal access token with rights to
+            write packages under the user. The
+            GITHUB_TOKEN by default.
+        default: ${{ secrets.GITHUB_TOKEN }}
 
 outputs:
     image:
         description: >
-            Tagged image name that was
-            found or created.
+            Tagged image name that was found or
+            created.
 
 runs:
     using: "node12"
