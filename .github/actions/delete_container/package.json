@@ -1,0 +1,23 @@
+{
+    "name": "adev-delete-container",
+    "version": "1.0.0",
+    "description": "Delete an image tag",
+    "main": "main.js",
+    "author": "agnesoft",
+    "license": "Apache-2.0",
+    "scripts": {
+        "build": "ncc build main.js -o dist --source-map",
+        "start": "node main.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/agnesoft/adev.git"
+    },
+    "dependencies": {
+        "@actions/core": "^1.6.0",
+        "octokit": "^1.7.1"
+    },
+    "devDependencies": {
+        "@vercel/ncc": "^0.28.6"
+    }
+}

@@ -1,0 +1,24 @@
+name: Delete Container
+
+description: >
+    Deletes a container tag of agnesoft/adev
+    image.
+
+author: agnesoft
+
+inputs:
+    image:
+        description: >
+            Tagged container name to be deleted.
+        required: true
+
+    token:
+        description: >
+            Personal access token with rights to
+            write packages under the user. The
+            GITHUB_TOKEN by default.
+        default: ${{ secrets.GITHUB_TOKEN }}
+
+runs:
+    using: "node12"
+    main: "dist/index.js"
