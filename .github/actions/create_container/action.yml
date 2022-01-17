@@ -37,9 +37,8 @@ inputs:
     token:
         description: >
             Personal access token with rights to
-            write packages under the user. The
-            GITHUB_TOKEN by default.
-        default: ${{ github.token }}
+            write packages under the user.
+        required: true
 
 outputs:
     image:
