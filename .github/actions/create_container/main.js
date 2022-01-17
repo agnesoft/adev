@@ -30,6 +30,10 @@ function image_base_name(name) {
     return ar[ar.length - 1];
 }
 
+function is_pr() {
+    return process.env.GITHUB_REF.startsWith("refs/pull/");
+}
+
 function is_main_branch() {
     return process.env.GITHUB_REF == "refs/heads/main";
 }
@@ -62,6 +66,10 @@ function latest_image_commit_id(versions) {
     return "";
 }
 
+function pr_name() {
+    return process.env.GITHUB_REF.split("/")[2];
+}
+
 async function run() {
     try {
         const username = core.getInput("username");
@@ -90,6 +98,11 @@ async function run() {
                 if (latestCommitImageId != "") {
                     await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${latestCommitImageId}`);
                 }
+            } else if (is_pr()) {
+                const pr = pr_name();
+                const imagePR = `${repository}/${username}/${imageName}:${pr}`;
+                await exec(`docker tag ${image} ${imagePR}`);
+                await exec(`docker push ${imagePR}`);
             }
 
             core.setOutput("created", true);

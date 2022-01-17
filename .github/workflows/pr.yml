@@ -23,6 +23,8 @@ jobs:
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
             - id: create_image
               uses: ./.github/actions/create_container
         outputs:
