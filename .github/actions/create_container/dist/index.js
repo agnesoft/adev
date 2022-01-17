@@ -21028,6 +21028,16 @@ async function exec(command) {
     return output;
 }
 
+async function get_versions(octokit, username, imageName) {
+    try {
+        return await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
+    } catch (error) {
+        let versions = {};
+        versions["data"] = [];
+        return versions;
+    }
+}
+
 function image_base_name(name) {
     const ar = name.split("/");
     return ar[ar.length - 1];
@@ -21083,7 +21093,7 @@ async function run() {
         const token = core.getInput("token");
 
         const octokit = new Octokit({ auth: token });
-        const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
+        const versions = await get_versions(octokit, username, imageName);
         const containerFileCommit = await last_file_commit(containerFile);
         const image = `${repository}/${username}/${imageName}:${containerFileCommit}`;
         const imageLatest = `${repository}/${username}/${imageName}:latest`;
