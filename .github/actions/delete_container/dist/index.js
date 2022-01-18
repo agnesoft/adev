@@ -19767,9 +19767,15 @@ async function run() {
         const tag = extract_image_tag(image);
         const token = core.getInput("token");
 
+        console.log(`${username} | ${imageName} | ${tag}`);
+        console.log(`GET /users/${username}/packages/container/${imageName}/versions`);
+
         const octokit = new Octokit({ auth: token });
         const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
         const id = image_id(versions["data"], tag);
+
+        console.log(`ID: ${id}`);
+        console.log(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);
 
         if (id != "") {
             await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);
