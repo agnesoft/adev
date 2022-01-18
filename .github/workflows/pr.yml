@@ -28,7 +28,7 @@ jobs:
             - id: create_image
               uses: ./.github/actions/create_container
               with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}
         outputs:
             image: ${{ steps.create_image.outputs.image }}
             created: ${{ steps.create_image.outputs.created }}}
@@ -232,4 +232,4 @@ jobs:
               uses: ./.github/actions/delete_container
               with:
                   image: ${{ needs.docker.outputs.image }}
-                  token: ${{ secrets.GITHUB_TOKEN }}
+                  token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}
