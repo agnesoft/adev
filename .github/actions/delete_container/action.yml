@@ -18,10 +18,11 @@ inputs:
     token:
         description: >
             Personal access token with permissions
-            to `delete packages` for the user
-            detected from the `image`. This cannot
-            be `GITHUB_TOKEN` because it does not
-            have `delete packages` permissions.
+            to `read` and `delete` packages for
+            the user detected from the `image`.
+            This cannot be `GITHUB_TOKEN` because
+            it does not have `delete` packages
+            permissions.
         required: true
 
 runs:
