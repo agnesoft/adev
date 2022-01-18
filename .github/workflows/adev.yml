@@ -5,7 +5,7 @@ on:
         branches: [main]
 
 jobs:
-    docker:
+    create_container:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -16,12 +16,13 @@ jobs:
               with:
                   token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}
         outputs:
+            created: ${{ steps.create_image.outputs.created }}
             image: ${{ steps.create_image.outputs.image }}
 
     address_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build address-sanitizer
@@ -29,8 +30,8 @@ jobs:
 
     analysis_linux:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build clang
@@ -47,8 +48,8 @@ jobs:
 
     coverage_linux:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build coverage
@@ -77,8 +78,8 @@ jobs:
 
     documentation:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build docs
@@ -91,16 +92,16 @@ jobs:
 
     formatting:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh format check
 
     linux_clang_x64:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build clang
@@ -114,8 +115,8 @@ jobs:
 
     linux_gcc_x64:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         if: false
         steps:
             - uses: actions/checkout@v2
@@ -130,8 +131,8 @@ jobs:
 
     memory_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build memory-sanitizer
@@ -139,8 +140,8 @@ jobs:
 
     thread_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build thread-sanitizer
@@ -148,8 +149,8 @@ jobs:
 
     undefined_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build undefined-sanitizer
