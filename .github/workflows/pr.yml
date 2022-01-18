@@ -27,8 +27,6 @@ jobs:
                   fetch-depth: 0
             - id: create_image
               uses: ./.github/actions/create_container
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
         outputs:
             image: ${{ steps.create_image.outputs.image }}
             created: ${{ steps.create_image.outputs.created }}}
@@ -225,11 +223,10 @@ jobs:
     cleanup:
         runs-on: ubuntu-latest
         needs: [diff, docker, analysis_linux, coverage_linux, documentation, formatting, linux_clang_x64, linux_gcc_x64]
-        if: always() && ${{ needs.docker.outputs.created }}
+        if: always() && ${{ needs.docker.outputs.created == 'true' }}
         steps:
             - uses: actions/checkout@v2
             - id: create_image
               uses: ./.github/actions/delete_container
               with:
                   image: ${{ needs.docker.outputs.image }}
-                  token: ${{ secrets.GITHUB_TOKEN }}

@@ -16,7 +16,7 @@ inputs:
         description: >
             Personal access token with rights to
             write packages under the user.
-        required: true
+        default: ${{ github.token }}
 
 runs:
     using: "node12"

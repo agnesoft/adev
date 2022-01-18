@@ -21133,12 +21133,12 @@ async function run() {
                 }
             } else if (is_pr()) {
                 const pr = pr_name();
-                const imagePR = `${repository}/${username}/${imageName}:${pr}`;
+                const imagePR = `${repository}/${username}/${imageName}:pr${pr}`;
                 await exec(`docker tag ${image} ${imagePR}`);
                 await exec(`docker push ${imagePR}`);
             }
 
-            core.setOutput("created", true);
+            core.setOutput("created", "true");
         }
 
         core.setOutput("image", image);
