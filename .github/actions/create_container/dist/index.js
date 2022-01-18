@@ -21099,7 +21099,7 @@ async function run() {
         const imageLatest = `${repository}/${username}/${imageName}:latest`;
 
         if (!image_version_exists(versions["data"], containerFileCommit)) {
-            await exec(`echo ${token} | docker login ${repository} -u ${username} -password-stdin`);
+            console.log(await exec(`echo ${token} | docker login ${repository} -u ${username} --password-stdin`));
             await exec(`docker build -f ${containerFile} -t ${image} ${containerPath}`);
             await exec(`docker push ${image}`);
 
