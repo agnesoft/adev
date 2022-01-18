@@ -21079,6 +21079,26 @@ function latest_image_commit_id(versions) {
     return "";
 }
 
+async function login(repository, username, token) {
+    const loginArgs = ["login", repository, "--username", username, "--password-stdin"];
+
+    core.info(`Logging into ${repository}...`);
+
+    await github_exec.exec
+        .getExecOutput("docker", loginArgs, {
+            ignoreReturnCode: true,
+            silent: true,
+            input: Buffer.from(token),
+        })
+        .then((res) => {
+            if (res.stderr.length > 0 && res.exitCode != 0) {
+                throw res.stderr.trim();
+            }
+
+            core.info(`Login Succeeded!`);
+        });
+}
+
 function pr_name() {
     return process.env.GITHUB_REF.split("/")[2];
 }
@@ -21099,7 +21119,7 @@ async function run() {
         const imageLatest = `${repository}/${username}/${imageName}:latest`;
 
         if (!image_version_exists(versions["data"], containerFileCommit)) {
-            console.log(await exec(`echo ${token} | docker login ${repository} -u ${username} --password-stdin`));
+            await login(repository, username, token);
             await exec(`docker build -f ${containerFile} -t ${image} ${containerPath}`);
             await exec(`docker push ${image}`);
 
