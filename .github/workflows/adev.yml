@@ -26,7 +26,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build address-sanitizer
-            - run: ./adev.sh test clang
+            - run: |
+                  export ASAN_OPTIONS=alloc_dealloc_mismatch=0
+                  ./adev.sh test clang
 
     analysis_linux:
         runs-on: ubuntu-latest
