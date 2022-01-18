@@ -6,11 +6,13 @@ function extract_image_name(image) {
 
     if (ar.length == 3) {
         return ar[2].split(":")[0];
-    } else if (ar.length == 2) {
-        return ar[1].split(":")[0];
-    } else {
-        throw `Invalid image name '${image}'`;
     }
+
+    if (ar.length == 2) {
+        return ar[1].split(":")[0];
+    }
+
+    throw `Invalid image name '${image}'`;
 }
 
 function extract_image_tag(image) {
@@ -18,9 +20,9 @@ function extract_image_tag(image) {
 
     if (ar.length == 2) {
         return ar[1];
-    } else {
-        throw `Invalid image name '${image}'`;
     }
+
+    throw `Invalid image name '${image}'`;
 }
 
 function extract_username(image) {
@@ -28,11 +30,13 @@ function extract_username(image) {
 
     if (ar.length == 3) {
         return ar[1];
-    } else if (ar.length == 2) {
-        return ar[0];
-    } else {
-        throw `Invalid image name '${image}'`;
     }
+
+    if (ar.length == 2) {
+        return ar[0];
+    }
+
+    throw `Invalid image name '${image}'`;
 }
 
 function image_id(versions, tag) {
@@ -44,7 +48,7 @@ function image_id(versions, tag) {
         }
     }
 
-    return "";
+    throw "Image 'image' not found.";
 }
 
 async function run() {
@@ -54,16 +58,11 @@ async function run() {
         const imageName = extract_image_name(image);
         const tag = extract_image_tag(image);
         const token = core.getInput("token");
-
         const octokit = new Octokit({ auth: token });
         const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
         const id = image_id(versions["data"], tag);
 
-        if (id != "") {
-            await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);
-        } else {
-            throw "Image 'image' not found.";
-        }
+        await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);
     } catch (error) {
         core.setFailed(error);
     }
