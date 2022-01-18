@@ -19771,8 +19771,8 @@ async function run() {
         const tag = extract_image_tag(image);
         const token = core.getInput("token");
         const octokit = new Octokit({ auth: token });
-        const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
-        const id = image_id(versions["data"], tag);
+        const versions = (await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`))["data"];
+        const id = image_id(versions, tag);
 
         core.info(`Deleting ${image} (package version ${id})`);
         await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);

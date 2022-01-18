@@ -24,14 +24,15 @@ async function exec(command, args, input = "") {
 async function get_versions(octokit, username, imageName) {
     try {
         core.info(`Retrieving ${username}/${imageName} versions...`);
-        return await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`)["data"];
+        return (await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`))["data"];
     } catch {
         return [];
     }
 }
 
 function image_base_name(name) {
-    return name.split("/")[-1];
+    const ar = name.split("/");
+    return ar[ar.length - 1];
 }
 
 function is_pr() {
@@ -43,8 +44,6 @@ function is_main_branch() {
 }
 
 function image_version(versions, tag) {
-    core.info(`Searching for image with tag ${tag}...`);
-
     for (const version of versions) {
         for (const versionTag of version["metadata"]["container"]["tags"]) {
             if (versionTag == tag) {
