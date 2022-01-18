@@ -19717,9 +19717,9 @@ function extract_image_name(image) {
     const ar = image.split("/");
 
     if (ar.length == 3) {
-        return ar[2];
+        return ar[2].split(":")[0];
     } else if (ar.length == 2) {
-        return ar[1];
+        return ar[1].split(":")[0];
     } else {
         throw `Invalid image name '${image}'`;
     }
@@ -19769,7 +19769,7 @@ async function run() {
 
         const octokit = new Octokit({ auth: token });
         const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
-        const id = image_id(versions);
+        const id = image_id(versions["data"], tag);
 
         if (id != "") {
             await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);
