@@ -13,49 +13,42 @@ jobs:
                   fetch-depth: 0
             - id: diff
               shell: bash
-              run: |
-                  source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh dockerfile"; then (echo "::set-output name=diff::true") fi
-                  source sh/common.sh && if is_changed "dockerfile"; then (echo "::set-output name=diff_dockerfile::true") fi
+              run: source sh/common.sh && if is_changed "*.cpp *.hpp **/*.sh containerfile"; then (echo "::set-output name=diff::true") fi
         outputs:
             diff: ${{ steps.diff.outputs.diff }}
-            diff_dockerfile: ${{ steps.diff.outputs.diff_dockerfile }}
 
-    docker:
+    create_container:
         runs-on: ubuntu-latest
         needs: diff
+        if: needs.diff.outputs.diff == 'true'
         steps:
-            - if: needs.diff.outputs.diff_dockerfile == 'true'
-              uses: actions/checkout@v2
-            - if: needs.diff.outputs.diff_dockerfile == 'true'
-              run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
-            - if: needs.diff.outputs.diff_dockerfile == 'true'
-              run: docker build . -t agnesoft/adev:pr${{ github.run_number }}
-            - if: needs.diff.outputs.diff_dockerfile == 'true'
-              run: docker push agnesoft/adev:pr${{ github.run_number }}
-            - id: image
-              run: |
-                  if [[ '${{ needs.diff.outputs.diff_dockerfile }}' == 'true' ]]; then
-                    echo "::set-output name=image::agnesoft/adev:pr${{ github.run_number }}"
-                  else
-                    echo "::set-output name=image::agnesoft/adev:latest"
-                  fi
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - id: create_image
+              uses: ./.github/actions/create_container
+              with:
+                  token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}
         outputs:
-            image: ${{ steps.image.outputs.image }}
+            created: ${{ steps.create_image.outputs.created }}
+            image: ${{ steps.create_image.outputs.image }}
 
     address_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build address-sanitizer
-            - run: ./adev.sh test clang
+            - run: |
+                  export ASAN_OPTIONS=alloc_dealloc_mismatch=0
+                  ./adev.sh test clang
 
     analysis_linux:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -79,8 +72,8 @@ jobs:
 
     coverage_linux:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -112,8 +105,8 @@ jobs:
 
     documentation:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -126,8 +119,8 @@ jobs:
 
     formatting:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -137,8 +130,8 @@ jobs:
 
     linux_clang_x64:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -153,8 +146,8 @@ jobs:
 
     linux_gcc_x64:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: false
         steps:
             - uses: actions/checkout@v2
@@ -169,8 +162,8 @@ jobs:
 
     memory_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -179,8 +172,8 @@ jobs:
 
     thread_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -189,8 +182,8 @@ jobs:
 
     undefined_sanitizer:
         runs-on: ubuntu-latest
-        container: ${{ needs.docker.outputs.image }}
-        needs: [diff, docker]
+        container: ${{ needs.create_container.outputs.image }}
+        needs: [diff, create_container]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
@@ -233,9 +226,12 @@ jobs:
 
     cleanup:
         runs-on: ubuntu-latest
-        needs: [diff, docker, analysis_linux, coverage_linux, documentation, formatting, linux_clang_x64, linux_gcc_x64]
-        if: always() && needs.diff.outputs.diff_dockerfile == 'true'
+        needs: [diff, create_container, analysis_linux, coverage_linux, documentation, formatting, linux_clang_x64, linux_gcc_x64]
+        if: always() && needs.create_container.outputs.created == 'true'
         steps:
-            - run: |
-                  token=$(curl -s -H "Content-Type: application/json" -X POST -d "{ \"username\": \"agnesoft\", \"password\": \"${{ secrets.DOCKER_HUB_PASSWORD }}\" }" "https://hub.docker.com/v2/users/login/" | jq -r .token)
-                  curl -X DELETE -H "Authorization: JWT ${token}" "https://hub.docker.com/v2/repositories/agnesoft/adev/tags/pr${{ github.run_number }}/"
+            - uses: actions/checkout@v2
+            - id: create_image
+              uses: ./.github/actions/delete_container
+              with:
+                  image: ${{ needs.create_container.outputs.image }}
+                  token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}

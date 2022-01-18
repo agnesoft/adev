@@ -5,34 +5,35 @@ on:
         branches: [main]
 
 jobs:
-    docker:
+    create_container:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
               with:
                   fetch-depth: 0
-            - id: diff
-              run: if [[ "$(git diff origin/main~1 --name-only -- dockerfile)" != "" ]]; then (echo "::set-output name=DIFF_DOCKERFILE::true") fi
-            - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
-              run: docker login -u agnesoft -p ${{ secrets.DOCKER_HUB_TOKEN }}
-            - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
-              run: docker build . -t agnesoft/adev:latest
-            - if: steps.diff.outputs.DIFF_DOCKERFILE == 'true'
-              run: docker push agnesoft/adev:latest
+            - id: create_image
+              uses: ./.github/actions/create_container
+              with:
+                  token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}
+        outputs:
+            created: ${{ steps.create_image.outputs.created }}
+            image: ${{ steps.create_image.outputs.image }}
 
     address_sanitizer:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build address-sanitizer
-            - run: ./adev.sh test clang
+            - run: |
+                  export ASAN_OPTIONS=alloc_dealloc_mismatch=0
+                  ./adev.sh test clang
 
     analysis_linux:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build clang
@@ -49,8 +50,8 @@ jobs:
 
     coverage_linux:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build coverage
@@ -79,8 +80,8 @@ jobs:
 
     documentation:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build docs
@@ -93,16 +94,16 @@ jobs:
 
     formatting:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh format check
 
     linux_clang_x64:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build clang
@@ -116,8 +117,8 @@ jobs:
 
     linux_gcc_x64:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         if: false
         steps:
             - uses: actions/checkout@v2
@@ -132,8 +133,8 @@ jobs:
 
     memory_sanitizer:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build memory-sanitizer
@@ -141,8 +142,8 @@ jobs:
 
     thread_sanitizer:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build thread-sanitizer
@@ -150,8 +151,8 @@ jobs:
 
     undefined_sanitizer:
         runs-on: ubuntu-latest
-        container: agnesoft/adev
-        needs: docker
+        container: ${{ needs.create_container.outputs.image }}
+        needs: create_container
         steps:
             - uses: actions/checkout@v2
             - run: ./adev.sh build undefined-sanitizer

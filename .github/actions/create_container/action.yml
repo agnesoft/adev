@@ -1,0 +1,63 @@
+name: Create Container
+
+description: >
+    Searches GitHub Container Registry for an
+    image `username`/`name` with a tag that
+    corresponds to the latest short commit hash
+    that modified the `containerFile`. If no image
+    is found it builds the image with that tag.
+
+    On `main` branch it also tags the image as
+    `latest` and removes the previous image tagged
+    as `latest`. On pull request it tags the image
+    with the PR number.
+
+    In all it sets the `image` output to the full
+    container identifier in the repository, e.g.
+    ghcr.io/usernam/name:commit. If the image was
+    created the `created` output is set to `true`.
+
+author: agnesoft
+
+inputs:
+    name:
+        description: >
+            Image name to be searched or created.
+            Defaults to repository name.
+        default: ${{ github.repository }}
+
+    username:
+        description: >
+            Username under which the image is
+            searched and/or created.
+        default: agnesoft
+
+    containerFile:
+        description: >
+            File to use for building the image.
+        default: containerfile
+
+    token:
+        description: >
+            Personal access token with permissions
+            to `read`, `write` and delete
+            packages` for the `username`. This
+            cannot be `GITHUB_TOKEN` because it
+            does not have `delete` packages
+            permissions.
+        required: true
+
+outputs:
+    created:
+        description: >
+            Indicates that the container has been
+            created rather than found.
+
+    image:
+        description: >
+            Tagged image name that was created or
+            found.
+
+runs:
+    using: "node12"
+    main: "dist/index.js"
