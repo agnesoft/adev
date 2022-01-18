@@ -13,6 +13,8 @@ jobs:
                   fetch-depth: 0
             - id: create_image
               uses: ./.github/actions/create_container
+              with:
+                  token: ${{ secrets.CONTAINER_REPOSITORY_TOKEN }}
         outputs:
             image: ${{ steps.create_image.outputs.image }}
 
