@@ -41,15 +41,15 @@ inputs:
         default: ${{ github.token }}
 
 outputs:
-    image:
-        description: >
-            Tagged image name that was found or
-            created.
-
     created:
         description: >
             Indicates that the container has been
             created rather than found and reused.
+
+    image:
+        description: >
+            Tagged image name that was found or
+            created.
 
 runs:
     using: "node12"
