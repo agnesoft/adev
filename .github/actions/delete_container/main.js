@@ -62,6 +62,7 @@ async function run() {
         const versions = await octokit.request(`GET /users/${username}/packages/container/${imageName}/versions`);
         const id = image_id(versions["data"], tag);
 
+        core.info(`Deleting ${image} (package version ${id})`);
         await octokit.request(`DELETE /users/${username}/packages/container/${imageName}/versions/${id}`);
     } catch (error) {
         core.setFailed(error);
