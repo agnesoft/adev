@@ -21084,7 +21084,7 @@ async function login(repository, username, token) {
 
     core.info(`Logging into ${repository}...`);
 
-    await github_exec.exec
+    await github_exec
         .getExecOutput("docker", loginArgs, {
             ignoreReturnCode: true,
             silent: true,
