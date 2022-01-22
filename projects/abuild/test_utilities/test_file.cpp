@@ -1,19 +1,22 @@
-export abuild.test_utilities : test_file;
+#ifndef __clang__
+export module abuild.test_utilities : test_file;
 export import astl;
+#endif
 
 namespace abuild
 {
+//! \private
 export class TestFile
 {
 public:
     explicit TestFile(std::filesystem::path path) :
-        filePath{path}
+        filePath{std::move(path)}
     {
         std::ofstream{this->filePath};
     }
 
     TestFile(std::filesystem::path path, std::string_view content) :
-        filePath{path}
+        filePath{std::move(path)}
     {
         std::ofstream{this->filePath} << content;
     }
@@ -28,7 +31,8 @@ public:
 
     ~TestFile()
     {
-        std::filesystem::remove(this->filePath);
+        std::error_code ec;
+        std::filesystem::remove(this->filePath, ec);
     }
 
     auto operator=(const TestFile &other) -> TestFile & = delete;
