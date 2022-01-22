@@ -9,9 +9,11 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/atest \
            -fprebuilt-module-path=${buildRoot}/acommandline \
            -fprebuilt-module-path=${buildRoot}/abuild/cache \
+           -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
            -o "${binDir}/abuild.cache_test${executableExtension}" \
            "${projectDir}/file_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/source_file_base_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/astl/astl.obj" \
@@ -23,6 +25,7 @@ function build_gcc() {
          -o "${binDir}/abuild.cache_test" \
          "${projectDir}/file_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/source_file_base_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/astl/astl.lib" \
@@ -34,10 +37,12 @@ cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/atest\" ^
        /ifcSearchDir \"${buildRoot}/acommandline\" ^
        /ifcSearchDir \"${buildRoot}/abuild/cache\" ^
+       /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cache_test.exe\" ^
        \"${projectDir}/file_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/source_file_base_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
