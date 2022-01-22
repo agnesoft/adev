@@ -22,7 +22,6 @@ function build_gcc() {
 buildMSVC="
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cache-file.ifc\" /Fo\"${buildDir}/abuild.cache-file.obj\" /c /TP \"${projectDir}/file.cpp\" || exit 1
 
-
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
        /ifcSearchDir \"${buildDir}\" ^

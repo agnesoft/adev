@@ -54,7 +54,7 @@ static const auto S = suite("read", [] { // NOLINT(cert-err58-cpp)
                 .command("aprocesstestapp")
                 .arg("--echo=Hi")
                 .arg("--echo=there")
-                .arg("--echo-delay=10");
+                .arg("--echo-delay=50");
 
         expect(process.read(DEFAULT_WAIT_TIMEOUT)).to_be("Hi");
         process.wait(DEFAULT_WAIT_TIMEOUT);
