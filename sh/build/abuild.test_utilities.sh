@@ -6,7 +6,7 @@ buildDir="${buildRoot}/abuild/test_utilities"
 
 function build_clang() {
 
-    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/abuild.test_file.pcm" -c "${projectDir}/test_file.cpp"
+    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/abuild.test_utilities.pcm" -c "${projectDir}/test_utilities.cpp"
     $clang $clangCompilerFlags -o "${buildDir}/abuild.test_utilities.obj" -c "${projectDir}/test_utilities.cpp"
 }
 
