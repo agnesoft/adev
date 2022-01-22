@@ -5,7 +5,7 @@ using atest::expect;
 using atest::suite;
 using atest::test;
 
-static const auto testSuite = suite("abuild::File", [] {
+static const auto S = suite("abuild::File", [] {  // NOLINT(cert-err58-cpp)
     test("construct with path", [] {
         const ::abuild::File file{"./main.cpp"};
 
