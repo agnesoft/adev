@@ -13,8 +13,10 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/abuild/test_utilities \
            -o "${binDir}/abuild.cache_test${executableExtension}" \
            "${projectDir}/file_test.cpp" \
+           "${projectDir}/header_file_test.cpp" \
            "${projectDir}/main.cpp" \
            "${projectDir}/source_file_base_test.cpp" \
+           "${projectDir}/source_file_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
            "${buildRoot}/abuild/test_utilities/abuild.test_utilities.obj" \
            "${buildRoot}/atest/atest.obj" \
@@ -26,8 +28,10 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/abuild.cache_test" \
          "${projectDir}/file_test.cpp" \
+         "${projectDir}/header_file_test.cpp" \
          "${projectDir}/main.cpp" \
          "${projectDir}/source_file_base_test.cpp" \
+         "${projectDir}/source_file_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
          "${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib" \
          "${buildRoot}/atest/atest.lib" \
@@ -45,6 +49,7 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cache_test.exe\" ^
        \"${projectDir}/file_test.cpp\" ^
+       \"${projectDir}/header_file_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${projectDir}/source_file_base_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^

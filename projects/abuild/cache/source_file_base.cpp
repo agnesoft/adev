@@ -7,8 +7,8 @@ export import abuild.cpptokenizer;
 namespace abuild
 {
 //! The `SourceFileBase` is a base class for C++
-//! source files that are being tracked by the
-//! `Cache`.
+//! source & header files that are being tracked
+//! by the `Cache`.
 export class SourceFileBase : public File
 {
 public:
