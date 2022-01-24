@@ -7,7 +7,7 @@ if is_windows; then
     uncoveredRegions="33"
     uncoveredBranches="3"
 else
-    ignoredSources="\/test|test_utilities\/"
+    ignoredSources="\/(test|test_utilities)\/"
     uncoveredFunctions="4"
     uncoveredLines="31"
     uncoveredRegions="32"
