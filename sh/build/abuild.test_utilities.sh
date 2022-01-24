@@ -6,8 +6,16 @@ buildDir="${buildRoot}/abuild/test_utilities"
 
 function build_clang() {
 
-    $clang $clangCompilerFlags -Xclang -emit-module-interface -o "${buildDir}/abuild.test_utilities.pcm" -c "${projectDir}/test_utilities.cpp"
-    $clang $clangCompilerFlags -o "${buildDir}/abuild.test_utilities.obj" -c "${projectDir}/test_utilities.cpp"
+    $clang $clangCompilerFlags \
+           -Xclang -emit-module-interface \
+           -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -o "${buildDir}/abuild.test_utilities.pcm" \
+           -c "${projectDir}/test_utilities.cpp"
+    
+    $clang $clangCompilerFlags \
+           -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -o "${buildDir}/abuild.test_utilities.obj" \
+           -c "${projectDir}/test_utilities.cpp"
 }
 
 function build_gcc() {

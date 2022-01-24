@@ -1,13 +1,13 @@
 source "sh/common.sh"
 
 if is_windows; then
-    ignoredSources="(\\\\|\\|\/)test(\\\\|\\|\/)"
+    ignoredSources="(\\\\|\\|\/)(test|test_utilities)(\\\\|\\|\/)"
     uncoveredFunctions="4"
     uncoveredLines="34"
     uncoveredRegions="33"
     uncoveredBranches="3"
 else
-    ignoredSources="\/test\/"
+    ignoredSources="\/test|test_utilities\/"
     uncoveredFunctions="4"
     uncoveredLines="31"
     uncoveredRegions="32"

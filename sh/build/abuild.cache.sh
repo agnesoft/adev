@@ -5,9 +5,16 @@ projectDir="projects/abuild/cache"
 buildDir="${buildRoot}/abuild/cache"
 
 function build_clang() {
-
-    $clang $clangCompilerFlags -Xclang -emit-module-interface -fprebuilt-module-path="${buildRoot}/abuild/cpptokenizer" -o "${buildDir}/abuild.cache.pcm" -c "${projectDir}/cache.cpp"
-    $clang $clangCompilerFlags -o "${buildDir}/abuild.cache.obj" -c "${projectDir}/cache.cpp"
+    $clang $clangCompilerFlags \
+           -Xclang -emit-module-interface \
+           -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -o "${buildDir}/abuild.cache.pcm" \
+           -c "${projectDir}/cache.cpp"
+    
+    $clang $clangCompilerFlags \
+           -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -o "${buildDir}/abuild.cache.obj" \
+           -c "${projectDir}/cache.cpp"
 }
 
 function build_gcc() {
