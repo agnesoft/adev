@@ -16,8 +16,9 @@ function build_gcc() {
 
     $gcc $gccCompilerFlags -o "${buildDir}/cache.obj" -c "${projectDir}/cache.cpp"
 
-    ar r "${buildDir}/file.obj" \
-         "${buildDir}/cache.obj"
+    ar r "${buildDir}/cache.obj" \
+         "${buildDir}/file.obj" \
+         "${buildDir}/source_file_base.obj"
 }
 
 buildMSVC="
@@ -35,7 +36,8 @@ cl.exe ${msvcCompilerFlags} ^
 lib.exe /NOLOGO ^
         /OUT:\"${buildDir}/abuild.cache.lib\" ^
         \"${buildDir}/abuild.cache.obj\" ^
-        \"${buildDir}/abuild.cache-file.obj\" || exit 1
+        \"${buildDir}/abuild.cache-file.obj\" ^
+        \"${buildDir}/abuild.cache-source_file_base.obj\" || exit 1
 "
 
 sh/build/astl.sh "${toolchain}"

@@ -8,6 +8,7 @@ namespace abuild
 //! Logical operator `&&`.
 export struct AndToken
 {
+    friend auto operator==(const AndToken &, const AndToken &) -> bool = default;
 };
 
 //! Conditional token checking that a particular
@@ -17,6 +18,8 @@ export struct DefinedToken
 {
     //! Define name.
     std::string name;
+
+    friend auto operator==(const DefinedToken &, const DefinedToken &) -> bool = default;
 };
 
 //! Conditional token checking that a particular
@@ -31,6 +34,8 @@ export struct EqualsToken
 
     //! Right value.
     std::string right;
+
+    friend auto operator==(const EqualsToken &, const EqualsToken &) -> bool = default;
 };
 
 //! Conditional token checking that a particular
@@ -44,6 +49,8 @@ export struct GreaterThanOrEqualsToken
 
     //! Right value.
     std::string right;
+
+    friend auto operator==(const GreaterThanOrEqualsToken &, const GreaterThanOrEqualsToken &) -> bool = default;
 };
 
 //! Conditional token checking that a particular
@@ -57,11 +64,14 @@ export struct GreaterThanToken
 
     //! Right value.
     std::string right;
+
+    friend auto operator==(const GreaterThanToken &, const GreaterThanToken &) -> bool = default;
 };
 
 //! Left bracket `(`.
 export struct LeftBracketToken
 {
+    friend auto operator==(const LeftBracketToken &, const LeftBracketToken &) -> bool = default;
 };
 
 //! Conditional token checking that a particular
@@ -75,6 +85,8 @@ export struct LessThanOrEqualsToken
 
     //! Right value.
     std::string right;
+
+    friend auto operator==(const LessThanOrEqualsToken &, const LessThanOrEqualsToken &) -> bool = default;
 };
 
 //! Conditional token checking that a particular
@@ -88,6 +100,8 @@ export struct LessThanToken
 
     //! Right value.
     std::string right;
+
+    friend auto operator==(const LessThanToken &, const LessThanToken &) -> bool = default;
 };
 
 //! Conditional token checking that a `include`
@@ -96,6 +110,8 @@ export struct HasIncludeLocalToken
 {
     //! Include file path.
     std::string include;
+
+    friend auto operator==(const HasIncludeLocalToken &, const HasIncludeLocalToken &) -> bool = default;
 };
 
 //! Conditional token checking that a `include`
@@ -104,6 +120,8 @@ export struct HasIncludeExternalToken
 {
     //! Include file path.
     std::string include;
+
+    friend auto operator==(const HasIncludeExternalToken &, const HasIncludeExternalToken &) -> bool = default;
 };
 
 //! Conditional token representing negation of the
@@ -111,16 +129,19 @@ export struct HasIncludeExternalToken
 //! `#if !defined(MY_MACRO)`).
 export struct NotToken
 {
+    friend auto operator==(const NotToken &, const NotToken &) -> bool = default;
 };
 
 //! Logical operator `||`.
 export struct OrToken
 {
+    friend auto operator==(const OrToken &, const OrToken &) -> bool = default;
 };
 
 //! Right bracket `)`.
 export struct RightBracketToken
 {
+    friend auto operator==(const RightBracketToken &, const RightBracketToken &) -> bool = default;
 };
 
 //! IfElement is a variant type combining all
@@ -146,16 +167,20 @@ export struct IfToken
 {
     //! Condition elements.
     std::vector<IfElement> elements;
+
+    friend auto operator==(const IfToken &, const IfToken &) -> bool = default;
 };
 
 //! ElseToken represents an preprocessor `#else`
 //! including `#elif`, `#elifdef` and `#elifndef`.
 export struct ElseToken
 {
+    friend auto operator==(const ElseToken &, const ElseToken &) -> bool = default;
 };
 
 //! EndIfToken represents an end of a condition.
 export struct EndIfToken
 {
+    friend auto operator==(const EndIfToken &, const EndIfToken &) -> bool = default;
 };
 }
