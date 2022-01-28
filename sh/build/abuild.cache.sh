@@ -20,12 +20,16 @@ function build_clang() {
 function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/file.obj"             -c "${projectDir}/file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/source_file_base.obj" -c "${projectDir}/source_file_base.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/source_file.obj"      -c "${projectDir}/source_file.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/header_file.obj"      -c "${projectDir}/header_file.cpp"
 
     $gcc $gccCompilerFlags -o "${buildDir}/cache.obj" -c "${projectDir}/cache.cpp"
 
     ar r "${buildDir}/cache.obj" \
          "${buildDir}/file.obj" \
-         "${buildDir}/source_file_base.obj"
+         "${buildDir}/source_file_base.obj" \
+         "${buildDir}/source_file.obj" \
+         "${buildDir}/header_file.obj"
 }
 
 buildMSVC="
@@ -33,6 +37,7 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-source_file_base.ifc\" /Fo\"${buildDir}/abuild.cache-source_file_base.obj\" /c /TP \"${projectDir}/source_file_base.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-source_file.ifc\"      /Fo\"${buildDir}/abuild.cache-source_file.obj\"      /c /TP \"${projectDir}/source_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header_file.ifc\"      /Fo\"${buildDir}/abuild.cache-header_file.obj\"      /c /TP \"${projectDir}/header_file.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-project.ifc\"          /Fo\"${buildDir}/abuild.cache-project.obj\"          /c /TP \"${projectDir}/project.cpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
@@ -48,7 +53,8 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cache-file.obj\" ^
         \"${buildDir}/abuild.cache-source_file_base.obj\" ^
         \"${buildDir}/abuild.cache-source_file.obj\" ^
-        \"${buildDir}/abuild.cache-header_file.obj\"  || exit 1
+        \"${buildDir}/abuild.cache-header_file.obj\" ^
+        \"${buildDir}/abuild.cache-project.obj\" || exit 1
 "
 
 sh/build/astl.sh "${toolchain}"

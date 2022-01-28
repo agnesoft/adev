@@ -15,6 +15,7 @@ function build_clang() {
            "${projectDir}/file_test.cpp" \
            "${projectDir}/header_file_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/project_test.cpp" \
            "${projectDir}/source_file_base_test.cpp" \
            "${projectDir}/source_file_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
@@ -30,6 +31,7 @@ function build_gcc() {
          "${projectDir}/file_test.cpp" \
          "${projectDir}/header_file_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/project_test.cpp" \
          "${projectDir}/source_file_base_test.cpp" \
          "${projectDir}/source_file_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
@@ -51,6 +53,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/file_test.cpp\" ^
        \"${projectDir}/header_file_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/project_test.cpp\" ^
        \"${projectDir}/source_file_base_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
