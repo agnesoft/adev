@@ -1,3 +1,3 @@
 export module yamlcpp;
 
-export import "yaml-cpp/yaml.h";
+export import "include/yaml-cpp/yaml.h";
