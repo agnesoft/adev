@@ -10,6 +10,11 @@ function detect_clang_format() {
 
 function format_check_source() {
     local source="${1}"
+
+    if [[ ${source} == projects/yamlcpp/* ]]; then
+        return
+    fi
+
     local replacements=$($clangFormat -output-replacements-xml $source | grep "<replacement ")
 
     if [[ "${replacements}" != "" ]]; then
@@ -56,8 +61,10 @@ function format_check() {
 
 function format() {
     for file in projects/**/*.{cpp,hpp}; do
-        "${clangFormat}" -i "${file}"
-        print_ok "${file}"
+        if ! [[ ${file} == projects/yamlcpp/* ]]; then
+            "${clangFormat}" -i "${file}"
+            print_ok "${file}"
+        fi
     done
 }
 
