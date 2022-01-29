@@ -1,0 +1,4 @@
+module yaml_h {
+    header "include/yaml-cpp/yaml.h"
+    export *
+}

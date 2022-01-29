@@ -25,7 +25,8 @@ function build_gcc() {
 
     $gcc $gccCompilerFlags -o "${buildDir}/cache.obj" -c "${projectDir}/cache.cpp"
 
-    ar r "${buildDir}/cache.obj" \
+    ar r "${buildDir}/abuild.cache.lib" \
+         "${buildDir}/cacge.obj" \
          "${buildDir}/file.obj" \
          "${buildDir}/source_file_base.obj" \
          "${buildDir}/source_file.obj" \
