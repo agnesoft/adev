@@ -5,7 +5,6 @@ source "sh/common.sh"
 function install_prerequisites() {
     export DEBIAN_FRONTEND="noninteractive"
     apt-get update -y
-    apt-get upgrade -y
     apt-get install -y --no-install-recommends tzdata git sudo
     ln -fs /usr/share/zoneinfo/Europe/Prague /etc/localtime
     dpkg-reconfigure --frontend noninteractive tzdata
