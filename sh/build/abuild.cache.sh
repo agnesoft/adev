@@ -63,4 +63,5 @@ lib.exe /NOLOGO ^
 
 sh/build/astl.sh "${toolchain}"
 sh/build/abuild.cpptokenizer.sh "${toolchain}"
+sh/build/yamlcpp.sh "${toolchain}"
 build
