@@ -19,3 +19,4 @@
 -fmodule-map-file=projects/awinapi/module.modulemap
 -fmodule-map-file=projects/aprocess/module.modulemap
 -fmodule-map-file=projects/yamlcpp/module.modulemap
+-Iprojects/yamlcpp/include
