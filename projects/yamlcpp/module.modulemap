@@ -1,4 +1,4 @@
-module yaml_h {
-    header "include/yaml-cpp/yaml.h"
+module yamlcpp_hpp {
+    header "yamlcpp.hpp"
     export *
 }

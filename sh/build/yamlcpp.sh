@@ -80,7 +80,7 @@ function build_clang() {
 }
 
 function build_gcc() {
-    $gcc $gccCompilerFlags -x c++-header "${projectDir}/include/cpp-yaml/yaml.h"
+    $gcc $gccCompilerFlags -x c++-header "${projectDir}/yamlcpp.hpp"
     $gcc $gccCompilerFlags -o "${buildDir}/yamlcpp.obj" -c "${projectDir}/yamlcpp.cpp"
 
     $gcc $gccCompilerFlags -I"${projectDir}/include" -o "${buildDir}/binary.o"          -c "${projectDir}/src/binary.cpp"
@@ -149,16 +149,14 @@ function build_gcc() {
 buildMSVC="
 cl.exe ${msvcCompilerFlags} /exportHeader ^
                             /I\"${projectDir}/include\" ^
-                            /ifcOutput \"${buildDir}/yaml.h.ifc\" ^
-                            /Fo\"${buildDir}/yaml.h.obj\" ^
-                            /c /TP \"${projectDir}/include/yaml-cpp/yaml.h\" || exit 1
+                            /ifcOutput \"${buildDir}/yamlcpp.hpp.ifc\" ^
+                            /Fo\"${buildDir}/yamlcpp.hpp.obj\" ^
+                            /c /TP \"${projectDir}/yamlcpp.hpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
        /ifcSearchDir \"${buildDir}\" ^
        /ifcOutput\"${buildDir}/yamlcpp.ifc\" ^
-       /headerUnit \"projects/yamlcpp/include/yaml-cpp/yaml.h=${buildDir}/yaml.h.ifc\" ^
-       /I\"${projectDir}/include\" ^
        /Fo\"${buildDir}/yamlcpp.obj\" ^
        /c \"${projectDir}/yamlcpp.cpp\" || exit 1
 

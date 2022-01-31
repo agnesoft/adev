@@ -8,11 +8,13 @@ function build_clang() {
     $clang $clangCompilerFlags \
            -Xclang -emit-module-interface \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${buildDir}/abuild.cache.pcm" \
            -c "${projectDir}/cache.cpp"
     
     $clang $clangCompilerFlags \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${buildDir}/abuild.cache.obj" \
            -c "${projectDir}/cache.cpp"
 }
@@ -44,6 +46,7 @@ cl.exe ${msvcCompilerFlags} ^
        /interface ^
        /ifcSearchDir \"${buildDir}\" ^
        /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" ^
+       /ifcSearchDir \"${buildRoot}/yamlcpp\" ^
        /ifcOutput\"${buildDir}/abuild.cache.ifc\" ^
        /Fo\"${buildDir}/abuild.cache.obj\" ^
        /c \"${projectDir}/cache.cpp\" || exit 1
