@@ -11,6 +11,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/abuild/cache \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
            -fprebuilt-module-path=${buildRoot}/abuild/test_utilities \
+           -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${binDir}/abuild.cache_test${executableExtension}" \
            "${projectDir}/file_test.cpp" \
            "${projectDir}/header_file_test.cpp" \
@@ -22,7 +23,8 @@ function build_clang() {
            "${buildRoot}/abuild/test_utilities/abuild.test_utilities.obj" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/astl/astl.obj" \
-           "${buildRoot}/acommandline/acommandline.obj"
+           "${buildRoot}/acommandline/acommandline.obj" \
+           "${buildRoot}/yamlcpp/yamlcpp.lib"
 }
 
 function build_gcc() {
@@ -38,7 +40,8 @@ function build_gcc() {
          "${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/astl/astl.lib" \
-         "${buildRoot}/acommandline/acommandline.lib"
+         "${buildRoot}/acommandline/acommandline.lib" \
+         "${buildRoot}/yamlcpp/yamlcpp.lib"
 }
 
 buildMSVC="
@@ -48,6 +51,7 @@ cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/abuild/cache\" ^
        /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" ^
        /ifcSearchDir \"${buildRoot}/abuild/test_utilities\" ^
+       /ifcSearchDir \"${buildRoot}/yamlcpp\" ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cache_test.exe\" ^
        \"${projectDir}/file_test.cpp\" ^
@@ -59,7 +63,8 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
        \"${buildRoot}/abuild/cache/abuild.cache.lib\" ^
-       \"${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib\" || exit 1
+       \"${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib\" ^
+       \"${buildRoot}/yamlcpp/yamlcpp.lib\" ^ || exit 1
 "
 
 sh/build/abuild.cache.sh "${toolchain}"
