@@ -41,13 +41,14 @@ The binaries will be output to `build/<toolchain>`.
 
 ## Projects
 
-| Name                                            | Path                                              | Description                                  |
-| ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------- |
-| [acommandline](projects/acommandline/readme.md) | [projects/acommandline/](/projects/acommandline/) | c++ command line parser                      |
-| [aprocess](projects/aprocess/readme.md)         | [projects/aprocess/](/projects/aprocess/)         | c++ process management library               |
-| [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper |
-| [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                        |
-| [awinapi](projects/awinapi/readme.md)           | [projects/awinapi/](/projects/awinapi/)           | c++ winapi module wrapper                    |
+| Name                                            | Path                                              | Description                                                                                              |
+| ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| [acommandline](projects/acommandline/readme.md) | [projects/acommandline/](/projects/acommandline/) | c++ command line parser                                                                                  |
+| [aprocess](projects/aprocess/readme.md)         | [projects/aprocess/](/projects/aprocess/)         | c++ process management library                                                                           |
+| [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper                                                             |
+| [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                                                                                    |
+| [awinapi](projects/awinapi/readme.md)           | [projects/awinapi/](/projects/awinapi/)           | c++ winapi module wrapper                                                                                |
+| [yamlcpp](projects/yamlcpp/readme.md)           | [projects/yamlcpp/](/projects/yamlcpp/)           | c++ [yaml-cpp](https://github.com/jbeder/yaml-cpp/) module wrapper, [LICENSE](/projects/yamlcpp/license) |
 
 ## Tools
 

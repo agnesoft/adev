@@ -16,7 +16,8 @@ clangCompilerFlagsCommon="-std=c++20 \
                           -fprebuilt-module-path=${buildRoot}/astl \
                           -fmodule-map-file=projects/astl/module.modulemap \
                           -fmodule-map-file=projects/awinapi/module.modulemap \
-                          -fmodule-map-file=projects/aprocess/module.modulemap"
+                          -fmodule-map-file=projects/aprocess/module.modulemap \
+                          -fmodule-map-file=projects/yamlcpp/module.modulemap"
 
 if is_windows; then
     clangCompilerFlags="${clangCompilerFlagsCommon}"
@@ -99,7 +100,8 @@ msvcCompilerFlags="/nologo \
                    /wd5106 \
                    /ifcSearchDir \"${buildRoot}/astl\" \
                    /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" \
-                   /headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" "
+                   /headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" \
+                   /headerUnit \"projects/yamlcpp/yamlcpp.hpp=${buildRoot}/yamlcpp/yamlcpp.hpp.ifc\" "
 
 function build() {
     if [[ -f "${buildRoot}/${project}.done" ]]; then

@@ -13,6 +13,10 @@ function analyse() {
 }
 
 function analyse_source() {
+    if [[ "${1}" == projects/yamlcpp/* ]]; then
+        return;
+    fi
+
     wait_for_free_job 8 # $(nproc)
     do_analyse_source $1 $2 &
     pids+=($!)

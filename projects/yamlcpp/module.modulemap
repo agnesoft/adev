@@ -1,0 +1,4 @@
+module yamlcpp_hpp {
+    header "yamlcpp.hpp"
+    export *
+}

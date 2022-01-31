@@ -82,6 +82,7 @@ if is_windows; then
     clangTidy="clang-tidy${executableExtension}"
     llvmCov="llvm-cov${executableExtension}"
     llvmProfdata="llvm-profdata${executableExtension}"
+    ar="llvm-ar${executableExtension}"
 elif is_linux; then
     home="/adev"
     llvmVersion=13
@@ -92,10 +93,12 @@ elif is_linux; then
     llvmCov="llvm-cov-${llvmVersion}"
     llvmProfdata="llvm-profdata-${llvmVersion}"
     gcc="g++-11"
+    ar="ar"
 else
     clang="clang++"
     clangFormat="clang-format"
     clangTidy="clang-tidy"
     llvmCov="llvm-cov"
     llvmProfdata="llvm-profdata"
+    ar="ar"
 fi

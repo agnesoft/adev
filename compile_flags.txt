@@ -14,6 +14,9 @@
 -fprebuilt-module-path=build/clang/abuild/cpptokenizer
 -fprebuilt-module-path=build/clang/abuild/cache
 -fprebuilt-module-path=build/clang/abuild/test_utilities
+-fprebuilt-module-path=build/clang/yamlcpp
 -fmodule-map-file=projects/astl/module.modulemap
 -fmodule-map-file=projects/awinapi/module.modulemap
 -fmodule-map-file=projects/aprocess/module.modulemap
+-fmodule-map-file=projects/yamlcpp/module.modulemap
+-Iprojects/yamlcpp/include
