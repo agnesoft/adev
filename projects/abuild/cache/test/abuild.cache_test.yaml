@@ -1,0 +1,10 @@
+projects:
+  my_project:
+    sources:
+      - main.cpp
+    headers:
+      - my_header.hpp
+sources:
+  main.cpp: ~
+headers:
+  my_header.hpp: ~
