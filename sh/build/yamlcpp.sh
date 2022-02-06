@@ -192,6 +192,7 @@ cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/tag.obj
 
 lib.exe /NOLOGO ^
         /OUT:\"${buildDir}/yamlcpp.lib\"    ^
+        \"${buildDir}/yamlcpp.hpp.obj\"     ^
         \"${buildDir}/yamlcpp.obj\"         ^
         \"${buildDir}/binary.obj\"          ^
         \"${buildDir}/convert.obj\"         ^
