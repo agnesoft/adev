@@ -7,6 +7,7 @@ import : source_file;
 
 namespace abuild
 {
+//! \private
 class CacheIndex
 {
     [[nodiscard]] static auto find_file(const std::filesystem::path &path, const auto &index) -> auto

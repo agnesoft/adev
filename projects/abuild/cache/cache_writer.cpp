@@ -6,6 +6,7 @@ import yamlcpp;
 
 namespace abuild
 {
+//! \private
 class CacheWriter
 {
 public:
@@ -91,6 +92,7 @@ private:
     ::YAML::Node root;
 };
 
+//! \private
 auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void
 {
     CacheWriter writer;

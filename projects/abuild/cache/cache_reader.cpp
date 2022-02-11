@@ -6,6 +6,7 @@ import yamlcpp;
 
 namespace abuild
 {
+//! \private
 class CacheReader
 {
 public:
@@ -95,6 +96,7 @@ private:
     Cache &cache;
 };
 
+//! \private
 auto read_cache(const std::filesystem::path &path, Cache &cache) -> void
 {
     CacheReader{cache}.read(path);

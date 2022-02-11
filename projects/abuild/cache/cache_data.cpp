@@ -7,6 +7,7 @@ import : source_file;
 
 namespace abuild
 {
+//! \private
 struct CacheData
 {
     std::vector<std::unique_ptr<SourceFile>> sources;
