@@ -59,7 +59,7 @@ private:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            files.push_back(this->cache.header_file((*it).as<std::string>()));
+            files.push_back(this->cache.exact_header_file((*it).as<std::string>()));
         }
 
         return files;
@@ -71,7 +71,7 @@ private:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            files.push_back(this->cache.source_file((*it).as<std::string>()));
+            files.push_back(this->cache.exact_source_file((*it).as<std::string>()));
         }
 
         return files;
@@ -92,7 +92,6 @@ private:
         }
     }
 
-private:
     Cache &cache;
 };
 

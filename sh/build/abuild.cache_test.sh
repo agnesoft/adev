@@ -14,6 +14,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${binDir}/abuild.cache_test${executableExtension}" \
            "${projectDir}/cache_test.cpp" \
+           "${projectDir}/file_lookup_test.cpp" \
            "${projectDir}/main.cpp" \
            "${projectDir}/tokens_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
@@ -29,6 +30,7 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/abuild.cache_test" \
          "${projectDir}/cache_test.cpp" \
+         "${projectDir}/file_lookup_test.cpp" \
          "${projectDir}/main.cpp" \
          "${projectDir}/tokens_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
@@ -51,6 +53,7 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cache_test.exe\" ^
        \"${projectDir}/cache_test.cpp\" ^
+       \"${projectDir}/file_lookup_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${projectDir}/tokens_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^

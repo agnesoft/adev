@@ -8,7 +8,7 @@ namespace abuild
 export class ProjectRoot
 {
 public:
-    explicit ProjectRoot(std::filesystem::path path) noexcept :
+    explicit ProjectRoot(std::filesystem::path path) :
         root{std::move(path)}
     {
         if (!std::filesystem::exists(this->root))
@@ -42,12 +42,12 @@ private:
 export class TestProject
 {
 public:
-    TestProject(std::string_view root, std::vector<std::pair<std::string_view, std::string_view>> files) :
+    TestProject(std::string_view root, const std::vector<std::pair<std::string_view, std::string_view>> &files) :
         projectRoot{root}
     {
         this->projectFiles.reserve(files.size());
 
-        for (auto file : files)
+        for (const auto &file : files)
         {
             std::filesystem::path path{this->projectRoot.path() / file.first};
             std::filesystem::create_directories(path.parent_path());

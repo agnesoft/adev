@@ -70,14 +70,14 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
 
-        expect(cache.header_file("my_header.hpp")->path).to_be("my_header.hpp");
-        expect(cache.source_file("main.cpp")->path).to_be("main.cpp");
+        expect(cache.exact_header_file("my_header.hpp")->path).to_be("my_header.hpp");
+        expect(cache.exact_source_file("main.cpp")->path).to_be("main.cpp");
 
         const ::abuild::Project *project = cache.project("my_project");
 
         assert_(project->sources.size()).to_be(1U);
-        expect(project->sources[0]).to_be(cache.source_file("main.cpp"));
+        expect(project->sources[0]).to_be(cache.exact_source_file("main.cpp"));
         assert_(project->headers.size()).to_be(1U);
-        expect(project->headers[0]).to_be(cache.header_file("my_header.hpp"));
+        expect(project->headers[0]).to_be(cache.exact_header_file("my_header.hpp"));
     });
 });

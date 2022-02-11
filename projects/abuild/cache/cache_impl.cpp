@@ -15,7 +15,7 @@ export class Cache
     [[nodiscard]] auto insert_file(std::filesystem::path path, auto &files)
     {
         using T = typename std::remove_cvref_t<decltype(files)>::value_type::element_type;
-        T *file = files.emplace_back(new T{File{.path = std::move(path)}}).get();
+        T *file = files.emplace_back(std::make_unique<T>(T{File{.path = std::move(path)}})).get();
         this->index.insert(file);
         return file;
     }
@@ -30,6 +30,20 @@ public:
         }
     }
 
+    Cache(const Cache &other) = delete;
+    Cache(Cache &&other) noexcept = default;
+
+    ~Cache()
+    {
+        try
+        {
+            ::abuild::write_cache(this->filePath, this->data);
+        }
+        catch (...)
+        {
+        }
+    }
+
     auto add_header_file(std::filesystem::path path) -> HeaderFile *
     {
         return Cache::insert_file(std::move(path), this->data.headers);
@@ -37,7 +51,7 @@ public:
 
     auto add_project(std::string name) -> Project *
     {
-        Project *project = this->data.projects.emplace_back(new Project{.name = std::move(name)}).get();
+        Project *project = this->data.projects.emplace_back(std::make_unique<Project>(Project{.name = std::move(name)})).get();
         this->index.insert(project);
         return project;
     }
@@ -45,6 +59,16 @@ public:
     auto add_source_file(std::filesystem::path path) -> SourceFile *
     {
         return Cache::insert_file(std::move(path), this->data.sources);
+    }
+
+    [[nodiscard]] auto exact_header_file(const std::filesystem::path &path) -> HeaderFile *
+    {
+        return this->index.exact_header_file(path);
+    }
+
+    [[nodiscard]] auto exact_source_file(const std::filesystem::path &path) -> SourceFile *
+    {
+        return this->index.exact_source_file(path);
     }
 
     [[nodiscard]] auto header_file(const std::filesystem::path &path) -> HeaderFile *
@@ -62,16 +86,8 @@ public:
         return this->index.source_file(path);
     }
 
-    ~Cache()
-    {
-        try
-        {
-            ::abuild::write_cache(this->filePath, this->data);
-        }
-        catch (...)
-        {
-        }
-    }
+    auto operator=(const Cache &other) -> Cache & = delete;
+    auto operator=(Cache &&other) noexcept -> Cache & = default;
 
 private:
     std::filesystem::path filePath;
