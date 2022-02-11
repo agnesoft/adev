@@ -1,6 +1,7 @@
 #ifndef __clang__
 module abuild.cache : cache_writer;
 import : cache_data;
+import : token_writer;
 import yamlcpp;
 #endif
 
@@ -9,7 +10,7 @@ namespace abuild
 class CacheWriter
 {
 public:
-    auto save_headers(const std::vector<std::unique_ptr<HeaderFile>> &headers) -> void
+    auto save_headers(std::vector<std::unique_ptr<HeaderFile>> &headers) -> void
     {
         CacheWriter::save_files(headers, CacheWriter::ensure_node(root["headers"]));
     }
@@ -24,7 +25,7 @@ public:
         }
     }
 
-    auto save_sources(const std::vector<std::unique_ptr<SourceFile>> &sources) -> void
+    auto save_sources(std::vector<std::unique_ptr<SourceFile>> &sources) -> void
     {
         CacheWriter::save_files(sources, CacheWriter::ensure_node(root["sources"]));
     }
@@ -53,27 +54,29 @@ private:
         }
     }
 
-    static auto save_token([[maybe_unused]] const Token &token, [[maybe_unused]] ::YAML::Node &node)
+    static auto save_token(Token &token, ::YAML::Node &node)
     {
-        // TODO
+        TokenWriter writer;
+        writer.write(token);
+        node.push_back(writer.to_string());
     }
 
-    static auto save_tokens(const std::vector<Token> &tokens, ::YAML::Node &&node) -> void
+    static auto save_tokens(std::vector<Token> &tokens, ::YAML::Node &&node) -> void
     {
-        for (const Token &token : tokens)
+        for (Token &token : tokens)
         {
             CacheWriter::save_token(token, node);
         }
     }
 
-    static auto save_file(const auto &file, ::YAML::Node &node) -> void
+    static auto save_file(auto &file, ::YAML::Node &node) -> void
     {
         CacheWriter::save_tokens(file->tokens, CacheWriter::ensure_node(node[file->path.string()])["tokens"]);
     }
 
-    static auto save_files(const auto &files, ::YAML::Node &&node) -> void
+    static auto save_files(auto &files, ::YAML::Node &&node) -> void
     {
-        for (const auto &file : files)
+        for (auto &file : files)
         {
             CacheWriter::save_file(file, node);
         }
@@ -89,7 +92,7 @@ private:
     ::YAML::Node root;
 };
 
-auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void
+auto write_cache(const std::filesystem::path &path, CacheData &data) -> void
 {
     CacheWriter writer;
     writer.save_sources(data.sources);

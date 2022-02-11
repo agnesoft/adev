@@ -20,7 +20,7 @@ static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::HasIncludeLocalToken>(condition.elements[0]);
 
-        expect(token.include).to_be("my_header.hpp");
+        expect(token.name).to_be("my_header.hpp");
     });
 
     test("external include", [] {
@@ -36,7 +36,7 @@ static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::HasIncludeExternalToken>(condition.elements[0]);
 
-        expect(token.include).to_be("my_header.hpp");
+        expect(token.name).to_be("my_header.hpp");
     });
 
     test("empty include", [] {
@@ -53,7 +53,7 @@ static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::HasIncludeLocalToken>(condition.elements[0]);
 
-        expect(token.include).to_be("");
+        expect(token.name).to_be("");
     });
 
     test("leading & trailing space", [] {
@@ -69,7 +69,7 @@ static const auto S = suite("__has_include", [] { // NOLINT(cert-err58-cpp)
 
         const auto &token = std::get<::abuild::HasIncludeLocalToken>(condition.elements[0]);
 
-        expect(token.include).to_be("my_header.hpp");
+        expect(token.name).to_be("my_header.hpp");
     });
 
     test("bad has include", [] {

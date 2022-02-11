@@ -16,6 +16,8 @@ import yamlcpp;
 #include "cache_data.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_index.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_impl.cpp" //NOLINT(bugprone-suspicious-include)
+#include "token_reader.cpp" //NOLINT(bugprone-suspicious-include)
+#include "token_writer.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_reader.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_writer.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on

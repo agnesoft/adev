@@ -47,12 +47,12 @@ export [[nodiscard]] constexpr auto operator==(const LessThanToken &left, const 
 
 export [[nodiscard]] constexpr auto operator==(const HasIncludeLocalToken &left, const HasIncludeLocalToken &right) noexcept -> bool
 {
-    return left.include == right.include;
+    return left.name == right.name;
 }
 
 export [[nodiscard]] constexpr auto operator==(const HasIncludeExternalToken &left, const HasIncludeExternalToken &right) noexcept -> bool
 {
-    return left.include == right.include;
+    return left.name == right.name;
 }
 
 export [[nodiscard]] constexpr auto operator==([[maybe_unused]] const NotToken &left, [[maybe_unused]] const NotToken &right) noexcept -> bool
@@ -182,12 +182,12 @@ export auto operator<<(std::ostream &stream, const LessThanToken &token) -> std:
 
 export auto operator<<(std::ostream &stream, const HasIncludeLocalToken &token) -> std::ostream &
 {
-    return stream << "__has_include(\"" << token.include << "\")";
+    return stream << "__has_include(\"" << token.name << "\")";
 }
 
 export auto operator<<(std::ostream &stream, const HasIncludeExternalToken &token) -> std::ostream &
 {
-    return stream << "__has_include(<" << token.include << ">)";
+    return stream << "__has_include(<" << token.name << ">)";
 }
 
 export auto operator<<(std::ostream &stream, [[maybe_unused]] const LeftBracketToken &token) -> std::ostream &

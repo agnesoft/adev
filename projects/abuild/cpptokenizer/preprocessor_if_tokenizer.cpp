@@ -179,7 +179,7 @@ private:
         {
             this->skip_one();
             this->token.elements.emplace_back(T{
-                .include = std::string(include.data(), include.size())});
+                .name = std::string(include.data(), include.size())});
         }
         else
         {

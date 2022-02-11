@@ -8,7 +8,7 @@ namespace abuild
 {
 export class Cache;
 auto read_cache(const std::filesystem::path &path, Cache &cache) -> void;
-auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void;
+auto write_cache(const std::filesystem::path &path, CacheData &data) -> void;
 
 export class Cache
 {
