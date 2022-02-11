@@ -8,6 +8,6 @@ export import abuild.cpptokenizer;
 // clang-format off
 #include "test_file.cpp" //NOLINT(bugprone-suspicious-include)
 #include "token_operators.cpp" //NOLINT(bugprone-suspicious-include)
-#include "token_project.cpp" //NOLINT(bugprone-suspicious-include)
+#include "test_project.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on
 #endif
