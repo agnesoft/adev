@@ -13,10 +13,9 @@ public:
 
     auto tokenize() -> void
     {
-        this->skip_space_comment_macronewline();
-
         while (!this->at_end() && !this->is_end_of_line())
         {
+            this->skip_space_comment_macronewline();
             this->if_directive_element();
         }
 

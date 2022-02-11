@@ -1,13 +1,14 @@
 export module abuild.cpptokenizer;
 
 #ifndef __clang__
-export import : token;
+export import : token_operators;
 import : tokenizer;
 #else
 export import astl;
 // clang-format off
 #include "if_token.cpp" //NOLINT(bugprone-suspicious-include)
 #include "token.cpp" //NOLINT(bugprone-suspicious-include)
+#include "token_operators.cpp" //NOLINT(bugprone-suspicious-include)
 #include "tokenizer_common.cpp" //NOLINT(bugprone-suspicious-include)
 #include "preprocessor_tokenizer_common.cpp" //NOLINT(bugprone-suspicious-include)
 #include "preprocessor_if_tokenizer.cpp" //NOLINT(bugprone-suspicious-include)

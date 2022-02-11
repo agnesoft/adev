@@ -1,0 +1,6 @@
+sources:
+  main.cpp:
+    tokens:
+      - "#if defined(MY_MACRO) && ( 10 == SOME_VALUE || 10 >= SOME_VALUE || 10 > SOME_VALUE || 10 <= SOME_VALUE || 10 < SOME_VALUE ) && ! __has_include(<my_header.hpp>) || __has_include(\"include/some_header.h\") "
+headers: ~
+projects: ~

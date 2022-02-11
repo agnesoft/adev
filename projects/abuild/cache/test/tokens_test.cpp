@@ -14,18 +14,23 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         const ::abuild::Token token{::abuild::IfToken{
             .elements = {
                 ::abuild::DefinedToken{.name = "MY_MACRO"},
-                ::abuild::EqualsToken{.left = "10", .right = "SOME_VALUE"},
-                ::abuild::GreaterThanOrEqualsToken{.left = "10", .right = "SOME_VALUE"},
-                ::abuild::GreaterThanToken{.left = "10", .right = "SOME_VALUE"},
-                ::abuild::LessThanOrEqualsToken{.left = "10", .right = "SOME_VALUE"},
-                ::abuild::LessThanToken{.left = "10", .right = "SOME_VALUE"},
+                ::abuild::AndToken{},
                 ::abuild::LeftBracketToken{},
-                ::abuild::RightBracketToken{},
-                ::abuild::HasIncludeExternalToken{.name = "my_header.hpp"},
-                ::abuild::HasIncludeLocalToken{.name = "include/some_header.h"},
+                ::abuild::EqualsToken{.left = "10", .right = "SOME_VALUE"},
                 ::abuild::OrToken{},
+                ::abuild::GreaterThanOrEqualsToken{.left = "10", .right = "SOME_VALUE"},
+                ::abuild::OrToken{},
+                ::abuild::GreaterThanToken{.left = "10", .right = "SOME_VALUE"},
+                ::abuild::OrToken{},
+                ::abuild::LessThanOrEqualsToken{.left = "10", .right = "SOME_VALUE"},
+                ::abuild::OrToken{},
+                ::abuild::LessThanToken{.left = "10", .right = "SOME_VALUE"},
+                ::abuild::RightBracketToken{},
+                ::abuild::AndToken{},
                 ::abuild::NotToken{},
-                ::abuild::RightBracketToken{}}}};
+                ::abuild::HasIncludeExternalToken{.name = "my_header.hpp"},
+                ::abuild::OrToken{},
+                ::abuild::HasIncludeLocalToken{.name = "include/some_header.h"}}}};
 
         {
             ::abuild::Cache cache{file.path()};

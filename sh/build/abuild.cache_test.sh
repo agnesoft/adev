@@ -18,6 +18,7 @@ function build_clang() {
            "${projectDir}/tokens_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
            "${buildRoot}/abuild/test_utilities/abuild.test_utilities.obj" \
+           "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.obj" \
            "${buildRoot}/atest/atest.obj" \
            "${buildRoot}/astl/astl.obj" \
            "${buildRoot}/acommandline/acommandline.obj" \
@@ -32,6 +33,7 @@ function build_gcc() {
          "${projectDir}/tokens_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
          "${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib" \
+         "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib" \
          "${buildRoot}/atest/atest.lib" \
          "${buildRoot}/astl/astl.lib" \
          "${buildRoot}/acommandline/acommandline.lib" \
@@ -56,6 +58,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
        \"${buildRoot}/abuild/cache/abuild.cache.lib\" ^
        \"${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib\" ^
+       \"${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib\" ^
        \"${buildRoot}/yamlcpp/yamlcpp.lib\" || exit 1
 "
 

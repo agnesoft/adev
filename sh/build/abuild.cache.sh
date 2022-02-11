@@ -29,8 +29,6 @@ function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/cache_impl.obj"        -c "${projectDir}/cache_impl.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cache_reader.obj"      -c "${projectDir}/cache_reader.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cache_writer.obj"      -c "${projectDir}/cache_writer.cpp"
-    $gcc $gccCompilerFlags -o "${buildDir}/token_reader.obj"      -c "${projectDir}/token_reader.cpp"
-    $gcc $gccCompilerFlags -o "${buildDir}/token_writer.obj"      -c "${projectDir}/token_writer.cpp"
 
     $gcc $gccCompilerFlags -o "${buildDir}/cache.obj" -c "${projectDir}/cache.cpp"
 
@@ -55,8 +53,6 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-cache_data.ifc\"     /Fo\"${buildDir}/abuild.cache-cache_data.obj\"     /c /TP \"${projectDir}/cache_data.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-cache_index.ifc\"    /Fo\"${buildDir}/abuild.cache-cache_index.obj\"    /c /TP \"${projectDir}/cache_index.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-cache_impl.ifc\"     /Fo\"${buildDir}/abuild.cache-cache_impl.obj\"     /c /TP \"${projectDir}/cache_impl.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-token_reader.ifc\"   /Fo\"${buildDir}/abuild.cache-token_reader.obj\" /c /TP \"${projectDir}/token_reader.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-token_writer.ifc\"   /Fo\"${buildDir}/abuild.cache-token_writer.obj\" /c /TP \"${projectDir}/token_writer.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcSearchDir \"${buildRoot}/yamlcpp\" /ifcOutput\"${buildDir}/abuild.cache-cache_reader.ifc\" /Fo\"${buildDir}/abuild.cache-cache_reader.obj\" /c /TP \"${projectDir}/cache_reader.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcSearchDir \"${buildRoot}/yamlcpp\" /ifcOutput\"${buildDir}/abuild.cache-cache_writer.ifc\" /Fo\"${buildDir}/abuild.cache-cache_writer.obj\" /c /TP \"${projectDir}/cache_writer.cpp\" || exit 1
 
@@ -79,8 +75,6 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cache-cache_data.obj\" ^
         \"${buildDir}/abuild.cache-cache_index.obj\" ^
         \"${buildDir}/abuild.cache-cache_impl.obj\" ^
-        \"${buildDir}/abuild.cache-token_reader.obj\" ^
-        \"${buildDir}/abuild.cache-token_writer.obj\" ^
         \"${buildDir}/abuild.cache-cache_reader.obj\" ^
         \"${buildDir}/abuild.cache-cache_writer.obj\" || exit 1
 "

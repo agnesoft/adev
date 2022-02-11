@@ -1,6 +1,5 @@
 #ifndef __clang__
 module abuild.cache : cache_reader;
-import : token_reader;
 import : cache_impl;
 import yamlcpp;
 #endif
@@ -24,21 +23,16 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto read_token(const std::string &data) -> Token
-    {
-        return TokenReader{data}.read();
-    }
-
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
     {
-        std::vector<Token> tokens;
+        std::stringstream stream;
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            tokens.push_back(CacheReader::read_token((*it).as<std::string>()));
+            stream << (*it).as<std::string>() << '\n';
         }
 
-        return tokens;
+        return ::abuild::tokenize(stream.view());
     }
 
     auto read_headers(const ::YAML::Node &node) -> void
