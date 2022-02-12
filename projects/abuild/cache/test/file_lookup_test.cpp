@@ -7,7 +7,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
+static const auto S = suite("file lookup", [] { // NOLINT(cert-err58-cpp)
     test("several similar headers", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         ::abuild::Cache cache{file.path()};

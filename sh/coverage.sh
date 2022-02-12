@@ -9,7 +9,7 @@ if is_windows; then
 else
     ignoredSources="\/(test|test_utilities|yamlcpp)\/"
     uncoveredFunctions="4"
-    uncoveredLines="33"
+    uncoveredLines="32"
     uncoveredRegions="33"
     uncoveredBranches="2"
 fi

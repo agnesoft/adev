@@ -30,7 +30,7 @@ public:
 
     ~TestFile()
     {
-        std::error_code ec;
+        std::error_code ec{};
         std::filesystem::remove(this->filePath, ec);
     }
 

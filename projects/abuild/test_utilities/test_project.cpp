@@ -22,7 +22,7 @@ public:
 
     ~ProjectRoot()
     {
-        std::error_code ec;
+        std::error_code ec{};
         std::filesystem::remove_all(this->root, ec);
     }
 
