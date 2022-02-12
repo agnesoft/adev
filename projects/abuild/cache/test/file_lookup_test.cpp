@@ -2,7 +2,6 @@ import atest;
 import abuild.cache;
 import abuild.test_utilities;
 
-using ::atest::assert_;
 using ::atest::assert_fail;
 using ::atest::expect;
 using ::atest::suite;

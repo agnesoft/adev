@@ -18,10 +18,34 @@ auto write_cache(const std::filesystem::path &path, const CacheData &data) -> vo
 //!
 //! The Cache indexes all of its content for
 //! querying. It is constructed with a path to the
-//! cache file in YAML format. If the path exists
-//! the cache is populated by the data from the
-//! file. Upon destruction the cache data are
+//! cache file and uses YAML format. If the path
+//! exists the cache is populated by the data from
+//! the file. Upon destruction the cache data are
 //! written back to the file.
+//!
+//! The Cache YAML schema:
+//!
+//! ```
+//! projects:
+//!   project1:
+//!     headers:
+//!       - path/to/header1
+//!       - path/to/header2
+//!     sources:
+//!       - path/to/source
+//!   project2:
+//!     headers:
+//!       - path/to/some/heeder
+//! headers:
+//!   path/to/header1:
+//!     tokens:
+//!       - #if defined(SOME_MACRO)
+//!       - #define MY_MACRO
+//!       - #endif
+//! sources:
+//!   path/to/source:
+//!     tokens:
+//! ```
 export class Cache
 {
     [[nodiscard]] auto insert_file(std::filesystem::path path, auto &files)

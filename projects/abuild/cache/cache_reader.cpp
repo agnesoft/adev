@@ -33,7 +33,7 @@ private:
             stream << (*it).as<std::string>() << '\n';
         }
 
-        return ::abuild::tokenize(stream.view());
+        return ::abuild::tokenize(stream.str());
     }
 
     auto read_headers(const ::YAML::Node &node) -> void
