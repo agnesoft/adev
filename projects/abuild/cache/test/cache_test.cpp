@@ -65,8 +65,9 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         node["sources"]["main.cpp"] = {};
         node["headers"]["my_header.hpp"] = {};
 
-        ::abuild::TestFile file{"./abuild.cache_test.yaml"};
-        std::ofstream{file.path()} << node;
+        std::stringstream stream;
+        stream << node;
+        ::abuild::TestFile file{"./abuild.cache_test.yaml", stream.str()};
 
         ::abuild::Cache cache{file.path()};
 
