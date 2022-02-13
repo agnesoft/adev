@@ -10,7 +10,7 @@ using ::atest::test;
 
 static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
     test("add_source_file()", [] {
-        ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
 
         {
             ::abuild::Cache cache{file.path()};
@@ -25,7 +25,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("add_header_file()", [] {
-        ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
 
         {
             ::abuild::Cache cache{file.path()};
@@ -40,7 +40,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("add_project()", [] {
-        ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
 
         {
             ::abuild::Cache cache{file.path()};
@@ -65,7 +65,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         node["sources"]["main.cpp"] = {};
         node["headers"]["my_header.hpp"] = {};
 
-        ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         std::ofstream{file.path()} << node;
 
         ::abuild::Cache cache{file.path()};
