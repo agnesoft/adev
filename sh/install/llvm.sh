@@ -6,7 +6,7 @@ else
     sudo apt-get update -y
     sudo apt-get install -y lsb-release wget software-properties-common apt-utils
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
-    sudo add-apt-repository -y "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-13 main"
+    sudo add-apt-repository -y "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main"
     sudo apt-get update -y
     sudo apt-get install -y ${clang}
     sudo apt-get install -y ${clangFormat}
