@@ -8,7 +8,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
+static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
     test("Token - IfToken", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         const ::abuild::Token token{::abuild::IfToken{
