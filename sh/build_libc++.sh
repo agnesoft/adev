@@ -35,7 +35,7 @@ function build() {
 
     cmake -G Ninja \
           ../llvm \
-          -E env CXXFLAGS="-fsanitize-ignorelist=${dir}/ignorelist.txt"
+          -E env CXXFLAGS="-fsanitize-ignorelist=${dir}/ignorelist.txt" \
           -D CMAKE_BUILD_TYPE=Release \
           -D LLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
           -D CMAKE_C_COMPILER=clang-${llvmVersion} \
