@@ -63,6 +63,9 @@ while (process.is_running())
 //! [[output]]
         // clang-format on
 
-        expect(output).to_be("HelloWorld");
+        output += process.read();
+
+        expect(output)
+            .to_be("HelloWorld");
     });
 });
