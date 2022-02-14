@@ -4,3 +4,4 @@ WORKDIR /adev
 ADD adev.sh /adev
 ADD sh /adev/sh
 RUN bash sh/docker.sh
+
