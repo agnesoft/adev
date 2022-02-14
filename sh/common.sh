@@ -85,7 +85,7 @@ if is_windows; then
     ar="llvm-ar${executableExtension}"
 elif is_linux; then
     home="/adev"
-    llvmVersion=14
+    llvmVersion=13
     clang="clang++-${llvmVersion}"
     clangFormat="clang-format-${llvmVersion}"
     clangTidy="clang-tidy-${llvmVersion}"
