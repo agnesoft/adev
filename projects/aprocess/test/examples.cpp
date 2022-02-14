@@ -59,7 +59,7 @@ while (process.is_running())
 {
     output += process.read(std::chrono::milliseconds{1});
 }
-// output == "Hello, World!"
+// output == "HelloWorld"
 //! [[output]]
         // clang-format on
 
