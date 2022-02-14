@@ -31,10 +31,7 @@ std::string output =
         .command("aprocesstestapp")
         .arg("--echo-input");
 
-process.write("Hello\n");
-process.write(",\n");
-process.write("World\n");
-process.write("!\n");
+process.write("Hello,World!\n");
 process.write("exit\n");
 
 process.wait(std::chrono::seconds{1});
