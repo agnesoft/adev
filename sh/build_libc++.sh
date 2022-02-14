@@ -20,7 +20,7 @@ function detect_ninja () {
 
 function get_llvm_sources() {
     if [[ ! -d "${home}/llvm" ]]; then
-        git clone --depth=1 -b llvmorg-14.0.0-rc1 https://github.com/llvm/llvm-project.git "${home}/llvm"
+        git clone --depth=1 -b llvmorg-13.0.1 https://github.com/llvm/llvm-project.git "${home}/llvm"
     fi
 
     mkdir -p "${home}/llvm/build_msan/"
@@ -35,9 +35,9 @@ function build() {
 
     cmake -G Ninja \
           ../llvm \
-          -D CXXFLAGS="-fsanitize-ignorelist=${dir}/ignorelist.txt" \
+          -D CMAKE_CXX_FLAGS="-fsanitize-ignorelist=${dir}/ignorelist.txt" \
           -D CMAKE_BUILD_TYPE=Release \
-          -D LLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
+          -D LLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" \
           -D CMAKE_C_COMPILER=clang-${llvmVersion} \
           -D CMAKE_CXX_COMPILER=${clang} \
           -D LLVM_USE_SANITIZER=MemoryWithOrigins \
