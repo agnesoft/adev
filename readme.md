@@ -85,7 +85,7 @@ Workflow summary:
 
 The `adev` is using GitHub Actions. The `.adev.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites & tools listed above:
 
--   [`agnesoft/adev`](https://hub.docker.com/r/agnesoft/adev)
+-   [`agnesoft/adev`](https://github.com/agnesoft/adev/pkgs/container/adev)
 
 The docker image is rebuilt if it changes in a PR and the checks are run on such an image. If the PR with a changed `dockerfile` is merged to `main` the build will rebuild & push the `latest` tag of that image to the repository.
 
