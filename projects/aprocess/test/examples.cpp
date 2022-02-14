@@ -50,9 +50,7 @@ std::string output = process.read();
     ::aprocess::create_process()
         .command("aprocesstestapp")
         .arg("--echo=Hello")
-        .arg("--echo=,")
         .arg("--echo=World")
-        .arg("--echo=!")
         .arg("--echo-delay=10");
 
 std::string output;
@@ -65,6 +63,6 @@ while (process.is_running())
 //! [[output]]
         // clang-format on
 
-        expect(output).to_be("Hello,World!");
+        expect(output).to_be("HelloWorld");
     });
 });
