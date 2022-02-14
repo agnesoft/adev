@@ -12,7 +12,6 @@ public:
     explicit TestFile(std::filesystem::path path) :
         filePath{std::move(path)}
     {
-        std::ofstream{this->filePath};
     }
 
     TestFile(std::filesystem::path path, std::string_view content) :
@@ -31,7 +30,7 @@ public:
 
     ~TestFile()
     {
-        std::error_code ec;
+        std::error_code ec{};
         std::filesystem::remove(this->filePath, ec);
     }
 

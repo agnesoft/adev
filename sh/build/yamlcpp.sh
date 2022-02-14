@@ -173,7 +173,7 @@ cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/excepti
 cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/exp.obj\"             /c \"${projectDir}/src/exp.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/memory.obj\"          /c \"${projectDir}/src/memory.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/node.obj\"            /c \"${projectDir}/src/node.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/node_data.obj\"       /c \"${projectDir}/src/node_data.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/node_data.obj\"       /c \"${projectDir}/src/node_data.cpp\" /wd4702 || exit 1
 cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/nodebuilder.obj\"     /c \"${projectDir}/src/nodebuilder.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/nodeevents.obj\"      /c \"${projectDir}/src/nodeevents.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/null.obj\"            /c \"${projectDir}/src/null.cpp\" || exit 1
@@ -192,6 +192,7 @@ cl.exe ${msvcCompilerFlags} /I\"${projectDir}/include\" /Fo\"${buildDir}/tag.obj
 
 lib.exe /NOLOGO ^
         /OUT:\"${buildDir}/yamlcpp.lib\"    ^
+        \"${buildDir}/yamlcpp.hpp.obj\"     ^
         \"${buildDir}/yamlcpp.obj\"         ^
         \"${buildDir}/binary.obj\"          ^
         \"${buildDir}/convert.obj\"         ^

@@ -90,12 +90,12 @@ export struct LessThanToken
     std::string right;
 };
 
-//! Conditional token checking that a `include`
+//! Conditional token checking that a `name`
 //! path is available locally.
 export struct HasIncludeLocalToken
 {
     //! Include file path.
-    std::string include;
+    std::string name;
 };
 
 //! Conditional token checking that a `include`
@@ -103,7 +103,7 @@ export struct HasIncludeLocalToken
 export struct HasIncludeExternalToken
 {
     //! Include file path.
-    std::string include;
+    std::string name;
 };
 
 //! Conditional token representing negation of the

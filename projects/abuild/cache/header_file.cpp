@@ -1,16 +1,17 @@
 #ifndef __clang__
 export module abuild.cache : header_file;
-export import : source_file_base;
+export import : file;
+export import abuild.cpptokenizer;
 #endif
 
 namespace abuild
 {
-//! The `HeaderFile` is a base class for C++
-//! header files that are being tracked by the
-//! `Cache`.
-export class HeaderFile : public SourceFileBase
+//! The `HeaderFile` is a base struct for header
+//! files that are being tracked by the `Cache`.
+export struct HeaderFile : File
 {
-public:
-    using SourceFileBase::SourceFileBase;
+    //! Relevant code tokens extracted during code
+    //! analysis.
+    std::vector<Token> tokens;
 };
 }

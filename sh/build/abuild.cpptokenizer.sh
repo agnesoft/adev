@@ -13,6 +13,7 @@ function build_clang() {
 function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/if_token.obj"                      -c "${projectDir}/if_token.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/token.obj"                         -c "${projectDir}/token.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/token_operators.obj"               -c "${projectDir}/token_operators.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/tokenizer_common.obj"              -c "${projectDir}/tokenizer_common.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/preprocessor_tokenizer_common.obj" -c "${projectDir}/preprocessor_tokenizer_common.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/preprocessor_if_tokenizer.obj"     -c "${projectDir}/preprocessor_if_tokenizer.cpp"
@@ -25,6 +26,7 @@ function build_gcc() {
          "${buildDir}/cpptokenizer.obj" \
          "${buildDir}/if_token.obj" \
          "${buildDir}/token.obj" \
+         "${buildDir}/token_operators.obj" \
          "${buildDir}/tokenizer_common.obj" \
          "${buildDir}/preprocessor_tokenizer_common.obj" \
          "${buildDir}/preprocessor_if_tokenizer.obj" \
@@ -35,6 +37,7 @@ function build_gcc() {
 buildMSVC="
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cpptokenizer-if_token.ifc\"                      /Fo\"${buildDir}/abuild.cpptokenizer-if_token.obj\"                      /c /TP \"${projectDir}/if_token.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cpptokenizer-token.ifc\"                         /Fo\"${buildDir}/abuild.cpptokenizer-token.obj\"                         /c /TP \"${projectDir}/token.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cpptokenizer-token_operators.ifc\"               /Fo\"${buildDir}/abuild.cpptokenizer-token_operators.obj\"               /c /TP \"${projectDir}/token_operators.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cpptokenizer-tokenizer_common.ifc\"              /Fo\"${buildDir}/abuild.cpptokenizer-tokenizer_common.obj\"              /c /TP \"${projectDir}/tokenizer_common.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cpptokenizer-preprocessor_tokenizer_common.ifc\" /Fo\"${buildDir}/abuild.cpptokenizer-preprocessor_tokenizer_common.obj\" /c /TP \"${projectDir}/preprocessor_tokenizer_common.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcOutput\"${buildDir}/abuild.cpptokenizer-preprocessor_if_tokenizer.ifc\"     /Fo\"${buildDir}/abuild.cpptokenizer-preprocessor_if_tokenizer.obj\"     /c /TP \"${projectDir}/preprocessor_if_tokenizer.cpp\" || exit 1
@@ -53,6 +56,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cpptokenizer.obj\" ^
         \"${buildDir}/abuild.cpptokenizer-if_token.obj\" ^
         \"${buildDir}/abuild.cpptokenizer-token.obj\" ^
+        \"${buildDir}/abuild.cpptokenizer-token_operators.obj\" ^
         \"${buildDir}/abuild.cpptokenizer-tokenizer_common.obj\" ^
         \"${buildDir}/abuild.cpptokenizer-preprocessor_tokenizer_common.obj\" ^
         \"${buildDir}/abuild.cpptokenizer-preprocessor_if_tokenizer.obj\" ^
