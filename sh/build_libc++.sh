@@ -20,7 +20,7 @@ function detect_ninja () {
 
 function get_llvm_sources() {
     if [[ ! -d "${home}/llvm" ]]; then
-        git clone --depth=1 -b llvmorg-13.0.1 https://github.com/llvm/llvm-project.git "${home}/llvm"
+        git clone --depth=1 -b llvmorg-14.0.0-rc1 https://github.com/llvm/llvm-project.git "${home}/llvm"
     fi
 
     mkdir -p "${home}/llvm/build_msan/"
