@@ -30,8 +30,12 @@ function get_llvm_sources() {
 function build() {
     cd ${home}/llvm/build_msan/
 
+    echo "fun:*create_file_status*" > ignorelist.txt
+    local dir=$(pwd)
+
     cmake -G Ninja \
           ../llvm \
+          -E env CXXFLAGS="-fsanitize-ignorelist=${dir}/ignorelist.txt"
           -D CMAKE_BUILD_TYPE=Release \
           -D LLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
           -D CMAKE_C_COMPILER=clang-${llvmVersion} \
