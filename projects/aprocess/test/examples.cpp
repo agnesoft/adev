@@ -37,7 +37,7 @@ process.write("World\n");
 process.write("!\n");
 process.write("exit\n");
 
-process.wait(std::chrono::seconds{2});
+process.wait(std::chrono::seconds{1});
 std::string output = process.read();
 // output == "Hello, World!"
 //! [[input]]
