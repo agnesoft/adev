@@ -3,7 +3,6 @@ import abuild.cache;
 import abuild.test_utilities;
 import yamlcpp;
 
-using ::atest::assert_;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
