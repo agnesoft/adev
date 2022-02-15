@@ -16,6 +16,7 @@ function build_clang() {
            "${projectDir}/cache_test.cpp" \
            "${projectDir}/file_lookup_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/settings_test.cpp" \
            "${projectDir}/tokens_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
            "${buildRoot}/abuild/test_utilities/abuild.test_utilities.obj" \
@@ -32,6 +33,7 @@ function build_gcc() {
          "${projectDir}/cache_test.cpp" \
          "${projectDir}/file_lookup_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/settings_test.cpp" \
          "${projectDir}/tokens_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
          "${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib" \
@@ -55,6 +57,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${projectDir}/cache_test.cpp\" ^
        \"${projectDir}/file_lookup_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/settings_test.cpp\" ^
        \"${projectDir}/tokens_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^

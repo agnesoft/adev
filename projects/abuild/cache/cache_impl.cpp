@@ -151,6 +151,13 @@ public:
         return this->index.project(name);
     }
 
+    //! Returns the internal read-only Settings
+    //! struct.
+    [[nodiscard]] auto settings() const noexcept -> const Settings &
+    {
+        return this->data.settings;
+    }
+
     //! Finds the first source matching the `path`
     //! such that the `path` is a subpath of the
     //! matched file. E.g. searching for
