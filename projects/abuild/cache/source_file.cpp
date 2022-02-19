@@ -13,5 +13,8 @@ export struct SourceFile : File
     //! Relevant code tokens extracted during code
     //! analysis.
     std::vector<Token> tokens;
+
+    //! Project this source file belongs to.
+    Project *project = nullptr;
 };
 }

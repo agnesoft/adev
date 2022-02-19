@@ -14,8 +14,8 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            cache.add_source_file("main.cpp");
-            cache.add_source_file("source.cpp");
+            cache.add_source_file("main.cpp", "my_project");
+            cache.add_source_file("source.cpp", "my_project");
         }
 
         const auto node = ::YAML::LoadFile(file.path().string());
@@ -29,8 +29,8 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            cache.add_header_file("header.hpp");
-            cache.add_header_file("include/header.hpp");
+            cache.add_header_file("header.hpp", "my_project");
+            cache.add_header_file("include/header.hpp", "my_project");
         }
 
         const auto node = ::YAML::LoadFile(file.path().string());
@@ -39,14 +39,13 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         expect(node["headers"]["include/header.hpp"].IsDefined()).to_be(true);
     });
 
-    test("add_project()", [] {
+    test("add project", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::Project *project = cache.add_project("my.project");
-            project->sources.push_back(cache.add_source_file("main.cpp"));
-            project->headers.push_back(cache.add_header_file("header.hpp"));
+            cache.add_source_file("main.cpp", "my.project");
+            cache.add_header_file("header.hpp", "my.project");
         }
 
         const auto node = ::YAML::LoadFile(file.path().string());

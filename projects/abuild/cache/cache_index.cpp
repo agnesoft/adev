@@ -74,7 +74,14 @@ public:
 
     [[nodiscard]] auto project(const std::string &name) -> Project *
     {
-        return this->projects.at(name);
+        auto it = this->projects.find(name);
+
+        if (it != this->proejcts.end())
+        {
+            return *it;
+        }
+
+        return nullptr;
     }
 
     [[nodiscard]] auto source_file(const std::filesystem::path &path) -> SourceFile *
