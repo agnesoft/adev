@@ -106,11 +106,8 @@ static auto s= ::atest::suite("My test suite", [] {
 ## expect(), assert\_()
 
 ```
-template<typename T>
-auto atest::expect(const T &value) noexcept -> Expect<T>
-
-template<typename T>
-auto atest::assert_(const T &value) noexcept -> Expect<T>
+template<typename T> auto atest::expect(const T &value) noexcept -> Expect<T>
+template<typename T> auto atest::assert_(const T &value) noexcept -> Expect<T>
 ```
 
 Starts composition of the test's expectation or assertion. The difference is that `assert_` will stop the test when it fails while `expect` will continue even if it fails. Any `T` is allowed as argument. If `T` is a callable it will be executed once the assertion is finalized. No exceptions will be propagated from the call. The return value is the internal class `Expect` that lets you select from one of the supported expectations:
@@ -118,8 +115,7 @@ Starts composition of the test's expectation or assertion. The difference is tha
 ### to_be()
 
 ```
-template<typename V>
-auto to_be(const V &value) -> ExpectToMatch
+template<typename V> auto to_be(const V &value) -> ExpectToMatch
 ```
 
 Completes the expectation using the default matcher that uses `operator==` to match the values. Custom types can be supported by simply defining the `operator==` for them. Note that if your type will be nested in a container such as `std::vector` its `operator==` might need to be implemented as a member function or its namespace for ADL (Argument Dependent Lookup) to find it.
@@ -137,8 +133,7 @@ Default matcher provides extended diff capabilities for string convertible value
 ### to_match()
 
 ```
-template<typename M, typename V>
-auto to_match(const V &value) -> ExpectToMatch
+template<typename V> auto to_match(const V &value) -> ExpectToMatch
 ```
 
 Completes the expectation using a custom matcher. The custom matcher can be any callable type that takes parameters of type `T` and `V` to perform the matching (i.e. `auto operator()(const T&, const V&) -> bool`). Furthermore the matcher needs to have the following methods:
@@ -177,14 +172,9 @@ struct MyLessMatcher //no need to inherit anything
 ### to_throw()
 
 ```
-template<typename E>
-auto to_throw() -> ExpectToThrow
-
-template<typename E>
-auto to_throw(const E &exception) -> ExpectToThrow
-
-template<typename E, typename V>
-auto to_throw(const V &value) -> ExpectToThrow
+template<typename E> auto to_throw() -> ExpectToThrow
+template<typename E> auto to_throw(const E &exception) -> ExpectToThrow
+template<typename E, typename V> auto to_throw(const V &value) -> ExpectToThrow
 ```
 
 Completes the matching by expecting an exception. The `T` passed to the `expect()` must be a callable for this expectation. The exception type may be specified as a template argument to the call or deduced from the value. In either case strong type matching is performed using `typeid` (RTTI) and the exact match is required (i.e. expecting a base class but throwing a derived class is a failure). If a value was passed the exception will be additionally validated against it as well. If the exception type implements `what()` method returning a type that is convertible to `std::string` the result of `what()` will be compared against the value. If there is no `what()` method (e.g. an `int` or `std::string` is thrown) the value is compared directly to the exception object. The value comparison requires `operator==(const E &e, const V &v)` to compile. Additionally the exception type that does not have `what()` must be printable (the operator `auto operator<<(std::ostream &, const E &exception) -> std::ostream &` must exist).
@@ -202,10 +192,10 @@ Examples:
 ### not\_\*()
 
 ```
-not_to_be()
-not_to_match()
-not_to_contain()
-not_to_throw()
+template<typename V> auto not_to_be()  -> ExpectToMatch
+template<typename V> auto not_to_match()  -> ExpectToMatch
+template<typename V> auto not_to_contain() -> ExpectToMatch
+template<typename V> auto not_to_throw() -> ExpectToThrow
 ```
 
 All expectations do have corresponding `not_` expectation that modifies the expectation or assertion to reverse the result. If the expectation/assertion passes it will be converted into an error (and stop the test in case of `assert_`). Conversely if the expectation/assertion fails it will be considered a success. No additional output will be printed regarding the failure as it makes little sense to print for example values that are equal but were expected not to be. It is primarily useful for testing negative scenarios such as pointers not being `nullptr`. Note that `expect` will still fail on an unexpected exceptions except for `not_to_throw()`.
