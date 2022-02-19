@@ -6,11 +6,11 @@
     -   [Using Declarations](#using-declarations)
     -   [test()](#test)
     -   [suite()](#suite)
-    -   [expect(), assert()](#expect-assert_)
+    -   [expect(), assert\_()](#expect-assert_)
         -   [to_be()](#to_be)
         -   [to_match()](#to_match)
         -   [to_throw()](#to_throw)
-        -   [expect_fail(), assert_fail()](#expect_fail-assert_fail)
+        -   [not\_\*()](#not_*)
     -   [Test Runner](#test-runner)
     -   [Filtering & Listing](#filtering--listing)
     -   [Printer](#printer)
@@ -59,9 +59,7 @@ It is recommended to use the following set of using declarations to make the tes
 
 ```
 using ::atest::assert_;
-using ::atest::assert_fail;
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 ```
@@ -194,30 +192,29 @@ Completes the matching by expecting an exception. The `T` passed to the `expect(
 Examples:
 
 ```
-:;atest::expect([] { throw std::exception{}; }).to_throw<std::exception>();
-:;atest::expect([] { throw std::logic_error{"Some text"}; }).to_throw<std::logic_error>("Some text");
-:;atest::expect([] { throw std::logic_error{"Some text"}; }).to_throw(std::logic_error{"Some text"});
-:;atest::expect([] { throw 1; }).to_throw<int>();
-:;atest::expect([] { throw 1; }).to_throw(1);
+::atest::expect([] { throw std::exception{}; }).to_throw<std::exception>();
+::atest::expect([] { throw std::logic_error{"Some text"}; }).to_throw<std::logic_error>("Some text");
+::atest::expect([] { throw std::logic_error{"Some text"}; }).to_throw(std::logic_error{"Some text"});
+::atest::expect([] { throw 1; }).to_throw<int>();
+::atest::expect([] { throw 1; }).to_throw(1);
 ```
 
-### expect_fail(), assert_fail()
+### not\_\*()
 
 ```
-template<typename T>
-auto atest::expect_fail(const T &value) noexcept -> Expect<T>
-
-template<typename T>
-auto atest::assert_fail(const T &value) noexcept -> Expect<T>
+not_to_be()
+not_to_match()
+not_to_contain()
+not_to_throw()
 ```
 
-Modifies the expectation or assertion to reverse the result. If the expectation/assertion passes it will be converted into an error (and stop the test in case of `assert_fail`). Conversely if the expectation/assertion fails it will be considered a success. No additional output will be printed regarding the failure. It is primarily useful for testing negative scenarios. Note that `expect_fail` will still fail on unexpected exceptions except when reversing `to_throw()`.
+All expectations do have corresponding `not_` expectation that modifies the expectation or assertion to reverse the result. If the expectation/assertion passes it will be converted into an error (and stop the test in case of `assert_`). Conversely if the expectation/assertion fails it will be considered a success. No additional output will be printed regarding the failure as it makes little sense to print for example values that are equal but were expected not to be. It is primarily useful for testing negative scenarios such as pointers not being `nullptr`. Note that `expect` will still fail on an unexpected exceptions except for `not_to_throw()`.
 
 Example:
 
 ```
-::atest::expect_fail(1).to_be(2); //passes despite failing
-::atest::assert_fail([] {}).to_throw<int>(); //passes despite failing
+::atest::expect(1).not_to_be(2);
+::atest::assert_([] {}).not_to_throw<int>();
 ```
 
 ## Test Runner

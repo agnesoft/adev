@@ -1,7 +1,6 @@
 import atest;
 
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -32,8 +31,8 @@ public:
 static const auto S = suite("Expect::to_match()", [] { // NOLINT(cert-err58-cpp)
     test("Custom matcher", [] {
         expect(1).to_match<MyMatcher>(2);
-        expect_fail(1).to_match<MyMatcher>(1);
-        expect_fail(1).to_match<MyMatcher>(0);
+        expect(1).not_to_match<MyMatcher>(1);
+        expect(1).not_to_match<MyMatcher>(0);
     });
 
     test("Custom matcher (failing)", [] {
@@ -43,7 +42,7 @@ static const auto S = suite("Expect::to_match()", [] { // NOLINT(cert-err58-cpp)
             ::atest::TestRunner runner{output};
 
             test("test", [] {
-                expect_fail(1).to_match<MyMatcher>(2);
+                expect(1).not_to_match<MyMatcher>(2);
                 expect(1).to_match<MyMatcher>(1);
                 expect(1).to_match<MyMatcher>(0);
             });
