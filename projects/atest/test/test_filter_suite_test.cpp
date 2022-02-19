@@ -1,7 +1,6 @@
 import atest;
 
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -39,13 +38,13 @@ static const auto S = suite("test filter (suite)", [] { // NOLINT(cert-err58-cpp
 
         expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
         expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
-        expect_fail(output.str()).to_contain("my suite");
-        expect_fail(output.str()).to_contain("yay testing");
-        expect_fail(output.str()).to_contain("lol test me");
+        expect(output.str()).not_to_contain("my suite");
+        expect(output.str()).not_to_contain("yay testing");
+        expect(output.str()).not_to_contain("lol test me");
         expect(output.str()).to_contain("other suite to run");
         expect(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
     });
 
     test("run 2 suites", [] {
@@ -86,8 +85,8 @@ static const auto S = suite("test filter (suite)", [] { // NOLINT(cert-err58-cpp
         expect(output.str()).to_contain("lol test me");
         expect(output.str()).to_contain("other suite to run");
         expect(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
     });
 
     test("run suites with wildcard at end", [] {
@@ -123,13 +122,13 @@ static const auto S = suite("test filter (suite)", [] { // NOLINT(cert-err58-cpp
 
         expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
         expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
-        expect_fail(output.str()).to_contain("my suite");
-        expect_fail(output.str()).to_contain("yay testing");
-        expect_fail(output.str()).to_contain("lol test me");
+        expect(output.str()).not_to_contain("my suite");
+        expect(output.str()).not_to_contain("yay testing");
+        expect(output.str()).not_to_contain("lol test me");
         expect(output.str()).to_contain("other suite to run");
         expect(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
     });
 
     test("run suites with wildcard in front", [] {
@@ -168,10 +167,10 @@ static const auto S = suite("test filter (suite)", [] { // NOLINT(cert-err58-cpp
         expect(output.str()).to_contain("my suite");
         expect(output.str()).to_contain("yay testing");
         expect(output.str()).to_contain("lol test me");
-        expect_fail(output.str()).to_contain("other suite to run");
-        expect_fail(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
+        expect(output.str()).not_to_contain("other suite to run");
+        expect(output.str()).not_to_contain("my tst");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
     });
 
     test("run suites with wildcards in front and back", [] {
@@ -212,8 +211,8 @@ static const auto S = suite("test filter (suite)", [] { // NOLINT(cert-err58-cpp
         expect(output.str()).to_contain("lol test me");
         expect(output.str()).to_contain("other suite to run");
         expect(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
     });
 
     test("skip empty suites", [] {
@@ -249,12 +248,12 @@ static const auto S = suite("test filter (suite)", [] { // NOLINT(cert-err58-cpp
 
         expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
         expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
-        expect_fail(output.str()).to_contain("my suite");
-        expect_fail(output.str()).to_contain("yay testing");
-        expect_fail(output.str()).to_contain("lol test me");
+        expect(output.str()).not_to_contain("my suite");
+        expect(output.str()).not_to_contain("yay testing");
+        expect(output.str()).not_to_contain("lol test me");
         expect(output.str()).to_contain("other suite to run");
         expect(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
     });
 });

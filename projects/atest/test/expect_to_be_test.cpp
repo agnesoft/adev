@@ -1,7 +1,6 @@
 import atest;
 
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -35,24 +34,24 @@ static const auto S = suite("Expect::to_be()", [] { // NOLINT(cert-err58-cpp)
         expect("").to_be(std::string{});
     });
 
-    test("expect_fail().to_be()", [] {
-        expect_fail(1).to_be(2);
+    test("expect().not_to_be()", [] {
+        expect(1).not_to_be(2);
     });
 
-    test("expect_fail(custom type).to_be()", [] {
-        expect_fail(MyStruct{1}).to_be(MyStruct{2});
+    test("expect(custom type).not_to_be()", [] {
+        expect(MyStruct{1}).not_to_be(MyStruct{2});
     });
 
-    test("expect_fail(std::vector).to_be()", [] {
-        expect_fail(std::vector<int>{1, 2, 3}).to_be(std::vector<int>{3, 2, 1});
+    test("expect(std::vector).not_to_be()", [] {
+        expect(std::vector<int>{1, 2, 3}).not_to_be(std::vector<int>{3, 2, 1});
     });
 
-    test("expect_fail(std::vector<custom type>).to_be()", [] {
-        expect_fail(std::vector<MyStruct>{{1}, {2}, {3}}).to_be(std::vector<MyStruct>{{3}, {2}, {1}});
+    test("expect(std::vector<custom type>).to_be()", [] {
+        expect(std::vector<MyStruct>{{1}, {2}, {3}}).not_to_be(std::vector<MyStruct>{{3}, {2}, {1}});
     });
 
-    test("expect_fail(std::pair).to_be()", [] {
-        expect_fail(std::pair<int, int>{1, 2}).to_be(std::pair<int, int>{2, 1});
+    test("expect(std::pair).not_to_be()", [] {
+        expect(std::pair<int, int>{1, 2}).not_to_be(std::pair<int, int>{2, 1});
     });
 
     test("expect().to_be() (failing)", [] {
@@ -73,14 +72,14 @@ static const auto S = suite("Expect::to_be()", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Actual  :  1");
     });
 
-    test("expect_fail().to_be() (passing)", [] {
+    test("expect().not_to_be() (passing)", [] {
         std::stringstream output;
 
         {
             ::atest::TestRunner runner{output};
 
             test("test", [] {
-                expect_fail(1).to_be(1);
+                expect(1).not_to_be(1);
             });
 
             static_cast<void>(runner.run(0, nullptr));
@@ -89,14 +88,14 @@ static const auto S = suite("Expect::to_be()", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Expected a failure but the expectation passed.");
     });
 
-    test("expect_fail().to_be() (throwing)", [] {
+    test("expect().not_to_be() (throwing)", [] {
         std::stringstream output;
 
         {
             ::atest::TestRunner runner{output};
 
             test("test", [] {
-                expect_fail([]() -> int { throw std::runtime_error{"bad call"}; }).to_be(1);
+                expect([]() -> int { throw std::runtime_error{"bad call"}; }).not_to_be(1);
             });
 
             static_cast<void>(runner.run(0, nullptr));
@@ -105,14 +104,14 @@ static const auto S = suite("Expect::to_be()", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Unexpected exception thrown (" + std::string{typeid(std::runtime_error).name()} + "): bad call");
     });
 
-    test("expect_fail().to_be() (throw int)", [] {
+    test("expect().not_to_be() (throw int)", [] {
         std::stringstream output;
 
         {
             ::atest::TestRunner runner{output};
 
             test("test", [] {
-                expect_fail([]() -> int { throw 1; }).to_be(1); // NOLINT(hicpp-exception-baseclass)
+                expect([]() -> int { throw 1; }).not_to_be(1); // NOLINT(hicpp-exception-baseclass)
             });
 
             static_cast<void>(runner.run(0, nullptr));
