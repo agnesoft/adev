@@ -3,7 +3,6 @@ import awinapi;
 
 #ifdef _WIN32
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -28,7 +27,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
         ::awinapi::Buffer buffer{bufferSize};
         expect(buffer.tchar_size()).to_be(bufferSize);
         expect(buffer.byte_size()).to_be(bufferSize);
-        expect_fail(buffer.str()).to_be(nullptr);
+        expect(buffer.str()).not_to_be(nullptr);
     });
 
     test("move constructor", [] {
@@ -37,7 +36,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
         ::awinapi::Buffer other{std::move(buffer)};
         expect(other.tchar_size()).to_be(bufferSize);
         expect(other.byte_size()).to_be(bufferSize);
-        expect_fail(other.str()).to_be(nullptr);
+        expect(other.str()).not_to_be(nullptr);
     });
 
     test("move assignment", [] {
@@ -47,7 +46,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
         other = std::move(buffer);
         expect(other.tchar_size()).to_be(bufferSize);
         expect(other.byte_size()).to_be(bufferSize);
-        expect_fail(other.str()).to_be(nullptr);
+        expect(other.str()).not_to_be(nullptr);
     });
 
     test("move assignment to itself", [] {
@@ -57,7 +56,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
         buffer = std::move(other);
         expect(buffer.tchar_size()).to_be(bufferSize);
         expect(buffer.byte_size()).to_be(bufferSize);
-        expect_fail(buffer.str()).to_be(nullptr);
+        expect(buffer.str()).not_to_be(nullptr);
     });
 });
 #endif

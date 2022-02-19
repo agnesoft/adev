@@ -42,23 +42,7 @@ namespace atest
 export template<typename ExpressionT>
 [[nodiscard]] auto assert_(const ExpressionT &expression, // NOLINT(readability-identifier-naming)
                            const std::source_location &sourceLocation = std::source_location::current()) noexcept
-    -> Expect<ExpressionT,
-              ExpectationType::Assertion,
-              ResultHandlingPolicy::Normal>
-{
-    return {expression, sourceLocation};
-}
-
-//! Starts an assertion with reversed result that
-//! will stop the test when failed. The
-//! `expression` can be a callable. The call site
-//! source location is automatically captured.
-export template<typename ExpressionT>
-[[nodiscard]] auto assert_fail(const ExpressionT &expression,
-                               const std::source_location &sourceLocation = std::source_location::current()) noexcept
-    -> Expect<ExpressionT,
-              ExpectationType::Assertion,
-              ResultHandlingPolicy::Reverse>
+    -> Expect<ExpressionT, ExpectationType::Assertion>
 {
     return {expression, sourceLocation};
 }
@@ -69,22 +53,7 @@ export template<typename ExpressionT>
 export template<typename ExpressionT>
 [[nodiscard]] auto expect(const ExpressionT &expression,
                           const std::source_location &sourceLocation = std::source_location::current()) noexcept
-    -> Expect<ExpressionT,
-              ExpectationType::Expectation,
-              ResultHandlingPolicy::Normal>
-{
-    return {expression, sourceLocation};
-}
-
-//! Starts an expectation with reversed result.
-//! The `expression` can be a callable. Call site
-//! source location is automatically captured.
-export template<typename ExpressionT>
-[[nodiscard]] auto expect_fail(const ExpressionT &expression,
-                               const std::source_location &sourceLocation = std::source_location::current()) noexcept
-    -> Expect<ExpressionT,
-              ExpectationType::Expectation,
-              ResultHandlingPolicy::Reverse>
+    -> Expect<ExpressionT, ExpectationType::Expectation>
 {
     return {expression, sourceLocation};
 }

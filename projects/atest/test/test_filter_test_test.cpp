@@ -1,7 +1,6 @@
 import atest;
 
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -26,7 +25,7 @@ static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Running 1 tests from 1 test suites...");
         expect(output.str()).to_contain("Tests       : 1 | 1 passed | 0 failed");
         expect(output.str()).to_contain("test1");
-        expect_fail(output.str()).to_contain("test2");
+        expect(output.str()).not_to_contain("test2");
     });
 
     test("run 2 tests", [] {
@@ -54,7 +53,7 @@ static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Tests       : 2 | 2 passed | 0 failed");
         expect(output.str()).to_contain("test1");
         expect(output.str()).to_contain("test2");
-        expect_fail(output.str()).to_contain("test3");
+        expect(output.str()).not_to_contain("test3");
     });
 
     test("run tests with wildcard at end", [] {
@@ -82,7 +81,7 @@ static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Tests       : 2 | 2 passed | 0 failed");
         expect(output.str()).to_contain("test11");
         expect(output.str()).to_contain("test235 aa");
-        expect_fail(output.str()).to_contain("my test");
+        expect(output.str()).not_to_contain("my test");
     });
 
     test("run tests with wildcard in front", [] {
@@ -110,7 +109,7 @@ static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Tests       : 2 | 2 passed | 0 failed");
         expect(output.str()).to_contain("yay test");
         expect(output.str()).to_contain("lol test");
-        expect_fail(output.str()).to_contain("my tst");
+        expect(output.str()).not_to_contain("my tst");
     });
 
     test("run tests with wildcards in front and back", [] {
@@ -138,7 +137,7 @@ static const auto S = suite("test filter (test)", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("Tests       : 2 | 2 passed | 0 failed");
         expect(output.str()).to_contain("yay testing");
         expect(output.str()).to_contain("lol test me");
-        expect_fail(output.str()).to_contain("my tst not me");
+        expect(output.str()).not_to_contain("my tst not me");
     });
 
     test("empty name", [] {

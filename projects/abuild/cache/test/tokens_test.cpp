@@ -3,7 +3,6 @@ import abuild.cache;
 import abuild.test_utilities;
 
 using ::atest::assert_;
-using ::atest::assert_fail;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
@@ -40,7 +39,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -57,7 +56,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -74,7 +73,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -91,7 +90,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -108,7 +107,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -125,7 +124,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -142,7 +141,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -159,7 +158,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -176,7 +175,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -193,7 +192,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -210,7 +209,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });
@@ -228,7 +227,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
             ::abuild::Cache cache{file.path()};
             ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-            assert_fail(source).to_be(nullptr);
+            assert_(source).not_to_be(nullptr);
             assert_(source->tokens.size()).to_be(1U);
             expect(source->tokens[0]).to_be(token);
         });
@@ -246,7 +245,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{file.path()};
         ::abuild::SourceFile *source = cache.exact_source_file("main.cpp");
-        assert_fail(source).to_be(nullptr);
+        assert_(source).not_to_be(nullptr);
         assert_(source->tokens.size()).to_be(1U);
         expect(source->tokens[0]).to_be(token);
     });

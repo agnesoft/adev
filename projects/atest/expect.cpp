@@ -17,7 +17,7 @@ namespace atest
 //! impose further requirements on `ExpressionT`
 //! such as having certain comparison operator,
 //! streaming operator or being a callable.
-export template<typename ExpressionT, ExpectationType expectationType, ResultHandlingPolicy resultHandlingPolicy>
+export template<typename ExpressionT, ExpectationType expectationType>
 class Expect
 {
 public:
@@ -29,13 +29,101 @@ public:
     }
 
     //! Creates the value matcher expectation with
+    //! a default Matcher that uses
+    //! `!(operator==)`.
+    template<typename ValueT>
+    auto not_to_be(const ValueT &value) -> ExpectToMatch<ExpressionT,
+                                                         ValueT,
+                                                         Matcher,
+                                                         expectationType,
+                                                         ResultHandlingPolicy::Reverse>
+    {
+        return {this->expression, value, this->sourceLocation};
+    }
+
+    //! Creates a reversed generic matcher
+    //! expectation using a custom matcher
+    //! `MatcherT`.
+    template<typename MatcherT, typename ValueT>
+    auto not_to_match(const ValueT &value) -> ExpectToMatch<ExpressionT,
+                                                            ValueT,
+                                                            MatcherT,
+                                                            expectationType,
+                                                            ResultHandlingPolicy::Reverse>
+    {
+        return {this->expression, value, this->sourceLocation};
+    }
+
+    //! Creates the value matcher expectation that
+    //! tries to find the `value` in the
+    //! `expression`.
+    template<typename ValueT>
+    auto not_to_contain(const ValueT &value) -> ExpectToMatch<ExpressionT,
+                                                              ValueT,
+                                                              MatcherContains,
+                                                              expectationType,
+                                                              ResultHandlingPolicy::Reverse>
+    {
+        return {this->expression, value, this->sourceLocation};
+    }
+
+    //! Creates an expectation that expects a type
+    //! `ExceptionT` not to be thrown from the
+    //! callable expression `ExpressionT`.
+    template<typename ExceptionT>
+    requires std::invocable<ExpressionT>
+    auto not_to_throw() -> ExpectToThrow<ExpressionT,
+                                         ExceptionT,
+                                         const char *,
+                                         ExceptionValidationPolicy::TypeOnly,
+                                         expectationType,
+                                         ResultHandlingPolicy::Reverse>
+    {
+        return {this->expression, "", this->sourceLocation};
+    }
+
+    //! Creates an expectation that expects a type
+    //! `ExceptionT` not to be thrown from the
+    //! callable expression `ExpressionT` that
+    //! matches the object `exception`.
+    template<typename ExceptionT>
+    requires std::invocable<ExpressionT>
+    auto not_to_throw(const ExceptionT &exception) -> ExpectToThrow<ExpressionT,
+                                                                    ExceptionT,
+                                                                    ExceptionT,
+                                                                    ExceptionValidationPolicy::Value,
+                                                                    expectationType,
+                                                                    ResultHandlingPolicy::Reverse>
+    {
+        return {this->expression, exception, this->sourceLocation};
+    }
+
+    //! Creates an expectation that expects a type
+    //! `ExceptionT` not to be thrown from the
+    //! callable expression `ExpressionT` that
+    //! matches the `value`. This overload is
+    //! typically used for matching an exception's
+    //! text.
+    template<typename ExceptionT, typename ValueT>
+    requires std::invocable<ExpressionT>
+    auto not_to_throw(const ValueT &value) -> ExpectToThrow<ExpressionT,
+                                                            ExceptionT,
+                                                            ValueT,
+                                                            ExceptionValidationPolicy::Value,
+                                                            expectationType,
+                                                            ResultHandlingPolicy::Reverse>
+    {
+        return {this->expression, value, this->sourceLocation};
+    }
+
+    //! Creates the value matcher expectation with
     //! a default Matcher that uses `operator==`.
     template<typename ValueT>
     auto to_be(const ValueT &value) -> ExpectToMatch<ExpressionT,
                                                      ValueT,
                                                      Matcher,
                                                      expectationType,
-                                                     resultHandlingPolicy>
+                                                     ResultHandlingPolicy::Normal>
     {
         return {this->expression, value, this->sourceLocation};
     }
@@ -48,7 +136,7 @@ public:
                                                           ValueT,
                                                           MatcherContains,
                                                           expectationType,
-                                                          resultHandlingPolicy>
+                                                          ResultHandlingPolicy::Normal>
     {
         return {this->expression, value, this->sourceLocation};
     }
@@ -60,7 +148,7 @@ public:
                                                         ValueT,
                                                         MatcherT,
                                                         expectationType,
-                                                        resultHandlingPolicy>
+                                                        ResultHandlingPolicy::Normal>
     {
         return {this->expression, value, this->sourceLocation};
     }
@@ -75,7 +163,7 @@ public:
                                      const char *,
                                      ExceptionValidationPolicy::TypeOnly,
                                      expectationType,
-                                     resultHandlingPolicy>
+                                     ResultHandlingPolicy::Normal>
     {
         return {this->expression, "", this->sourceLocation};
     }
@@ -91,7 +179,7 @@ public:
                                                                 ExceptionT,
                                                                 ExceptionValidationPolicy::Value,
                                                                 expectationType,
-                                                                resultHandlingPolicy>
+                                                                ResultHandlingPolicy::Normal>
     {
         return {this->expression, exception, this->sourceLocation};
     }
@@ -109,7 +197,7 @@ public:
                                                         ValueT,
                                                         ExceptionValidationPolicy::Value,
                                                         expectationType,
-                                                        resultHandlingPolicy>
+                                                        ResultHandlingPolicy::Normal>
     {
         return {this->expression, value, this->sourceLocation};
     }

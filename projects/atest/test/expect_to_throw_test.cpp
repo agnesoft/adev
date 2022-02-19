@@ -1,7 +1,6 @@
 import atest;
 
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -11,15 +10,15 @@ static const auto S = suite("Expect::to_throw()", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("types mismatch", [] {
-        expect_fail([] { throw std::runtime_error{""}; }).to_throw<std::logic_error>();
+        expect([] { throw std::runtime_error{""}; }).not_to_throw<std::logic_error>();
     });
 
     test("types mismatch: expect base, throw derived", [] {
-        expect_fail([] { throw std::runtime_error{""}; }).to_throw<std::exception>();
+        expect([] { throw std::runtime_error{""}; }).not_to_throw<std::exception>();
     });
 
     test("types mismatch: throw int", [] {
-        expect_fail([] { throw 1; }).to_throw<std::exception>(); // NOLINT(hicpp-exception-baseclass)
+        expect([] { throw 1; }).not_to_throw<std::exception>(); // NOLINT(hicpp-exception-baseclass)
     });
 
     test("text match", [] {
@@ -31,11 +30,11 @@ static const auto S = suite("Expect::to_throw()", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("text mismatch", [] {
-        expect_fail([] { throw std::runtime_error{"Some exception text"}; }).to_throw<std::runtime_error>("Some different exception text");
+        expect([] { throw std::runtime_error{"Some exception text"}; }).not_to_throw<std::runtime_error>("Some different exception text");
     });
 
     test("nothing thrown", [] {
-        expect_fail([] {}).to_throw<std::exception>();
+        expect([] {}).not_to_throw<std::exception>();
     });
 
     test("types match: int", [] {

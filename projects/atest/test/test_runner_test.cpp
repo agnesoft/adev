@@ -1,7 +1,6 @@
 import atest;
 
 using ::atest::expect;
-using ::atest::expect_fail;
 using ::atest::suite;
 using ::atest::test;
 
@@ -138,10 +137,10 @@ static const auto S = suite("TestRunner", [] { // NOLINT(cert-err58-cpp)
         expect(result).to_be(0);
         expect(output.str()).to_contain("--test");
         expect(output.str()).to_contain("--suite");
-        expect_fail(output.str()).to_contain("Running");
-        expect_fail(output.str()).to_contain("Result");
-        expect_fail(output.str()).to_contain("Tests       :");
-        expect_fail(output.str()).to_contain("Expectations:");
+        expect(output.str()).not_to_contain("Running");
+        expect(output.str()).not_to_contain("Result");
+        expect(output.str()).not_to_contain("Tests       :");
+        expect(output.str()).not_to_contain("Expectations:");
     });
 
     test("list tests", [] {
@@ -182,11 +181,11 @@ static const auto S = suite("TestRunner", [] { // NOLINT(cert-err58-cpp)
         expect(output.str()).to_contain("my tst");
         expect(output.str()).to_contain("do not run");
         expect(output.str()).to_contain("do not run this either");
-        expect_fail(output.str()).to_contain("PASSED");
-        expect_fail(output.str()).to_contain("Running");
-        expect_fail(output.str()).to_contain("Result");
-        expect_fail(output.str()).to_contain("Tests       :");
-        expect_fail(output.str()).to_contain("Expectations:");
+        expect(output.str()).not_to_contain("PASSED");
+        expect(output.str()).not_to_contain("Running");
+        expect(output.str()).not_to_contain("Result");
+        expect(output.str()).not_to_contain("Tests       :");
+        expect(output.str()).not_to_contain("Expectations:");
     });
 
     test("list tests (filtered)", [] {
@@ -220,18 +219,18 @@ static const auto S = suite("TestRunner", [] { // NOLINT(cert-err58-cpp)
             static_cast<void>(runner.run(3, std::array<const char *, 3>{"./app_test", "-l", "-s=\"other suite to run\""}.data()));
         }
 
-        expect_fail(output.str()).to_contain("my suite");
-        expect_fail(output.str()).to_contain("yay testing");
-        expect_fail(output.str()).to_contain("lol test me");
+        expect(output.str()).not_to_contain("my suite");
+        expect(output.str()).not_to_contain("yay testing");
+        expect(output.str()).not_to_contain("lol test me");
         expect(output.str()).to_contain("other suite to run");
         expect(output.str()).to_contain("my tst");
-        expect_fail(output.str()).to_contain("do not run");
-        expect_fail(output.str()).to_contain("do not run this either");
-        expect_fail(output.str()).to_contain("PASSED");
-        expect_fail(output.str()).to_contain("Running");
-        expect_fail(output.str()).to_contain("Result");
-        expect_fail(output.str()).to_contain("Tests       :");
-        expect_fail(output.str()).to_contain("Expectations:");
+        expect(output.str()).not_to_contain("do not run");
+        expect(output.str()).not_to_contain("do not run this either");
+        expect(output.str()).not_to_contain("PASSED");
+        expect(output.str()).not_to_contain("Running");
+        expect(output.str()).not_to_contain("Result");
+        expect(output.str()).not_to_contain("Tests       :");
+        expect(output.str()).not_to_contain("Expectations:");
     });
 
     test("unmatched command line argument", [] {

@@ -2,7 +2,7 @@ import atest;
 import abuild.cache;
 import abuild.test_utilities;
 
-using ::atest::assert_fail;
+using ::atest::assert_;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
@@ -18,7 +18,7 @@ static const auto S = suite("file lookup", [] { // NOLINT(cert-err58-cpp)
         cache.add_header_file("c:/dev/my_other_project/include/my_header.hpp", "my_project");
 
         ::abuild::HeaderFile *f = cache.header_file("my_other_project/my_header.hpp");
-        assert_fail(f).to_be(nullptr);
+        assert_(f).not_to_be(nullptr);
         expect(f->path).to_be("c:/dev/my_other_project/my_header.hpp");
     });
 
@@ -45,7 +45,7 @@ static const auto S = suite("file lookup", [] { // NOLINT(cert-err58-cpp)
         cache.add_source_file("c:/dev/my_other_project/src/main.cpp", "my_project");
 
         ::abuild::SourceFile *f = cache.source_file("my_other_project/main.cpp");
-        assert_fail(f).to_be(nullptr);
+        assert_(f).not_to_be(nullptr);
         expect(f->path).to_be("c:/dev/my_other_project/main.cpp");
     });
 
