@@ -13,6 +13,7 @@
 -fprebuilt-module-path=build/clang/awinapi
 -fprebuilt-module-path=build/clang/abuild/cpptokenizer
 -fprebuilt-module-path=build/clang/abuild/cache
+-fprebuilt-module-path=build/clang/abuild/scanners
 -fprebuilt-module-path=build/clang/abuild/test_utilities
 -fprebuilt-module-path=build/clang/yamlcpp
 -fmodule-map-file=projects/astl/module.modulemap

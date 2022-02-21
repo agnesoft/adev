@@ -1,6 +1,6 @@
 #ifdef _MSC_VER
-export module abuild : project_scanner;
-export import : abuild.cache;
+export module abuild.scanners : project_scanner;
+export import abuild.cache;
 #endif
 
 namespace abuild
@@ -21,7 +21,7 @@ public:
 private:
     auto append_project_name(std::string &projectName, const std::string &directoryName) const -> void
     {
-        if (projectName->empty())
+        if (projectName.empty())
         {
             projectName = directoryName;
         }
@@ -48,7 +48,7 @@ private:
         return path.filename().string().front() == '.' || this->cache.settings().ignoreDirectories.contains(path.filename().string());
     }
 
-    [[nodiscard]] auto isSkipDirectory(const std::filesystem::path &path) -> bool
+    [[nodiscard]] auto is_skip_directory(const std::filesystem::path &path) -> bool
     {
         return this->cache.settings().skipDirectories.contains(path.filename().string());
     }

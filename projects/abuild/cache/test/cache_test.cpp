@@ -50,19 +50,14 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
 
         const auto node = ::YAML::LoadFile(file.path().string());
 
-        expect(node["projects"]["my.project"].IsDefined()).to_be(true);
-        expect(node["projects"]["my.project"]["sources"].as<std::vector<std::string>>())
-            .to_be(std::vector<std::string>{"main.cpp"});
-        expect(node["projects"]["my.project"]["headers"].as<std::vector<std::string>>())
-            .to_be(std::vector<std::string>{"header.hpp"});
+        expect(node["sources"]["main.cpp"]["project"].as<std::string>()).to_be("my.project");
+        expect(node["headers"]["header.hpp"]["project"].as<std::string>()).to_be("my.project");
     });
 
     test("load from file", [] {
         ::YAML::Node node;
-        node["projects"]["my_project"]["sources"].push_back("main.cpp");
-        node["projects"]["my_project"]["headers"].push_back("my_header.hpp");
-        node["sources"]["main.cpp"] = {};
-        node["headers"]["my_header.hpp"] = {};
+        node["sources"]["main.cpp"]["project"] = "my_project";
+        node["headers"]["my_header.hpp"]["project"] = "my_project";
 
         std::stringstream stream;
         stream << node;

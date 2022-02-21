@@ -50,7 +50,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -67,7 +67,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -84,7 +84,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -101,7 +101,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -118,7 +118,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -135,7 +135,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -152,7 +152,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -169,7 +169,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -186,7 +186,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -203,7 +203,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 
@@ -221,7 +221,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
             {
                 ::abuild::Cache cache{file.path()};
-                ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+                ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
                 source->tokens.push_back(token);
             }
 
@@ -239,7 +239,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{file.path()};
-            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project)";
+            ::abuild::SourceFile *source = cache.add_source_file("main.cpp", "my_project");
             source->tokens.push_back(token);
         }
 

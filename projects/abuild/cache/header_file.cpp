@@ -12,11 +12,11 @@ export class Project;
 //! files that are being tracked by the `Cache`.
 export struct HeaderFile : File
 {
+    //! Project this header file belongs to.
+    Project *project = nullptr;
+
     //! Relevant code tokens extracted during code
     //! analysis.
     std::vector<Token> tokens;
-
-    //! Project this header file belongs to.
-    Project *project = nullptr;
 };
 }

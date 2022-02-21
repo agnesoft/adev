@@ -34,7 +34,7 @@ function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/cache.obj" -c "${projectDir}/cache.cpp"
 
     ar r "${buildDir}/abuild.cache.lib" \
-         "${buildDir}/cacge.obj" \
+         "${buildDir}/cache.obj" \
          "${buildDir}/file.obj" \
          "${buildDir}/source_file.obj" \
          "${buildDir}/header_file.obj" \
@@ -83,7 +83,6 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cache-cache_writer.obj\" || exit 1
 "
 
-sh/build/astl.sh "${toolchain}"
 sh/build/abuild.cpptokenizer.sh "${toolchain}"
 sh/build/yamlcpp.sh "${toolchain}"
 build

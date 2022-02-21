@@ -68,6 +68,5 @@ lib.exe /NOLOGO ^
         \"${buildDir}/aprocess-process.obj\" || exit 1
 "
 
-sh/build/astl.sh "${toolchain}"
 sh/build/awinapi.sh "${toolchain}"
 build

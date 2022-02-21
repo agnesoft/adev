@@ -93,8 +93,8 @@ public:
     auto add_header_file(std::filesystem::path path, const std::string &projectName) -> HeaderFile *
     {
         Project *proj = this->get_project(projectName);
-        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>({File{.path = std::move(path), .project = proj}})).get();
-        proj.headers.push_back(file);
+        HeaderFile *file = this->data.headers.emplace_back(new HeaderFile{std::move(path), true, proj, {}}).get();
+        proj->headers.push_back(file);
         this->index.insert(file);
         return file;
     }
@@ -107,8 +107,8 @@ public:
     auto add_source_file(std::filesystem::path path, const std::string &projectName) -> SourceFile *
     {
         Project *proj = this->get_project(projectName);
-        SourceFile *file = this->data.headers.emplace_back(std::make_unique<SourceFile>({File{.path = std::move(path), .project = proj}})).get();
-        proj.sources.push_back(file);
+        SourceFile *file = this->data.sources.emplace_back(new SourceFile{std::move(path), true, proj, {}}).get();
+        proj->sources.push_back(file);
         this->index.insert(file);
         return file;
     }
@@ -188,13 +188,13 @@ private:
     {
         Project *proj = this->project(name);
 
-        if (project == nullptr)
+        if (proj == nullptr)
         {
             proj = this->data.projects.emplace_back(std::make_unique<Project>(Project{.name = std::move(name)})).get();
-            this->index.insert(project);
+            this->index.insert(proj);
         }
 
-        return project;
+        return proj;
     }
 
     std::filesystem::path filePath;
