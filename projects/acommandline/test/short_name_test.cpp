@@ -37,7 +37,7 @@ static const auto S = suite("short name", [] { // NOLINT(cert-err58-cpp)
         bool value = false;
         std::string option;
         std::int64_t another = 0;
-        constexpr int argc = 5;
+        static constexpr int argc = 5;
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
         commandLine.option().long_name("option").short_name('o').description("").bind_to(&option);

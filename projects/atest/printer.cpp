@@ -188,7 +188,7 @@ private:
 
     [[nodiscard]] static auto separator() -> std::string
     {
-        constexpr std::size_t separatorWidth = 75;
+        static constexpr std::size_t separatorWidth = 75;
         return {std::string(separatorWidth, '=')};
     }
 

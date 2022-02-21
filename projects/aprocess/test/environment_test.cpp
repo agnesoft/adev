@@ -19,7 +19,7 @@ auto operator<<(std::ostream &stream, const ::aprocess::EnvironmentVariable &var
 }
 }
 
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
+static constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{1000};
 
 static const auto S = suite("environment", [] { // NOLINT(cert-err58-cpp)
     test("variable", [] {

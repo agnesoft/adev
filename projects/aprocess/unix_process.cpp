@@ -196,7 +196,7 @@ private:
 
     [[nodiscard]] auto do_read() -> std::string
     {
-        constexpr std::size_t bufferSize = 65'536;
+        static constexpr std::size_t bufferSize = 65'536;
         std::string buffer(bufferSize, char{});
         std::size_t bytesRead = 0;
         std::stringstream output;
