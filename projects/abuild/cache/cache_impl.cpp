@@ -1,6 +1,6 @@
 #ifndef __clang__
 export module abuild.cache : cache_impl;
-import : cache_data;
+export import : cache_data;
 import : cache_index;
 #endif
 
@@ -146,6 +146,12 @@ public:
     [[nodiscard]] auto project(const std::string &name) const -> Project *
     {
         return this->index.project(name);
+    }
+
+    //! Returns the list of projects.
+    [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
+    {
+        return this->data.projects;
     }
 
     //! Returns root of the project which is the

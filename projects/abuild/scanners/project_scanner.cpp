@@ -100,11 +100,7 @@ private:
 
         for (auto it = directories.crbegin(); it != directories.crend() && !this->is_squash_directory(*it); ++it)
         {
-            if (this->is_test_directory(*it))
-            {
-                return this->ensure_project_name(projectName) + this->cache.settings().projectNameSeparator + it->filename().string();
-            }
-            else if (!this->is_skip_directory(*it))
+            if (!this->is_skip_directory(*it))
             {
                 this->append_project_name(projectName, it->filename().string());
             }
