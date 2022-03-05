@@ -23,6 +23,18 @@ public:
     }
 
 private:
+    [[nodiscard]] static auto read_file(std::filesystem::path path, const auto &it) -> File
+    {
+        const std::size_t timestamp = it->second["timestamp"].as<std::size_t>();
+        const std::size_t size = it->second["size"].as<std::size_t>();
+
+        return File{
+            .path = std::move(path),
+            .timestamp = timestamp,
+            .size = size,
+            .outdated = false};
+    }
+
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
     {
         std::stringstream stream;
@@ -39,8 +51,13 @@ private:
     {
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            HeaderFile *header = this->cache.add_header_file(it->first.as<std::string>(), it->second["project"].as<std::string>());
-            header->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            std::filesystem::path path = it->first.as<std::string>();
+
+            if (std::filesystem::exists(path))
+            {
+                HeaderFile *header = this->cache.add_header_file(CacheReader::read_file(std::move(path), it), it->second["project"].as<std::string>());
+                header->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            }
         }
     }
 
@@ -48,8 +65,13 @@ private:
     {
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            SourceFile *source = this->cache.add_source_file(it->first.as<std::string>(), it->second["project"].as<std::string>());
-            source->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            std::filesystem::path path = it->first.as<std::string>();
+
+            if (std::filesystem::exists(path))
+            {
+                SourceFile *source = this->cache.add_source_file(CacheReader::read_file(std::move(path), it), it->second["project"].as<std::string>());
+                source->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            }
         }
     }
 

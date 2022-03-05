@@ -68,6 +68,7 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/yamlcpp/yamlcpp.lib\" || exit 1
 "
 
+sh/build/abuild.cache.sh "${toolchain}"
 sh/build/abuild.test_utilities.sh "${toolchain}"
 sh/build/atest.sh "${toolchain}"
 build

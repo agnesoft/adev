@@ -31,7 +31,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             "project_scanner_test",
             {{"main.cpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("project_scanner_test");
@@ -49,7 +49,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             {{"projects/myapp/main.cpp", ""},
              {"projects/mylib/my_lib.cpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -75,7 +75,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             {{"myapp/src/main.cpp", ""},
              {"myapp/some_source.cpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -94,7 +94,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             {{"myapp/main.cpp", ""},
              {"myapp/subapp/main.cpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -118,7 +118,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             "project_scanner_test",
             {{"build/myapp/main.cpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         expect(cache.projects().size()).to_be(0U);
@@ -130,7 +130,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             {{"myapp/main.cpp", ""},
              {"myapp/test/main.cpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -156,7 +156,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
              {"mylib/include/some_header.hpp", ""},
              {"mylib/include/mylib/some_other_header.hpp", ""}}};
 
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("mylib");

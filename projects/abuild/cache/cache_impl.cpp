@@ -85,29 +85,29 @@ public:
         }
     }
 
-    //! Adds header file identified by `path` to
-    //! the Cache and associates it with
-    //! `projectName` project. If the project does
-    //! not exist it is created. Returns the
-    //! pointer to the inserted HeaderFile.
-    auto add_header_file(std::filesystem::path path, const std::string &projectName) -> HeaderFile *
+    //! Adds header `file` to the Cache and
+    //! associates it with `projectName` project.
+    //! If the project does not exist it is
+    //! created. Returns the pointer to the
+    //! inserted HeaderFile.
+    auto add_header_file(File headerFile, const std::string &projectName) -> HeaderFile *
     {
         Project *proj = this->get_project(projectName);
-        HeaderFile *file = this->data.headers.emplace_back(new HeaderFile{std::move(path), true, proj, {}}).get();
+        HeaderFile *file = this->data.headers.emplace_back(new HeaderFile{File{std::move(headerFile)}, proj, {}}).get();
         proj->headers.push_back(file);
         this->index.insert(file);
         return file;
     }
 
-    //! Adds source file identified by `path` to
-    //! the Cache and associates it with
-    //! `projectName` project. If the project does
-    //! not exist it is created. Returns the
-    //! pointer to the inserted SourceFile.
-    auto add_source_file(std::filesystem::path path, const std::string &projectName) -> SourceFile *
+    //! Adds source `file` to the Cache and
+    //! associates it with `projectName` project.
+    //! If the project does not exist it is
+    //! created. Returns the pointer to the
+    //! inserted SourceFile.
+    auto add_source_file(File sourceFile, const std::string &projectName) -> SourceFile *
     {
         Project *proj = this->get_project(projectName);
-        SourceFile *file = this->data.sources.emplace_back(new SourceFile{std::move(path), true, proj, {}}).get();
+        SourceFile *file = this->data.sources.emplace_back(new SourceFile{File{std::move(sourceFile)}, proj, {}}).get();
         proj->sources.push_back(file);
         this->index.insert(file);
         return file;
@@ -139,6 +139,12 @@ public:
     [[nodiscard]] auto header_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         return this->index.header_file(path);
+    }
+
+    //! Returns the list of all header files.
+    [[nodiscard]] auto header_files() const noexcept -> const std::vector<std::unique_ptr<HeaderFile>> &
+    {
+        return this->data.headers;
     }
 
     //! Find the project with `name`. If no such
@@ -181,6 +187,12 @@ public:
     [[nodiscard]] auto source_file(const std::filesystem::path &path) const -> SourceFile *
     {
         return this->index.source_file(path);
+    }
+
+    //! Returns the list of all source files.
+    [[nodiscard]] auto source_files() const noexcept -> const std::vector<std::unique_ptr<SourceFile>> &
+    {
+        return this->data.sources;
     }
 
     //! Deleted copy assignment.

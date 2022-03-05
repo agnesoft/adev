@@ -43,22 +43,32 @@ private:
         }
     }
 
-    [[nodiscard]] auto is_ignore_directory(const std::filesystem::path &path) -> bool
+    [[nodiscard]] auto is_executable(Project *project) const -> bool
+    {
+        return project->type != Project::Type::Executable;
+    }
+
+    [[nodiscard]] auto is_executable_filename(const std::filesystem::path &path) const -> bool
+    {
+        return this->cache.settings().executableFilenames.contains(path.stem().string());
+    }
+
+    [[nodiscard]] auto is_ignore_directory(const std::filesystem::path &path) const -> bool
     {
         return path.filename().string().front() == '.' || this->cache.settings().ignoreDirectories.contains(path.filename().string());
     }
 
-    [[nodiscard]] auto is_skip_directory(const std::filesystem::path &path) -> bool
+    [[nodiscard]] auto is_skip_directory(const std::filesystem::path &path) const -> bool
     {
         return this->cache.settings().skipDirectories.contains(path.filename().string());
     }
 
-    [[nodiscard]] auto is_squash_directory(const std::filesystem::path &path) -> bool
+    [[nodiscard]] auto is_squash_directory(const std::filesystem::path &path) const -> bool
     {
         return this->cache.settings().squashDirectories.contains(path.filename().string());
     }
 
-    [[nodiscard]] auto is_test_directory(const std::filesystem::path &path) -> bool
+    [[nodiscard]] auto is_test_directory(const std::filesystem::path &path) const -> bool
     {
         return this->cache.settings().testDirectories.contains(path.filename().string());
     }
@@ -80,17 +90,58 @@ private:
     {
         if (this->cache.settings().cppSourceExtensions.contains(path.extension().string()))
         {
-            this->cache.add_source_file(path, projectName);
-
-            if (this->cache.project(projectName)->type != Project::Type::Executable
-                && this->cache.settings().executableFilenames.contains(path.stem().string()))
-            {
-                this->cache.project(projectName)->type = Project::Type::Executable;
-            }
+            this->process_source_file(path, projectName);
         }
         else if (cache.settings().cppHeaderExtensions.contains(path.extension().string()))
         {
-            this->cache.add_header_file(path, projectName);
+            this->process_header_file(path, projectName);
+        }
+    }
+
+    template<typename T>
+    auto process_cpp_file(T *file) -> void
+    {
+        const std::size_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(file->path).time_since_epoch()).count();
+        const std::size_t size = std::filesystem::file_size(file->path);
+
+        if (file->timestamp != timestamp || file->size != size)
+        {
+            file->timestamp = timestamp;
+            file->size = size;
+            file->tokens = ::abuild::tokenize(ProjectScanner::read_file(file->path));
+        }
+        else
+        {
+            file->outdated = false;
+        }
+    }
+
+    [[nodiscard]] auto process_header_file(const std::filesystem::path &path, const std::string &projectName) -> void
+    {
+        HeaderFile *file = this->cache.exact_header_file(path);
+
+        if (file == nullptr)
+        {
+            file = this->cache.add_header_file(File{path}, projectName);
+        }
+
+        this->process_cpp_file(file);
+    }
+
+    [[nodiscard]] auto process_source_file(const std::filesystem::path &path, const std::string &projectName) -> void
+    {
+        SourceFile *file = this->cache.exact_source_file(path);
+
+        if (file == nullptr)
+        {
+            file = this->cache.add_source_file(File{path}, projectName);
+        }
+
+        this->process_cpp_file(file);
+
+        if (!this->is_executable(file->project) && this->is_executable_filename(path))
+        {
+            file->project->type = Project::Type::Executable;
         }
     }
 
@@ -114,6 +165,18 @@ private:
         return this->project_name_from_directories(this->path_directories(path));
     }
 
+    [[nodiscard]] static auto read_file(const std::filesystem::path &path) -> std::string
+    {
+        std::ifstream stream{path};
+        stream.seekg(0, std::ios::end);
+        const std::size_t size = stream.tellg();
+        std::string buffer;
+        buffer.reserve(size);
+        stream.seekg(0, std::ios::beg);
+        stream.read(buffer.data(), size);
+        return buffer;
+    }
+
     auto scan_directory(const std::filesystem::path &path) -> void
     {
         const std::string projectName = this->project_name_from_path(path);
@@ -125,7 +188,7 @@ private:
 
         Project *project = cache.project(projectName);
 
-        if (this->is_test_directory(path) && project)
+        if (project != nullptr && this->is_test_directory(path))
         {
             project->type = Project::Type::Executable;
         }
