@@ -1,18 +1,43 @@
-#ifdef _MSC_VER
+#ifndef __clang__
 export module abuild.scanners : project_scanner;
 export import abuild.cache;
 #endif
 
 namespace abuild
 {
+//! The ProjectScanner class scans the directory
+//! structure from Cache::project_root() to
+//! discover projects and source files according
+//! to Settings.
+//!
+//! Each directory that is not a `skip directory`
+//! constitutes a name of a project. The projects
+//! can be nested in which case their names are
+//! chained with a project name separator (e.g.
+//! `.`). That way for example it is easy to have
+//! `test` directory under a project name and the
+//! resulting test project would be `<project
+//! name>.test`.
+//!
+//! The discovered source files are scanned for
+//! build relevant C++ tokens. If the given file
+//! exists in the Cache already it will be
+//! rescanned for tokens only if its current
+//! timestamp differs to the one on file.
 export class ProjectScanner
 {
 public:
+    //! Constructs the scanner with `cache`.
     explicit ProjectScanner(Cache &cache) :
         cache{cache}
     {
     }
 
+    //! Scans the directory structure from
+    //! Cache::project_root() and populates the
+    //! underlying Cache with discovered source
+    //! files, header files and their
+    //! corresponding projects.
     auto scan() -> void
     {
         this->scan_directory(this->cache.project_root());
@@ -114,7 +139,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto process_header_file(const std::filesystem::path &path, const std::string &projectName) -> void
+    auto process_header_file(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         HeaderFile *file = this->cache.exact_header_file(path);
 
@@ -126,7 +151,7 @@ private:
         this->process_cpp_file(file);
     }
 
-    [[nodiscard]] auto process_source_file(const std::filesystem::path &path, const std::string &projectName) -> void
+    auto process_source_file(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         SourceFile *file = this->cache.exact_source_file(path);
 

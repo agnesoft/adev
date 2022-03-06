@@ -26,32 +26,25 @@ auto write_cache(const std::filesystem::path &path, const CacheData &data) -> vo
 //! The Cache YAML schema:
 //!
 //! ```
-//! projects:
-//!   project1:
-//!     headers:
-//!       - path/to/header1
-//!       - path/to/header2
-//!     sources:
-//!       - path/to/source
-//!   project2:
-//!     headers:
-//!       - path/to/some/heeder
 //! headers:
 //!   path/to/header1:
+//!     project: my_project
+//!     timestamp: 123
 //!     tokens:
 //!       - #if defined(SOME_MACRO)
 //!       - #define MY_MACRO
 //!       - #endif
 //! sources:
 //!   path/to/source:
+//!     project: my_project
+//!     timestamp: 456
 //!     tokens:
 //! ```
+//!
+//! NOTE: When loaded from a cache file all
+//! non-existent files are skipped.
 export class Cache
 {
-    [[nodiscard]] auto insert_file(std::filesystem::path path, auto &files, const std::string &projectName)
-    {
-    }
-
 public:
     //! Constructs the `Cache` with `path`. If the
     //! `path` exists it will read the data from it

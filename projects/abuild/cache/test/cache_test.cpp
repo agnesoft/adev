@@ -83,4 +83,34 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         assert_(project->headers.size()).to_be(1U);
         expect(project->headers[0]).to_be(header);
     });
+
+    test("load missing files", [] {
+        const ::abuild::TestProject testProject{
+            "cache_test",
+            {{"main.cpp", ""},
+             {"source.cpp", ""},
+             {"my_header.hpp", ""},
+             {"header.hpp", ""}}};
+
+        {
+            ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+            cache.add_source_file(::abuild::File{testProject.root() / "main.cpp"}, "my_project");
+            cache.add_source_file(::abuild::File{testProject.root() / "source.cpp"}, "my_project");
+            cache.add_header_file(::abuild::File{testProject.root() / "my_header.hpp"}, "my_project");
+            cache.add_header_file(::abuild::File{testProject.root() / "header.hpp"}, "my_project");
+
+            assert_(cache.source_files().size()).to_be(2U);
+            assert_(cache.header_files().size()).to_be(2U);
+        }
+
+        std::filesystem::remove(testProject.root() / "source.cpp");
+        std::filesystem::remove(testProject.root() / "header.hpp");
+
+        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+
+        expect(cache.source_files().size()).to_be(1U);
+        expect(cache.source_files()[0]->path).to_be(testProject.root() / "main.cpp");
+        expect(cache.header_files().size()).to_be(1U);
+        expect(cache.header_files()[0]->path).to_be(testProject.root() / "my_header.hpp");
+    });
 });

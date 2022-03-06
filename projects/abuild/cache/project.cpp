@@ -13,7 +13,7 @@ export struct SourceFile;
 //! tracked by the `Cache`.
 export struct Project
 {
-    // Output type of the project.
+    //! Output type of the project.
     enum class Type
     {
         //! Static library producing *.lib or *.a.
@@ -37,7 +37,7 @@ export struct Project
     //! project.
     std::vector<SourceFile *> sources;
 
-    // Output type of the project.
+    //! Output type of the project.
     Type type = Type::StaticLibrary;
 };
 }

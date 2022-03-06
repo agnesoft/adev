@@ -27,7 +27,7 @@ private:
     {
         return File{
             .path = std::move(path),
-            .timestamp = it->second["timestamp"].as<std::size_t>(),
+            .timestamp = it->second["timestamp"].template as<std::size_t>(),
             .outdated = false};
     }
 

@@ -6,7 +6,7 @@ export import abuild.cpptokenizer;
 
 namespace abuild
 {
-export class Project;
+export struct Project;
 
 //! The `SourceFile` is a base struct for source
 //! files that are being tracked by the `Cache`.
