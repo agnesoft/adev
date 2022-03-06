@@ -25,13 +25,9 @@ public:
 private:
     [[nodiscard]] static auto read_file(std::filesystem::path path, const auto &it) -> File
     {
-        const std::size_t timestamp = it->second["timestamp"].as<std::size_t>();
-        const std::size_t size = it->second["size"].as<std::size_t>();
-
         return File{
             .path = std::move(path),
-            .timestamp = timestamp,
-            .size = size,
+            .timestamp = it->second["timestamp"].as<std::size_t>(),
             .outdated = false};
     }
 

@@ -15,9 +15,6 @@ export struct File
     //! Last modified time of the file.
     std::size_t timestamp = 0;
 
-    //! Size of the file.
-    std::size_t size = 0;
-
     //! Indicates whether the file is outdated
     //! since being cached.
     bool outdated = true;

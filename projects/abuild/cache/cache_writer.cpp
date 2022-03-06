@@ -50,7 +50,6 @@ private:
     {
         ::YAML::Node fileNode = CacheWriter::ensure_node(node[file->path.string()]);
         fileNode["timestamp"] = file->timestamp;
-        fileNode["size"] = file->size;
         fileNode["project"] = file->project->name;
         CacheWriter::save_tokens(file->tokens, fileNode["tokens"]);
     }

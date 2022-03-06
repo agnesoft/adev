@@ -45,7 +45,7 @@ private:
 
     [[nodiscard]] auto is_executable(Project *project) const -> bool
     {
-        return project->type != Project::Type::Executable;
+        return project->type == Project::Type::Executable;
     }
 
     [[nodiscard]] auto is_executable_filename(const std::filesystem::path &path) const -> bool
@@ -102,12 +102,10 @@ private:
     auto process_cpp_file(T *file) -> void
     {
         const std::size_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(file->path).time_since_epoch()).count();
-        const std::size_t size = std::filesystem::file_size(file->path);
 
-        if (file->timestamp != timestamp || file->size != size)
+        if (file->timestamp != timestamp)
         {
             file->timestamp = timestamp;
-            file->size = size;
             file->tokens = ::abuild::tokenize(ProjectScanner::read_file(file->path));
         }
         else
@@ -170,8 +168,7 @@ private:
         std::ifstream stream{path};
         stream.seekg(0, std::ios::end);
         const std::size_t size = stream.tellg();
-        std::string buffer;
-        buffer.reserve(size);
+        std::string buffer(size, {});
         stream.seekg(0, std::ios::beg);
         stream.read(buffer.data(), size);
         return buffer;

@@ -168,4 +168,88 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
         expect(project->headers[0]->path).to_be("project_scanner_test/mylib/include/mylib/some_other_header.hpp");
         expect(project->headers[1]->path).to_be("project_scanner_test/mylib/include/some_header.hpp");
     });
+
+    test("tokens", [] {
+        const ::abuild::TestProject testProject{
+            "project_scanner_test",
+            {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
+
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        ::abuild::ProjectScanner{cache}.scan();
+
+        ::abuild::Project *project = cache.project("mylib");
+
+        assert_(project).not_to_be(nullptr);
+        expect(project->name).to_be("mylib");
+        expect(project->type).to_be(::abuild::Project::Type::StaticLibrary);
+        assert_(project->sources.size()).to_be(1U);
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
+    });
+
+    test("tokens", [] {
+        const ::abuild::TestProject testProject{
+            "project_scanner_test",
+            {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
+
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        ::abuild::ProjectScanner{cache}.scan();
+
+        ::abuild::Project *project = cache.project("mylib");
+
+        assert_(project).not_to_be(nullptr);
+        assert_(project->sources.size()).to_be(1U);
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
+    });
+
+    test("skip cached unchanged file", [] {
+        const ::abuild::TestProject testProject{
+            "project_scanner_test",
+            {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
+
+        {
+            ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+            ::abuild::ProjectScanner{cache}.scan();
+
+            const auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
+            std::fstream{testProject.root() / "mylib/mylib.cpp", std::ios::in | std::ios::out | std::ios::trunc};
+            std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", {});
+            assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.cpp")).to_be(0);
+            const auto currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
+            assert_(currentTimestamp).to_be(timestamp);
+        }
+
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        ::abuild::ProjectScanner{cache}.scan();
+
+        ::abuild::Project *project = cache.project("mylib");
+
+        assert_(project).not_to_be(nullptr);
+        assert_(project->sources.size()).to_be(1U);
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
+    });
+
+    test("update cached file", [] {
+        const ::abuild::TestProject testProject{
+            "project_scanner_test",
+            {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
+
+        {
+            ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+            ::abuild::ProjectScanner{cache}.scan();
+
+            std::fstream{testProject.root() / "mylib/mylib.cpp", std::ios::in | std::ios::out | std::ios::trunc} << "export module mylib2;";
+            std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", std::filesystem::file_time_type{std::chrono::seconds{1}});
+            const auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
+            assert_(timestamp).to_be(1);
+        }
+
+        ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        ::abuild::ProjectScanner{cache}.scan();
+
+        ::abuild::Project *project = cache.project("mylib");
+
+        assert_(project).not_to_be(nullptr);
+        assert_(project->sources.size()).to_be(1U);
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib2", .exported = true}});
+    });
 });
