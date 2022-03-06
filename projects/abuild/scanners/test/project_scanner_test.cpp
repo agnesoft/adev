@@ -216,14 +216,14 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             ::abuild::ProjectScanner{cache}.scan();
 
             auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
-            std::fstream{testProject.root() / "mylib/mylib.cpp", std::ios::in | std::ios::out | std::ios::trunc};
+            std::fstream{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", {});
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.cpp")).to_be(0U);
             auto currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
             assert_(currentTimestamp).to_be(timestamp);
 
             timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
-            std::fstream{testProject.root() / "mylib/mylib.hpp", std::ios::in | std::ios::out | std::ios::trunc};
+            std::fstream{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp", {});
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.hpp")).to_be(0U);
             currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
@@ -253,12 +253,12 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
             ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
             ::abuild::ProjectScanner{cache}.scan();
 
-            std::fstream{testProject.root() / "mylib/mylib.cpp", std::ios::in | std::ios::out | std::ios::trunc} << "export module mylib2;";
+            std::fstream{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)} << "export module mylib2;";
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", std::filesystem::file_time_type{std::chrono::seconds{1}});
             auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
             assert_(timestamp).to_be(1);
 
-            std::fstream{testProject.root() / "mylib/mylib.hpp", std::ios::in | std::ios::out | std::ios::trunc} << "#include <string>";
+            std::fstream{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)} << "#include <string>";
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp", std::filesystem::file_time_type{std::chrono::seconds{1}});
             timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
             assert_(timestamp).to_be(1);

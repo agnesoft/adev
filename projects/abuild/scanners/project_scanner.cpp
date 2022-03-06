@@ -62,15 +62,8 @@ private:
         {
             return this->cache.project_root().filename().string();
         }
-        else
-        {
-            return projectName;
-        }
-    }
 
-    [[nodiscard]] auto is_executable(Project *project) const -> bool
-    {
-        return project->type == Project::Type::Executable;
+        return projectName;
     }
 
     [[nodiscard]] auto is_executable_filename(const std::filesystem::path &path) const -> bool
@@ -162,7 +155,7 @@ private:
 
         this->process_cpp_file(file);
 
-        if (!this->is_executable(file->project) && this->is_executable_filename(path))
+        if (file->project->type != Project::Type::Executable && this->is_executable_filename(path))
         {
             file->project->type = Project::Type::Executable;
         }
@@ -195,7 +188,7 @@ private:
         const std::size_t size = stream.tellg();
         std::string buffer(size, {});
         stream.seekg(0, std::ios::beg);
-        stream.read(buffer.data(), size);
+        stream.read(buffer.data(), static_cast<std::streamsize>(size));
         return buffer;
     }
 
@@ -218,7 +211,7 @@ private:
 
     auto scan_directory_entry(const std::filesystem::directory_entry &entry, const std::string &projectName) -> void
     {
-        const std::filesystem::path entryPath = entry.path();
+        const std::filesystem::path &entryPath = entry.path();
 
         if (std::filesystem::is_regular_file(entryPath))
         {

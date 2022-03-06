@@ -23,10 +23,10 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto read_file(std::filesystem::path path, const auto &it) -> File
+    [[nodiscard]] static auto read_file(const std::filesystem::path &path, const auto &it) -> File
     {
         return File{
-            .path = std::move(path),
+            .path = path,
             .timestamp = it->second["timestamp"].template as<std::size_t>(),
             .outdated = false};
     }
@@ -51,7 +51,7 @@ private:
 
             if (std::filesystem::exists(path))
             {
-                HeaderFile *header = this->cache.add_header_file(CacheReader::read_file(std::move(path), it), it->second["project"].as<std::string>());
+                HeaderFile *header = this->cache.add_header_file(CacheReader::read_file(path, it), it->second["project"].as<std::string>());
                 header->tokens = CacheReader::read_tokens(it->second["tokens"]);
             }
         }
@@ -65,7 +65,7 @@ private:
 
             if (std::filesystem::exists(path))
             {
-                SourceFile *source = this->cache.add_source_file(CacheReader::read_file(std::move(path), it), it->second["project"].as<std::string>());
+                SourceFile *source = this->cache.add_source_file(CacheReader::read_file(path, it), it->second["project"].as<std::string>());
                 source->tokens = CacheReader::read_tokens(it->second["tokens"]);
             }
         }
