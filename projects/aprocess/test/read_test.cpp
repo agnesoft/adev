@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{2000};
+static constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{2000};
 
 static const auto S = suite("read", [] { // NOLINT(cert-err58-cpp)
     test("no output", [] {
@@ -44,7 +44,7 @@ static const auto S = suite("read", [] { // NOLINT(cert-err58-cpp)
 
         output += process.read();
 
-        constexpr std::size_t largeSize = 1'000'000;
+        static constexpr std::size_t largeSize = 1'000'000;
         expect(output).to_be(std::string(largeSize, 'A'));
     });
 

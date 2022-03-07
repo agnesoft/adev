@@ -81,7 +81,7 @@ private:
             return 1;
         }
 
-        constexpr std::size_t base = 10;
+        static constexpr std::size_t base = 10;
         std::size_t digits = 0;
 
         while (number != 0)
@@ -227,7 +227,7 @@ private:
         return {};
     }
 
-    constexpr static std::size_t MAX_STRING_SIZE = 80;
-    constexpr static std::size_t HALF_MAX_STRING_SIZE = (Matcher::MAX_STRING_SIZE / 2);
+    static constexpr std::size_t MAX_STRING_SIZE = 80;
+    static constexpr std::size_t HALF_MAX_STRING_SIZE = (Matcher::MAX_STRING_SIZE / 2);
 };
 }

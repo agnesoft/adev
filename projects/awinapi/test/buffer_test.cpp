@@ -23,7 +23,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("constructed with size", [] {
-        constexpr DWORD bufferSize = 8U;
+        static constexpr DWORD bufferSize = 8U;
         ::awinapi::Buffer buffer{bufferSize};
         expect(buffer.tchar_size()).to_be(bufferSize);
         expect(buffer.byte_size()).to_be(bufferSize);
@@ -31,7 +31,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("move constructor", [] {
-        constexpr DWORD bufferSize = 8U;
+        static constexpr DWORD bufferSize = 8U;
         ::awinapi::Buffer buffer{bufferSize};
         ::awinapi::Buffer other{std::move(buffer)};
         expect(other.tchar_size()).to_be(bufferSize);
@@ -40,7 +40,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("move assignment", [] {
-        constexpr DWORD bufferSize = 8U;
+        static constexpr DWORD bufferSize = 8U;
         ::awinapi::Buffer buffer{bufferSize};
         ::awinapi::Buffer other;
         other = std::move(buffer);
@@ -50,7 +50,7 @@ static const auto S = suite("Buffer", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("move assignment to itself", [] {
-        constexpr DWORD bufferSize = 8U;
+        static constexpr DWORD bufferSize = 8U;
         ::awinapi::Buffer buffer{bufferSize};
         ::awinapi::Buffer &other = buffer;
         buffer = std::move(other);

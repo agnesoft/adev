@@ -23,7 +23,7 @@ static const auto S = suite("repeated", [] { // NOLINT(cert-err58-cpp)
         ::acommandline::CommandLine commandLine{stream};
 
         std::vector<double> values;
-        constexpr int argc = 7;
+        static constexpr int argc = 7;
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&values);
         expect(commandLine.parse(argc, std::array<const char *, argc>{"./app", "-v", "33.3", "--value=51.61234", "-v=9.999", "-v", "19.19"}.data())).to_be(true);

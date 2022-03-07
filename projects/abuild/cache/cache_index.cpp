@@ -40,12 +40,12 @@ class CacheIndex
     }
 
 public:
-    [[nodiscard]] auto exact_header_file(const std::filesystem::path &path) -> HeaderFile *
+    [[nodiscard]] auto exact_header_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         return CacheIndex::find_exact_file(path, this->headers);
     }
 
-    [[nodiscard]] auto exact_source_file(const std::filesystem::path &path) -> SourceFile *
+    [[nodiscard]] auto exact_source_file(const std::filesystem::path &path) const -> SourceFile *
     {
         return CacheIndex::find_exact_file(path, this->sources);
     }
@@ -67,17 +67,24 @@ public:
         this->sources.insert({file->path, file});
     }
 
-    [[nodiscard]] auto header_file(const std::filesystem::path &path) -> HeaderFile *
+    [[nodiscard]] auto header_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         return CacheIndex::find_file(path, this->headersByName);
     }
 
-    [[nodiscard]] auto project(const std::string &name) -> Project *
+    [[nodiscard]] auto project(const std::string &name) const -> Project *
     {
-        return this->projects.at(name);
+        auto it = this->projects.find(name);
+
+        if (it != this->projects.end())
+        {
+            return it->second;
+        }
+
+        return nullptr;
     }
 
-    [[nodiscard]] auto source_file(const std::filesystem::path &path) -> SourceFile *
+    [[nodiscard]] auto source_file(const std::filesystem::path &path) const -> SourceFile *
     {
         return CacheIndex::find_file(path, this->sourcesByName);
     }

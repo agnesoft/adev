@@ -20,10 +20,17 @@ public:
         ::YAML::Node root = ::YAML::LoadFile(path.string());
         this->read_sources(root["sources"]);
         this->read_headers(root["headers"]);
-        this->read_projects(root["projects"]);
     }
 
 private:
+    [[nodiscard]] static auto read_file(const std::filesystem::path &path, const auto &it) -> File
+    {
+        return File{
+            .path = path,
+            .timestamp = it->second["timestamp"].template as<std::size_t>(),
+            .outdated = false};
+    }
+
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
     {
         std::stringstream stream;
@@ -40,8 +47,13 @@ private:
     {
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            HeaderFile *header = this->cache.add_header_file(it->first.as<std::string>());
-            header->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            std::filesystem::path path = it->first.as<std::string>();
+
+            if (std::filesystem::exists(path))
+            {
+                HeaderFile *header = this->cache.add_header_file(CacheReader::read_file(path, it), it->second["project"].as<std::string>());
+                header->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            }
         }
     }
 
@@ -49,47 +61,13 @@ private:
     {
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            SourceFile *source = this->cache.add_source_file(it->first.as<std::string>());
-            source->tokens = CacheReader::read_tokens(it->second["tokens"]);
-        }
-    }
+            std::filesystem::path path = it->first.as<std::string>();
 
-    auto read_project_headers(const ::YAML::Node &node) -> std::vector<HeaderFile *>
-    {
-        std::vector<HeaderFile *> files;
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            files.push_back(this->cache.exact_header_file((*it).as<std::string>()));
-        }
-
-        return files;
-    }
-
-    auto read_project_sources(const ::YAML::Node &node) -> std::vector<SourceFile *>
-    {
-        std::vector<SourceFile *> files;
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            files.push_back(this->cache.exact_source_file((*it).as<std::string>()));
-        }
-
-        return files;
-    }
-
-    auto read_project(std::string name, const ::YAML::Node &node) -> void
-    {
-        Project *proj = this->cache.add_project(std::move(name));
-        proj->sources = this->read_project_sources(node["sources"]);
-        proj->headers = this->read_project_headers(node["headers"]);
-    }
-
-    auto read_projects(const ::YAML::Node &node) -> void
-    {
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            this->read_project(it->first.as<std::string>(), it->second);
+            if (std::filesystem::exists(path))
+            {
+                SourceFile *source = this->cache.add_source_file(CacheReader::read_file(path, it), it->second["project"].as<std::string>());
+                source->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            }
         }
     }
 

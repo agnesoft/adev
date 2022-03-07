@@ -14,7 +14,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         std::string option;
         std::int64_t another = 0;
         std::string positional;
-        constexpr int argc = 6;
+        static constexpr int argc = 6;
 
         commandLine.option().long_name("value").short_name('v').description("").bind_to(&value);
         commandLine.option().long_name("option").short_name('o').description("").bind_to(&option);
@@ -72,7 +72,7 @@ static const auto S = suite("CommandLine::parse()", [] { // NOLINT(cert-err58-cp
         bool flag = true;
         std::string output;
         std::vector<std::string> paths;
-        constexpr int argc = 6;
+        static constexpr int argc = 6;
 
         commandLine.option().long_name("param").short_name('p').description("").bind_to(&parameters);
         commandLine.option().long_name("flag").short_name('f').description("").bind_to(&flag);

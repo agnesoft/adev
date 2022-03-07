@@ -5,7 +5,7 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{5000};
+static constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{5000};
 
 static const auto S = suite("write", [] { // NOLINT(cert-err58-cpp)
     test("empty input", [] {
@@ -44,7 +44,7 @@ static const auto S = suite("write", [] { // NOLINT(cert-err58-cpp)
                 .arg("--echo-input")
                 .arg("--echo-input-timeout=5000");
 
-        constexpr std::size_t largeSize = 1'000'000;
+        static constexpr std::size_t largeSize = 1'000'000;
         std::string input(largeSize, 'A');
         std::string output;
 
@@ -83,7 +83,7 @@ static const auto S = suite("write", [] { // NOLINT(cert-err58-cpp)
                 .command("aprocesstestapp")
                 .arg("--wait=100");
 
-        constexpr std::size_t largeSize = 1'000'000;
+        static constexpr std::size_t largeSize = 1'000'000;
         std::string input(largeSize, 'A');
 
         expect([&] {

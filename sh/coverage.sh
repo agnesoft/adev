@@ -5,13 +5,13 @@ if is_windows; then
     uncoveredFunctions="4"
     uncoveredLines="35"
     uncoveredRegions="34"
-    uncoveredBranches="3"
+    uncoveredBranches="4"
 else
     ignoredSources="\/(test|test_utilities|yamlcpp)\/"
     uncoveredFunctions="4"
     uncoveredLines="32"
     uncoveredRegions="33"
-    uncoveredBranches="2"
+    uncoveredBranches="3"
 fi
 
 function coverage() {

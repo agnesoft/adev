@@ -23,7 +23,7 @@ public:
 private:
     [[nodiscard]] static auto count_name_width(const std::vector<OptionHelpLine> &helpLines) -> int
     {
-        constexpr std::size_t minimumWidth = 10;
+        static constexpr std::size_t minimumWidth = 10;
         std::size_t width = minimumWidth;
 
         for (const OptionHelpLine &line : helpLines)
@@ -39,7 +39,7 @@ private:
 
     [[nodiscard]] static auto count_attributes_width(const std::vector<OptionHelpLine> &helpLines) -> int
     {
-        constexpr std::size_t minimumWidth = 10;
+        static constexpr std::size_t minimumWidth = 10;
         std::size_t width = minimumWidth;
 
         for (const OptionHelpLine &line : helpLines)
@@ -68,7 +68,7 @@ private:
 
     auto print_help_header(const std::string &appName) -> void
     {
-        constexpr int width = 15;
+        static constexpr int width = 15;
 
         this->stream << "Usage:\n    " << appName << " [options]" << '\n';
         this->stream << "Syntax:\n";

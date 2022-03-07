@@ -7,7 +7,7 @@ using ::atest::suite;
 using ::atest::test;
 
 auto is_process_running(std::int64_t pid) -> bool;
-constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{20};
+static constexpr std::chrono::milliseconds DEFAULT_WAIT_TIMEOUT{20};
 
 static const auto S = suite("detached", [] { // NOLINT(cert-err58-cpp)
     test("detach on construction", [] {

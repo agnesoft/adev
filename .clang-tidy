@@ -31,7 +31,8 @@ readability-*,
 -cppcoreguidelines-avoid-magic-numbers,
 -cppcoreguidelines-c-copy-assignment-signature,
 -cppcoreguidelines-explicit-virtual-functions,
--cppcoreguidelines-non-private-member-variables-in-classes
+-cppcoreguidelines-non-private-member-variables-in-classes,
+-misc-no-recursion
 '
 WarningsAsErrors: '
 bugprone-*,
@@ -66,7 +67,8 @@ readability-*,
 -cppcoreguidelines-avoid-magic-numbers,
 -cppcoreguidelines-c-copy-assignment-signature,
 -cppcoreguidelines-explicit-virtual-functions,
--cppcoreguidelines-non-private-member-variables-in-classes
+-cppcoreguidelines-non-private-member-variables-in-classes,
+-misc-no-recursion
 '
 
 FormatStyle: file
