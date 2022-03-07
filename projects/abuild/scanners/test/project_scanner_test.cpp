@@ -85,9 +85,20 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
         expect(project->name).to_be("myapp");
         expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(3U);
-        expect(project->sources[0]->path).to_be("project_scanner_test/myapp/source.cpp");
-        expect(project->sources[1]->path).to_be("project_scanner_test/myapp/src/main.cpp");
-        expect(project->sources[2]->path).to_be("project_scanner_test/myapp/src/src/source.cpp");
+
+        std::vector<std::filesystem::path> sourcePaths;
+        sourcePaths.reserve(3);
+
+        for (const auto &source : project->sources)
+        {
+            sourcePaths.push_back(source->path);
+        }
+
+        std::sort(sourcePaths.begin(), sourcePaths.end());
+
+        expect(sourcePaths[0]).to_be("project_scanner_test/myapp/source.cpp");
+        expect(sourcePaths[1]).to_be("project_scanner_test/myapp/src/main.cpp");
+        expect(sourcePaths[2]).to_be("project_scanner_test/myapp/src/src/source.cpp");
     });
 
     test("sub project", [] {
@@ -169,11 +180,22 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
         expect(project->name).to_be("mylib");
         expect(project->type).to_be(::abuild::Project::Type::StaticLibrary);
         assert_(project->headers.size()).to_be(2U);
-        expect(project->headers[0]->path).to_be("project_scanner_test/mylib/include/mylib/some_other_header.hpp");
-        expect(project->headers[1]->path).to_be("project_scanner_test/mylib/include/some_header.hpp");
+
+        std::vector<std::filesystem::path> headerPaths;
+        headerPaths.reserve(2U);
+
+        for (const auto &header : project->headers)
+        {
+            headerPaths.push_back(header->path);
+        }
+
+        std::sort(headerPaths.begin(), headerPaths.end());
+
+        expect(headerPaths[0]).to_be("project_scanner_test/mylib/include/mylib/some_other_header.hpp");
+        expect(headerPaths[1]).to_be("project_scanner_test/mylib/include/some_header.hpp");
     });
 
-    test("tokens", [] {
+    test("tokens in source", [] {
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
@@ -190,10 +212,10 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
         expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
     });
 
-    test("tokens", [] {
+    test("tokens in header", [] {
         const ::abuild::TestProject testProject{
             "project_scanner_test",
-            {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
+            {{"mylib/mylib.hpp", "#include <vector>"}}};
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -201,8 +223,8 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
         ::abuild::Project *project = cache.project("mylib");
 
         assert_(project).not_to_be(nullptr);
-        assert_(project->sources.size()).to_be(1U);
-        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
+        assert_(project->headers.size()).to_be(1U);
+        expect(project->headers[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::IncludeExternalToken{.name = "vector"}});
     });
 
     test("skip cached unchanged file", [] {
@@ -217,14 +239,14 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
 
             auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
             std::fstream{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
-            std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", {});
-            assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.cpp")).to_be(0U);
+            std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", std::filesystem::file_time_type{std::chrono::seconds{timestamp}});
             auto currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
+            assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.cpp")).to_be(0U);
             assert_(currentTimestamp).to_be(timestamp);
 
             timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
             std::fstream{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
-            std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp", {});
+            std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp", std::filesystem::file_time_type{std::chrono::seconds{timestamp}});
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.hpp")).to_be(0U);
             currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
             assert_(currentTimestamp).to_be(timestamp);

@@ -11,7 +11,7 @@ else
     uncoveredFunctions="4"
     uncoveredLines="32"
     uncoveredRegions="33"
-    uncoveredBranches="2"
+    uncoveredBranches="3"
 fi
 
 function coverage() {
