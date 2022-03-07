@@ -30,8 +30,7 @@ function get_llvm_sources() {
 function build() {
     cd ${home}/llvm/build_msan/
 
-    echo "fun:*create_file_status*
-fun:*__last_write_time*" > ignorelist.txt
+    echo "src:/adev/llvm/libcxx/src/filesystem/operations.cpp" > ignorelist.txt
     local dir=$(pwd)
 
     cmake -G Ninja \
