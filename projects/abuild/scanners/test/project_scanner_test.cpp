@@ -25,7 +25,7 @@ auto operator<<(std::ostream &stream, const ::abuild::Project::Type &type) -> st
 }
 }
 
-static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp)
+static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cppcoreguidelines-interfaces-global-init)
     test("single file project", [] {
         const ::abuild::TestProject testProject{
             "project_scanner_test",
