@@ -30,7 +30,7 @@ public:
     auto push(std::function<void()> callable) -> void
     {
         std::lock_guard<std::mutex> lock{this->mutex};
-        this->queue.push(callable);
+        this->queue.push(std::move(callable));
     }
 
 private:

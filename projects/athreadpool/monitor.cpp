@@ -31,7 +31,7 @@ public:
 private:
     auto start() -> void
     {
-        this->monitor = std::jthread{[&](std::stop_token token) {
+        this->monitor = std::jthread{[&](const std::stop_token &token) {
             while (!token.stop_requested())
             {
                 if (this->jobs.assign(this->queue.front()))

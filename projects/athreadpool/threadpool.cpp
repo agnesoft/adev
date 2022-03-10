@@ -83,7 +83,7 @@ private:
             std::this_thread::sleep_for(std::chrono::milliseconds{1});
         }
 
-        this->timeout();
+        ThreadPool::timeout();
     }
 
     auto wait_for_queue(const auto end) -> void
@@ -98,10 +98,10 @@ private:
             std::this_thread::sleep_for(std::chrono::milliseconds{1});
         }
 
-        this->timeout();
+        ThreadPool::timeout();
     }
 
-    auto timeout() -> void
+    static auto timeout() -> void
     {
         throw std::runtime_error{"ThreadPool::wait() timed out"};
     }

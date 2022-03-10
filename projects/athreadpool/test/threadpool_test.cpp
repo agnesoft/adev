@@ -14,34 +14,38 @@ static const auto S = suite("ThreadPool", [] { // NOLINT(cert-err58-cpp)
             result = 1;
         });
 
-        pool.wait(std::chrono::milliseconds{100});
+        static constexpr std::chrono::milliseconds timeout{100};
+        pool.wait(timeout);
 
         expect(result).to_be(1);
     });
 
     test("multiple jobs", [] {
+        static constexpr int jobs = 100;
         std::atomic_int result = 0;
 
         ::athreadpool::ThreadPool pool{2};
 
-        for (std::size_t i = 0; i < 100; ++i)
+        for (int i = 0; i < jobs; ++i)
         {
             pool.run([&] {
                 ++result;
             });
         }
 
-        pool.wait(std::chrono::milliseconds{100});
+        static constexpr std::chrono::milliseconds timeout{100};
+        pool.wait(timeout);
 
-        expect(result.load()).to_be(100);
+        expect(result.load()).to_be(jobs);
     });
 
     test("wait timeout on queue", [] {
+        static constexpr int jobs = 10;
         std::atomic_int result = 0;
 
         ::athreadpool::ThreadPool pool{2};
 
-        for (std::size_t i = 0; i < 10; ++i)
+        for (int i = 0; i < jobs; ++i)
         {
             pool.run([&] {
                 ++result;
@@ -58,23 +62,28 @@ static const auto S = suite("ThreadPool", [] { // NOLINT(cert-err58-cpp)
 
         pool.run([&] {
             ++result;
-            std::this_thread::sleep_for(std::chrono::milliseconds{10});
+
+            static constexpr std::chrono::milliseconds sleepTime{10};
+            std::this_thread::sleep_for(sleepTime);
         });
 
         expect([&] { pool.wait(std::chrono::milliseconds{1}); }).to_throw<std::runtime_error>("ThreadPool::wait() timed out");
     });
 
     test("destroyed with pending jobs", [] {
+        static constexpr int jobs = 10;
         std::atomic_int result = 0;
 
         {
             ::athreadpool::ThreadPool pool{2};
 
-            for (std::size_t i = 0; i < 10; ++i)
+            for (int i = 0; i < jobs; ++i)
             {
                 pool.run([&] {
                     ++result;
-                    std::this_thread::sleep_for(std::chrono::milliseconds{10});
+
+                    static constexpr std::chrono::milliseconds sleepTime{10};
+                    std::this_thread::sleep_for(sleepTime);
                 });
             }
         }
