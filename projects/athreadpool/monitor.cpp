@@ -16,6 +16,14 @@ public:
     {
     }
 
+    Monitor(const Monitor &other) = delete;
+    Monitor(Monitor &&other) noexcept = delete;
+
+    ~Monitor()
+    {
+        this->running.store(false);
+    }
+
     auto launch() -> void
     {
         bool previous = false;
@@ -28,11 +36,14 @@ public:
         this->start();
     }
 
+    auto operator=(const Monitor &other) -> Monitor & = delete;
+    auto operator=(Monitor &&other) noexcept -> Monitor & = delete;
+
 private:
     auto start() -> void
     {
-        this->monitor = std::jthread{[&](const std::stop_token &token) {
-            while (!token.stop_requested())
+        this->monitor = std::async([&]() {
+            while (this->running.load())
             {
                 if (this->jobs.assign(this->queue.front()))
                 {
@@ -40,17 +51,16 @@ private:
 
                     if (this->queue.empty())
                     {
-                        running.store(false);
-                        return;
+                        this->running.store(false);
                     }
                 }
             }
-        }};
+        });
     }
 
     Jobs &jobs;
     Queue &queue;
-    std::jthread monitor;
+    std::future<void> monitor;
     std::atomic_bool running;
 };
 }
