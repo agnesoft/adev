@@ -40,7 +40,7 @@ static const auto S = suite("ThreadPool", [] { // NOLINT(cert-err58-cpp)
     });
 
     test("wait timeout on queue", [] {
-        static constexpr int jobs = 100;
+        static constexpr int jobs = 10;
         std::atomic_int result = 0;
 
         ::athreadpool::ThreadPool pool{2};
@@ -49,6 +49,9 @@ static const auto S = suite("ThreadPool", [] { // NOLINT(cert-err58-cpp)
         {
             pool.run([&] {
                 ++result;
+
+                static constexpr std::chrono::milliseconds sleepTime{1};
+                std::this_thread::sleep_for(sleepTime);
             });
         }
 
