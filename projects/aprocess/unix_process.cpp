@@ -314,7 +314,7 @@ private:
         const int e = errno;
         ::write(this->monitorPipe.write_end(), &e, sizeof(e));
         std::mutex mutex;
-        const std::lock_guard<std::mutex> lock(mutex);
+        const std::lock_guard lock{mutex};
         std::exit(e); // NOLINT(concurrency-mt-unsafe)
     }
 
