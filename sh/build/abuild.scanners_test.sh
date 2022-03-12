@@ -12,6 +12,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/abuild/cache \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
            -fprebuilt-module-path=${buildRoot}/abuild/test_utilities \
+           -fprebuilt-module-path=${buildRoot}/athreadpool \
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${binDir}/abuild.scanners_test${executableExtension}" \
            "${projectDir}/main.cpp" \
@@ -49,6 +50,7 @@ cl.exe ${msvcCompilerFlags} ^
        /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" ^
        /ifcSearchDir \"${buildRoot}/abuild/scanners\" ^
        /ifcSearchDir \"${buildRoot}/abuild/test_utilities\" ^
+       /ifcSearchDir \"${buildRoot}/athreadpool\" ^
        /ifcSearchDir \"${buildRoot}/yamlcpp\" ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.scanners_test.exe\" ^
@@ -61,7 +63,8 @@ cl.exe ${msvcCompilerFlags} ^
        \"${buildRoot}/abuild/scanners/abuild.scanners.lib\" ^
        \"${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib\" ^
        \"${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib\" ^
-       \"${buildRoot}/yamlcpp/yamlcpp.lib\" || exit 1
+       \"${buildRoot}/yamlcpp/yamlcpp.lib\" ^
+       \"${buildRoot}/athreadpool/athreadpool.lib\" || exit 1
 "
 
 sh/build/abuild.scanners.sh "${toolchain}"

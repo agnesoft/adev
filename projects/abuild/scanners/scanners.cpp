@@ -4,6 +4,7 @@ export module abuild.scanners;
 export import : project_scanner;
 #else
 export import abuild.cache;
+import athreadpool;
 // clang-format off
 #include "project_scanner.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on

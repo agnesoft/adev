@@ -1,6 +1,7 @@
 #ifndef __clang__
 export module abuild.scanners : project_scanner;
 export import abuild.cache;
+import athreadpool;
 #endif
 
 namespace abuild
@@ -40,10 +41,36 @@ public:
     //! corresponding projects.
     auto scan() -> void
     {
+        static constexpr std::chrono::seconds timeout{300};
         this->scan_directory(this->cache.project_root());
+        this->threadPool.wait(timeout);
     }
 
 private:
+    [[nodiscard]] auto header_file(const std::filesystem::path &path, const std::string &projectName) -> HeaderFile *
+    {
+        HeaderFile *file = this->cache.exact_header_file(path);
+
+        if (file == nullptr)
+        {
+            file = this->cache.add_header_file(File{path}, projectName);
+        }
+
+        return file;
+    }
+
+    [[nodiscard]] auto source_file(const std::filesystem::path &path, const std::string &projectName) -> SourceFile *
+    {
+        SourceFile *file = this->cache.exact_source_file(path);
+
+        if (file == nullptr)
+        {
+            file = this->cache.add_source_file(File{path}, projectName);
+        }
+
+        return file;
+    }
+
     auto append_project_name(std::string &projectName, const std::string &directoryName) const -> void
     {
         if (projectName.empty())
@@ -110,14 +137,14 @@ private:
         {
             this->process_source_file(path, projectName);
         }
-        else if (cache.settings().cppHeaderExtensions.contains(path.extension().string()))
+        else if (this->cache.settings().cppHeaderExtensions.contains(path.extension().string()))
         {
             this->process_header_file(path, projectName);
         }
     }
 
     template<typename T>
-    auto process_cpp_file(T *file) -> void
+    static auto process_cpp_file(T *file) -> void
     {
         const std::size_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(file->path).time_since_epoch()).count();
 
@@ -134,26 +161,15 @@ private:
 
     auto process_header_file(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        HeaderFile *file = this->cache.exact_header_file(path);
-
-        if (file == nullptr)
-        {
-            file = this->cache.add_header_file(File{path}, projectName);
-        }
-
-        this->process_cpp_file(file);
+        HeaderFile *file = this->header_file(path, projectName);
+        this->threadPool.run([file] { ProjectScanner::process_cpp_file(file); });
     }
 
     auto process_source_file(const std::filesystem::path &path, const std::string &projectName) -> void
     {
-        SourceFile *file = this->cache.exact_source_file(path);
+        SourceFile *file = this->source_file(path, projectName);
 
-        if (file == nullptr)
-        {
-            file = this->cache.add_source_file(File{path}, projectName);
-        }
-
-        this->process_cpp_file(file);
+        this->threadPool.run([file] { ProjectScanner::process_cpp_file(file); });
 
         if (file->project->type != Project::Type::Executable && this->is_executable_filename(path))
         {
@@ -201,7 +217,7 @@ private:
             this->scan_directory_entry(entry, projectName);
         }
 
-        Project *project = cache.project(projectName);
+        Project *project = this->cache.project(projectName);
 
         if (project != nullptr && this->is_test_directory(path))
         {
@@ -224,5 +240,6 @@ private:
     }
 
     Cache &cache;
+    ::athreadpool::ThreadPool threadPool;
 };
 }

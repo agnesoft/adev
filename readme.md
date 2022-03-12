@@ -50,7 +50,7 @@ The binaries will be output to `build/<toolchain>`.
 | [aprocess](projects/aprocess/readme.md)         | [projects/aprocess/](/projects/aprocess/)         | c++ process management library                                                                           |
 | [astl](projects/astl/readme.md)                 | [projects/astl/](/projects/astl/)                 | c++ standard template library module wrapper                                                             |
 | [atest](projects/atest/readme.md)               | [projects/atest/](/projects/atest/)               | c++ testing framework                                                                                    |
-| [athreadpool](projects/atest/athreadpool.md)    | [projects/athreadpool/](/projects/athreadpool/)   | c++ thread pool                                                                                          |
+| [athreadpool](projects/atest/readme.md)         | [projects/athreadpool/](/projects/athreadpool/)   | c++ thread pool                                                                                          |
 | [awinapi](projects/awinapi/readme.md)           | [projects/awinapi/](/projects/awinapi/)           | c++ winapi module wrapper                                                                                |
 | [yamlcpp](projects/yamlcpp/readme.md)           | [projects/yamlcpp/](/projects/yamlcpp/)           | c++ [yaml-cpp](https://github.com/jbeder/yaml-cpp/) module wrapper, [LICENSE](/projects/yamlcpp/license) |
 
