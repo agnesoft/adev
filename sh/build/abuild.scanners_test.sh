@@ -12,6 +12,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/abuild/cache \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
            -fprebuilt-module-path=${buildRoot}/abuild/test_utilities \
+           -fprebuilt-module-path=${buildRoot}/athreadpool \
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${binDir}/abuild.scanners_test${executableExtension}" \
            "${projectDir}/main.cpp" \
