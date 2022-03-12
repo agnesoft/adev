@@ -9,6 +9,7 @@ function build_clang() {
            -Xclang -emit-module-interface \
            -fprebuilt-module-path=${buildRoot}/abuild/cache \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -fprebuilt-module-path=${buildRoot}/athreadpool \
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${buildDir}/abuild.scanners.pcm" \
            -c "${projectDir}/scanners.cpp"
@@ -16,6 +17,7 @@ function build_clang() {
     $clang $clangCompilerFlags \
            -fprebuilt-module-path=${buildRoot}/abuild/cache \
            -fprebuilt-module-path=${buildRoot}/abuild/cpptokenizer \
+           -fprebuilt-module-path=${buildRoot}/athreadpool \
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${buildDir}/abuild.scanners.obj" \
            -c "${projectDir}/scanners.cpp"
@@ -32,13 +34,14 @@ function build_gcc() {
 }
 
 buildMSVC="
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcSearchDir \"${buildRoot}/abuild/cache\" /ifcOutput\"${buildDir}/abuild.scanners-project_scanner.ifc\" /Fo\"${buildDir}/abuild.scanners-project_scanner.obj\" /c /TP \"${projectDir}/project_scanner.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcSearchDir \"${buildRoot}/abuild/cache\" /ifcSearchDir \"${buildRoot}/athreadpool\" /ifcOutput\"${buildDir}/abuild.scanners-project_scanner.ifc\" /Fo\"${buildDir}/abuild.scanners-project_scanner.obj\" /c /TP \"${projectDir}/project_scanner.cpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags} ^
        /interface ^
        /ifcSearchDir \"${buildDir}\" ^
        /ifcSearchDir \"${buildRoot}/abuild/cache\" ^
        /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" ^
+       /ifcSearchDir \"${buildRoot}/athreadpool\" ^
        /ifcSearchDir \"${buildRoot}/yamlcpp\" ^
        /ifcOutput\"${buildDir}/abuild.scanners.ifc\" ^
        /Fo\"${buildDir}/abuild.scanners.obj\" ^
@@ -51,4 +54,5 @@ lib.exe /NOLOGO ^
 "
 
 sh/build/abuild.cache.sh "${toolchain}"
+sh/build/athreadpool.sh "${toolchain}"
 build
