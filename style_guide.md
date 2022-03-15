@@ -71,7 +71,6 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   private headers should be placed with the source files
 -   every project should have a `test/` directory with a test application
 -   projects can have sub-projects (they should be rare) placed directly in the parent project's directory (e.g. `projects/abuild/preprocessor`)
--   every project must have a [design.md](#design) (and should start with it)
 -   every project must have a [readme.md](#readme)
 
 ### Project Readme
@@ -130,9 +129,10 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 -   use `[[...]]`
 -   use `((...))` and `$((...))` for mathematical constructs
 -   use `==` instead of `=` for equality
+-   prefer using `if [[ command ]]; then ... fi` instead of checking value of `$?`
 -   do not use `[...]`
 -   do not use `test ...`
--   do not use `[ $a -gt $b ]` for mathemitical constructs
+-   do not use `[ $a -gt $b ]` for mathematical constructs
 
 ### Command Substitution
 
@@ -148,6 +148,7 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 
 -   names according to [generic rules](#file-names)
 -   use `*.sh`
+-   use shebang
 -   make shell scripts executable unless they are libraries/imports only
 
 ### Functions
@@ -302,7 +303,7 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 ### Exceptions
 
 -   use exceptions for error handling
--   always inherit from `std::exception`
+-   use or inherit from `std::exception` or its descendants (e.g. `std::runtime_error`, `std::logic_error` etc.)
 
 ### Formatting
 
@@ -335,7 +336,7 @@ GitHub reformats issue titles, PR titles and commit messages (especially when th
 
 ### Headers
 
--   do not use or create header files, use [imports](#imports) and [modules](#modules) instead
+-   avoid using header files, use [imports](#imports) and [modules](#modules) instead
 
 If you must create a header file:
 
@@ -353,7 +354,7 @@ If you must create a header file:
 
 ### Includes
 
--   do not use `#include`, use [import](#imports) instead
+-   avoid using `#include`, use [import](#imports) instead
 
 If you must use an include:
 
@@ -379,7 +380,7 @@ If you must use an include:
 -   use `int` only in internal code
 -   prefer signed integer types
 -   avoid unsigned integer types in loops
--   avoid comparing signed and unsigned integers and avoid casting in such cases, use `cmp_*` family of STL functions instead
+-   avoid comparing signed and unsigned integers and avoid casting in such cases, use `std::cmp_*` family of STL functions instead
 
 ### Lambdas
 
@@ -403,7 +404,7 @@ If you must use an include:
 
 -   declare variables close to their first use
 -   declare variables with narrowest scope possible
--   declare varitables [const](#const) or [constexpr](#constexpr) correct
+-   declare variables [const](#const) or [constexpr](#constexpr) correct
 -   consider using conditional and loop initializers for variables bound only to that scope (e.g. `if (int i = foo(); i == 1) {}`, `while (int i = 0; i < 10) { ++i; }`
 
 ### Member Variables
@@ -460,7 +461,7 @@ If you must use an include:
 
 **NOTE**
 
-Use `mixedCase` for member variables as well and use `this->` to disambiguate them from other variables.
+Use `mixedCase` for member variables as well and use `this->` to disambiguate them from local variables.
 
 ---
 
