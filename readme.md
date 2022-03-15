@@ -72,7 +72,7 @@ The binaries will be output to `build/<toolchain>`.
 
 Please refer to [contribution.md](contribution.md) and [style_guide.md](style_guide.md) for general information.
 
-To setup the development environment use `./adev.sh install <package>` actions or install the [tools](#tools) manually.
+For development you can use the [docker image](https://github.com/agnesoft/adev/pkgs/container/adev) (preferred) or setup your environment with `./adev.sh install <package>` actions or install the [tools](#tools) manually.
 
 Workflow summary:
 
