@@ -5,6 +5,7 @@ export import : toolchain;
 export import : executable;
 export import : dynamic_library;
 export import : static_library;
+export import : translation_unit;
 #endif
 
 namespace abuild
@@ -15,6 +16,8 @@ namespace abuild
 //! linker flags.
 export struct Configuration
 {
+    std::string name;
+
     //! Pointer to the `Toolchain` that defines
     //! the base ABI.
     const Toolchain *toolchain = nullptr;

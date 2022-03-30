@@ -1,7 +1,6 @@
 #ifndef __clang__
 export module abuild.cache : translation_unit;
 export import : source_file;
-export import : header;
 export import : header_unit;
 export import : module_;
 #endif

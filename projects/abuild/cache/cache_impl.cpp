@@ -125,7 +125,7 @@ public:
     //! configuration.
     [[nodiscard]] auto configuration(const std::string &name) const noexcept -> Configuration *
     {
-        for (auto config : this->data.configurations)
+        for (const auto &config : this->data.configurations)
         {
             if (config->name == name)
             {
@@ -202,7 +202,7 @@ public:
     //! `nullptr` if there is no such toolchain.
     [[nodiscard]] auto toolchain(const std::string &name) -> Toolchain *
     {
-        for (auto t : this->data.toolchains)
+        for (const auto &t : this->data.toolchains)
         {
             if (t->name == name)
             {
