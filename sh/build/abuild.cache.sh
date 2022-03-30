@@ -93,7 +93,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cache-source_file.obj\" ^
         \"${buildDir}/abuild.cache-header_file.obj\" ^
         \"${buildDir}/abuild.cache-executable.obj\" ^
-        \"${buildDir}/abuild.cache-dynamic_libary.obj\" ^
+        \"${buildDir}/abuild.cache-dynamic_library.obj\" ^
         \"${buildDir}/abuild.cache-static_library.obj\" ^
         \"${buildDir}/abuild.cache-visibility.obj\" ^
         \"${buildDir}/abuild.cache-module_partition.obj\" ^
