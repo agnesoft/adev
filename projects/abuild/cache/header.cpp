@@ -1,5 +1,6 @@
 #ifndef __clang__
 export module abuild.cache : header;
+export import astl;
 #endif
 
 namespace abuild

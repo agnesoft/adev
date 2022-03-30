@@ -1,13 +1,13 @@
 #ifndef __clang__
 export module abuild.cache : module_partition;
 export import : file;
-export improt : visibility;
+export import : visibility;
 #endif
 
 namespace abuild
 {
 export struct Module;
-export class TranslationUnit;
+export struct TranslationUnit;
 
 export struct ModulePartition
 {

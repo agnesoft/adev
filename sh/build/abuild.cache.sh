@@ -59,7 +59,7 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-static_library.ifc\"   /Fo\"${buildDir}/abuild.cache-static_library.obj\"   /c /TP \"${projectDir}/static_library.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-visibility.ifc\"       /Fo\"${buildDir}/abuild.cache-visibility.obj\"       /c /TP \"${projectDir}/visibility.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-module_partition.ifc\" /Fo\"${buildDir}/abuild.cache-module_partition.obj\" /c /TP \"${projectDir}/module_partition.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-module.ifc\"           /Fo\"${buildDir}/abuild.cache-module.obj\"           /c /TP \"${projectDir}/module.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-module_.ifc\"          /Fo\"${buildDir}/abuild.cache-module_.obj\"          /c /TP \"${projectDir}/module.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header.ifc\"           /Fo\"${buildDir}/abuild.cache-header.obj\"           /c /TP \"${projectDir}/header.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header_unit.ifc\"      /Fo\"${buildDir}/abuild.cache-header_unit.obj\"      /c /TP \"${projectDir}/header_unit.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-settings.ifc\"         /Fo\"${buildDir}/abuild.cache-settings.obj\"         /c /TP \"${projectDir}/settings.cpp\" || exit 1
@@ -97,7 +97,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cache-static_library.obj\" ^
         \"${buildDir}/abuild.cache-visibility.obj\" ^
         \"${buildDir}/abuild.cache-module_partition.obj\" ^
-        \"${buildDir}/abuild.cache-module.obj\" ^
+        \"${buildDir}/abuild.cache-module_.obj\" ^
         \"${buildDir}/abuild.cache-header.obj\" ^
         \"${buildDir}/abuild.cache-header_unit.obj\" ^
         \"${buildDir}/abuild.cache-settings.obj\" ^

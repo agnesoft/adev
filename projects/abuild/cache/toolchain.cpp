@@ -1,6 +1,6 @@
 #ifndef __clang__
 export module abuild.cache : toolchain;
-export import abi;
+export import : abi;
 #endif
 
 namespace abuild
