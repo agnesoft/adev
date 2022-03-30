@@ -78,6 +78,13 @@ public:
         }
     }
 
+    //! Adds new configuration `name` to the Cache
+    //! and returns a pointer to it.
+    auto add_configuration(std::string name) -> Configuration *
+    {
+        return this->data.configurations.emplace_back(std::make_unique<Configuration>(Configuration{.name = std::move(name)})).get();
+    }
+
     //! Adds header `file` to the Cache and
     //! associates it with `projectName` project.
     //! If the project does not exist it is
@@ -86,7 +93,7 @@ public:
     auto add_header_file(File headerFile, const std::string &projectName) -> HeaderFile *
     {
         Project *proj = this->get_project(projectName);
-        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>(HeaderFile{File{std::move(headerFile)}, proj, {}})).get();
+        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>(HeaderFile{CppFile{File{std::move(headerFile)}, proj, {}}})).get();
         proj->headers.push_back(file);
         this->index.insert(file);
         return file;
@@ -100,10 +107,33 @@ public:
     auto add_source_file(File sourceFile, const std::string &projectName) -> SourceFile *
     {
         Project *proj = this->get_project(projectName);
-        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>(SourceFile{File{std::move(sourceFile)}, proj, {}})).get();
+        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>(SourceFile{CppFile{File{std::move(sourceFile)}, proj, {}}})).get();
         proj->sources.push_back(file);
         this->index.insert(file);
         return file;
+    }
+
+    //! Adds a new toolchain with `name` to the
+    //! Cache and returns a pointer to it.
+    auto add_toolchain(std::string name) -> Toolchain *
+    {
+        return this->data.toolchains.emplace_back(std::make_unique<Toolchain>(Toolchain{.name = std::move(name)})).get();
+    }
+
+    //! Returns configuration named `name` or
+    //! `nullptr` if there is no such
+    //! configuration.
+    [[nodiscard]] auto configuration(const std::string &name) const noexcept -> Configuration *
+    {
+        for (auto config : this->data.configurations)
+        {
+            if (config->name == name)
+            {
+                return config.get();
+            }
+        }
+
+        return nullptr;
     }
 
     //! Finds the header with the exact `path` and
@@ -166,6 +196,27 @@ public:
     [[nodiscard]] auto settings() const noexcept -> const Settings &
     {
         return this->data.settings;
+    }
+
+    //! Returns the toolchain with `name` or
+    //! `nullptr` if there is no such toolchain.
+    [[nodiscard]] auto toolchain(const std::string &name) -> Toolchain *
+    {
+        for (auto t : this->data.toolchains)
+        {
+            if (t->name == name)
+            {
+                return t.get();
+            }
+        }
+
+        return nullptr;
+    }
+
+    //! Returns the toolchains in the cache.
+    [[nodiscard]] auto toolchains() const noexcept -> const std::vector<std::unique_ptr<Toolchain>> &
+    {
+        return this->data.toolchains;
     }
 
     //! Finds the first source matching the `path`
