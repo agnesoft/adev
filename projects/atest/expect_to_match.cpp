@@ -1,7 +1,7 @@
 #ifndef __clang__
-export module atest : expect_to_match;
-import : expect_base;
-import : stringify;
+export module atest:expect_to_match;
+import :expect_base;
+import :stringify;
 #endif
 
 namespace atest

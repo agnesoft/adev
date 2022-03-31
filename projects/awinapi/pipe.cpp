@@ -1,7 +1,7 @@
 #ifndef __clang__
-export module awinapi : pipe;
-export import : handle;
-export import : last_error_message;
+export module awinapi:pipe;
+export import :handle;
+export import :last_error_message;
 #endif
 
 #ifdef _WIN32

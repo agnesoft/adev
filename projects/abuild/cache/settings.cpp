@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.cache : settings;
+export module abuild.cache:settings;
 export import astl;
 #endif
 

@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module atest : test;
-import : failure;
+export module atest:test;
+import :failure;
 #endif
 
 namespace atest
@@ -9,7 +9,7 @@ namespace atest
 export struct Test
 {
     std::string name;
-    auto (*body)() -> void = nullptr;
+    auto(*body)() -> void = nullptr;
     std::source_location sourceLocation;
     std::size_t expectations = 0;
     std::size_t failedExpectations = 0;

@@ -1,7 +1,7 @@
 export module abuild.cache;
 
 #ifndef __clang__
-export import : cache_impl;
+export import :cache_impl;
 #else
 export import abuild.cpptokenizer;
 import yamlcpp;

@@ -1,5 +1,5 @@
 #ifndef __clang__
-module atest : failure;
+module atest:failure;
 import astl;
 #endif
 

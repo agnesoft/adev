@@ -1,5 +1,5 @@
 #ifndef __clang__
-module atest : stats;
+module atest:stats;
 import astl;
 #endif
 

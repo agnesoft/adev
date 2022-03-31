@@ -1,6 +1,6 @@
 #ifndef __clang__
-module abuild.cpptokenizer : tokenizer;
-import : preprocessor_tokenizer;
+module abuild.cpptokenizer:tokenizer;
+import :preprocessor_tokenizer;
 #endif
 
 namespace abuild
@@ -59,7 +59,7 @@ private:
         {
             this->skip_one();
             this->push_token(T{
-                .name = std::string(&name[0], name.size()),
+                .name = std::string(name.data(), name.size()),
                 .exported = exported});
         }
         else
@@ -79,7 +79,8 @@ private:
         {
             this->push_token(T{
                 .name = std::string{name.data(), name.size()},
-                .exported = exported});
+                .exported = exported
+            });
         }
     }
 
@@ -187,7 +188,8 @@ private:
                 this->skip_one();
                 this->push_token(ModuleToken{
                     .name = std::string{name.data(), name.size()},
-                    .exported = exported});
+                    .exported = exported
+                });
             }
         }
         else if (this->current_char() == ':')
@@ -213,8 +215,9 @@ private:
             {
                 this->push_token(ModulePartitionToken{
                     .mod = std::string{moduleName.data(), moduleName.size()},
-                    .name = std::string{partition.data(), partition.size()},
-                    .exported = exported});
+                    .name = std::string{partition.data(),  partition.size() },
+                    .exported = exported
+                });
             }
         }
         else

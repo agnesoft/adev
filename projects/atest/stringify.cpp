@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module atest : stringify;
+export module atest:stringify;
 export import astl;
 #endif
 

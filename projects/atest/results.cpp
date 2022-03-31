@@ -1,6 +1,6 @@
 #ifndef __clang__
-module atest : results;
-import : stats;
+module atest:results;
+import :stats;
 #endif
 
 namespace atest

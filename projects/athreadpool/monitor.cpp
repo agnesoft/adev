@@ -1,7 +1,7 @@
 #ifndef __clang__
-module athreadpool : monitor;
-import : jobs;
-import : queue;
+module athreadpool:monitor;
+import :jobs;
+import :queue;
 #endif
 
 namespace athreadpool

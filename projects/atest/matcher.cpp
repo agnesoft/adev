@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module atest : matcher;
-export import : matcher_base;
+export module atest:matcher;
+export import :matcher_base;
 #endif
 
 namespace atest
@@ -163,7 +163,7 @@ private:
     }
 
     template<typename ActualValueT, typename ExpectedValueT>
-    [[nodiscard]] constexpr static auto is_string_convertible() -> bool
+    [[nodiscard]] static constexpr auto is_string_convertible() -> bool
     {
         return ::atest::StringConvertible<ActualValueT> && ::atest::StringConvertible<ExpectedValueT> && !(std::is_pointer_v<ActualValueT> && std::is_pointer_v<ExpectedValueT>);
     }

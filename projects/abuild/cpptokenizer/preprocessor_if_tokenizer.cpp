@@ -1,6 +1,6 @@
 #ifndef __clang__
-module abuild.cpptokenizer : preprocessor_if_tokenizer;
-import : preprocessor_tokenizer_common;
+module abuild.cpptokenizer:preprocessor_if_tokenizer;
+import :preprocessor_tokenizer_common;
 #endif
 
 namespace abuild

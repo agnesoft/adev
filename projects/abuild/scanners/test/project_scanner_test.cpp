@@ -47,7 +47,8 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"projects/myapp/main.cpp", ""},
-             {"projects/mylib/my_lib.cpp", ""}}};
+              {"projects/mylib/my_lib.cpp", ""}}
+        };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -73,8 +74,9 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"myapp/src/main.cpp", ""},
-             {"myapp/src/src/source.cpp", ""},
-             {"myapp/source.cpp", ""}}};
+              {"myapp/src/src/source.cpp", ""},
+              {"myapp/source.cpp", ""}}
+        };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -105,7 +107,8 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"myapp/main.cpp", ""},
-             {"myapp/subapp/main.cpp", ""}}};
+              {"myapp/subapp/main.cpp", ""}}
+        };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -130,8 +133,9 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"build/myapp/main.cpp", ""},
-             {".somedir/header.hpp", ""},
-             {"someapp/.hidden/source.cpp", ""}}};
+              {".somedir/header.hpp", ""},
+              {"someapp/.hidden/source.cpp", ""}}
+        };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -143,7 +147,8 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"myapp/main.cpp", ""},
-             {"myapp/test/main.cpp", ""}}};
+              {"myapp/test/main.cpp", ""}}
+        };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -168,8 +173,9 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"mylib/mylib.cpp", ""},
-             {"mylib/include/some_header.hpp", ""},
-             {"mylib/include/mylib/some_other_header.hpp", ""}}};
+              {"mylib/include/some_header.hpp", ""},
+              {"mylib/include/mylib/some_other_header.hpp", ""}}
+        };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
@@ -209,7 +215,10 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         expect(project->name).to_be("mylib");
         expect(project->type).to_be(::abuild::Project::Type::StaticLibrary);
         assert_(project->sources.size()).to_be(1U);
-        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{
+            ::abuild::ModuleToken{.name = "mylib", .exported = true},
+            ::abuild::ImportModuleToken{.name = "other.module"              }
+        });
     });
 
     test("tokens in header", [] {
@@ -231,21 +240,26 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"},
-             {"mylib/mylib.hpp", "#include <vector>"}}};
+              {"mylib/mylib.hpp", "#include <vector>"}}
+        };
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
             ::abuild::ProjectScanner{cache}.scan();
 
             auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
-            std::fstream{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            {
+                std::fstream eraseFile{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            }
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", std::filesystem::file_time_type{std::chrono::seconds{timestamp}});
             auto currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.cpp")).to_be(0U);
             assert_(currentTimestamp).to_be(timestamp);
 
             timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
-            std::fstream{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            {
+                std::fstream eraseFile{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            }
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp", std::filesystem::file_time_type{std::chrono::seconds{timestamp}});
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.hpp")).to_be(0U);
             currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
@@ -259,7 +273,10 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         assert_(project->sources.size()).to_be(1U);
-        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib", .exported = true}, ::abuild::ImportModuleToken{.name = "other.module"}});
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{
+            ::abuild::ModuleToken{.name = "mylib", .exported = true},
+            ::abuild::ImportModuleToken{.name = "other.module"              }
+        });
 
         assert_(project->headers.size()).to_be(1U);
         expect(project->headers[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::IncludeExternalToken{.name = "vector"}});
@@ -269,7 +286,8 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         const ::abuild::TestProject testProject{
             "project_scanner_test",
             {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"},
-             {"mylib/mylib.hpp", "#include <vector>"}}};
+              {"mylib/mylib.hpp", "#include <vector>"}}
+        };
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
@@ -293,7 +311,9 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         assert_(project->sources.size()).to_be(1U);
-        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::ModuleToken{.name = "mylib2", .exported = true}});
+        expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{
+            ::abuild::ModuleToken{.name = "mylib2", .exported = true}
+        });
 
         assert_(project->headers.size()).to_be(1U);
         expect(project->headers[0]->tokens).to_be(std::vector<::abuild::Token>{::abuild::IncludeExternalToken{.name = "string"}});

@@ -1,6 +1,6 @@
 #ifndef __clang__
-module acommandline : option_matcher;
-import : option;
+module acommandline:option_matcher;
+import :option;
 #endif
 
 namespace acommandline

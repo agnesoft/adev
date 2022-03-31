@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module atest : test_suite;
-import : test;
+export module atest:test_suite;
+import :test;
 #endif
 
 namespace atest

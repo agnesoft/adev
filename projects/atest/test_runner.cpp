@@ -1,11 +1,11 @@
 #ifndef __clang__
-export module atest : test_runner;
-import : failed_assertion;
-import : test_context;
-import : test_filter;
-import : printer;
-import : reporter;
-import : filters;
+export module atest:test_runner;
+import :failed_assertion;
+import :test_context;
+import :test_filter;
+import :printer;
+import :reporter;
+import :filters;
 import acommandline;
 #endif
 
@@ -69,7 +69,7 @@ public:
     //!
     //! If the command line arguments are
     //! incorrect returns -1.
-    [[nodiscard]] auto run(int argc, const char *const *argv) noexcept -> int
+    [[nodiscard]] auto run(int argc, const char * const *argv) noexcept -> int
     {
         try
         {
@@ -123,7 +123,7 @@ private:
         }
     }
 
-    [[nodiscard]] auto parse_arguments(int argc, const char *const *argv) -> bool
+    [[nodiscard]] auto parse_arguments(int argc, const char * const *argv) -> bool
     {
         try
         {

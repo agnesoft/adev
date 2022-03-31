@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.scanners : project_scanner;
+export module abuild.scanners:project_scanner;
 export import abuild.cache;
 import athreadpool;
 #endif

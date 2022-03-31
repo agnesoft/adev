@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module abuild.cpptokenizer : token;
-export import : if_token;
+export module abuild.cpptokenizer:token;
+export import :if_token;
 #endif
 
 namespace abuild

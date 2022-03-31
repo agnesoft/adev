@@ -3,8 +3,8 @@ export module atest;
 export import astl;
 
 #ifndef __clang__
-export import : test_runner;
-export import : expect;
+export import :test_runner;
+export import :expect;
 #else
 export import acommandline;
 // clang-format off
@@ -67,10 +67,10 @@ export template<typename ExpressionT>
 //! location is automatically captured.
 export template<typename T = int>
 auto test(const char *name,
-          auto (*body)()->void,
-          const std::source_location &sourceLocation = std::source_location::current()) -> void
+          auto(*body)()->void,
+          const std::source_location &sourceLocation = std::source_location::current()) noexcept -> void
 {
-    ::atest::test_context().current_test_suite().tests.emplace_back(Test{name, body, sourceLocation});
+    ::atest::test_context().add_test(name, body, sourceLocation);
 }
 
 //! Registers the test suite under `name`. The
@@ -82,7 +82,7 @@ auto test(const char *name,
 //! location is automatically captured.
 export template<typename T = int>
 auto suite(const char *name,
-           auto (*body)()->void,
+           auto(*body)()->void,
            const std::source_location &sourceLocation = std::source_location::current()) noexcept -> int
 {
     return ::atest::test_context().add_test_suite(name, body, sourceLocation);
