@@ -70,7 +70,7 @@ auto test(const char *name,
           auto(*body)()->void,
           const std::source_location &sourceLocation = std::source_location::current()) -> void
 {
-    ::atest::test_context().current_test_suite().tests.emplace_back(Test{name, body, sourceLocation});
+    ::atest::test_context().add_test(name, body, sourceLocation);
 }
 
 //! Registers the test suite under `name`. The

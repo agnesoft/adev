@@ -18,6 +18,8 @@ public:
     TestContext() noexcept :
         parentContext{TestContext::current().context}
     {
+        this->initialize_global_test_suite();
+
         if (TestContext::current().instances.load() != 0)
         {
             TestContext::current().context = this;
@@ -31,8 +33,27 @@ public:
 
     ~TestContext()
     {
-        TestContext::current().context = this->parentContext;
-        --TestContext::current().instances;
+        try
+        {
+            TestContext::current().context = this->parentContext;
+            --TestContext::current().instances;
+        }
+        catch (...)
+        {
+        }
+    }
+
+    auto add_test(const char *name,
+                  auto(*body)()->void,
+                  const std::source_location &sourceLocation) noexcept
+    {
+        try
+        {
+            this->currentTestSuite->tests.emplace_back(Test{name, body, sourceLocation});
+        }
+        catch (...)
+        {
+        }
     }
 
     auto add_test_suite(const char *name,
@@ -87,9 +108,15 @@ public:
         return *this->currentTest;
     }
 
-    [[nodiscard]] auto current_test_suite() noexcept -> TestSuite &
+    auto initialize_global_test_suite() noexcept -> void
     {
-        return *this->currentTestSuite;
+        try
+        {
+            this->currentTestSuite = &this->testSuites.emplace_back(TestSuite{.name = "Global"});
+        }
+        catch (...)
+        {
+        }
     }
 
     auto reset() -> void
@@ -123,9 +150,10 @@ public:
     auto operator=(TestContext &&other) noexcept -> TestContext & = delete;
 
 private:
-    TestContext(TestContext *context) :
+    TestContext(TestContext *context) noexcept :
         parentContext{context}
     {
+        this->initialize_global_test_suite();
     }
 
     static auto reset_test(Test &test) -> void
@@ -144,8 +172,8 @@ private:
         }
     }
 
-    std::vector<TestSuite> testSuites = {TestSuite{"Global"}};
-    TestSuite *currentTestSuite = &this->testSuites.front();
+    std::vector<TestSuite> testSuites;
+    TestSuite *currentTestSuite = nullptr;
     Test *currentTest = nullptr;
     TestContext *parentContext = nullptr;
 };
