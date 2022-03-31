@@ -14,7 +14,7 @@ static const auto S = suite("ThreadPool", [] { // NOLINT(cert-err58-cpp)
             result = 1;
         });
 
-        static constexpr std::chrono::milliseconds timeout{100};
+        static constexpr std::chrono::milliseconds timeout{1000};
         pool.wait(timeout);
 
         expect(result).to_be(1);
@@ -33,7 +33,7 @@ static const auto S = suite("ThreadPool", [] { // NOLINT(cert-err58-cpp)
             });
         }
 
-        static constexpr std::chrono::milliseconds timeout{100};
+        static constexpr std::chrono::milliseconds timeout{1000};
         pool.wait(timeout);
 
         expect(result.load()).to_be(jobs);
