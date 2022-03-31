@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module abuild.cache : module_;
-export import : module_partition;
+export module abuild.cache:module_;
+export import :module_partition;
 #endif
 
 namespace abuild

@@ -1,11 +1,11 @@
 #ifndef __clang__
-export module abuild.cache : configuration;
-export import : flag;
-export import : toolchain;
-export import : executable;
-export import : dynamic_library;
-export import : static_library;
-export import : translation_unit;
+export module abuild.cache:configuration;
+export import :flag;
+export import :toolchain;
+export import :executable;
+export import :dynamic_library;
+export import :static_library;
+export import :translation_unit;
 #endif
 
 namespace abuild

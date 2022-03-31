@@ -93,7 +93,10 @@ public:
     auto add_header_file(File headerFile, const std::string &projectName) -> HeaderFile *
     {
         Project *proj = this->get_project(projectName);
-        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>(HeaderFile{CppFile{File{std::move(headerFile)}, proj, {}}})).get();
+        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>(HeaderFile{
+                                                               CppFile{File{std::move(headerFile)}, proj, {}}
+        }))
+                               .get();
         proj->headers.push_back(file);
         this->index.insert(file);
         return file;
@@ -107,7 +110,10 @@ public:
     auto add_source_file(File sourceFile, const std::string &projectName) -> SourceFile *
     {
         Project *proj = this->get_project(projectName);
-        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>(SourceFile{CppFile{File{std::move(sourceFile)}, proj, {}}})).get();
+        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>(SourceFile{
+                                                               CppFile{File{std::move(sourceFile)}, proj, {}}
+        }))
+                               .get();
         proj->sources.push_back(file);
         this->index.insert(file);
         return file;

@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.cache : flag;
+export module abuild.cache:flag;
 export import astl;
 #endif
 

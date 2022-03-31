@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module abuild.cache : binary_file;
-export import : file;
+export module abuild.cache:binary_file;
+export import :file;
 #endif
 
 namespace abuild

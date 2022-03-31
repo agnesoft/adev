@@ -1,7 +1,7 @@
 #ifndef __clang__
-export module abuild.cache : module_partition;
-export import : file;
-export import : visibility;
+export module abuild.cache:module_partition;
+export import :file;
+export import :visibility;
 #endif
 
 namespace abuild

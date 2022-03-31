@@ -1,8 +1,8 @@
 #ifndef __clang__
-export module abuild.cache : translation_unit;
-export import : source_file;
-export import : header_unit;
-export import : module_;
+export module abuild.cache:translation_unit;
+export import :source_file;
+export import :header_unit;
+export import :module_;
 #endif
 
 namespace abuild
