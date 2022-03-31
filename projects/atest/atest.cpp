@@ -68,7 +68,7 @@ export template<typename ExpressionT>
 export template<typename T = int>
 auto test(const char *name,
           auto(*body)()->void,
-          const std::source_location &sourceLocation = std::source_location::current()) -> void
+          const std::source_location &sourceLocation = std::source_location::current()) noexcept -> void
 {
     ::atest::test_context().add_test(name, body, sourceLocation);
 }
