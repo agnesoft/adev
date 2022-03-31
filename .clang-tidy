@@ -32,7 +32,8 @@ readability-*,
 -cppcoreguidelines-c-copy-assignment-signature,
 -cppcoreguidelines-explicit-virtual-functions,
 -cppcoreguidelines-non-private-member-variables-in-classes,
--misc-no-recursion
+-misc-no-recursion,
+-readability-identifier-length
 '
 WarningsAsErrors: '
 bugprone-*,
@@ -68,7 +69,8 @@ readability-*,
 -cppcoreguidelines-c-copy-assignment-signature,
 -cppcoreguidelines-explicit-virtual-functions,
 -cppcoreguidelines-non-private-member-variables-in-classes,
--misc-no-recursion
+-misc-no-recursion,
+-readability-identifier-length
 '
 
 FormatStyle: file

@@ -122,7 +122,7 @@ function detect_clang_tidy() {
         print_error "ERROR: ${clangTidy} is not available. Please install it with './adev.sh install llvm'."
     else
         if is_linux; then
-            libCppModuleMap="--extra-arg=-fmodule-map-file=/usr/lib/llvm-13/include/c++/v1/module.modulemap"
+            libCppModuleMap="--extra-arg=-fmodule-map-file=/usr/lib/llvm-${llvmVersion}/include/c++/v1/module.modulemap"
         fi
 
         "${clangTidy}" --version | head -n 2 | tail -n +2
