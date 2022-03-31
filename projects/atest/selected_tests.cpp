@@ -1,6 +1,6 @@
 #ifndef __clang__
-module atest : selected_tests;
-import : test_suite;
+module atest:selected_tests;
+import :test_suite;
 #endif
 
 namespace atest

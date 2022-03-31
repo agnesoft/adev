@@ -1,6 +1,6 @@
 #ifndef __clang__
-module acommandline : option_setter;
-import : option;
+module acommandline:option_setter;
+import :option;
 #endif
 
 namespace acommandline

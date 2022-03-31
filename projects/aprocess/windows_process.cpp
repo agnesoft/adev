@@ -1,6 +1,6 @@
 #ifndef __clang__
-module aprocess : windows_process;
-import : process_setup;
+module aprocess:windows_process;
+import :process_setup;
 import awinapi;
 #endif
 

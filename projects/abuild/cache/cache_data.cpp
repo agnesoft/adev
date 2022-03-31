@@ -1,9 +1,9 @@
 #ifndef __clang__
-export module abuild.cache : cache_data;
-export import : header_file;
-export import : project;
-export import : source_file;
-export import : settings;
+export module abuild.cache:cache_data;
+export import :header_file;
+export import :project;
+export import :source_file;
+export import :settings;
 #endif
 
 namespace abuild

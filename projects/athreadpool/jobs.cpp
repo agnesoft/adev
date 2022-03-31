@@ -1,6 +1,6 @@
 #ifndef __clang__
-module athreadpool : jobs;
-import : job;
+module athreadpool:jobs;
+import :job;
 #endif
 
 namespace athreadpool

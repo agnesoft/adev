@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module awinapi : last_error_message;
-export import : buffer;
+export module awinapi:last_error_message;
+export import :buffer;
 #endif
 
 #ifdef _WIN32

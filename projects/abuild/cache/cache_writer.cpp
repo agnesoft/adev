@@ -1,6 +1,6 @@
 #ifndef __clang__
-module abuild.cache : cache_writer;
-import : cache_data;
+module abuild.cache:cache_writer;
+import :cache_data;
 import yamlcpp;
 #endif
 

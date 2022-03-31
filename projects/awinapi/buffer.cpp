@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module awinapi : buffer;
+export module awinapi:buffer;
 export import "windows.hpp";
 export import astl;
 #endif

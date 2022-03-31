@@ -3,7 +3,7 @@ export module acommandline;
 export import astl;
 
 #ifndef __clang__
-export import : command_line;
+export import :command_line;
 #else
 // clang-format off
 #include "option.cpp" //NOLINT(bugprone-suspicious-include)

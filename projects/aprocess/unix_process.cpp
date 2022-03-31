@@ -1,10 +1,10 @@
 #ifndef __clang__
-module aprocess : unix_process;
-import : process_setup;
-import : pipe;
+module aprocess:unix_process;
+import :process_setup;
+import :pipe;
 #    ifndef _WIN32
-import<poll.h>;
-import<wait.h>;
+import <poll.h>;
+import <wait.h>;
 #    endif
 #endif
 
@@ -240,8 +240,9 @@ private:
     {
         std::array<::pollfd, 1> fds{
             ::pollfd{
-                .fd = this->readPipe.read_end(),
-                .events = POLLIN}};
+                     .fd = this->readPipe.read_end(),
+                     .events = POLLIN}
+        };
 
         return ::poll(fds.data(), 1, static_cast<int>(timeout.count())) == 1;
     }

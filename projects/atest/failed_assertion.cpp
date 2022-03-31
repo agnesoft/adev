@@ -1,5 +1,5 @@
 #ifndef __clang__
-module atest : failed_assertion;
+module atest:failed_assertion;
 #endif
 
 namespace atest

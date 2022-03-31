@@ -1,6 +1,6 @@
 #ifndef __clang__
-module aprocess : process_setup;
-import : environment_variable;
+module aprocess:process_setup;
+import :environment_variable;
 #endif
 
 namespace aprocess

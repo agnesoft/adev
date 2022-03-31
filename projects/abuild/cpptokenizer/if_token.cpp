@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.cpptokenizer : if_token;
+export module abuild.cpptokenizer:if_token;
 export import astl;
 #endif
 

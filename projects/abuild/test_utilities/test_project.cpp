@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module abuild.test_utilities : test_project;
-export import : test_file;
+export module abuild.test_utilities:test_project;
+export import :test_file;
 #endif
 
 namespace abuild

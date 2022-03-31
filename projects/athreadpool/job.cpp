@@ -1,5 +1,5 @@
 #ifndef __clang__
-module athreadpool : job;
+module athreadpool:job;
 import astl;
 #endif
 

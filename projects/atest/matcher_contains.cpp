@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module atest : matcher_contains;
-import : matcher_base;
+export module atest:matcher_contains;
+import :matcher_base;
 #endif
 
 namespace atest

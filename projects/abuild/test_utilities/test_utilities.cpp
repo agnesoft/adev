@@ -1,8 +1,8 @@
 export module abuild.test_utilities;
 
 #ifndef __clang__
-export import : test_project;
-export import : token_operators;
+export import :test_project;
+export import :token_operators;
 #else
 export import abuild.cpptokenizer;
 // clang-format off

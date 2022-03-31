@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module acommandline : option_builder;
-export import : option_builder_named;
+export module acommandline:option_builder;
+export import :option_builder_named;
 #endif
 
 namespace acommandline

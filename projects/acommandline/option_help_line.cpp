@@ -1,6 +1,6 @@
 #ifndef __clang__
-module acommandline : option_help_line;
-import : option;
+module acommandline:option_help_line;
+import :option;
 #endif
 
 namespace acommandline

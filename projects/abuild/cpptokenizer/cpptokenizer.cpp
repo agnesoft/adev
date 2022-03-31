@@ -1,8 +1,8 @@
 export module abuild.cpptokenizer;
 
 #ifndef __clang__
-export import : token_operators;
-import : tokenizer;
+export import :token_operators;
+import :tokenizer;
 #else
 export import astl;
 // clang-format off

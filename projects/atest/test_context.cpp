@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module atest : test_context;
-import : test_suite;
+export module atest:test_context;
+import :test_suite;
 #endif
 
 namespace atest
@@ -36,7 +36,7 @@ public:
     }
 
     auto add_test_suite(const char *name,
-                        auto (*body)()->void,
+                        auto(*body)()->void,
                         const std::source_location &sourceLocation) noexcept -> int
     {
         try

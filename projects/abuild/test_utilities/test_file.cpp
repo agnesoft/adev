@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.test_utilities : test_file;
+export module abuild.test_utilities:test_file;
 export import astl;
 #endif
 

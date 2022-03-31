@@ -58,7 +58,8 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         const ::abuild::TestProject testProject{
             "cache_test",
             {{"main.cpp", ""},
-             {"my_header.hpp", ""}}};
+              {"my_header.hpp", ""}}
+        };
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
@@ -88,9 +89,10 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         const ::abuild::TestProject testProject{
             "cache_test",
             {{"main.cpp", ""},
-             {"source.cpp", ""},
-             {"my_header.hpp", ""},
-             {"header.hpp", ""}}};
+              {"source.cpp", ""},
+              {"my_header.hpp", ""},
+              {"header.hpp", ""}}
+        };
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};

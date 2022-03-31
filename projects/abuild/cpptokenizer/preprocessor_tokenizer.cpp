@@ -1,6 +1,6 @@
 #ifndef __clang__
-module abuild.cpptokenizer : preprocessor_tokenizer;
-import : preprocessor_if_tokenizer;
+module abuild.cpptokenizer:preprocessor_tokenizer;
+import :preprocessor_if_tokenizer;
 #endif
 
 namespace abuild
@@ -113,7 +113,8 @@ private:
         this->push_token(IfToken{
             .elements = {NotToken{},
                          DefinedToken{
-                             .name = std::string(defineName.data(), defineName.size())}}});
+                             .name = std::string(defineName.data(), defineName.size())}}
+        });
         this->skip_space_comment();
     }
 
