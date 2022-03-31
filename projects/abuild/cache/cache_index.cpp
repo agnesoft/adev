@@ -1,8 +1,8 @@
 #ifndef __clang__
-module abuild.cache : cache_index;
-import : header_file;
-import : project;
-import : source_file;
+module abuild.cache:cache_index;
+import :header_file;
+import :project;
+import :source_file;
 #endif
 
 namespace abuild
@@ -92,7 +92,7 @@ public:
 private:
     struct PathHash
     {
-        [[nodiscard]] auto operator()(std::filesystem::path const &path) const noexcept -> std::size_t
+        [[nodiscard]] auto operator()(const std::filesystem::path &path) const noexcept -> std::size_t
         {
             return std::filesystem::hash_value(path);
         }

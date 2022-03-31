@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module abuild.cache : source_file;
-export import : file;
+export module abuild.cache:source_file;
+export import :file;
 export import abuild.cpptokenizer;
 #endif
 

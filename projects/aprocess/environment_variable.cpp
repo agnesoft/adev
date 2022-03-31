@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module aprocess : environment_variable;
+export module aprocess:environment_variable;
 #endif
 
 export import astl;

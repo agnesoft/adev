@@ -15,7 +15,7 @@ import astl;
 #    ifdef __clang__
 import wait_h;
 #    else
-import<wait.h>;
+import <wait.h>;
 #    endif
 
 [[nodiscard]] auto is_process_running(std::int64_t pid) -> bool

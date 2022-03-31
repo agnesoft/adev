@@ -1,6 +1,6 @@
 #ifndef __clang__
-module acommandline : printer;
-import : option_help_line;
+module acommandline:printer;
+import :option_help_line;
 #endif
 
 namespace acommandline

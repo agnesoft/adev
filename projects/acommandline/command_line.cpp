@@ -1,9 +1,9 @@
 #ifndef __clang__
-export module acommandline : command_line;
-import : option_builder;
-import : option_matcher;
-import : option_setter;
-import : printer;
+export module acommandline:command_line;
+import :option_builder;
+import :option_matcher;
+import :option_setter;
+import :printer;
 #endif
 
 namespace acommandline
@@ -167,7 +167,7 @@ public:
     //! arguments were passed. Returns `false` if
     //! the help was displayed. Throws an
     //! exception if an error occurred.
-    [[nodiscard]] auto parse(int argc, const char *const *argv) -> bool
+    [[nodiscard]] auto parse(int argc, const char * const *argv) -> bool
     {
         try
         {
@@ -233,7 +233,7 @@ private:
         return true;
     }
 
-    auto parse_arguments(int argc, const char *const *argv) -> void
+    auto parse_arguments(int argc, const char * const *argv) -> void
     {
         this->arguments.clear();
 
@@ -243,7 +243,7 @@ private:
         }
     }
 
-    auto parse_command(int argc, const char *const *argv) -> void
+    auto parse_command(int argc, const char * const *argv) -> void
     {
         if (argc == 0)
         {

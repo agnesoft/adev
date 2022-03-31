@@ -1,7 +1,7 @@
 #ifndef __clang__
-module atest : reporter;
-import : results;
-import : selected_tests;
+module atest:reporter;
+import :results;
+import :selected_tests;
 #endif
 
 namespace atest

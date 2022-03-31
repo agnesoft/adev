@@ -1,7 +1,7 @@
 #ifndef __clang__
-module atest : expect_base;
-import : failed_assertion;
-import : test_context;
+module atest:expect_base;
+import :failed_assertion;
+import :test_context;
 #endif
 
 namespace atest

@@ -1,7 +1,7 @@
 export module awinapi;
 
 #ifndef __clang__
-export import : pipe;
+export import :pipe;
 #else
 export import "windows.hpp";
 export import astl;

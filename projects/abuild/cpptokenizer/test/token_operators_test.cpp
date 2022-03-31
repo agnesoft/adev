@@ -99,13 +99,15 @@ static const auto S = suite("token operators", [] { // NOLINT(cert-err58-cpp)
 
     test("IfToken", [] {
         std::stringstream stream;
-        stream << ::abuild::IfToken{.elements{
-            ::abuild::LeftBracketToken{},
-            ::abuild::DefinedToken{.name = "MY_MACRO"},
-            ::abuild::AndToken{},
-            ::abuild::NotToken{},
-            ::abuild::DefinedToken{.name = "NO_MY_MACRO"},
-            ::abuild::RightBracketToken{}}};
+        stream << ::abuild::IfToken{
+            .elements{
+                      ::abuild::LeftBracketToken{},
+                      ::abuild::DefinedToken{.name = "MY_MACRO"},
+                      ::abuild::AndToken{},
+                      ::abuild::NotToken{},
+                      ::abuild::DefinedToken{.name = "NO_MY_MACRO"},
+                      ::abuild::RightBracketToken{}}
+        };
 
         expect(stream.str()).to_be("#if ( defined(MY_MACRO) && ! defined(NO_MY_MACRO) ) ");
     });
@@ -245,7 +247,9 @@ static const auto S = suite("token operators", [] { // NOLINT(cert-err58-cpp)
 
     test("Token", [] {
         std::stringstream stream;
-        stream << ::abuild::Token{::abuild::ModuleToken{.name = "my_module", .exported = true}};
+        stream << ::abuild::Token{
+            ::abuild::ModuleToken{.name = "my_module", .exported = true}
+        };
 
         expect(stream.str()).to_be("export module my_module;");
     });

@@ -29,7 +29,9 @@ static const auto S = suite("environment", [] { // NOLINT(cert-err58-cpp)
                                           .env({"aprocesstest_envvar", "somevalue1"})
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
-        expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{{"aprocesstest_envvar", "somevalue1"}});
+        expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{
+            {"aprocesstest_envvar", "somevalue1"}
+        });
         expect(process.read()).to_be("somevalue1");
     });
 
@@ -38,10 +40,16 @@ static const auto S = suite("environment", [] { // NOLINT(cert-err58-cpp)
                                           .command("aprocesstestapp")
                                           .arg("--echo-env=aprocesstestenvvar")
                                           .arg("--echo-env=aprocesstestenvvar2")
-                                          .environment({{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}})
+                                          .environment({
+                                              {"aprocesstestenvvar",  "somevalue1"},
+                                              {"aprocesstestenvvar2", "somevalue2"}
+        })
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
-        expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}});
+        expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{
+            {"aprocesstestenvvar",  "somevalue1"},
+            {"aprocesstestenvvar2", "somevalue2"}
+        });
         expect(process.read()).to_be("somevalue1somevalue2");
     });
 
@@ -49,10 +57,16 @@ static const auto S = suite("environment", [] { // NOLINT(cert-err58-cpp)
         ::aprocess::Process process = ::aprocess::create_process()
                                           .command("aprocesstestapp")
                                           .arg("--echo-env=PATH")
-                                          .environment({{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}})
+                                          .environment({
+                                              {"aprocesstestenvvar",  "somevalue1"},
+                                              {"aprocesstestenvvar2", "somevalue2"}
+        })
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
-        expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{{"aprocesstestenvvar", "somevalue1"}, {"aprocesstestenvvar2", "somevalue2"}});
+        expect(process.environment()).to_be(std::vector<::aprocess::EnvironmentVariable>{
+            {"aprocesstestenvvar",  "somevalue1"},
+            {"aprocesstestenvvar2", "somevalue2"}
+        });
         expect(process.read().empty()).to_be(false);
     });
 });

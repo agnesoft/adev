@@ -1,6 +1,6 @@
 #ifndef __clang__
-export module athreadpool : threadpool;
-import : monitor;
+export module athreadpool:threadpool;
+import :monitor;
 #endif
 
 namespace athreadpool

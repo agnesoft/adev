@@ -1,7 +1,7 @@
 export module aprocess;
 
 #ifndef __clang__
-export import : process;
+export import :process;
 #else
 import awinapi;
 #    ifndef _WIN32

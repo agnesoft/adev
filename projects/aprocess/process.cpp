@@ -1,8 +1,8 @@
 #ifndef __clang__
-export module aprocess : process;
-export import : environment_variable;
-import : unix_process;
-import : windows_process;
+export module aprocess:process;
+export import :environment_variable;
+import :unix_process;
+import :windows_process;
 #endif
 
 namespace aprocess

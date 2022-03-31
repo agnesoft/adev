@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module acommandline : option;
+export module acommandline:option;
 export import astl;
 #endif
 
@@ -21,7 +21,7 @@ using BoundValue = std::variant<bool *,
                                 std::vector<double> *,
                                 std::vector<std::string> *>;
 
-static constexpr const char *const POSITIONAL_LONG_NAME = "[positional]";
+static constexpr const char * const POSITIONAL_LONG_NAME = "[positional]";
 
 //! \private
 export struct Option

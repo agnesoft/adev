@@ -1,5 +1,5 @@
 #ifndef __clang__
-module athreadpool : queue;
+module athreadpool:queue;
 import astl;
 #endif
 

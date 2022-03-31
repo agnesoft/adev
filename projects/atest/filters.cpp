@@ -1,6 +1,6 @@
 #ifndef __clang__
-module atest : filters;
-import : failure;
+module atest:filters;
+import :failure;
 #endif
 
 namespace atest

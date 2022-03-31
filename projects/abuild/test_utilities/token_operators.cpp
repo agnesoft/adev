@@ -1,5 +1,5 @@
 #ifndef __clang__
-export module abuild.test_utilities : token_operators;
+export module abuild.test_utilities:token_operators;
 export import abuild.cpptokenizer;
 #endif
 

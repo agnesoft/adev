@@ -1,7 +1,7 @@
 export module abuild.scanners;
 
 #ifndef __clang__
-export import : project_scanner;
+export import :project_scanner;
 #else
 export import abuild.cache;
 import athreadpool;
