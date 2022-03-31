@@ -33,8 +33,7 @@ readability-*,
 -cppcoreguidelines-explicit-virtual-functions,
 -cppcoreguidelines-non-private-member-variables-in-classes,
 -misc-no-recursion,
--readability-identifier-length,
--bugprone-exception-escape
+-readability-identifier-length
 '
 WarningsAsErrors: '
 bugprone-*,
@@ -71,8 +70,7 @@ readability-*,
 -cppcoreguidelines-explicit-virtual-functions,
 -cppcoreguidelines-non-private-member-variables-in-classes,
 -misc-no-recursion,
--readability-identifier-length,
--bugprone-exception-escape
+-readability-identifier-length
 '
 
 FormatStyle: file
