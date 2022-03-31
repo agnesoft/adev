@@ -248,14 +248,18 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
             ::abuild::ProjectScanner{cache}.scan();
 
             auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
-            std::fstream{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            {
+                std::fstream eraseFile{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            }
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp", std::filesystem::file_time_type{std::chrono::seconds{timestamp}});
             auto currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.cpp")).to_be(0U);
             assert_(currentTimestamp).to_be(timestamp);
 
             timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();
-            std::fstream{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            {
+                std::fstream eraseFile{testProject.root() / "mylib/mylib.hpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)};
+            }
             std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp", std::filesystem::file_time_type{std::chrono::seconds{timestamp}});
             assert_(std::filesystem::file_size(testProject.root() / "mylib/mylib.hpp")).to_be(0U);
             currentTimestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.hpp").time_since_epoch()).count();

@@ -124,7 +124,7 @@ private:
         if (!value.empty())
         {
             this->push_token(T{
-                .name = std::string(&value[0], value.size())});
+                .name = std::string(value.data(), value.size())});
         }
 
         this->skip_space_comment();

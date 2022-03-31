@@ -21,7 +21,7 @@ public:
     }
 
     TestFile(const TestFile &other) = delete;
-    TestFile(TestFile &&other) noexcept = default;
+    TestFile(TestFile &&other) = default;
 
     [[nodiscard]] auto path() const noexcept -> const std::filesystem::path &
     {
@@ -35,7 +35,7 @@ public:
     }
 
     auto operator=(const TestFile &other) -> TestFile & = delete;
-    auto operator=(TestFile &&other) noexcept -> TestFile & = default;
+    auto operator=(TestFile &&other) -> TestFile & = default;
 
 private:
     std::filesystem::path filePath;

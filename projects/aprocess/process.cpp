@@ -164,7 +164,7 @@ public:
     Process(const Process &other) = delete;
 
     //! Move constructor.
-    Process(Process &&other) noexcept = default;
+    Process(Process &&other) = default;
 
     //! Destroys the process object. If the
     //! process is still running it is first
@@ -308,7 +308,7 @@ public:
     auto operator=(const Process &other) -> Process & = delete;
 
     //! Move assignment.
-    auto operator=(Process &&other) noexcept -> Process & = default;
+    auto operator=(Process &&other) -> Process & = default;
 
 private:
     explicit Process(ProcessSetup setup) :

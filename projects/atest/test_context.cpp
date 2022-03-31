@@ -15,7 +15,7 @@ export class TestContext
     };
 
 public:
-    TestContext() :
+    TestContext() noexcept :
         parentContext{TestContext::current().context}
     {
         if (TestContext::current().instances.load() != 0)
@@ -75,7 +75,7 @@ public:
         return 1;
     }
 
-    [[nodiscard]] static auto current() -> TestContextWrapper &
+    [[nodiscard]] static auto current() noexcept -> TestContextWrapper &
     {
         static TestContext globalContext{nullptr};
         static TestContextWrapper wrapper{.context = &globalContext};

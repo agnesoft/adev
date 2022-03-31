@@ -59,7 +59,7 @@ private:
         {
             this->skip_one();
             this->push_token(T{
-                .name = std::string(&name[0], name.size()),
+                .name = std::string(name.data(), name.size()),
                 .exported = exported});
         }
         else
