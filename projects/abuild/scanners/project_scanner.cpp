@@ -53,7 +53,7 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_header_file(File{path}, projectName);
+            file = this->cache.add_header_file(path, projectName);
         }
 
         return file;
@@ -65,7 +65,7 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_source_file(File{path}, projectName);
+            file = this->cache.add_source_file(path, projectName);
         }
 
         return file;

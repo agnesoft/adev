@@ -80,9 +80,9 @@ public:
 
     //! Adds new configuration `name` to the Cache
     //! and returns a pointer to it.
-    auto add_configuration(std::string name) -> Configuration *
+    auto add_configuration(std::string name, Toolchain *toolchain) -> Configuration *
     {
-        return this->data.configurations.emplace_back(std::make_unique<Configuration>(Configuration{.name = std::move(name)})).get();
+        return this->data.configurations.emplace_back(std::make_unique<Configuration>(std::move(name), toolchain)).get();
     }
 
     //! Adds header `file` to the Cache and
@@ -90,13 +90,12 @@ public:
     //! If the project does not exist it is
     //! created. Returns the pointer to the
     //! inserted HeaderFile.
-    auto add_header_file(File headerFile, const std::string &projectName) -> HeaderFile *
+    auto add_header_file(std::filesystem::path path, const std::string &projectName) -> HeaderFile *
     {
         Project *proj = this->get_project(projectName);
-        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>(HeaderFile{
-                                                               CppFile{File{std::move(headerFile)}, proj, {}}
-        }))
-                               .get();
+        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>()).get();
+        file->path = std::move(path);
+        file->project = proj;
         proj->headers.push_back(file);
         this->index.insert(file);
         return file;
@@ -107,13 +106,12 @@ public:
     //! If the project does not exist it is
     //! created. Returns the pointer to the
     //! inserted SourceFile.
-    auto add_source_file(File sourceFile, const std::string &projectName) -> SourceFile *
+    auto add_source_file(std::filesystem::path path, const std::string &projectName) -> SourceFile *
     {
         Project *proj = this->get_project(projectName);
-        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>(SourceFile{
-                                                               CppFile{File{std::move(sourceFile)}, proj, {}}
-        }))
-                               .get();
+        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>()).get();
+        file->path = std::move(path);
+        file->project = proj;
         proj->sources.push_back(file);
         this->index.insert(file);
         return file;
@@ -123,17 +121,19 @@ public:
     //! Cache and returns a pointer to it.
     auto add_toolchain(std::string name) -> Toolchain *
     {
-        return this->data.toolchains.emplace_back(std::make_unique<Toolchain>(Toolchain{.name = std::move(name)})).get();
+        Toolchain *tools = this->data.toolchains.emplace_back(std::make_unique<Toolchain>()).get();
+        tools->name = std::move(name);
+        return tools;
     }
 
-    //! Returns configuration named `name` or
-    //! `nullptr` if there is no such
-    //! configuration.
-    [[nodiscard]] auto configuration(const std::string &name) const noexcept -> Configuration *
+    //! Returns configuration `name` for
+    //! `toolchain` or `nullptr` if there is no
+    //! such configuration.
+    [[nodiscard]] auto configuration(const std::string &name, Toolchain *toolchain) const noexcept -> Configuration *
     {
         for (const auto &config : this->data.configurations)
         {
-            if (config->name == name)
+            if (config->name() == name && config->toolchain() == toolchain)
             {
                 return config.get();
             }
@@ -254,15 +254,17 @@ public:
 private:
     auto get_project(const std::string &name) -> Project *
     {
-        Project *proj = this->project(name);
+        Project *projPtr = this->project(name);
 
-        if (proj == nullptr)
+        if (projPtr == nullptr)
         {
-            proj = this->data.projects.emplace_back(std::make_unique<Project>(Project{.name = name})).get();
-            this->index.insert(proj);
+            std::unique_ptr<Project> proj = std::make_unique<Project>();
+            proj->name = name;
+            projPtr = this->data.projects.emplace_back(std::move(proj)).get();
+            this->index.insert(projPtr);
         }
 
-        return proj;
+        return projPtr;
     }
 
     std::filesystem::path filePath;

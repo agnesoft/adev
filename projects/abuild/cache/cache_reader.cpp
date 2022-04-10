@@ -23,14 +23,6 @@ public:
     }
 
 private:
-    [[nodiscard]] static auto read_file(const std::filesystem::path &path, const auto &it) -> File
-    {
-        return File{
-            .path = path,
-            .timestamp = it->second["timestamp"].template as<std::size_t>(),
-            .outdated = false};
-    }
-
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
     {
         std::stringstream stream;
@@ -51,7 +43,10 @@ private:
 
             if (std::filesystem::exists(path))
             {
-                HeaderFile *header = this->cache.add_header_file(CacheReader::read_file(path, it), it->second["project"].as<std::string>());
+                HeaderFile *header = this->cache.add_header_file(path, it->second["project"].as<std::string>());
+                header->path = std::move(path);
+                header->timestamp = it->second["timestamp"].template as<std::size_t>();
+                header->outdated = false;
                 header->tokens = CacheReader::read_tokens(it->second["tokens"]);
             }
         }
@@ -65,7 +60,10 @@ private:
 
             if (std::filesystem::exists(path))
             {
-                SourceFile *source = this->cache.add_source_file(CacheReader::read_file(path, it), it->second["project"].as<std::string>());
+                SourceFile *source = this->cache.add_source_file(path, it->second["project"].as<std::string>());
+                source->path = std::move(path);
+                source->timestamp = it->second["timestamp"].template as<std::size_t>();
+                source->outdated = false;
                 source->tokens = CacheReader::read_tokens(it->second["tokens"]);
             }
         }

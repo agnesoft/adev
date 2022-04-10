@@ -25,6 +25,8 @@ import yamlcpp;
 #include "flag.cpp" //NOLINT(bugprone-suspicious-include)
 #include "toolchain.cpp" //NOLINT(bugprone-suspicious-include)
 #include "translation_unit.cpp" //NOLINT(bugprone-suspicious-include)
+#include "configuration_data.cpp" //NOLINT(bugprone-suspicious-include)
+#include "configuration_index.cpp" //NOLINT(bugprone-suspicious-include)
 #include "configuration.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_data.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_index.cpp" //NOLINT(bugprone-suspicious-include)

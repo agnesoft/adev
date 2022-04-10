@@ -9,8 +9,17 @@ namespace abuild
 //! toolchain.
 export struct Toolchain
 {
+    enum class Frontend
+    {
+        Clang,
+        GCC,
+        MSVC
+    };
+
     //! Name of the toolchain.
     std::string name;
+
+    Frontend frontend = Frontend::GCC;
 
     //! Path to the C compiler.
     std::filesystem::path compilerC;

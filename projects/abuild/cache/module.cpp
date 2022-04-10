@@ -9,7 +9,7 @@ export struct Module
 {
     std::string name;
     TranslationUnit *translationUnit = nullptr;
-    std::vector<ModulePartition> partitions;
+    std::vector<ModulePartition *> partitions;
     File precompiledModuleInterface;
     Visibility visibility = Visibility::Private;
 };

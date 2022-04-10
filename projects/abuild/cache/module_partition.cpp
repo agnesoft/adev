@@ -11,12 +11,6 @@ export struct TranslationUnit;
 
 export struct ModulePartition
 {
-    enum class Visibility
-    {
-        Public,
-        Private
-    };
-
     std::string name;
     File precompiledModuleInterface;
     Module *mod = nullptr;

@@ -19,19 +19,6 @@ export struct ABI
         ARM
     };
 
-    //! Platform or operating system.
-    enum class Platform
-    {
-        //! Linux
-        Linux,
-
-        //! Unix
-        Unix,
-
-        //! Windows
-        Windows
-    };
-
     //! Architecture's register size.
     enum class Bitness
     {
@@ -48,6 +35,32 @@ export struct ABI
         x64
     };
 
+    //! Platform or operating system.
+    enum class Platform
+    {
+        //! Linux
+        Linux,
+
+        //! Unix
+        Unix,
+
+        //! Windows
+        Windows
+    };
+
+    //! Compiler frontend
+    enum class Frontend
+    {
+        //! LLVM Clang C compiler family
+        Clang,
+
+        //! GNU C/C++ compiler
+        GCC,
+
+        //! Microsoft Visual C/C++
+        MSVC
+    };
+
     //! Processor architecture
     Architecture architecture;
 
@@ -56,5 +69,8 @@ export struct ABI
 
     //! Register size
     Bitness bitness;
+
+    //! Compiler frontend
+    Frontend frontend;
 };
 }
