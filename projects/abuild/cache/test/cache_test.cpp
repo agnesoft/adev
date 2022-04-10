@@ -9,19 +9,30 @@ using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
-    test("add_source_file()", [] {
+    test("add_configuration()", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+        ::abuild::Cache cache{file.path()};
 
+        ::abuild::Toolchain *gcc = cache.add_toolchain("gcc");
+        ::abuild::Configuration *release = cache.add_configuration(gcc, "release");
+        ::abuild::Configuration *debug = cache.add_configuration(gcc, "debug");
+        ::abuild::Configuration *addressSanitizer = cache.add_configuration(gcc, "address");
+
+        std::vector<::abuild::Configuration *> configurations;
+        configurations.reserve(cache.configurations().size());
+
+        for (const std::unique_ptr<::abuild::Configuration> &configuration : cache.configurations())
         {
-            ::abuild::Cache cache{file.path()};
-            cache.add_source_file("main.cpp", "my_project");
-            cache.add_source_file("source.cpp", "my_project");
+            configurations.push_back(configuration.get());
         }
 
-        const auto node = ::YAML::LoadFile(file.path().string());
-
-        expect(node["sources"]["main.cpp"].IsDefined()).to_be(true);
-        expect(node["sources"]["source.cpp"].IsDefined()).to_be(true);
+        expect(configurations).to_be(std::vector<::abuild::Configuration *>{release, debug, addressSanitizer});
+        expect(cache.configuration(gcc, "release")).to_be(release);
+        expect(cache.configuration(gcc, "debug")).to_be(debug);
+        expect(cache.configuration(gcc, "address")).to_be(addressSanitizer);
+        expect(cache.configuration(gcc, "memory")).to_be(nullptr);
+        expect(cache.configuration(nullptr, "release")).to_be(nullptr);
+        expect(cache.configuration(nullptr, "")).to_be(nullptr);
     });
 
     test("add_header_file()", [] {
@@ -37,6 +48,47 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
 
         expect(node["headers"]["header.hpp"].IsDefined()).to_be(true);
         expect(node["headers"]["include/header.hpp"].IsDefined()).to_be(true);
+    });
+
+    test("add_source_file()", [] {
+        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+
+        {
+            ::abuild::Cache cache{file.path()};
+            cache.add_source_file("main.cpp", "my_project");
+            cache.add_source_file("source.cpp", "my_project");
+        }
+
+        const auto node = ::YAML::LoadFile(file.path().string());
+
+        expect(node["sources"]["main.cpp"].IsDefined()).to_be(true);
+        expect(node["sources"]["source.cpp"].IsDefined()).to_be(true);
+    });
+
+    test("add_toolchain()", [] {
+        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+
+        ::abuild::Cache cache{file.path()};
+        ::abuild::Toolchain *gcc = cache.add_toolchain("gcc_x64");
+        ::abuild::Toolchain *msvc = cache.add_toolchain("msvc_x64");
+        ::abuild::Toolchain *clang = cache.add_toolchain("clang_x64");
+
+        std::vector<::abuild::Toolchain *> toolchains;
+        toolchains.reserve(cache.toolchains().size());
+
+        for (const std::unique_ptr<::abuild::Toolchain> &toolchain : cache.toolchains())
+        {
+            toolchains.push_back(toolchain.get());
+        }
+
+        expect(toolchains).to_be(std::vector<::abuild::Toolchain *>{gcc, msvc, clang});
+
+        expect(cache.toolchain("gcc_x64")).to_be(gcc);
+        expect(cache.toolchain("msvc_x64")).to_be(msvc);
+        expect(cache.toolchain("clang_x64")).to_be(clang);
+        expect(cache.toolchain("gcc")).to_be(nullptr);
+        expect(cache.toolchain("gcc_x32")).to_be(nullptr);
+        expect(cache.toolchain("")).to_be(nullptr);
     });
 
     test("add project", [] {
@@ -85,7 +137,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         expect(project->headers[0]).to_be(header);
     });
 
-    test("load missing files", [] {
+    test("load with missing files", [] {
         const ::abuild::TestProject testProject{
             "cache_test",
             {{"main.cpp", ""},

@@ -14,6 +14,7 @@ namespace abuild
 
 export struct ConfigurationData
 {
+    //! Configuration name
     std::string name;
 
     //! Pointer to the `Toolchain` that defines

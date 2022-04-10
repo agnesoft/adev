@@ -78,9 +78,10 @@ public:
         }
     }
 
-    //! Adds new configuration `name` to the Cache
-    //! and returns a pointer to it.
-    auto add_configuration(std::string name, Toolchain *toolchain) -> Configuration *
+    //! Adds new configuration `name` for
+    //! `toolchain` to the Cache and returns a
+    //! pointer to it.
+    auto add_configuration(Toolchain *toolchain, std::string name) -> Configuration *
     {
         return this->data.configurations.emplace_back(std::make_unique<Configuration>(std::move(name), toolchain)).get();
     }
@@ -129,9 +130,9 @@ public:
     //! Returns configuration `name` for
     //! `toolchain` or `nullptr` if there is no
     //! such configuration.
-    [[nodiscard]] auto configuration(const std::string &name, Toolchain *toolchain) const noexcept -> Configuration *
+    [[nodiscard]] auto configuration(Toolchain *toolchain, const std::string &name) const noexcept -> Configuration *
     {
-        for (const auto &config : this->data.configurations)
+        for (const std::unique_ptr<Configuration> &config : this->data.configurations)
         {
             if (config->name() == name && config->toolchain() == toolchain)
             {
@@ -140,6 +141,12 @@ public:
         }
 
         return nullptr;
+    }
+
+    //! Returns all configurations in the cache.
+    [[nodiscard]] auto configurations() const noexcept -> const std::vector<std::unique_ptr<Configuration>> &
+    {
+        return this->data.configurations;
     }
 
     //! Finds the header with the exact `path` and
@@ -208,7 +215,7 @@ public:
     //! `nullptr` if there is no such toolchain.
     [[nodiscard]] auto toolchain(const std::string &name) -> Toolchain *
     {
-        for (const auto &t : this->data.toolchains)
+        for (const std::unique_ptr<Toolchain> &t : this->data.toolchains)
         {
             if (t->name == name)
             {

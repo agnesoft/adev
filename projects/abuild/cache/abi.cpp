@@ -48,19 +48,6 @@ export struct ABI
         Windows
     };
 
-    //! Compiler frontend
-    enum class Frontend
-    {
-        //! LLVM Clang C compiler family
-        Clang,
-
-        //! GNU C/C++ compiler
-        GCC,
-
-        //! Microsoft Visual C/C++
-        MSVC
-    };
-
     //! Processor architecture
     Architecture architecture;
 
@@ -69,8 +56,5 @@ export struct ABI
 
     //! Register size
     Bitness bitness;
-
-    //! Compiler frontend
-    Frontend frontend;
 };
 }

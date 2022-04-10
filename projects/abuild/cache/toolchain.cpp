@@ -9,16 +9,23 @@ namespace abuild
 //! toolchain.
 export struct Toolchain
 {
+    //! Compiler frontend types
     enum class Frontend
     {
+        //! LLVM C family compiler
         Clang,
+
+        //! GNU compiler
         GCC,
+
+        //! Microsoft Visual C++
         MSVC
     };
 
     //! Name of the toolchain.
     std::string name;
 
+    //! Compiler frontend type
     Frontend frontend = Frontend::GCC;
 
     //! Path to the C compiler.

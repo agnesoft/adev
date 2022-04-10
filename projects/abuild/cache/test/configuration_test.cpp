@@ -11,5 +11,8 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
     test("", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         ::abuild::Cache cache{file.path()};
+
+        ::abuild::Toolchain gcc = cache.add_toolchain("gcc");
+        ::abuild::Configuration gccRelease = cache.add_configuration(gcc, "release");
     });
 });

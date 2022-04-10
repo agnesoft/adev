@@ -226,12 +226,12 @@ private:
 
     [[nodiscard]] auto precompiled_module_suffix() const -> std::string
     {
-        if (this->data.toolchain->abi.frontend == ABI::Frontend::Clang)
+        if (this->data.toolchain->frontend == Toolchain::Frontend::Clang)
         {
             return ".pcm";
         }
 
-        if (this->data.toolchain->abi.frontend == ABI::Frontend::MSVC)
+        if (this->data.toolchain->frontend == Toolchain::Frontend::MSVC)
         {
             return ".ifc";
         }
