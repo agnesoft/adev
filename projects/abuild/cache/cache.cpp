@@ -8,7 +8,7 @@ import yamlcpp;
 // clang-format off
 #include "project.cpp" //NOLINT(bugprone-suspicious-include)
 #include "file.cpp" //NOLINT(bugprone-suspicious-include)
-#include "binary_file.cpp" //NOLINT(bugprone-suspicious-include)
+#include "linked_file.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cpp_file.cpp" //NOLINT(bugprone-suspicious-include)
 #include "source_file.cpp" //NOLINT(bugprone-suspicious-include)
 #include "header_file.cpp" //NOLINT(bugprone-suspicious-include)

@@ -29,10 +29,10 @@ export struct Toolchain
     Frontend frontend = Frontend::GCC;
 
     //! Path to the C compiler.
-    std::filesystem::path compilerC;
+    std::filesystem::path cCompiler;
 
     //! Path to the C++ compiler.
-    std::filesystem::path compilerCpp;
+    std::filesystem::path cppCompiler;
 
     //! Path to the linker.
     std::filesystem::path linker;

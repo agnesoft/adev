@@ -20,6 +20,16 @@ public:
         CacheWriter::save_files(sources, CacheWriter::ensure_node(root["sources"]));
     }
 
+    auto save_toolchains(const std::vector<std::unique_ptr<Toolchain>> &toolchains)
+    {
+        ::YAML::Node node = CacheWriter::ensure_node(root["toolchains"]);
+
+        for (const std::unique_ptr<Toolchain> &toolchain : toolchains)
+        {
+            CacheWriter::save_toolchain(toolchain.get(), node);
+        }
+    }
+
     auto save_to_file(const std::filesystem::path &path) -> void
     {
         std::ofstream{path} << this->root;
@@ -29,6 +39,13 @@ private:
     [[nodiscard]] static auto ensure_node(::YAML::Node &&node) -> ::YAML::Node &&
     {
         return std::move(node = {});
+    }
+
+    static auto save_abi(const ABI &abi, ::YAML::Node &&node) -> void
+    {
+        node["architecture"] = CacheWriter::to_string(abi.architecture);
+        node["bitness"] = CacheWriter::to_string(abi.bitness);
+        node["platform"] = CacheWriter::to_string(abi.platform);
     }
 
     static auto save_token(const Token &token, ::YAML::Node &node)
@@ -62,6 +79,74 @@ private:
         }
     }
 
+    static auto save_toolchain(const Toolchain *toolchain, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node toolchainNode = CacheWriter::ensure_node(node[toolchain->name]);
+        toolchainNode["frontend"] = CacheWriter::to_string(toolchain->frontend);
+        toolchainNode["c_compiler"] = toolchain->cCompiler.string();
+        toolchainNode["cpp_compiler"] = toolchain->cppCompiler.string();
+        toolchainNode["linker"] = toolchain->linker.string();
+        toolchainNode["archiver"] = toolchain->archiver.string();
+
+        CacheWriter::save_abi(toolchain->abi, CacheWriter::ensure_node(toolchainNode["abi"]));
+    }
+
+    [[nodiscard]] static auto to_string(const Toolchain::Frontend &frontend) -> std::string
+    {
+        switch (frontend)
+        {
+        case Toolchain::Frontend::Clang:
+            return "Clang";
+        case Toolchain::Frontend::GCC:
+            return "GCC";
+        case Toolchain::Frontend::MSVC:
+            return "MSVC";
+        };
+
+        return {};
+    }
+
+    [[nodiscard]] static auto to_string(const ABI::Architecture &architecture) -> std::string
+    {
+        switch (architecture)
+        {
+        case ABI::Architecture::x86:
+            return "x86";
+        case ABI::Architecture::ARM:
+            return "ARM";
+        };
+
+        return {};
+    }
+
+    [[nodiscard]] static auto to_string(const ABI::Bitness &bitness) -> std::string
+    {
+        switch (bitness)
+        {
+        case ABI::Bitness::x32:
+            return "x32";
+        case ABI::Bitness::x64:
+            return "x64";
+        };
+
+        return {};
+    }
+
+    [[nodiscard]] static auto to_string(const ABI::Platform &platform) -> std::string
+    {
+        switch (platform)
+        {
+        case ABI::Platform::Linux:
+            return "Linux";
+        case ABI::Platform::Unix:
+            return "Unix";
+        case ABI::Platform::Windows:
+            return "Windows";
+        };
+
+        return {};
+    }
+
     ::YAML::Node root;
 };
 
@@ -69,6 +154,7 @@ private:
 auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void
 {
     CacheWriter writer;
+    writer.save_toolchains(data.toolchains);
     writer.save_sources(data.sources);
     writer.save_headers(data.headers);
     writer.save_to_file(path);
