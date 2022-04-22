@@ -13,19 +13,6 @@ export struct SourceFile;
 //! tracked by the `Cache`.
 export struct Project
 {
-    //! Output type of the project.
-    enum class Type
-    {
-        //! Static library producing *.lib or *.a.
-        StaticLibrary,
-
-        //! Dynamic library producing *.dll or *.so.
-        DynamicLibrary,
-
-        //! Executable producing *.exe (on Windows).
-        Executable
-    };
-
     //! Name of the project.
     std::string name;
 
@@ -36,8 +23,5 @@ export struct Project
     //! List of sources that are part of the
     //! project.
     std::vector<SourceFile *> sources;
-
-    //! Output type of the project.
-    Type type = Type::StaticLibrary;
 };
 }

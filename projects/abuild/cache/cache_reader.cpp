@@ -26,17 +26,12 @@ public:
 private:
     [[nodiscard]] static auto abi_architecture(const std::string &value) -> ABI::Architecture
     {
-        if (value == "x86")
-        {
-            return ABI::Architecture::x86;
-        }
-
         if (value == "ARM")
         {
             return ABI::Architecture::ARM;
         }
 
-        throw std::logic_error{"Unknown ABI architecture '" + value + "'."};
+        return ABI::Architecture::x86;
     }
 
     [[nodiscard]] static auto abi_bitness(const std::string &value) -> ABI::Bitness
@@ -46,21 +41,11 @@ private:
             return ABI::Bitness::x32;
         }
 
-        if (value == "x64")
-        {
-            return ABI::Bitness::x64;
-        }
-
-        throw std::logic_error{"Unknown ABI bitness '" + value + "'."};
+        return ABI::Bitness::x64;
     }
 
     [[nodiscard]] static auto abi_platform(const std::string &value) -> ABI::Platform
     {
-        if (value == "Linux")
-        {
-            return ABI::Platform::Linux;
-        }
-
         if (value == "Unix")
         {
             return ABI::Platform::Unix;
@@ -71,7 +56,7 @@ private:
             return ABI::Platform::Windows;
         }
 
-        throw std::logic_error{"Unknown ABI platform '" + value + "'."};
+        return ABI::Platform::Linux;
     }
 
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
@@ -153,17 +138,12 @@ private:
             return Toolchain::Frontend::Clang;
         }
 
-        if (value == "GCC")
-        {
-            return Toolchain::Frontend::GCC;
-        }
-
         if (value == "MSVC")
         {
             return Toolchain::Frontend::MSVC;
         }
 
-        throw std::logic_error{"Unknown toolchain frontend value '" + value + "'."};
+        return Toolchain::Frontend::GCC;
     }
 
     Cache &cache;

@@ -93,58 +93,52 @@ private:
 
     [[nodiscard]] static auto to_string(const Toolchain::Frontend &frontend) -> std::string
     {
-        switch (frontend)
+        if (frontend == Toolchain::Frontend::Clang)
         {
-        case Toolchain::Frontend::Clang:
             return "Clang";
-        case Toolchain::Frontend::GCC:
-            return "GCC";
-        case Toolchain::Frontend::MSVC:
-            return "MSVC";
-        };
+        }
 
-        return {};
+        if (frontend == Toolchain::Frontend::MSVC)
+        {
+            return "MSVC";
+        }
+
+        return "GCC";
     }
 
     [[nodiscard]] static auto to_string(const ABI::Architecture &architecture) -> std::string
     {
-        switch (architecture)
+        if (architecture == ABI::Architecture::ARM)
         {
-        case ABI::Architecture::x86:
-            return "x86";
-        case ABI::Architecture::ARM:
             return "ARM";
-        };
+        }
 
-        return {};
+        return "x86";
     }
 
     [[nodiscard]] static auto to_string(const ABI::Bitness &bitness) -> std::string
     {
-        switch (bitness)
+        if (bitness == ABI::Bitness::x32)
         {
-        case ABI::Bitness::x32:
             return "x32";
-        case ABI::Bitness::x64:
-            return "x64";
-        };
+        }
 
-        return {};
+        return "x64";
     }
 
     [[nodiscard]] static auto to_string(const ABI::Platform &platform) -> std::string
     {
-        switch (platform)
+        if (platform == ABI::Platform::Unix)
         {
-        case ABI::Platform::Linux:
-            return "Linux";
-        case ABI::Platform::Unix:
             return "Unix";
-        case ABI::Platform::Windows:
-            return "Windows";
-        };
+        }
 
-        return {};
+        if (platform == ABI::Platform::Windows)
+        {
+            return "Windows";
+        }
+
+        return "Linux";
     }
 
     ::YAML::Node root;

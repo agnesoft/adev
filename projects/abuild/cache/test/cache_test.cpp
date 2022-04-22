@@ -273,7 +273,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
 
         ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
 
-        assert_(cache.toolchains().size()).to_be(3);
+        assert_(cache.toolchains().size()).to_be(3U);
 
         expect(cache.toolchains()[0]->name).to_be("gcc_x64");
         expect(cache.toolchains()[0]->frontend).to_be(::abuild::Toolchain::Frontend::GCC);
@@ -304,5 +304,38 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         expect(cache.toolchains()[2]->abi.architecture).to_be(::abuild::ABI::Architecture::ARM);
         expect(cache.toolchains()[2]->abi.bitness).to_be(::abuild::ABI::Bitness::x64);
         expect(cache.toolchains()[2]->abi.platform).to_be(::abuild::ABI::Platform::Unix);
+    });
+
+    test("load missing toolchains", [] {
+        const ::abuild::TestProject testProject{
+            "cache_test",
+            {{"usr/bin/g++", ""},
+              {"usr/bin/ld", ""},
+              {"usr/bin/clang", ""},
+              {"usr/bin/lld", ""},
+              {"Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe", ""}}
+        };
+
+        {
+            ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+            ::abuild::Toolchain *gcc = cache.add_toolchain("gcc_x64");
+            gcc->cCompiler = testProject.root() / "usr/bin/gcc";
+            gcc->cppCompiler = testProject.root() / "usr/bin/g++";
+            gcc->linker = testProject.root() / "usr/bin/ld";
+
+            ::abuild::Toolchain *msvc = cache.add_toolchain("msvc2022_x86");
+            msvc->cCompiler = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe";
+            msvc->cppCompiler = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe";
+            msvc->linker = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\link.exe";
+
+            ::abuild::Toolchain *clang = cache.add_toolchain("clang_x64");
+            clang->cCompiler = testProject.root() / "usr/bin/clang";
+            clang->cppCompiler = testProject.root() / "usr/bin/clang++";
+            clang->linker = testProject.root() / "usr/bin/lld";
+        }
+
+        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+
+        assert_(cache.toolchains().size()).to_be(0U);
     });
 });

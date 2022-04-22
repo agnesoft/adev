@@ -2,6 +2,7 @@
 export module abuild.cache:configuration;
 export import :configuration_data;
 export import :project;
+export import :settings;
 import :configuration_index;
 #endif
 
@@ -21,18 +22,16 @@ public:
 
     auto add_dynamic_library(Project *project) -> DynamicLibrary *
     {
-        std::unique_ptr<DynamicLibrary> lib = std::make_unique<DynamicLibrary>();
+        DynamicLibrary *lib = this->data.dynamicLibraries.emplace_back(std::make_unique<DynamicLibrary>()).get();
         lib->path = this->build_dir() / "bin" / (project->name + this->dynamic_library_suffix());
-
-        return this->data.dynamicLibraries.emplace_back(std::move(lib)).get();
+        return lib;
     }
 
     auto add_executable(Project *project) -> Executable *
     {
-        std::unique_ptr<Executable> exe = std::make_unique<Executable>();
+        Executable *exe = this->data.executables.emplace_back(std::make_unique<Executable>()).get();
         exe->path = this->build_dir() / "bin" / (project->name + this->executable_suffix());
-
-        return this->data.executables.emplace_back(std::move(exe)).get();
+        return exe;
     }
 
     auto add_header_unit(CppFile *file, Visibility visibility) -> HeaderUnit *
@@ -41,71 +40,65 @@ public:
 
         if (unit == nullptr)
         {
-            std::unique_ptr<HeaderUnit> header = std::make_unique<HeaderUnit>();
-            header->file = file;
-            header->precompiledHeaderUnit.path = this->build_dir() / "header_units" / (file->path.filename().string() + this->precompiled_module_suffix());
-            header->visibility = visibility;
-            unit = this->data.headerUnits.emplace_back(std::move(header)).get();
+            unit = this->data.headerUnits.emplace_back(std::make_unique<HeaderUnit>()).get();
+            unit->file = file;
+            unit->precompiledHeaderUnit.path = this->build_dir() / "header_units" / (file->path.filename().string() + this->precompiled_module_suffix());
+            unit->visibility = visibility;
+            this->index.insert(unit);
         }
 
         return unit;
     }
 
-    auto add_module(std::string name, TranslationUnit *unit, Visibility visibility) -> Module *
+    auto add_module(const std::string &name, TranslationUnit *unit, Visibility visibility) -> Module *
     {
-        Module *modPtr = this->index.module_(name);
+        Module *mod = this->index.module_(name);
 
-        if (modPtr == nullptr)
+        if (mod == nullptr)
         {
-            std::unique_ptr<Module> mod = std::make_unique<Module>();
-            mod->name = std::move(name);
+            mod = this->data.modules.emplace_back(std::make_unique<Module>()).get();
+            mod->name = name;
             mod->precompiledModuleInterface.path = this->build_dir() / "modules" / (name + this->precompiled_module_suffix());
             mod->visibility = visibility;
-            modPtr = this->data.modules.emplace_back(std::move(mod)).get();
-            this->index.insert(modPtr);
+            this->index.insert(mod);
         }
 
-        modPtr->translationUnit = unit;
-        return modPtr;
+        mod->translationUnit = unit;
+        return mod;
     }
 
-    auto add_module_partition(const std::string &mod, std::string name, TranslationUnit *unit, Visibility visibility) -> ModulePartition *
+    auto add_module_partition(const std::string &modName, const std::string &name, TranslationUnit *unit, Visibility visibility) -> ModulePartition *
     {
-        Module *modPtr = this->index.module_(mod);
+        Module *mod = this->index.module_(modName);
 
-        if (modPtr == nullptr)
+        if (mod == nullptr)
         {
-            modPtr = this->add_module(mod, nullptr, visibility);
+            mod = this->add_module(modName, nullptr, visibility);
         }
 
-        std::unique_ptr<ModulePartition> partition = std::make_unique<ModulePartition>();
-        partition->name = std::move(name);
-        partition->precompiledModuleInterface.path = this->build_dir() / "modules" / (mod + '-' + name + this->precompiled_module_suffix());
-        partition->mod = modPtr;
+        ModulePartition *partition = this->data.modulePartitions.emplace_back(std::make_unique<ModulePartition>()).get();
+        partition->name = name;
+        partition->precompiledModuleInterface.path = this->build_dir() / "modules" / (modName + '-' + name + this->precompiled_module_suffix());
+        partition->mod = mod;
         partition->translationUnit = unit;
         partition->visibility = visibility;
-
-        ModulePartition *partitionPtr = this->data.modulePartitions.emplace_back(std::move(partition)).get();
-        modPtr->partitions.push_back(partitionPtr);
-        this->index.insert(partitionPtr);
-        return partitionPtr;
+        mod->partitions.push_back(partition);
+        return partition;
     }
 
     auto add_static_library(Project *project) -> StaticLibrary *
     {
-        auto lib = std::make_unique<StaticLibrary>();
-        lib->path = this->build_dir() / "lib" / (project->name + this->dynamic_library_suffix());
-
-        return this->data.staticLibraries.emplace_back(std::move(lib)).get();
+        StaticLibrary *lib = this->data.staticLibraries.emplace_back(std::make_unique<StaticLibrary>()).get();
+        lib->path = this->build_dir() / "lib" / (project->name + this->static_library_suffix());
+        return lib;
     }
 
     auto add_translation_unit(SourceFile *file) -> TranslationUnit *
     {
-        auto unit = std::make_unique<TranslationUnit>();
+        TranslationUnit *unit = this->data.translationUnits.emplace_back(std::make_unique<TranslationUnit>()).get();
         unit->sourceFile = file;
         unit->path = this->build_dir() / file->project->name / (file->path.filename().string() + this->object_file_suffix());
-
-        return this->data.translationUnits.emplace_back(std::move(unit)).get();
+        return unit;
     }
 
     [[nodiscard]] auto name() const noexcept -> const std::string &

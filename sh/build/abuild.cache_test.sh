@@ -14,6 +14,7 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${binDir}/abuild.cache_test${executableExtension}" \
            "${projectDir}/cache_test.cpp" \
+           "${projectDir}/configuration_test.cpp" \
            "${projectDir}/file_lookup_test.cpp" \
            "${projectDir}/main.cpp" \
            "${projectDir}/settings_test.cpp" \
@@ -31,6 +32,7 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/abuild.cache_test" \
          "${projectDir}/cache_test.cpp" \
+         "${projectDir}/configuration_test.cpp" \
          "${projectDir}/file_lookup_test.cpp" \
          "${projectDir}/main.cpp" \
          "${projectDir}/settings_test.cpp" \
@@ -55,6 +57,7 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cache_test.exe\" ^
        \"${projectDir}/cache_test.cpp\" ^
+       \"${projectDir}/configuration_test.cpp\" ^
        \"${projectDir}/file_lookup_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
        \"${projectDir}/settings_test.cpp\" ^

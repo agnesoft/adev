@@ -7,24 +7,6 @@ using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
-namespace abuild
-{
-auto operator<<(std::ostream &stream, const ::abuild::Project::Type &type) -> std::ostream &
-{
-    switch (type)
-    {
-    case Project::Type::StaticLibrary:
-        return stream << "StaticLibrary (" << static_cast<std::underlying_type_t<::abuild::Project::Type>>(type) << ')';
-    case Project::Type::DynamicLibrary:
-        return stream << "DynamicLibrary (" << static_cast<std::underlying_type_t<::abuild::Project::Type>>(type) << ')';
-    case Project::Type::Executable:
-        return stream << "Executable (" << static_cast<std::underlying_type_t<::abuild::Project::Type>>(type) << ')';
-    }
-
-    throw std::logic_error{"Unknown enum value of ::abuild::Project::Type (" + std::to_string(static_cast<std::underlying_type_t<::abuild::Project::Type>>(type)) + ')'};
-}
-}
-
 static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cppcoreguidelines-interfaces-global-init)
     test("single file project", [] {
         const ::abuild::TestProject testProject{
@@ -38,7 +20,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("project_scanner_test");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/main.cpp");
     });
@@ -57,7 +38,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("myapp");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/projects/myapp/main.cpp");
 
@@ -65,7 +45,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("mylib");
-        expect(project->type).to_be(::abuild::Project::Type::StaticLibrary);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/projects/mylib/my_lib.cpp");
     });
@@ -85,7 +64,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("myapp");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(3U);
 
         std::vector<std::filesystem::path> sourcePaths;
@@ -117,14 +95,12 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("myapp");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/myapp/main.cpp");
 
         project = cache.project("myapp.subapp");
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("myapp.subapp");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/myapp/subapp/main.cpp");
     });
@@ -157,14 +133,12 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("myapp");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/myapp/main.cpp");
 
         project = cache.project("myapp.test");
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("myapp.test");
-        expect(project->type).to_be(::abuild::Project::Type::Executable);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->path).to_be("project_scanner_test/myapp/test/main.cpp");
     });
@@ -184,7 +158,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("mylib");
-        expect(project->type).to_be(::abuild::Project::Type::StaticLibrary);
         assert_(project->headers.size()).to_be(2U);
 
         std::vector<std::filesystem::path> headerPaths;
@@ -213,7 +186,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         assert_(project).not_to_be(nullptr);
         expect(project->name).to_be("mylib");
-        expect(project->type).to_be(::abuild::Project::Type::StaticLibrary);
         assert_(project->sources.size()).to_be(1U);
         expect(project->sources[0]->tokens).to_be(std::vector<::abuild::Token>{
             ::abuild::ModuleToken{.name = "mylib", .exported = true},

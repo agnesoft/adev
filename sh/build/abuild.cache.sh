@@ -22,7 +22,7 @@ function build_clang() {
 function build_gcc() {
     $gcc $gccCompilerFlags -o "${buildDir}/project.obj"             -c "${projectDir}/project.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/file.obj"                -c "${projectDir}/file.cpp"
-    $gcc $gccCompilerFlags -o "${buildDir}/binary_file.obj"         -c "${projectDir}/binary_file.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/linked_file.obj"         -c "${projectDir}/linked_file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cpp_file.obj"            -c "${projectDir}/cpp_file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/source_file.obj"         -c "${projectDir}/source_file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/header_file.obj"         -c "${projectDir}/header_file.cpp"
@@ -53,7 +53,7 @@ function build_gcc() {
          "${buildDir}/cache.obj" \
          "${buildDir}/project.obj" \
          "${buildDir}/file.obj" \
-         "${buildDir}/binary_file.obj" \
+         "${buildDir}/linked_file.obj" \
          "${buildDir}/cpp_file.obj" \
          "${buildDir}/source_file.obj" \
          "${buildDir}/header_file.obj" \
@@ -83,7 +83,7 @@ function build_gcc() {
 buildMSVC="
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-project.ifc\"             /Fo\"${buildDir}/abuild.cache-project.obj\"             /c /TP \"${projectDir}/project.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-file.ifc\"                /Fo\"${buildDir}/abuild.cache-file.obj\"                /c /TP \"${projectDir}/file.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-binary_file.ifc\"         /Fo\"${buildDir}/abuild.cache-binary_file.obj\"         /c /TP \"${projectDir}/binary_file.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-linked_file.ifc\"         /Fo\"${buildDir}/abuild.cache-linked_file.obj\"         /c /TP \"${projectDir}/linked_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-cpp_file.ifc\"            /Fo\"${buildDir}/abuild.cache-cpp_file.obj\"            /c /TP \"${projectDir}/cpp_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-source_file.ifc\"         /Fo\"${buildDir}/abuild.cache-source_file.obj\"         /c /TP \"${projectDir}/source_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header_file.ifc\"         /Fo\"${buildDir}/abuild.cache-header_file.obj\"         /c /TP \"${projectDir}/header_file.cpp\" || exit 1
@@ -123,7 +123,7 @@ lib.exe /NOLOGO ^
         \"${buildDir}/abuild.cache.obj\" ^
         \"${buildDir}/abuild.cache-project.obj\" ^
         \"${buildDir}/abuild.cache-file.obj\" ^
-        \"${buildDir}/abuild.cache-binary_file.obj\" ^
+        \"${buildDir}/abuild.cache-linked_file.obj\" ^
         \"${buildDir}/abuild.cache-cpp_file.obj\" ^
         \"${buildDir}/abuild.cache-source_file.obj\" ^
         \"${buildDir}/abuild.cache-header_file.obj\" ^
