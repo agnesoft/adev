@@ -22,13 +22,13 @@ export struct Header
 
     //! List of `HeaderUnit`s imported by this
     //! header.
-    std::vector<HeaderUnit *> headerUnit;
+    std::vector<HeaderUnit *> importedHeaderUnits;
 
     //! List of `Module`s imported by this header.
-    std::vector<Module *> modules;
+    std::vector<Module *> importedModules;
 
     //! List of `ModulePartition`s imported by
     //! this header.
-    std::vector<ModulePartition *> modulePartitions;
+    std::vector<ModulePartition *> importedModulePartitions;
 };
 }

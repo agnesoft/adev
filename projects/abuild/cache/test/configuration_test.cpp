@@ -367,4 +367,117 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
 
         expect(config.header_unit(&file2)).to_be(headerUnit);
     });
+
+    test("write & read configuration", [] {
+        const ::abuild::TestProject testProject{
+            "cache_test",
+            {{"myapp/main.cpp", ""},
+              {"mylib/module.cpp", ""},
+              {"mylib/partition.hpp", ""},
+              {"mylib/header.hpp", ""},
+              {"mylib/header2.hpp", ""}}
+        };
+
+        {
+            ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+            ::abuild::Configuration *config = cache.add_configuration(cache.add_toolchain("gcc"), "release");
+
+            ::abuild::SourceFile *main = cache.add_source_file(testProject.root() / "main.cpp", "myapp");
+            ::abuild::SourceFile *modSource = cache.add_source_file(testProject.root() / "module.cpp", "mylib");
+            ::abuild::SourceFile *partitionSource = cache.add_source_file(testProject.root() / "partition.cpp", "mylib");
+            ::abuild::HeaderFile *headerFile1 = cache.add_header_file(testProject.root() / "header.hpp", "mylib");
+            ::abuild::HeaderFile *headerFile2 = cache.add_header_file(testProject.root() / "header2.hpp", "mylib");
+
+            ::abuild::StaticLibrary *staticLib = config->add_static_library(cache.project("mylib"));
+            ::abuild::DynamicLibrary *dynamicLib = config->add_dynamic_library(cache.project("mylib"));
+            ::abuild::Executable *exe = config->add_executable(cache.project("myapp"));
+            ::abuild::TranslationUnit *mainUnit = config->add_translation_unit(main);
+            ::abuild::TranslationUnit *modUnit = config->add_translation_unit(modSource);
+            ::abuild::TranslationUnit *partitionUnit = config->add_translation_unit(partitionSource);
+            ::abuild::HeaderUnit *headerUnit1 = config->add_header_unit(headerFile1);
+            ::abuild::HeaderUnit *headerUnit2 = config->add_header_unit(headerFile2);
+            ::abuild::Module *mod = config->add_module("my_module", modUnit, ::abuild::Visibility::Public);
+            ::abuild::ModulePartition *partition = config->add_module_partition("my_module", "my_partition", partitionUnit, ::abuild::Visibility::Public);
+
+            ::abuild::Header header1{
+                .file = headerFile1,
+                .includes = {},
+                .importedHeaderUnits = {},
+                .importedModules = {mod},
+                .importedModulePartitions = {partition}};
+            ::abuild::Header header2{
+                .file = headerFile2,
+                .includes = {header1},
+                .importedHeaderUnits = {headerUnit1}};
+
+            exe->translationUnits.push_back(mainUnit);
+            staticLib->translationUnits.push_back(modUnit);
+            staticLib->translationUnits.push_back(partitionUnit);
+            dynamicLib->translationUnits.push_back(modUnit);
+            dynamicLib->translationUnits.push_back(partitionUnit);
+
+            mainUnit->includes = {header2};
+            mainUnit->importedHeaderUnits = {headerUnit2};
+            mainUnit->importedModules = {mod};
+            modUnit->importedModulePartitions = {partition};
+            partitionUnit->importedHeaderUnits = {headerUnit2};
+        }
+
+        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
+        ::abuild::Configuration *config = cache.configuration(cache.toolchain("gcc"), "release");
+        ::abuild::SourceFile *main = cache.exact_source_file(testProject.root() / "main.cpp");
+        ::abuild::SourceFile *modSource = cache.exact_source_file(testProject.root() / "module.cpp");
+        ::abuild::SourceFile *partitionSource = cache.exact_source_file(testProject.root() / "partition.cpp");
+        ::abuild::HeaderFile *headerFile1 = cache.exact_header_file(testProject.root() / "header.hpp");
+        ::abuild::HeaderFile *headerFile2 = cache.exact_header_file(testProject.root() / "header2.hpp");
+
+        assert_(config).not_to_be(nullptr);
+        assert_(main).not_to_be(nullptr);
+        assert_(modSource).not_to_be(nullptr);
+        assert_(partitionSource).not_to_be(nullptr);
+        assert_(headerFile1).not_to_be(nullptr);
+        assert_(headerFile2).not_to_be(nullptr);
+        assert_(config->static_libraries().size()).to_be(1U);
+        assert_(config->dynamic_libraries().size()).to_be(1U);
+        assert_(config->executables().size()).to_be(1U);
+        assert_(config->header_units().size()).to_be(2U);
+        assert_(config->modules().size()).to_be(1U);
+        assert_(config->translation_units().size()).to_be(3U);
+
+        ::abuild::StaticLibrary *staticLib = config->static_libraries()[0].get();
+        ::abuild::DynamicLibrary *dynamicLib = config->dynamic_libraries()[0].get();
+        ::abuild::Executable *exe = config->executables()[0].get();
+        ::abuild::TranslationUnit *mainUnit = config->translation_units()[0].get();
+        ::abuild::TranslationUnit *modUnit = config->translation_units()[1].get();
+        ::abuild::TranslationUnit *partitionUnit = config->translation_units()[2].get();
+        ::abuild::HeaderUnit *headerUnit1 = config->header_units()[0].get();
+        ::abuild::HeaderUnit *headerUnit2 = config->header_units()[1].get();
+        ::abuild::Module *mod = config->module_("my_module");
+        assert_(mod).not_to_be(nullptr);
+        assert_(mod->partitions.size()).to_be(1U);
+        ::abuild::ModulePartition *partition = mod->partitions[0];
+        expect(partition->name).to_be("my_partition");
+
+        expect(staticLib->translationUnits).to_be(std::vector<::abuild::TranslationUnit *>{modUnit, partitionUnit});
+        expect(dynamicLib->translationUnits).to_be(std::vector<::abuild::TranslationUnit *>{modUnit, partitionUnit});
+        expect(exe->translationUnits).to_be(std::vector<::abuild::TranslationUnit *>{mainUnit});
+
+        expect(mainUnit->sourceFile).to_be(main);
+        assert_(mainUnit->includes.size()).to_be(1U);
+        assert_(mainUnit->importedHeaderUnits).to_be(std::vector<::abuild::HeaderUnit *>{headerUnit2});
+        assert_(mainUnit->importedModules).to_be(std::vector<::abuild::Module *>{mod});
+
+        ::abuild::Header &header2 = mainUnit->includes[0];
+        expect(header2.file).to_be(headerFile2);
+        assert_(header2.includes.size()).to_be(1U);
+        assert_(header2.importedHeaderUnits).to_be(std::vector<::abuild::HeaderUnit *>{headerUnit1});
+
+        ::abuild::Header &header1 = header2.includes[0];
+        expect(header1.file).to_be(headerFile1);
+        expect(header1.importedModules).to_be(std::vector<::abuild::Module *>{mod});
+        expect(header1.importedModulePartitions).to_be(std::vector<::abuild::ModulePartition *>{partition});
+
+        expect(modUnit->importedModulePartitions).to_be(std::vector<::abuild::ModulePartition *>{partition});
+        expect(partitionUnit->importedHeaderUnits).to_be(std::vector<::abuild::HeaderUnit *>{headerUnit2});
+    });
 });
