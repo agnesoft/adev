@@ -45,6 +45,5 @@ public:
 private:
     std::unordered_map<CppFile *, HeaderUnit *> headerUnits;
     std::unordered_map<std::string, Module *> modules;
-    std::unordered_map<TranslationUnit *, Module *> moduleTranslationUnits;
 };
 }

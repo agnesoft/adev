@@ -101,11 +101,6 @@ public:
         return unit;
     }
 
-    [[nodiscard]] auto name() const noexcept -> const std::string &
-    {
-        return this->data.name;
-    }
-
     [[nodiscard]] auto archiver_flags() const noexcept -> const std::vector<Flag> &
     {
         return this->data.archiverFlags;
@@ -131,6 +126,11 @@ public:
         return this->data.executables;
     }
 
+    [[nodiscard]] auto header_unit(CppFile *file) const -> HeaderUnit *
+    {
+        return this->index.header_unit(file);
+    }
+
     [[nodiscard]] auto header_units() const noexcept -> const std::vector<std::unique_ptr<HeaderUnit>> &
     {
         return this->data.headerUnits;
@@ -141,9 +141,19 @@ public:
         return this->data.linkerFlags;
     }
 
+    [[nodiscard]] auto module_(const std::string &name) const -> Module *
+    {
+        return this->index.module_(name);
+    }
+
     [[nodiscard]] auto modules() const noexcept -> const std::vector<std::unique_ptr<Module>> &
     {
         return this->data.modules;
+    }
+
+    [[nodiscard]] auto name() const noexcept -> const std::string &
+    {
+        return this->data.name;
     }
 
     auto set_archiver_flags(std::vector<Flag> flags) noexcept -> void

@@ -342,4 +342,30 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         expect(config.add_module("my_module", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be("");
         expect(config.add_module_partition("my_module", "my_partition", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be("");
     });
+
+    test("module lookup", [] {
+        ::abuild::Toolchain toolchain;
+        ::abuild::Configuration config("release", &toolchain);
+
+        config.add_module("my_mod", nullptr, ::abuild::Visibility::Public);
+        ::abuild::Module *mod2 = config.add_module("some.mod", nullptr, ::abuild::Visibility::Private);
+        config.add_module("astl", nullptr, ::abuild::Visibility::Public);
+
+        expect(config.module_("some.mod")).to_be(mod2);
+    });
+
+    test("header lookup", [] {
+        ::abuild::Toolchain toolchain;
+        ::abuild::Configuration config("release", &toolchain);
+
+        ::abuild::CppFile file1;
+        ::abuild::CppFile file2;
+        ::abuild::CppFile file3;
+
+        config.add_header_unit(&file1, ::abuild::Visibility::Public);
+        ::abuild::HeaderUnit *headerUnit = config.add_header_unit(&file2, ::abuild::Visibility::Public);
+        config.add_header_unit(&file3, ::abuild::Visibility::Public);
+
+        expect(config.header_unit(&file2)).to_be(headerUnit);
+    });
 });
