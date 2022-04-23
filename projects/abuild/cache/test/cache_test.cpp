@@ -29,8 +29,8 @@ auto operator<<(std::ostream &stream, const ABI::Architecture &architecture) -> 
 {
     switch (architecture)
     {
-    case ABI::Architecture::x86:
-        return stream << "x86";
+    case ABI::Architecture::X86:
+        return stream << "X86";
     case ABI::Architecture::ARM:
         return stream << "ARM";
     };
@@ -42,10 +42,10 @@ auto operator<<(std::ostream &stream, const ABI::Bitness &bitness) -> std::ostre
 {
     switch (bitness)
     {
-    case ABI::Bitness::x32:
-        return stream << "x32";
-    case ABI::Bitness::x64:
-        return stream << "x64";
+    case ABI::Bitness::X32:
+        return stream << "X32";
+    case ABI::Bitness::X64:
+        return stream << "X64";
     };
 
     return stream << "Unknown";
@@ -236,8 +236,8 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
               {"usr/bin/clang", ""},
               {"usr/bin/clang++", ""},
               {"usr/bin/lld", ""},
-              {"Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe", ""},
-              {"Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\link.exe", ""}}
+              {R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)", ""},
+              {R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\link.exe)", ""}}
         };
 
         {
@@ -247,17 +247,17 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
             gcc->cppCompiler = testProject.root() / "usr/bin/g++";
             gcc->linker = testProject.root() / "usr/bin/ld";
             gcc->archiver = testProject.root() / "usr/bin/ar";
-            gcc->abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::x86,
-                                     .bitness = ::abuild::ABI::Bitness::x64,
+            gcc->abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::X86,
+                                     .bitness = ::abuild::ABI::Bitness::X64,
                                      .platform = ::abuild::ABI::Platform::Linux};
 
             ::abuild::Toolchain *msvc = cache.add_toolchain("msvc2022_x86");
             msvc->frontend = ::abuild::Toolchain::Frontend::MSVC;
-            msvc->cCompiler = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe";
-            msvc->cppCompiler = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe";
-            msvc->linker = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\link.exe";
-            msvc->abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::x86,
-                                      .bitness = ::abuild::ABI::Bitness::x32,
+            msvc->cCompiler = testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)";
+            msvc->cppCompiler = testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)";
+            msvc->linker = testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\link.exe)";
+            msvc->abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::X86,
+                                      .bitness = ::abuild::ABI::Bitness::X32,
                                       .platform = ::abuild::ABI::Platform::Windows};
 
             ::abuild::Toolchain *clang = cache.add_toolchain("clang_x64");
@@ -267,7 +267,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
             clang->linker = testProject.root() / "usr/bin/lld";
             clang->archiver = testProject.root() / "usr/bin/llvm-ar";
             clang->abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::ARM,
-                                       .bitness = ::abuild::ABI::Bitness::x64,
+                                       .bitness = ::abuild::ABI::Bitness::X64,
                                        .platform = ::abuild::ABI::Platform::Unix};
         }
 
@@ -281,18 +281,18 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         expect(cache.toolchains()[0]->cppCompiler).to_be(testProject.root() / "usr/bin/g++");
         expect(cache.toolchains()[0]->linker).to_be(testProject.root() / "usr/bin/ld");
         expect(cache.toolchains()[0]->archiver).to_be(testProject.root() / "usr/bin/ar");
-        expect(cache.toolchains()[0]->abi.architecture).to_be(::abuild::ABI::Architecture::x86);
-        expect(cache.toolchains()[0]->abi.bitness).to_be(::abuild::ABI::Bitness::x64);
+        expect(cache.toolchains()[0]->abi.architecture).to_be(::abuild::ABI::Architecture::X86);
+        expect(cache.toolchains()[0]->abi.bitness).to_be(::abuild::ABI::Bitness::X64);
         expect(cache.toolchains()[0]->abi.platform).to_be(::abuild::ABI::Platform::Linux);
 
         expect(cache.toolchains()[1]->name).to_be("msvc2022_x86");
         expect(cache.toolchains()[1]->frontend).to_be(::abuild::Toolchain::Frontend::MSVC);
-        expect(cache.toolchains()[1]->cCompiler).to_be(testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe");
-        expect(cache.toolchains()[1]->cppCompiler).to_be(testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe");
-        expect(cache.toolchains()[1]->linker).to_be(testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\link.exe");
+        expect(cache.toolchains()[1]->cCompiler).to_be(testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)");
+        expect(cache.toolchains()[1]->cppCompiler).to_be(testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)");
+        expect(cache.toolchains()[1]->linker).to_be(testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\link.exe)");
         expect(cache.toolchains()[1]->archiver).to_be(std::filesystem::path{});
-        expect(cache.toolchains()[1]->abi.architecture).to_be(::abuild::ABI::Architecture::x86);
-        expect(cache.toolchains()[1]->abi.bitness).to_be(::abuild::ABI::Bitness::x32);
+        expect(cache.toolchains()[1]->abi.architecture).to_be(::abuild::ABI::Architecture::X86);
+        expect(cache.toolchains()[1]->abi.bitness).to_be(::abuild::ABI::Bitness::X32);
         expect(cache.toolchains()[1]->abi.platform).to_be(::abuild::ABI::Platform::Windows);
 
         expect(cache.toolchains()[2]->name).to_be("clang_x64");
@@ -302,7 +302,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
         expect(cache.toolchains()[2]->linker).to_be(testProject.root() / "usr/bin/lld");
         expect(cache.toolchains()[2]->archiver).to_be(testProject.root() / "usr/bin/llvm-ar");
         expect(cache.toolchains()[2]->abi.architecture).to_be(::abuild::ABI::Architecture::ARM);
-        expect(cache.toolchains()[2]->abi.bitness).to_be(::abuild::ABI::Bitness::x64);
+        expect(cache.toolchains()[2]->abi.bitness).to_be(::abuild::ABI::Bitness::X64);
         expect(cache.toolchains()[2]->abi.platform).to_be(::abuild::ABI::Platform::Unix);
     });
 
@@ -313,7 +313,7 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
               {"usr/bin/ld", ""},
               {"usr/bin/clang", ""},
               {"usr/bin/lld", ""},
-              {"Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe", ""}}
+              {R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)", ""}}
         };
 
         {
@@ -324,9 +324,9 @@ static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
             gcc->linker = testProject.root() / "usr/bin/ld";
 
             ::abuild::Toolchain *msvc = cache.add_toolchain("msvc2022_x86");
-            msvc->cCompiler = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe";
-            msvc->cppCompiler = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\cl.exe";
-            msvc->linker = testProject.root() / "Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.31.31103\\bin\\Hostx86\\x86\\link.exe";
+            msvc->cCompiler = testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)";
+            msvc->cppCompiler = testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\cl.exe)";
+            msvc->linker = testProject.root() / R"(Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\bin\Hostx86\x86\link.exe)";
 
             ::abuild::Toolchain *clang = cache.add_toolchain("clang_x64");
             clang->cCompiler = testProject.root() / "usr/bin/clang";

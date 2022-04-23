@@ -5,6 +5,7 @@ export import :linked_file;
 
 namespace abuild
 {
+//! The `Executable` represents an executable.
 export struct Executable : LinkedFile
 {
 };

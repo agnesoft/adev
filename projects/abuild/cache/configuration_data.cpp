@@ -11,31 +11,15 @@ export import abuild.cpptokenizer;
 
 namespace abuild
 {
-
+//! \private
 export struct ConfigurationData
 {
-    //! Configuration name
     std::string name;
-
-    //! Pointer to the `Toolchain` that defines
-    //! the base ABI.
     const Toolchain *toolchain = nullptr;
-
-    //! List of `defines` for this configuration
-    //! that is the combination of the compiler
-    //! in-built defines and user specified
-    //! defines.
     std::vector<DefineToken> defines;
-
-    //! List of flags for the compiler.
     std::vector<Flag> compilerFlags;
-
-    //! List of flags for the linker.
     std::vector<Flag> linkerFlags;
-
-    //! List of flags for the archiver.
     std::vector<Flag> archiverFlags;
-
     std::vector<std::unique_ptr<DynamicLibrary>> dynamicLibraries;
     std::vector<std::unique_ptr<StaticLibrary>> staticLibraries;
     std::vector<std::unique_ptr<Executable>> executables;

@@ -113,17 +113,17 @@ private:
             return "ARM";
         }
 
-        return "x86";
+        return "X86";
     }
 
     [[nodiscard]] static auto to_string(const ABI::Bitness &bitness) -> std::string
     {
-        if (bitness == ABI::Bitness::x32)
+        if (bitness == ABI::Bitness::X32)
         {
-            return "x32";
+            return "X32";
         }
 
-        return "x64";
+        return "X64";
     }
 
     [[nodiscard]] static auto to_string(const ABI::Platform &platform) -> std::string

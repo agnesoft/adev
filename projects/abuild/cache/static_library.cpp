@@ -5,6 +5,8 @@ export import :linked_file;
 
 namespace abuild
 {
+//! The `StaticLibrary` represents a static
+//! library.
 export struct StaticLibrary : LinkedFile
 {
 };

@@ -2,14 +2,15 @@
 export module abuild.cache:header_unit;
 export import :file;
 export import :header;
-export import :visibility;
 #endif
 
 namespace abuild
 {
+//! The `HeaderUnit` is precompiled header in a
+//! module format.
 export struct HeaderUnit : Header
 {
+    //! Precompiled header unit file.
     File precompiledHeaderUnit;
-    Visibility visibility = Visibility::Private;
 };
 }

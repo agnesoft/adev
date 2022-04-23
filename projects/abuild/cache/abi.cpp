@@ -16,17 +16,17 @@ export struct ABI
         ARM,
 
         //! Intel x86
-        x86
+        X86
     };
 
     //! Architecture's register size.
     enum class Bitness
     {
         //! 32 bits
-        x32,
+        X32,
 
         //! 64 bits
-        x64
+        X64
     };
 
     //! Platform or operating system.
@@ -43,10 +43,10 @@ export struct ABI
     };
 
     //! Processor architecture
-    Architecture architecture = Architecture::x86;
+    Architecture architecture = Architecture::X86;
 
     //! Register size
-    Bitness bitness = Bitness::x64;
+    Bitness bitness = Bitness::X64;
 
     //! Target platform
     Platform platform = Platform::Linux;

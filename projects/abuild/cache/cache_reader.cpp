@@ -31,17 +31,17 @@ private:
             return ABI::Architecture::ARM;
         }
 
-        return ABI::Architecture::x86;
+        return ABI::Architecture::X86;
     }
 
     [[nodiscard]] static auto abi_bitness(const std::string &value) -> ABI::Bitness
     {
-        if (value == "x32")
+        if (value == "X32")
         {
-            return ABI::Bitness::x32;
+            return ABI::Bitness::X32;
         }
 
-        return ABI::Bitness::x64;
+        return ABI::Bitness::X64;
     }
 
     [[nodiscard]] static auto abi_platform(const std::string &value) -> ABI::Platform
@@ -109,7 +109,7 @@ private:
     {
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            std::string name = it->first.as<std::string>();
+            auto name = it->first.as<std::string>();
             std::filesystem::path cCompiler = it->second["c_compiler"].as<std::string>();
             std::filesystem::path cppCompiler = it->second["cpp_compiler"].as<std::string>();
             std::filesystem::path linker = it->second["linker"].as<std::string>();

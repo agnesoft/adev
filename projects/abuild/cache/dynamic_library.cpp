@@ -5,6 +5,8 @@ export import :linked_file;
 
 namespace abuild
 {
+//! The `DynamicLibrary` represents a dynamic
+//! library.
 export struct DynamicLibrary : LinkedFile
 {
 };

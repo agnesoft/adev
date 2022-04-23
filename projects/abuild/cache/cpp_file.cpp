@@ -8,6 +8,9 @@ namespace abuild
 {
 export struct Project;
 
+//! The `CppFile` is common base class for C++
+//! source files: headers (.hpp) and sources
+//! (.cpp).
 export struct CppFile : File
 {
     //! Project this source file belongs to.

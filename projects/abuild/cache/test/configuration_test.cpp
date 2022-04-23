@@ -112,12 +112,11 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         ::abuild::HeaderFile header1{{{"some_header.hpp"}}};
         ::abuild::HeaderFile header2{{{"source.cpp"}}};
 
-        ::abuild::HeaderUnit *headerUnit1 = config.add_header_unit(&header1, ::abuild::Visibility::Public);
-        ::abuild::HeaderUnit *headerUnit2 = config.add_header_unit(&header2, ::abuild::Visibility::Private);
-        ::abuild::HeaderUnit *headerUnit3 = config.add_header_unit(&header1, ::abuild::Visibility::Private);
+        ::abuild::HeaderUnit *headerUnit1 = config.add_header_unit(&header1);
+        ::abuild::HeaderUnit *headerUnit2 = config.add_header_unit(&header2);
+        ::abuild::HeaderUnit *headerUnit3 = config.add_header_unit(&header1);
 
         expect(headerUnit1).to_be(headerUnit3);
-        expect(headerUnit1->visibility).to_be(::abuild::Visibility::Public);
 
         std::vector<::abuild::HeaderUnit *> headerUnits;
         headerUnits.reserve(config.header_units().size());
@@ -275,7 +274,7 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         expect(config.add_dynamic_library(&project)->path.extension().string()).to_be(".dll");
         expect(config.add_executable(&project)->path.extension().string()).to_be(".exe");
         expect(config.add_translation_unit(&source)->path.extension().string()).to_be(".obj");
-        expect(config.add_header_unit(&source, ::abuild::Visibility::Public)->precompiledHeaderUnit.path.extension().string()).to_be(".ifc");
+        expect(config.add_header_unit(&source)->precompiledHeaderUnit.path.extension().string()).to_be(".ifc");
         expect(config.add_module("my_module", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be(".ifc");
         expect(config.add_module_partition("my_module", "my_partition", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be(".ifc");
     });
@@ -296,7 +295,7 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         expect(config.add_dynamic_library(&project)->path.extension().string()).to_be(".dll");
         expect(config.add_executable(&project)->path.extension().string()).to_be(".exe");
         expect(config.add_translation_unit(&source)->path.extension().string()).to_be(".obj");
-        expect(config.add_header_unit(&source, ::abuild::Visibility::Public)->precompiledHeaderUnit.path.extension().string()).to_be(".pcm");
+        expect(config.add_header_unit(&source)->precompiledHeaderUnit.path.extension().string()).to_be(".pcm");
         expect(config.add_module("my_module", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be(".pcm");
         expect(config.add_module_partition("my_module", "my_partition", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be(".pcm");
     });
@@ -317,7 +316,7 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         expect(config.add_dynamic_library(&project)->path.extension().string()).to_be(".so");
         expect(config.add_executable(&project)->path.extension().string()).to_be("");
         expect(config.add_translation_unit(&source)->path.extension().string()).to_be(".o");
-        expect(config.add_header_unit(&source, ::abuild::Visibility::Public)->precompiledHeaderUnit.path.extension().string()).to_be(".pcm");
+        expect(config.add_header_unit(&source)->precompiledHeaderUnit.path.extension().string()).to_be(".pcm");
         expect(config.add_module("my_module", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be(".pcm");
         expect(config.add_module_partition("my_module", "my_partition", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be(".pcm");
     });
@@ -338,7 +337,7 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         expect(config.add_dynamic_library(&project)->path.extension().string()).to_be(".so");
         expect(config.add_executable(&project)->path.extension().string()).to_be("");
         expect(config.add_translation_unit(&source)->path.extension().string()).to_be(".o");
-        expect(config.add_header_unit(&source, ::abuild::Visibility::Public)->precompiledHeaderUnit.path.extension().string()).to_be(".cpp");
+        expect(config.add_header_unit(&source)->precompiledHeaderUnit.path.extension().string()).to_be(".cpp");
         expect(config.add_module("my_module", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be("");
         expect(config.add_module_partition("my_module", "my_partition", nullptr, ::abuild::Visibility::Public)->precompiledModuleInterface.path.extension().string()).to_be("");
     });
@@ -362,9 +361,9 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         ::abuild::CppFile file2;
         ::abuild::CppFile file3;
 
-        config.add_header_unit(&file1, ::abuild::Visibility::Public);
-        ::abuild::HeaderUnit *headerUnit = config.add_header_unit(&file2, ::abuild::Visibility::Public);
-        config.add_header_unit(&file3, ::abuild::Visibility::Public);
+        config.add_header_unit(&file1);
+        ::abuild::HeaderUnit *headerUnit = config.add_header_unit(&file2);
+        config.add_header_unit(&file3);
 
         expect(config.header_unit(&file2)).to_be(headerUnit);
     });
