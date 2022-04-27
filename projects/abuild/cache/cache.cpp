@@ -35,3 +35,8 @@ import yamlcpp;
 #include "cache_writer.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on
 #endif
+
+namespace abuild
+{
+export using Cache = CacheImpl;
+}

@@ -12,11 +12,19 @@ namespace abuild
 //! \private
 struct CacheData
 {
+    std::vector<DefineToken> defines;
+    std::vector<Flag> compilerFlags;
+    std::vector<Flag> linkerFlags;
+    std::vector<Flag> archiverFlags;
+    std::vector<std::unique_ptr<Project>> projects;
     std::vector<std::unique_ptr<SourceFile>> sources;
     std::vector<std::unique_ptr<HeaderFile>> headers;
-    std::vector<std::unique_ptr<Project>> projects;
-    std::vector<std::unique_ptr<Toolchain>> toolchains;
-    std::vector<std::unique_ptr<Configuration>> configurations;
+    std::vector<std::unique_ptr<HeaderUnit>> headerUnits;
+    std::vector<std::unique_ptr<Module>> modules;
+    std::vector<std::unique_ptr<ModulePartition>> modulePartitions;
     Settings settings;
+    Toolchain toolchain;
+    std::string configurationName;
+    std::filesystem::path filePath;
 };
 }

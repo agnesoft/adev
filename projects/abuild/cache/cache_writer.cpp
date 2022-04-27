@@ -10,6 +10,16 @@ namespace abuild
 class CacheWriter
 {
 public:
+    auto save_configurations(const std::vector<std::unique_ptr<Configuration>> &configurations)
+    {
+        ::YAML::Node node = CacheWriter::ensure_node(root["configurations"]);
+
+        for (const std::unique_ptr<Configuration> &configuration : configurations)
+        {
+            CacheWriter::save_configuration(configuration.get(), node);
+        }
+    }
+
     auto save_headers(const std::vector<std::unique_ptr<HeaderFile>> &headers) -> void
     {
         CacheWriter::save_files(headers, CacheWriter::ensure_node(root["headers"]));
@@ -48,18 +58,25 @@ private:
         node["platform"] = CacheWriter::to_string(abi.platform);
     }
 
-    static auto save_token(const Token &token, ::YAML::Node &node)
+    static auto save_configuration(const Configuration *configuration, ::YAML::Node &node) -> void
     {
-        std::stringstream stream;
-        stream << token;
-        node.push_back(stream.str());
+        ::YAML::Node configurationNode = CacheWriter::ensure_node(node[configuration->name()]);
+        configurationNode["toolchain"] = configuration->toolchain()->name;
+        CacheWriter::save_executables(configuration->executables(), configurationNode);
+        CacheWriter::save_dynamic_libraries(configuration->dynamic_libraries(), configurationNode);
+        CacheWriter::save_static_libraries(configuration->static_libraries(), configurationNode);
+        CacheWriter::save_header_units(configuration->header_units(), configurationNode);
+        CacheWriter::save_modules(configuration->modules(), configurationNode);
+        CacheWriter::save_translation_units(configuration->translation_units(), configurationNode);
     }
 
-    static auto save_tokens(const std::vector<Token> &tokens, ::YAML::Node &&node) -> void
+    static auto save_executables(const std::vector<std::unique_ptr<Executable>> &executables, ::YAML::Node &node) -> void
     {
-        for (const Token &token : tokens)
+        ::YAML::Node executablesNode = CacheWriter::ensure_node(node["executables"]);
+
+        for (const std::unique_ptr<Executable> &executable : executables)
         {
-            CacheWriter::save_token(token, node);
+            executablesNode.push_back(executable->project->name);
         }
     }
 
@@ -79,6 +96,144 @@ private:
         }
     }
 
+    static auto save_dynamic_libraries(const std::vector<std::unique_ptr<DynamicLibrary>> &libraries, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node librariesNode = CacheWriter::ensure_node(node["dynamic_libraries"]);
+
+        for (const std::unique_ptr<DynamicLibrary> &lib : libraries)
+        {
+            librariesNode.push_back(lib->project->name);
+        }
+    }
+
+    static auto save_header_units(const std::vector<std::unique_ptr<HeaderUnit>> &units, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node unitsNode = CacheWriter::ensure_node(node["header_units"]);
+
+        for (const std::unique_ptr<HeaderUnit> &unit : units)
+        {
+            CacheWriter::save_header(*unit, unitsNode);
+        }
+    }
+
+    static auto save_header(const Header &header, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node unitNode = CacheWriter::ensure_node(node[header.file->path.string()]);
+        CacheWriter::save_headers(header.includes, unitNode);
+        CacheWriter::save_imported_header_units(header.importedHeaderUnits, unitNode);
+        CacheWriter::save_imported_modules(header.importedModules, unitNode);
+        CacheWriter::save_imported_module_partitions(header.importedModulePartitions, unitNode);
+    }
+
+    static auto save_headers(const std::vector<Header> &headers, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node includesNode = CacheWriter::ensure_node(node["includes"]);
+
+        for (const Header &header : headers)
+        {
+            CacheWriter::save_header(header, node);
+        }
+    }
+
+    static auto save_imported_header_units(const std::vector<HeaderUnit *> &headerUnits, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node headerUnitsNode = CacheWriter::ensure_node(node["importedHeaderUnits"]);
+
+        for (const HeaderUnit *unit : headerUnits)
+        {
+            headerUnitsNode.push_back(unit->file->path.string());
+        }
+    }
+
+    static auto save_imported_modules(const std::vector<Module *> &modules, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node modulesNode = CacheWriter::ensure_node(node["importedModules"]);
+
+        for (const Module *mod : modules)
+        {
+            modulesNode.push_back(mod->name);
+        }
+    }
+
+    static auto save_imported_module_partitions(const std::vector<ModulePartition *> &partitions, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node partitionsNode = CacheWriter::ensure_node(node["importedModules"]);
+
+        for (const ModulePartition *partition : partitions)
+        {
+            partitionsNode.push_back(partition->name);
+        }
+    }
+
+    static auto save_module(const Module *mod, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node modNode = node[mod->name];
+        modNode["translationUnit"] = mod->translationUnit->sourceFile->path.string();
+
+        if (mod->visibility == Visibility::Public)
+        {
+            modNode["export"] = "true";
+        }
+
+        CacheWriter::save_module_partitions(mod->partitions, node);
+    }
+
+    static auto save_module_partition(const ModulePartition *partition, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node partitionNode = CacheWriter::ensure_node(node[partition->name]);
+        partitionNode["translationUnit"] = partition->translationUnit->sourceFile->path.string();
+
+        if (partition->visibility == Visibility::Public)
+        {
+            partitionNode["export"] = "true";
+        }
+    }
+
+    static auto save_module_partitions(const std::vector<ModulePartition *> &partitions, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node partitionsNode = CacheWriter::ensure_node(node["partitions"]);
+
+        for (const ModulePartition *partition : partitions)
+        {
+            CacheWriter::save_module_partition(partition, partitionsNode);
+        }
+    }
+
+    static auto save_modules(const std::vector<std::unique_ptr<Module>> &modules, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node modulesNode = CacheWriter::ensure_node(node["modules"]);
+
+        for (const std::unique_ptr<Module> &mod : modules)
+        {
+            CacheWriter::save_module(mod.get(), modulesNode);
+        }
+    }
+
+    static auto save_static_libraries(const std::vector<std::unique_ptr<StaticLibrary>> &libraries, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node librariesNode = CacheWriter::ensure_node(node["static_libraries"]);
+
+        for (const std::unique_ptr<StaticLibrary> &lib : libraries)
+        {
+            librariesNode.push_back(lib->project->name);
+        }
+    }
+
+    static auto save_token(const Token &token, ::YAML::Node &node)
+    {
+        std::stringstream stream;
+        stream << token;
+        node.push_back(stream.str());
+    }
+
+    static auto save_tokens(const std::vector<Token> &tokens, ::YAML::Node &&node) -> void
+    {
+        for (const Token &token : tokens)
+        {
+            CacheWriter::save_token(token, node);
+        }
+    }
+
     static auto save_toolchain(const Toolchain *toolchain, ::YAML::Node &node) -> void
     {
         ::YAML::Node toolchainNode = CacheWriter::ensure_node(node[toolchain->name]);
@@ -91,19 +246,23 @@ private:
         CacheWriter::save_abi(toolchain->abi, CacheWriter::ensure_node(toolchainNode["abi"]));
     }
 
-    [[nodiscard]] static auto to_string(const Toolchain::Frontend &frontend) -> std::string
+    static auto save_translation_unit(const TranslationUnit *unit, ::YAML::Node &node) -> void
     {
-        if (frontend == Toolchain::Frontend::Clang)
-        {
-            return "Clang";
-        }
+        ::YAML::Node unitNode = CacheWriter::ensure_node(node[unit->sourceFile->path.string()]);
+        CacheWriter::save_headers(unit->includes, unitNode);
+        CacheWriter::save_imported_header_units(unit->importedHeaderUnits, unitNode);
+        CacheWriter::save_imported_modules(unit->importedModules, unitNode);
+        CacheWriter::save_imported_module_partitions(unit->importedModulePartitions, unitNode);
+    }
 
-        if (frontend == Toolchain::Frontend::MSVC)
-        {
-            return "MSVC";
-        }
+    static auto save_translation_units(const std::vector<std::unique_ptr<TranslationUnit>> &units, ::YAML::Node &node) -> void
+    {
+        ::YAML::Node unitsNode = CacheWriter::ensure_node(node["translationUnis"]);
 
-        return "GCC";
+        for (const std::unique_ptr<TranslationUnit> &unit : units)
+        {
+            CacheWriter::save_translation_unit(unit.get(), unitsNode);
+        }
     }
 
     [[nodiscard]] static auto to_string(const ABI::Architecture &architecture) -> std::string
@@ -141,6 +300,21 @@ private:
         return "Linux";
     }
 
+    [[nodiscard]] static auto to_string(const Toolchain::Frontend &frontend) -> std::string
+    {
+        if (frontend == Toolchain::Frontend::Clang)
+        {
+            return "Clang";
+        }
+
+        if (frontend == Toolchain::Frontend::MSVC)
+        {
+            return "MSVC";
+        }
+
+        return "GCC";
+    }
+
     ::YAML::Node root;
 };
 
@@ -151,6 +325,7 @@ auto write_cache(const std::filesystem::path &path, const CacheData &data) -> vo
     writer.save_toolchains(data.toolchains);
     writer.save_sources(data.sources);
     writer.save_headers(data.headers);
+    writer.save_configurations(data.configurations);
     writer.save_to_file(path);
 }
 }

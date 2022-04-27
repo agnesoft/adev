@@ -56,6 +56,16 @@ public:
         this->headers.insert({file->path, file});
     }
 
+    auto insert(HeaderUnit *unit) -> void
+    {
+        this->headerUnits.insert({unit->cppFile, unit});
+    }
+
+    auto insert(Module *mod) -> void
+    {
+        this->modules.insert({mod->name, mod});
+    }
+
     auto insert(Project *project) -> void
     {
         this->projects.insert({project->name, project});
@@ -70,6 +80,30 @@ public:
     [[nodiscard]] auto header_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         return CacheIndex::find_file(path, this->headersByName);
+    }
+
+    [[nodiscard]] auto header_unit(CppFile *file) const -> HeaderUnit *
+    {
+        auto it = this->headerUnits.find(file);
+
+        if (it != this->headerUnits.end())
+        {
+            return it->second;
+        }
+
+        return nullptr;
+    }
+
+    [[nodiscard]] auto module_(const std::string &name) const -> Module *
+    {
+        auto it = this->modules.find(name);
+
+        if (it != this->modules.end())
+        {
+            return it->second;
+        }
+
+        return nullptr;
     }
 
     [[nodiscard]] auto project(const std::string &name) const -> Project *
@@ -119,5 +153,7 @@ private:
     std::unordered_map<std::filesystem::path, SourceFile *, PathHash> sources;
     std::unordered_map<std::filesystem::path, HeaderFile *, PathHash> headers;
     std::unordered_map<std::string, Project *> projects;
+    std::unordered_map<CppFile *, HeaderUnit *> headerUnits;
+    std::unordered_map<std::string, Module *> modules;
 };
 }

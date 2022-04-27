@@ -11,8 +11,7 @@ export struct Module
     //! Name of the module.
     std::string name;
 
-    //! `TranslationUnit` of this module.
-    TranslationUnit *translationUnit = nullptr;
+    SourceFile *sourceFile = nullptr;
 
     //! List of `ModulePartition`s of this module.
     std::vector<ModulePartition *> partitions;
@@ -21,6 +20,6 @@ export struct Module
     File precompiledModuleInterface;
 
     //! Declared visibility of this partition.
-    Visibility visibility = Visibility::Private;
+    bool exported = false;
 };
 }

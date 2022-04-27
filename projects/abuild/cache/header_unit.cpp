@@ -8,8 +8,10 @@ namespace abuild
 {
 //! The `HeaderUnit` is precompiled header in a
 //! module format.
-export struct HeaderUnit : Header
+export struct HeaderUnit
 {
+    CppFile *cppFile = nullptr;
+
     //! Precompiled header unit file.
     File precompiledHeaderUnit;
 };

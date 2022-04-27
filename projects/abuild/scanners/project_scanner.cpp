@@ -53,7 +53,16 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_header_file(path, projectName);
+            file = this->cache.add_header_file(path);
+
+            Project *project = this->cache.project(projectName);
+
+            if (project == nullptr)
+            {
+                project = this->cache.add_project(projectName);
+            }
+
+            project->headers.push_back(file);
         }
 
         return file;
@@ -65,7 +74,16 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_source_file(path, projectName);
+            file = this->cache.add_source_file(path);
+
+            Project *project = this->cache.project(projectName);
+
+            if (project == nullptr)
+            {
+                project = this->cache.add_project(projectName);
+            }
+
+            project->sources.push_back(file);
         }
 
         return file;

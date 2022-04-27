@@ -161,7 +161,7 @@ static const auto S = suite("Configuration", [] { // NOLINT(cert-err58-cpp)
         expect(partition1->mod->partitions).to_be(std::vector<::abuild::ModulePartition *>{partition1, partition2});
     });
 
-    test("add_translation_unit()", [] {
+    test("add translation units", [] {
         ::abuild::Toolchain toolchain;
         ::abuild::Configuration config("release", &toolchain);
 

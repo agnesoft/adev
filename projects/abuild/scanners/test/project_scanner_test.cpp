@@ -15,7 +15,6 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
         ::abuild::ProjectScanner{cache}.scan();
-
         ::abuild::Project *project = cache.project("project_scanner_test");
 
         assert_(project).not_to_be(nullptr);

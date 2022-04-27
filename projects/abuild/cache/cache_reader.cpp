@@ -10,7 +10,7 @@ namespace abuild
 class CacheReader
 {
 public:
-    explicit CacheReader(Cache &cache) :
+    explicit CacheReader(CacheImpl &cache) :
         cache{cache}
     {
     }
@@ -21,6 +21,12 @@ public:
         this->read_sources(root["sources"]);
         this->read_headers(root["headers"]);
         this->read_toolchains(root["toolchains"]);
+    }
+
+    auto read_configurations(const std::filesystem::path &path) -> void
+    {
+        ::YAML::Node root = ::YAML::LoadFile(path.string());
+        this->load_configurations(root["configurations"]);
     }
 
 private:
@@ -57,6 +63,33 @@ private:
         }
 
         return ABI::Platform::Linux;
+    }
+
+    [[nodiscard]] auto load_configuration(const std::string &name, const ::YAML::Node &node) -> void
+    {
+        Toolchain *toolchain = this->cache.toolchain(node["toolchain"].as<std::string>());
+
+        if (toolchain == toolchain)
+        {
+            return;
+        }
+
+        Configuration *config = this->cache.add_configuration(toolchain, name);
+        static_cast<void>(config);
+        // this->read_translation_units(config, node);
+        // this->read_header_units(config, node);
+        // this->read_modules(config, node);
+        // this->read_executables(config, node);
+        // this->read_dynamic_libraries(config, node);
+        // this->read_static_libraries(config, node);
+    }
+
+    [[nodiscard]] auto load_configurations(const ::YAML::Node &node) -> void
+    {
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            this->load_configuration(it->first.as<std::string>(), it->second);
+        }
     }
 
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
@@ -105,6 +138,22 @@ private:
         }
     }
 
+    auto read_translation_units(Configuration *config, const ::YAML::Node &node) -> void
+    {
+        const ::YAML::Node &units = node["translationUnits"];
+
+        for (auto it = units.begin(); it != units.end(); ++it)
+        {
+            std::filesystem::path path = it->first.as<std::string>();
+            SourceFile *src = this->cache.exact_source_file(path);
+
+            if (src != nullptr)
+            {
+                config->add_translation_unit(src);
+            }
+        }
+    }
+
     auto read_toolchains(const ::YAML::Node &node) -> void
     {
         for (auto it = node.begin(); it != node.end(); ++it)
@@ -146,12 +195,17 @@ private:
         return Toolchain::Frontend::GCC;
     }
 
-    Cache &cache;
+    CacheImpl &cache;
 };
 
 //! \private
-auto read_cache(const std::filesystem::path &path, Cache &cache) -> void
+auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void
 {
     CacheReader{cache}.read(path);
+}
+
+auto read_configurations(const std::filesystem::path &path, CacheImpl &cache) -> void
+{
+    CacheReader{cache}.read_configurations(path);
 }
 }

@@ -19,5 +19,20 @@ export struct CppFile : File
     //! Relevant code tokens extracted during code
     //! analysis.
     std::vector<Token> tokens;
+
+    //! List of `Header`s included by the source
+    //! file.
+    std::vector<Header> includes;
+
+    //! List of `HeaderUnit`s imported by the
+    //! source file.
+    std::vector<HeaderUnit *> importedHeaderUnits;
+
+    //! List of `Module`s imported by the file.
+    std::vector<Module *> importedModules;
+
+    //! List of `ModulePartition`s imported by the
+    //! file.
+    std::vector<ModulePartition *> importedModulePartitions;
 };
 }

@@ -1,6 +1,6 @@
 #ifndef __clang__
 export module abuild.cache:project;
-export import astl;
+export import :file;
 #endif
 
 namespace abuild
@@ -13,8 +13,17 @@ export struct SourceFile;
 //! tracked by the `Cache`.
 export struct Project
 {
+    enum class Type
+    {
+        Executable,
+        DynamicLibrary,
+        StaticLibrary
+    };
+
     //! Name of the project.
     std::string name;
+
+    File linkedFile;
 
     //! List of headers that are part of the
     //! project.
@@ -23,5 +32,7 @@ export struct Project
     //! List of sources that are part of the
     //! project.
     std::vector<SourceFile *> sources;
+
+    Type type = Type::StaticLibrary;
 };
 }

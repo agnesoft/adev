@@ -9,5 +9,7 @@ namespace abuild
 //! files that are being tracked by the `Cache`.
 export struct SourceFile : CppFile
 {
+    //! Binary object file.
+    File objectFile;
 };
 }

@@ -15,9 +15,7 @@ export struct ModulePartition
     //! Name of the partition.
     std::string name;
 
-    //! `TranslationUnit` of the partition's
-    //! source file.
-    TranslationUnit *translationUnit = nullptr;
+    SourceFile *sourceFile = nullptr;
 
     //! The module to which this partition belongs.
     Module *mod = nullptr;
@@ -25,7 +23,6 @@ export struct ModulePartition
     //! Precompiled interface file.
     File precompiledModuleInterface;
 
-    //! Declared visibility of this partition.
-    Visibility visibility = Visibility::Private;
+    bool exported = false;
 };
 }
