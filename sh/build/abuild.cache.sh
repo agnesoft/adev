@@ -20,18 +20,19 @@ function build_clang() {
 }
 
 function build_gcc() {
-    $gcc $gccCompilerFlags -o "${buildDir}/project.obj"             -c "${projectDir}/project.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/file.obj"                -c "${projectDir}/file.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/project.obj"             -c "${projectDir}/project.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/header.obj"              -c "${projectDir}/header.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cpp_file.obj"            -c "${projectDir}/cpp_file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/source_file.obj"         -c "${projectDir}/source_file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/header_file.obj"         -c "${projectDir}/header_file.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/module_partition.obj"    -c "${projectDir}/module_partition.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/module_.obj"             -c "${projectDir}/module_.cpp"
-    $gcc $gccCompilerFlags -o "${buildDir}/header.obj"              -c "${projectDir}/header.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/header_unit.obj"         -c "${projectDir}/header_unit.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/settings.obj"            -c "${projectDir}/settings.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/abi.obj"                 -c "${projectDir}/abi.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/flag.obj"                -c "${projectDir}/flag.cpp"
+    $gcc $gccCompilerFlags -o "${buildDir}/toolchain.obj"           -c "${projectDir}/toolchain.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cache_data.obj"          -c "${projectDir}/cache_data.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cache_index.obj"         -c "${projectDir}/cache_index.cpp"
     $gcc $gccCompilerFlags -o "${buildDir}/cache_impl.obj"          -c "${projectDir}/cache_impl.cpp"
@@ -43,27 +44,18 @@ function build_gcc() {
     ar r "${buildDir}/abuild.cache.lib" \
          "${buildDir}/cache.obj" \
          "${buildDir}/project.obj" \
+         "${buildDir}/header.obj" \
          "${buildDir}/file.obj" \
-         "${buildDir}/linked_file.obj" \
          "${buildDir}/cpp_file.obj" \
          "${buildDir}/source_file.obj" \
          "${buildDir}/header_file.obj" \
-         "${buildDir}/executable.obj" \
-         "${buildDir}/dynamic_library.obj" \
-         "${buildDir}/static_library.obj" \
-         "${buildDir}/visibility.obj" \
          "${buildDir}/module_partition.obj" \
          "${buildDir}/module_.obj" \
-         "${buildDir}/header.obj" \
          "${buildDir}/header_unit.obj" \
          "${buildDir}/settings.obj" \
          "${buildDir}/abi.obj" \
          "${buildDir}/flag.obj" \
          "${buildDir}/toolchain.obj" \
-         "${buildDir}/translation_unit.obj" \
-         "${buildDir}/configuration_data.obj" \
-         "${buildDir}/configuration_index.obj" \
-         "${buildDir}/configuration.obj" \
          "${buildDir}/cache_data.obj" \
          "${buildDir}/cache_index.obj" \
          "${buildDir}/cache_impl.obj" \
@@ -72,14 +64,14 @@ function build_gcc() {
 }
 
 buildMSVC="
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-project.ifc\"             /Fo\"${buildDir}/abuild.cache-project.obj\"             /c /TP \"${projectDir}/project.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-file.ifc\"                /Fo\"${buildDir}/abuild.cache-file.obj\"                /c /TP \"${projectDir}/file.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-project.ifc\"             /Fo\"${buildDir}/abuild.cache-project.obj\"             /c /TP \"${projectDir}/project.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header.ifc\"              /Fo\"${buildDir}/abuild.cache-header.obj\"              /c /TP \"${projectDir}/header.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-cpp_file.ifc\"            /Fo\"${buildDir}/abuild.cache-cpp_file.obj\"            /c /TP \"${projectDir}/cpp_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-source_file.ifc\"         /Fo\"${buildDir}/abuild.cache-source_file.obj\"         /c /TP \"${projectDir}/source_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header_file.ifc\"         /Fo\"${buildDir}/abuild.cache-header_file.obj\"         /c /TP \"${projectDir}/header_file.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-module_partition.ifc\"    /Fo\"${buildDir}/abuild.cache-module_partition.obj\"    /c /TP \"${projectDir}/module_partition.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-module_.ifc\"             /Fo\"${buildDir}/abuild.cache-module_.obj\"             /c /TP \"${projectDir}/module.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header.ifc\"              /Fo\"${buildDir}/abuild.cache-header.obj\"              /c /TP \"${projectDir}/header.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-header_unit.ifc\"         /Fo\"${buildDir}/abuild.cache-header_unit.obj\"         /c /TP \"${projectDir}/header_unit.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-settings.ifc\"            /Fo\"${buildDir}/abuild.cache-settings.obj\"            /c /TP \"${projectDir}/settings.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild/cpptokenizer\" /ifcOutput\"${buildDir}/abuild.cache-abi.ifc\"                 /Fo\"${buildDir}/abuild.cache-abi.obj\"                 /c /TP \"${projectDir}/abi.cpp\" || exit 1

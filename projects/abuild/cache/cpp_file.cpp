@@ -1,6 +1,7 @@
 #ifndef __clang__
 export module abuild.cache:cpp_file;
 export import :file;
+export import :header;
 export import abuild.cpptokenizer;
 #endif
 

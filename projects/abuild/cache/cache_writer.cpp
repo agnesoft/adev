@@ -9,6 +9,7 @@ namespace abuild
 //! \private
 class CacheWriter
 {
+    /*
 public:
     auto save_configurations(const std::vector<std::unique_ptr<Configuration>> &configurations)
     {
@@ -315,17 +316,17 @@ private:
         return "GCC";
     }
 
-    ::YAML::Node root;
+    ::YAML::Node root;*/
 };
 
 //! \private
-auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void
+auto write_cache([[maybe_unused]] const std::filesystem::path &path, [[maybe_unused]] const CacheData &data) -> void
 {
-    CacheWriter writer;
-    writer.save_toolchains(data.toolchains);
-    writer.save_sources(data.sources);
-    writer.save_headers(data.headers);
-    writer.save_configurations(data.configurations);
-    writer.save_to_file(path);
+    // CacheWriter writer;
+    // writer.save_toolchains(data.toolchains);
+    // writer.save_sources(data.sources);
+    // writer.save_headers(data.headers);
+    // writer.save_configurations(data.configurations);
+    // writer.save_to_file(path);
 }
 }

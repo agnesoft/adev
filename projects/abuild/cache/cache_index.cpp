@@ -1,6 +1,8 @@
 #ifndef __clang__
 module abuild.cache:cache_index;
 import :header_file;
+import :header_unit;
+import :module_;
 import :project;
 import :source_file;
 #endif

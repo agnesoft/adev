@@ -28,16 +28,16 @@ auto write_cache(const std::filesystem::path &path, const CacheData &data) -> vo
 export class CacheImpl
 {
 public:
-    //! Constructs the `Cache` with `path`. If the
-    //! `path` exists it will read the data from it
-    //! and populate the cache and build all the
-    //! indexes.
+    //! Constructs the `Cache` with file `path`.
+    //! If the `path` exists it will read the data
+    //! from it and populate the cache and build
+    //! all the indexes.
     explicit CacheImpl(std::filesystem::path path) :
         data{.filePath = std::move(path)}
     {
-        if (std::filesystem::exists(this->filePath))
+        if (std::filesystem::exists(this->data.filePath))
         {
-            ::abuild::read_cache(this->filePath, *this);
+            ::abuild::read_cache(this->data.filePath, *this);
         }
     }
 
@@ -48,12 +48,12 @@ public:
     CacheImpl(CacheImpl &&other) noexcept = default;
 
     //! Destructs the Cache and writes its data to
-    //! the file.
+    //! the file passed in the constructor.
     ~CacheImpl()
     {
         try
         {
-            ::abuild::write_cache(this->filePath, this->data);
+            ::abuild::write_cache(this->data.filePath, this->data);
         }
         catch (...)
         {
@@ -143,10 +143,16 @@ public:
     //! inserted SourceFile.
     auto add_source_file(std::filesystem::path path) -> SourceFile *
     {
-        SourceFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>()).get();
+        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>()).get();
         file->path = path;
         this->index.insert(file);
         return file;
+    }
+
+    //! Returns path directory of the cache file.
+    [[nodiscard]] auto build_root() const -> std::filesystem::path
+    {
+        return this->data.filePath.parent_path();
     }
 
     //! Finds the header with the exact `path` and
@@ -198,14 +204,6 @@ public:
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
     {
         return this->data.projects;
-    }
-
-    //! Returns root of the project which is the
-    //! directory containing the cache file by
-    //! default.
-    [[nodiscard]] auto project_root() const -> std::filesystem::path
-    {
-        return this->filePath.parent_path();
     }
 
     //! Returns the internal read-only Settings

@@ -53,16 +53,7 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_header_file(path);
-
-            Project *project = this->cache.project(projectName);
-
-            if (project == nullptr)
-            {
-                project = this->cache.add_project(projectName);
-            }
-
-            project->headers.push_back(file);
+            file = this->cache.add_header_file(File{path}, projectName);
         }
 
         return file;
@@ -74,16 +65,7 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_source_file(path);
-
-            Project *project = this->cache.project(projectName);
-
-            if (project == nullptr)
-            {
-                project = this->cache.add_project(projectName);
-            }
-
-            project->sources.push_back(file);
+            file = this->cache.add_source_file(File{path}, projectName);
         }
 
         return file;
@@ -111,6 +93,11 @@ private:
         return projectName;
     }
 
+    [[nodiscard]] auto is_executable_filename(const std::filesystem::path &path) const -> bool
+    {
+        return this->cache.settings().executableFilenames.contains(path.stem().string());
+    }
+
     [[nodiscard]] auto is_ignore_directory(const std::filesystem::path &path) const -> bool
     {
         return path.filename().string().front() == '.' || this->cache.settings().ignoreDirectories.contains(path.filename().string());
@@ -124,6 +111,11 @@ private:
     [[nodiscard]] auto is_squash_directory(const std::filesystem::path &path) const -> bool
     {
         return this->cache.settings().squashDirectories.contains(path.filename().string());
+    }
+
+    [[nodiscard]] auto is_test_directory(const std::filesystem::path &path) const -> bool
+    {
+        return this->cache.settings().testDirectories.contains(path.filename().string());
     }
 
     [[nodiscard]] auto path_directories(std::filesystem::path path) -> std::vector<std::filesystem::path>
@@ -176,7 +168,13 @@ private:
     auto process_source_file(const std::filesystem::path &path, const std::string &projectName) -> void
     {
         SourceFile *file = this->source_file(path, projectName);
+
         this->threadPool.run([file] { ProjectScanner::process_cpp_file(file); });
+
+        if (file->project->type != Project::Type::Executable && this->is_executable_filename(path))
+        {
+            file->project->type = Project::Type::Executable;
+        }
     }
 
     [[nodiscard]] auto project_name_from_directories(const std::vector<std::filesystem::path> &directories) -> std::string
@@ -217,6 +215,13 @@ private:
         for (const std::filesystem::directory_entry &entry : std::filesystem::directory_iterator(path))
         {
             this->scan_directory_entry(entry, projectName);
+        }
+
+        Project *project = this->cache.project(projectName);
+
+        if (project != nullptr && this->is_test_directory(path))
+        {
+            project->type = Project::Type::Executable;
         }
     }
 

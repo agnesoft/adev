@@ -35,7 +35,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -54,7 +54,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -73,7 +73,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -92,7 +92,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -111,7 +111,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -130,7 +130,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -149,7 +149,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -168,7 +168,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -187,7 +187,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -206,7 +206,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -225,7 +225,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -244,7 +244,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 
@@ -263,7 +263,7 @@ static const auto S = suite("Tokens", [] { // NOLINT(cert-err58-cpp)
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp", "my_project");
+            ::abuild::SourceFile *source = cache.add_source_file(testProject.root() / "main.cpp");
             source->tokens.push_back(token);
         }
 

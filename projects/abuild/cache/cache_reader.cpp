@@ -9,6 +9,7 @@ namespace abuild
 //! \private
 class CacheReader
 {
+    /*
 public:
     explicit CacheReader(CacheImpl &cache) :
         cache{cache}
@@ -195,17 +196,12 @@ private:
         return Toolchain::Frontend::GCC;
     }
 
-    CacheImpl &cache;
+    CacheImpl &cache;*/
 };
 
 //! \private
-auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void
+auto read_cache([[maybe_unused]] const std::filesystem::path &path, [[maybe_unused]] CacheImpl &cache) -> void
 {
-    CacheReader{cache}.read(path);
-}
-
-auto read_configurations(const std::filesystem::path &path, CacheImpl &cache) -> void
-{
-    CacheReader{cache}.read_configurations(path);
+    // CacheReader{cache}.read(path);
 }
 }

@@ -14,11 +14,20 @@ function build_clang() {
            -fprebuilt-module-path=${buildRoot}/yamlcpp \
            -o "${binDir}/abuild.cache_test${executableExtension}" \
            "${projectDir}/cache_test.cpp" \
-           "${projectDir}/configuration_test.cpp" \
+           "${projectDir}/defines_test.cpp" \
            "${projectDir}/file_lookup_test.cpp" \
+           "${projectDir}/flag_test.cpp" \
+           "${projectDir}/header_file_test.cpp" \
+           "${projectDir}/header_test.cpp" \
+           "${projectDir}/header_unit_test.cpp" \
            "${projectDir}/main.cpp" \
+           "${projectDir}/module_partition_test.cpp" \
+           "${projectDir}/module_test.cpp" \
+           "${projectDir}/project_test.cpp" \
            "${projectDir}/settings_test.cpp" \
+           "${projectDir}/source_file_test.cpp" 
            "${projectDir}/tokens_test.cpp" \
+           "${projectDir}/toolchain_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \
            "${buildRoot}/abuild/test_utilities/abuild.test_utilities.obj" \
            "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.obj" \
@@ -32,11 +41,20 @@ function build_gcc() {
     $gcc $gccCompilerFlags \
          -o "${binDir}/abuild.cache_test" \
          "${projectDir}/cache_test.cpp" \
-         "${projectDir}/configuration_test.cpp" \
+         "${projectDir}/defines_test.cpp" \
          "${projectDir}/file_lookup_test.cpp" \
+         "${projectDir}/flag_test.cpp" \
+         "${projectDir}/header_file_test.cpp" \
+         "${projectDir}/header_test.cpp" \
+         "${projectDir}/header_unit_test.cpp" \
          "${projectDir}/main.cpp" \
+         "${projectDir}/module_partition_test.cpp" \
+         "${projectDir}/module_test.cpp" \
+         "${projectDir}/project_test.cpp" \
          "${projectDir}/settings_test.cpp" \
+         "${projectDir}/source_file_test.cpp" 
          "${projectDir}/tokens_test.cpp" \
+         "${projectDir}/toolchain_test.cpp" \
          "${buildRoot}/abuild/cache/abuild.cache.lib" \
          "${buildRoot}/abuild/test_utilities/abuild.test_utilities.lib" \
          "${buildRoot}/abuild/cpptokenizer/abuild.cpptokenizer.lib" \
@@ -57,11 +75,20 @@ cl.exe ${msvcCompilerFlags} ^
        /Fo\"$buildDir/\" ^
        /Fe\"${binDir}/abuild.cache_test.exe\" ^
        \"${projectDir}/cache_test.cpp\" ^
-       \"${projectDir}/configuration_test.cpp\" ^
+       \"${projectDir}/defines_test.cpp\" ^
        \"${projectDir}/file_lookup_test.cpp\" ^
+       \"${projectDir}/flag_test.cpp\" ^
+       \"${projectDir}/header_file_test.cpp\" ^
+       \"${projectDir}/header_test.cpp\" ^
+       \"${projectDir}/header_unit_test.cpp\" ^
        \"${projectDir}/main.cpp\" ^
+       \"${projectDir}/module_partition_test.cpp\" ^
+       \"${projectDir}/module_test.cpp\" ^
+       \"${projectDir}/project_test.cpp\" ^
        \"${projectDir}/settings_test.cpp\" ^
+       \"${projectDir}/source_file_test.cpp\" ^
        \"${projectDir}/tokens_test.cpp\" ^
+       \"${projectDir}/toolchain_test.cpp\" ^
        \"${buildRoot}/atest/atest.lib\" ^
        \"${buildRoot}/astl/astl.lib\" ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^

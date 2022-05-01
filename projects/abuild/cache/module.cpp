@@ -1,10 +1,13 @@
 #ifndef __clang__
 export module abuild.cache:module_;
-export import :module_partition;
+export import :file;
 #endif
 
 namespace abuild
 {
+export struct ModulePartition;
+export struct SourceFile;
+
 //! The `Module` is C++ module.
 export struct Module
 {
