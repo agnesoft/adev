@@ -161,7 +161,7 @@ static const auto S = suite("Header", [] { // NOLINT(cert-err58-cpp)
         assert_(headerFile).not_to_be(nullptr);
 
         ::abuild::HeaderFile *headerUnitFile = cache.exact_header_file(headerUnitPath);
-        assert_(headerUnitFile).not_to_be(headerUnitFile);
+        assert_(headerUnitFile).not_to_be(nullptr);
 
         ::abuild::HeaderUnit *headerUnit = cache.header_unit(headerUnitFile);
         assert_(headerUnit).not_to_be(nullptr);
@@ -241,6 +241,7 @@ static const auto S = suite("Header", [] { // NOLINT(cert-err58-cpp)
             assert_(partition).not_to_be(nullptr);
 
             mod->sourceFile = moduleSourceFile;
+            partition->mod = mod;
             partition->sourceFile = modulePartitionSourceFile;
             mod->partitions.push_back(partition);
 

@@ -93,7 +93,7 @@ public:
     auto save_settings(const Settings &settings) -> void
     {
         ::YAML::Node node = this->root["settings"];
-        node["projectNameSeparator"] = settings.projectNameSeparator;
+        node["project_name_separator"] = settings.projectNameSeparator;
         CacheWriter::save_settings_list(node["cpp_header_extensions"], settings.cppHeaderExtensions);
         CacheWriter::save_settings_list(node["cpp_source_extensions"], settings.cppSourceExtensions);
         CacheWriter::save_settings_list(node["executable_filenames"], settings.executableFilenames);
@@ -143,7 +143,7 @@ private:
     {
         for (const HeaderUnit *unit : headerUnits)
         {
-            node.push_back(unit->cppFile->path.string());
+            node.push_back(unit->headerFile->path.string());
         }
     }
 
@@ -159,7 +159,7 @@ private:
     {
         for (const ModulePartition *partition : partitions)
         {
-            node.push_back(partition->name);
+            node.push_back(partition->mod->name + ':' + partition->name);
         }
     }
 
@@ -168,7 +168,7 @@ private:
         ::YAML::Node node = includes[include.file->path.string()];
         node = {};
         CacheWriter::save_includes(node["includes"], include.includes);
-        CacheWriter::save_imported_header_units(node["imported_headerUnits"], include.importedHeaderUnits);
+        CacheWriter::save_imported_header_units(node["imported_header_units"], include.importedHeaderUnits);
         CacheWriter::save_imported_modules(node["imported_modules"], include.importedModules);
         CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], include.importedModulePartitions);
     }
@@ -187,14 +187,14 @@ private:
         node["timestamp"] = file->timestamp;
         CacheWriter::save_tokens(node["tokens"], file->tokens);
         CacheWriter::save_includes(node["includes"], file->includes);
-        CacheWriter::save_imported_header_units(node["imported_headerUnits"], file->importedHeaderUnits);
+        CacheWriter::save_imported_header_units(node["imported_header_units"], file->importedHeaderUnits);
         CacheWriter::save_imported_modules(node["imported_modules"], file->importedModules);
         CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], file->importedModulePartitions);
     }
 
     static auto save_header_unit(::YAML::Node &units, const HeaderUnit *unit) -> void
     {
-        ::YAML::Node node = units[unit->cppFile->path.string()];
+        ::YAML::Node node = units[unit->headerFile->path.string()];
 
         ::YAML::Node precompiledHeaderUnit = node["precompiled_header_unit"];
         precompiledHeaderUnit["path"] = unit->precompiledHeaderUnit.path.string();
@@ -267,7 +267,7 @@ private:
 
         CacheWriter::save_tokens(node["tokens"], file->tokens);
         CacheWriter::save_includes(node["includes"], file->includes);
-        CacheWriter::save_imported_header_units(node["imported_headerUnits"], file->importedHeaderUnits);
+        CacheWriter::save_imported_header_units(node["imported_header_units"], file->importedHeaderUnits);
         CacheWriter::save_imported_modules(node["imported_modules"], file->importedModules);
         CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], file->importedModulePartitions);
     }

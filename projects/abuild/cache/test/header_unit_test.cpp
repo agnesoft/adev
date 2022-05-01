@@ -25,7 +25,7 @@ static const auto S = suite("HeaderUnit", [] { // NOLINT(cert-err58-cpp)
             assert_(file).not_to_be(nullptr);
             ::abuild::HeaderUnit *unit = cache.add_header_unit(file);
             assert_(unit).not_to_be(nullptr);
-            expect(unit->cppFile).to_be(file);
+            expect(unit->headerFile).to_be(file);
             unit->precompiledHeaderUnit = precompiledHeaderUnitFile;
         }
 
@@ -34,7 +34,7 @@ static const auto S = suite("HeaderUnit", [] { // NOLINT(cert-err58-cpp)
         assert_(file).not_to_be(nullptr);
         ::abuild::HeaderUnit *unit = cache.header_unit(file);
         assert_(unit).not_to_be(nullptr);
-        expect(unit->cppFile).to_be(file);
+        expect(unit->headerFile).to_be(file);
         expect(unit->precompiledHeaderUnit).to_be(precompiledHeaderUnitFile);
     });
 });

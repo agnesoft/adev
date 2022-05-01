@@ -1,16 +1,17 @@
 #ifndef __clang__
 export module abuild.cache:header_unit;
 export import :file;
-export import :header;
 #endif
 
 namespace abuild
 {
+export struct HeaderFile;
+
 //! The `HeaderUnit` is precompiled header in a
 //! module format.
 export struct HeaderUnit
 {
-    CppFile *cppFile = nullptr;
+    HeaderFile *headerFile = nullptr;
 
     //! Precompiled header unit file.
     File precompiledHeaderUnit;

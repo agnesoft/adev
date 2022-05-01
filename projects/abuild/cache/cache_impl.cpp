@@ -105,10 +105,10 @@ public:
         return file;
     }
 
-    auto add_header_unit(CppFile *file) -> HeaderUnit *
+    auto add_header_unit(HeaderFile *file) -> HeaderUnit *
     {
         HeaderUnit *unit = this->data.headerUnits.emplace_back(std::make_unique<HeaderUnit>()).get();
-        unit->cppFile = file;
+        unit->headerFile = file;
         this->index.insert(unit);
         return unit;
     }
@@ -183,7 +183,7 @@ public:
         return this->index.header_file(path);
     }
 
-    [[nodiscard]] auto header_unit(CppFile *file) const -> HeaderUnit *
+    [[nodiscard]] auto header_unit(HeaderFile *file) const -> HeaderUnit *
     {
         return this->index.header_unit(file);
     }
