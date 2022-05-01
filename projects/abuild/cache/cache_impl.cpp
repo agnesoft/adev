@@ -11,7 +11,7 @@ export class CacheImpl;
 //! \private
 auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void;
 //! \private
-auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void;
+auto write_cache(const CacheData &data) -> void;
 
 //! The CacheImpl class stores all the build
 //! information.
@@ -53,7 +53,7 @@ public:
     {
         try
         {
-            ::abuild::write_cache(this->data.filePath, this->data);
+            ::abuild::write_cache(this->data);
         }
         catch (...)
         {
@@ -243,6 +243,11 @@ public:
     auto set_linker_flags(std::vector<Flag> flags) noexcept -> void
     {
         this->data.linkerFlags = std::move(flags);
+    }
+
+    auto set_settings(Settings settings) -> void
+    {
+        this->data.settings = std::move(settings);
     }
 
     auto set_toolchain(Toolchain toolchain) -> void

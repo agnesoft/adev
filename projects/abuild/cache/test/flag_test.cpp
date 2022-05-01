@@ -15,12 +15,7 @@ auto operator<<(std::ostream &stream, const Flag &flag) -> std::ostream &
 
     if (!flag.value.empty())
     {
-        stream << '=' << flag.value;
-    }
-
-    if (flag.affectsABI)
-    {
-        stream << " [abi]";
+        stream << ' ' << flag.value;
     }
 
     return stream;
@@ -28,7 +23,7 @@ auto operator<<(std::ostream &stream, const Flag &flag) -> std::ostream &
 
 [[nodiscard]] auto operator==(const Flag &left, const Flag &right) -> bool
 {
-    return left.name == right.name && left.value == right.value && left.affectsABI == right.affectsABI;
+    return left.name == right.name && left.value == right.value;
 }
 }
 
@@ -36,12 +31,10 @@ static const auto S = suite("Flag", [] { // NOLINT(cert-err58-cpp)
     test("compiler flags", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         const std::vector<::abuild::Flag> flags{
-            {.name = "-f"},
-            {           .name = "--flag",
+            {.name = "-f"    },
+            {.name = "--flag",
              .value = "some_value"},
-            { .name = "another_flag",
-             .value = {},
-             .affectsABI = true}
+            {.name = "another_flag"               }
         };
 
         {
@@ -58,12 +51,10 @@ static const auto S = suite("Flag", [] { // NOLINT(cert-err58-cpp)
     test("linker flags", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         const std::vector<::abuild::Flag> flags{
-            {.name = "-f"},
-            {           .name = "--flag",
+            {.name = "-f"    },
+            {.name = "--flag",
              .value = "some_value"},
-            { .name = "another_flag",
-             .value = {},
-             .affectsABI = true}
+            {.name = "another_flag"               }
         };
 
         {
@@ -80,12 +71,10 @@ static const auto S = suite("Flag", [] { // NOLINT(cert-err58-cpp)
     test("archiver flags", [] {
         const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
         const std::vector<::abuild::Flag> flags{
-            {.name = "-f"},
-            {           .name = "--flag",
+            {.name = "-f"    },
+            {.name = "--flag",
              .value = "some_value"},
-            { .name = "another_flag",
-             .value = {},
-             .affectsABI = true}
+            {.name = "another_flag"               }
         };
 
         {

@@ -46,6 +46,7 @@ static const auto S = suite("SourceFile", [] { // NOLINT(cert-err58-cpp)
             assert_(file).not_to_be(nullptr);
             assert_(project).not_to_be(nullptr);
             file->project = project;
+            project->sources.push_back(file);
         }
 
         ::abuild::Cache cache{testFile.path()};
@@ -107,14 +108,18 @@ static const auto S = suite("SourceFile", [] { // NOLINT(cert-err58-cpp)
     test("imported module", [] {
         const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
         const std::filesystem::path path = "source.cpp";
+        const std::filesystem::path modPath = "mod.cpp";
         const std::string moduleName = "my_module";
 
         {
             ::abuild::Cache cache{testFile.path()};
             ::abuild::SourceFile *file = cache.add_source_file(path);
+            ::abuild::SourceFile *modFile = cache.add_source_file(modPath);
             ::abuild::Module *mod = cache.add_module(moduleName);
             assert_(file).not_to_be(nullptr);
             assert_(mod).not_to_be(nullptr);
+            assert_(modFile).not_to_be(nullptr);
+            mod->sourceFile = modFile;
             file->importedModules.push_back(mod);
         }
 
@@ -129,6 +134,8 @@ static const auto S = suite("SourceFile", [] { // NOLINT(cert-err58-cpp)
     test("imported module partition", [] {
         const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
         const std::filesystem::path path = "source.cpp";
+        const std::filesystem::path modPath = "mod.cpp";
+        const std::filesystem::path partitionPath = "partition.cpp";
         const std::string moduleName = "my_module";
         const std::string partitionName = "my_partition";
 
@@ -136,11 +143,17 @@ static const auto S = suite("SourceFile", [] { // NOLINT(cert-err58-cpp)
             ::abuild::Cache cache{testFile.path()};
             ::abuild::SourceFile *file = cache.add_source_file(path);
             ::abuild::Module *mod = cache.add_module(moduleName);
+            ::abuild::SourceFile *modFile = cache.add_source_file(modPath);
+            ::abuild::SourceFile *partitionFile = cache.add_source_file(partitionPath);
             ::abuild::ModulePartition *partition = cache.add_module_partition(partitionName);
             assert_(file).not_to_be(nullptr);
             assert_(mod).not_to_be(nullptr);
             assert_(partition).not_to_be(nullptr);
+            assert_(modFile).not_to_be(nullptr);
+            assert_(partitionFile).not_to_be(nullptr);
             mod->partitions.push_back(partition);
+            mod->sourceFile = modFile;
+            partition->sourceFile = partitionFile;
             file->importedModulePartitions.push_back(partition);
         }
 

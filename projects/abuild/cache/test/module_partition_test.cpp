@@ -14,7 +14,7 @@ auto operator==(const File &left, const File &right) -> bool;
 }
 
 static const auto S = suite("ModulePartition", [] { // NOLINT(cert-err58-cpp)
-    test("add module", [] {
+    test("add module partition", [] {
         const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
         const std::filesystem::path modulePath = "source.cpp";
         const std::filesystem::path partitionPath = "source.cpp";
@@ -38,6 +38,7 @@ static const auto S = suite("ModulePartition", [] { // NOLINT(cert-err58-cpp)
             partition->sourceFile = partitionFile;
             partition->mod = mod;
             partition->precompiledModuleInterface = precompiledHeaderUnitFile;
+            mod->partitions.push_back(partition);
         }
 
         ::abuild::Cache cache{testFile.path()};

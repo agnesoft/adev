@@ -23,6 +23,8 @@ export struct Project
     //! Name of the project.
     std::string name;
 
+    Type type = Type::StaticLibrary;
+
     File linkedFile;
 
     //! List of headers that are part of the
@@ -32,7 +34,5 @@ export struct Project
     //! List of sources that are part of the
     //! project.
     std::vector<SourceFile *> sources;
-
-    Type type = Type::StaticLibrary;
 };
 }
