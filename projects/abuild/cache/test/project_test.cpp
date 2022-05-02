@@ -139,4 +139,52 @@ static const auto S = suite("Project", [] { // NOLINT(cert-err58-cpp)
         expect(cache.projects()[1].get()).to_be(project2);
         expect(cache.projects()[2].get()).to_be(project3);
     });
+
+    test("missing project", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        ::abuild::Cache cache{"./abuild.cache_test.yaml"};
+        expect(cache.project("missing_project")).to_be(nullptr);
+    });
+
+    test("missing project header file", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const std::string name = "my_project";
+
+        {
+            ::abuild::HeaderFile file;
+            file.path = "my_project/header1.cpp";
+
+            ::abuild::Cache cache{"./abuild.cache_test.yaml"};
+            ::abuild::Project *project = cache.add_project(name);
+            assert_(project).not_to_be(nullptr);
+            project->sources.push_back(cache.add_source_file("my_project/main.cpp"));
+            project->sources.push_back(cache.add_source_file("my_project/source1.cpp"));
+            project->sources.push_back(cache.add_source_file("my_project/source2.cpp"));
+            project->headers.push_back(&file);
+            project->headers.push_back(cache.add_header_file("my_project/header2.cpp"));
+        }
+
+        expect([&] { ::abuild::Cache{"./abuild.cache_test.yaml"}; }).to_throw<std::runtime_error>("Corrupted cache: missing project header file 'my_project/header1.cpp'");
+    });
+
+    test("missing project source file", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const std::string name = "my_project";
+
+        {
+            ::abuild::SourceFile file;
+            file.path = "my_project/source1.cpp";
+
+            ::abuild::Cache cache{"./abuild.cache_test.yaml"};
+            ::abuild::Project *project = cache.add_project(name);
+            assert_(project).not_to_be(nullptr);
+            project->sources.push_back(cache.add_source_file("my_project/main.cpp"));
+            project->sources.push_back(&file);
+            project->sources.push_back(cache.add_source_file("my_project/source2.cpp"));
+            project->sources.push_back(cache.add_source_file("my_project/header1.cpp"));
+            project->headers.push_back(cache.add_header_file("my_project/header2.cpp"));
+        }
+
+        expect([&] { ::abuild::Cache{"./abuild.cache_test.yaml"}; }).to_throw<std::runtime_error>("Corrupted cache: missing project source file 'my_project/source1.cpp'");
+    });
 });

@@ -107,13 +107,65 @@ static const auto S = suite("Toolchain", [] { // NOLINT(cert-err58-cpp)
         const ::abuild::Toolchain toolchain{
             .name = "gcc",
             .frontend = ::abuild::Toolchain::Frontend::GCC,
-            .cCompiler = "usr/bin/gcc",
-            .cppCompiler = "usr/bin/g++",
-            .linker = "usr/bin/ld",
-            .archiver = "usr/bin/ar",
+            .cCompiler = "/usr/bin/gcc",
+            .cppCompiler = "/usr/bin/g++",
+            .linker = "/usr/bin/ld",
+            .archiver = "/usr/bin/ar",
             .abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::X86,
                                  .bitness = ::abuild::ABI::Bitness::X64,
                                  .platform = ::abuild::ABI::Platform::Linux}
+        };
+
+        {
+            ::abuild::Cache cache{testFile.path()};
+            expect(cache.toolchain()).to_be(::abuild::Toolchain{});
+            cache.set_toolchain(::abuild::Toolchain{toolchain});
+            expect(cache.toolchain()).to_be(toolchain);
+        }
+
+        ::abuild::Cache cache{testFile.path()};
+        expect(cache.toolchain()).to_be(toolchain);
+    });
+
+    test("Clang/ARM/X32/Unix", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+
+        const ::abuild::Toolchain toolchain{
+            .name = "clang",
+            .frontend = ::abuild::Toolchain::Frontend::Clang,
+            .cCompiler = "/usr/bin/clang",
+            .cppCompiler = "/usr/bin/clang++",
+            .linker = "/usr/bin/ld",
+            .archiver = "/usr/bin/ar",
+            .abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::ARM,
+                                 .bitness = ::abuild::ABI::Bitness::X32,
+                                 .platform = ::abuild::ABI::Platform::Unix}
+        };
+
+        {
+            ::abuild::Cache cache{testFile.path()};
+            expect(cache.toolchain()).to_be(::abuild::Toolchain{});
+            cache.set_toolchain(::abuild::Toolchain{toolchain});
+            expect(cache.toolchain()).to_be(toolchain);
+        }
+
+        ::abuild::Cache cache{testFile.path()};
+        expect(cache.toolchain()).to_be(toolchain);
+    });
+
+    test("MSVC/X86/X64/Windows", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+
+        const ::abuild::Toolchain toolchain{
+            .name = "msvc",
+            .frontend = ::abuild::Toolchain::Frontend::MSVC,
+            .cCompiler = "cl.exe",
+            .cppCompiler = "cl.exe",
+            .linker = "link.exe",
+            .archiver = "lib.exe",
+            .abi = ::abuild::ABI{.architecture = ::abuild::ABI::Architecture::X86,
+                                 .bitness = ::abuild::ABI::Bitness::X64,
+                                 .platform = ::abuild::ABI::Platform::Windows}
         };
 
         {

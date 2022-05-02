@@ -168,4 +168,10 @@ static const auto S = suite("SourceFile", [] { // NOLINT(cert-err58-cpp)
         assert_(partition).not_to_be(nullptr);
         expect(file->importedModulePartitions).to_be(std::vector<::abuild::ModulePartition *>{partition});
     });
+
+    test("missing source file", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const ::abuild::Cache cache{testFile.path()};
+        expect(cache.exact_source_file("missing/file.hpp")).to_be(nullptr);
+    });
 });

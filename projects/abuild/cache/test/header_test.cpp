@@ -268,4 +268,45 @@ static const auto S = suite("Header", [] { // NOLINT(cert-err58-cpp)
 
         expect(sourceFile->includes).to_be(expected);
     });
+
+    test("include source file", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const std::filesystem::path sourcePath = "source.cpp";
+        const std::filesystem::path headerPath = "header.cpp";
+
+        {
+            ::abuild::Cache cache{testFile.path()};
+            ::abuild::SourceFile *sourceFile = cache.add_source_file(sourcePath);
+            ::abuild::SourceFile *headerFile = cache.add_source_file(headerPath);
+            assert_(sourceFile).not_to_be(nullptr);
+            assert_(headerFile).not_to_be(nullptr);
+
+            sourceFile->includes.emplace_back(::abuild::Header{.file = headerFile});
+        }
+
+        ::abuild::Cache cache{testFile.path()};
+        ::abuild::SourceFile *sourceFile = cache.exact_source_file(sourcePath);
+        ::abuild::SourceFile *headerFile = cache.exact_source_file(headerPath);
+        assert_(sourceFile).not_to_be(nullptr);
+        assert_(headerFile).not_to_be(nullptr);
+        expect(sourceFile->includes).to_be(std::vector<::abuild::Header>{::abuild::Header{.file = headerFile}});
+    });
+
+    test("missing included file", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const std::filesystem::path sourcePath = "source.cpp";
+        const std::filesystem::path headerPath = "header.hpp";
+
+        {
+            ::abuild::HeaderFile headerFile;
+            headerFile.path = headerPath;
+
+            ::abuild::Cache cache{testFile.path()};
+            ::abuild::SourceFile *sourceFile = cache.add_source_file(sourcePath);
+            assert_(sourceFile).not_to_be(nullptr);
+            sourceFile->includes.emplace_back(::abuild::Header{.file = &headerFile});
+        }
+
+        expect([&] { ::abuild::Cache{testFile.path()}; }).to_throw<std::runtime_error>("Corrupted cache: missing included file '" + headerPath.string() + '\'');
+    });
 });

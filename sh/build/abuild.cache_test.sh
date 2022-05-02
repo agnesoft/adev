@@ -25,7 +25,7 @@ function build_clang() {
            "${projectDir}/module_test.cpp" \
            "${projectDir}/project_test.cpp" \
            "${projectDir}/settings_test.cpp" \
-           "${projectDir}/source_file_test.cpp" 
+           "${projectDir}/source_file_test.cpp" \
            "${projectDir}/tokens_test.cpp" \
            "${projectDir}/toolchain_test.cpp" \
            "${buildRoot}/abuild/cache/abuild.cache.obj" \

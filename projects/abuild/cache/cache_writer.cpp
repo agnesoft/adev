@@ -209,7 +209,15 @@ private:
     static auto save_module(::YAML::Node &modules, const Module *mod) -> void
     {
         ::YAML::Node node = modules[mod->name];
-        node["source_file"] = mod->sourceFile->path.string();
+
+        if (mod->sourceFile != nullptr)
+        {
+            node["source_file"] = mod->sourceFile->path.string();
+        }
+        else
+        {
+            node["source_file"] = "";
+        }
 
         ::YAML::Node precompiledModuleInterface = node["precompiled_module_interface"];
         precompiledModuleInterface["path"] = mod->precompiledModuleInterface.path.string();

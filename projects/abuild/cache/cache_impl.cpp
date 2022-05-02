@@ -188,7 +188,7 @@ public:
         return this->index.header_unit(file);
     }
 
-    [[nodiscard]] auto module_(const std::string &name) -> Module *
+    [[nodiscard]] auto module_(const std::string &name) const -> Module *
     {
         return this->index.module_(name);
     }

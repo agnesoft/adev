@@ -84,7 +84,14 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            HeaderUnit *unit = this->cache.add_header_unit(this->cache.exact_header_file(it->first.as<std::string>()));
+            HeaderFile *file = this->cache.exact_header_file(it->first.as<std::string>());
+
+            if (file == nullptr)
+            {
+                throw std::runtime_error{"Corrupted cache: missing header unit file '" + it->first.as<std::string>() + '\''};
+            }
+
+            HeaderUnit *unit = this->cache.add_header_unit(file);
 
             const ::YAML::Node precompiledHeaderUnit = it->second["precompiled_header_unit"];
             unit->precompiledHeaderUnit.path = precompiledHeaderUnit["path"].as<std::string>();
@@ -278,7 +285,21 @@ private:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            units.push_back(this->cache.header_unit(this->cache.exact_header_file(it->as<std::string>())));
+            HeaderFile *file = this->cache.exact_header_file(it->as<std::string>());
+
+            if (file == nullptr)
+            {
+                throw std::runtime_error{"Corrupted cache: missing imported header unit file '" + it->as<std::string>() + '\''};
+            }
+
+            HeaderUnit *unit = this->cache.header_unit(file);
+
+            if (unit == nullptr)
+            {
+                throw std::runtime_error{"Corrupted cache: missing imported header unit '" + it->as<std::string>() + '\''};
+            }
+
+            units.push_back(unit);
         }
 
         return units;
@@ -299,16 +320,29 @@ private:
             const std::pair<std::string, std::string> modPartition = CacheReader::module_partition_names(it->as<std::string>());
             Module *mod = this->cache.module_(modPartition.first);
 
-            if (mod != nullptr)
+            if (mod == nullptr)
             {
-                for (ModulePartition *partition : mod->partitions)
+                throw std::runtime_error{"Corrupted cache: missing imported module '" + modPartition.first + '\''};
+            }
+
+            ModulePartition *partition = nullptr;
+
+            for (ModulePartition *candidate : mod->partitions)
+            {
+                if (candidate->name == modPartition.second)
                 {
-                    if (partition->name == modPartition.second)
-                    {
-                        partitions.push_back(partition);
-                        break;
-                    }
+                    partition = candidate;
+                    break;
                 }
+            }
+
+            if (partition == nullptr)
+            {
+                throw std::runtime_error{"Corrupted cache: missing imported module partition '" + it->as<std::string>() + '\''};
+            }
+            else
+            {
+                partitions.push_back(partition);
             }
         }
 
@@ -327,7 +361,14 @@ private:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            modules.push_back(this->cache.module_(it->as<std::string>()));
+            Module *mod = this->cache.module_(it->as<std::string>());
+
+            if (mod == nullptr)
+            {
+                throw std::runtime_error{"Corrupted cache: missing imported module '" + it->as<std::string>() + '\''};
+            }
+
+            modules.push_back(mod);
         }
 
         return modules;
@@ -351,6 +392,11 @@ private:
             if (file == nullptr)
             {
                 file = this->cache.exact_source_file(path);
+
+                if (file == nullptr)
+                {
+                    throw std::runtime_error("Corrupted cache: missing included file '" + path.string() + '\'');
+                }
             }
 
             includes.emplace_back(Header{.file = file,
@@ -403,6 +449,12 @@ private:
         for (auto it = node.begin(); it != node.end(); ++it)
         {
             HeaderFile *file = this->cache.exact_header_file(it->as<std::string>());
+
+            if (file == nullptr)
+            {
+                throw std::runtime_error("Corrupted cache: missing project header file '" + it->as<std::string>() + '\'');
+            }
+
             file->project = project;
             files.push_back(file);
         }
@@ -423,6 +475,12 @@ private:
         for (auto it = node.begin(); it != node.end(); ++it)
         {
             SourceFile *file = this->cache.exact_source_file(it->as<std::string>());
+
+            if (file == nullptr)
+            {
+                throw std::runtime_error("Corrupted cache: missing project source file '" + it->as<std::string>() + '\'');
+            }
+
             file->project = project;
             files.push_back(file);
         }

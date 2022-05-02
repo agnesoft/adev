@@ -115,4 +115,32 @@ static const auto S = suite("Module", [] { // NOLINT(cert-err58-cpp)
         expect(mod->partitions[2]->name).to_be(partitionName3);
     });
 
+    test("missing module", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const ::abuild::Cache cache{testFile.path()};
+        expect(cache.module_("missing_module")).to_be(nullptr);
+    });
+
+    test("missing module source file", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const ::abuild::File precompiledHeaderUnitFile{.path = "some/path/my_module.pcm", .timestamp = 123};
+        const std::string name = "my_module";
+
+        {
+            ::abuild::Cache cache{testFile.path()};
+            ::abuild::Module *mod = cache.add_module(name);
+            assert_(mod).not_to_be(nullptr);
+            expect(mod->name).to_be(name);
+            expect(mod->exported).to_be(false);
+            mod->precompiledModuleInterface = precompiledHeaderUnitFile;
+        }
+
+        ::abuild::Cache cache{testFile.path()};
+        ::abuild::Module *mod = cache.module_(name);
+        assert_(mod).not_to_be(nullptr);
+        expect(mod->sourceFile).to_be(nullptr);
+        expect(mod->name).to_be(name);
+        expect(mod->exported).to_be(false);
+        expect(mod->precompiledModuleInterface).to_be(precompiledHeaderUnitFile);
+    });
 });
