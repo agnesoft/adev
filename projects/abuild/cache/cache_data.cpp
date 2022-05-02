@@ -30,5 +30,6 @@ struct CacheData
     Toolchain toolchain;
     std::string configurationName;
     std::filesystem::path filePath;
+    std::filesystem::path projectRoot;
 };
 }

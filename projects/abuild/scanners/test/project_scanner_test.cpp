@@ -14,6 +14,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
             {{"main.cpp", ""}}};
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
         ::abuild::Project *project = cache.project("project_scanner_test");
 
@@ -31,6 +32,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -57,6 +59,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -88,6 +91,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -113,6 +117,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         expect(cache.projects().size()).to_be(0U);
@@ -126,6 +131,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("myapp");
@@ -151,6 +157,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
         };
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("mylib");
@@ -179,6 +186,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
             {{"mylib/mylib.cpp", "export module mylib;\nimport other.module;"}}};
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("mylib");
@@ -198,6 +206,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
             {{"mylib/mylib.hpp", "#include <vector>"}}};
 
         ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+        cache.set_project_root(testProject.root());
         ::abuild::ProjectScanner{cache}.scan();
 
         ::abuild::Project *project = cache.project("mylib");
@@ -216,6 +225,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+            cache.set_project_root(testProject.root());
             ::abuild::ProjectScanner{cache}.scan();
 
             auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::last_write_time(testProject.root() / "mylib/mylib.cpp").time_since_epoch()).count();
@@ -262,6 +272,7 @@ static const auto S = suite("ProjectScanner", [] { // NOLINT(cert-err58-cpp, cpp
 
         {
             ::abuild::Cache cache{testProject.root() / "abuild.scanners_test.yaml"};
+            cache.set_project_root(testProject.root());
             ::abuild::ProjectScanner{cache}.scan();
 
             std::fstream{testProject.root() / "mylib/mylib.cpp", static_cast<unsigned int>(std::ios::in) | static_cast<unsigned int>(std::ios::out) | static_cast<unsigned int>(std::ios::trunc)} << "export module mylib2;";

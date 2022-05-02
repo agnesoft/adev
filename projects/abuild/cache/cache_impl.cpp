@@ -200,6 +200,11 @@ public:
         return this->index.project(name);
     }
 
+    [[nodiscard]] auto project_root() const noexcept -> const std::filesystem::path &
+    {
+        return this->data.projectRoot;
+    }
+
     //! Returns the list of projects.
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
     {
@@ -243,6 +248,11 @@ public:
     auto set_linker_flags(std::vector<Flag> flags) noexcept -> void
     {
         this->data.linkerFlags = std::move(flags);
+    }
+
+    auto set_project_root(std::filesystem::path path) noexcept -> void
+    {
+        this->data.projectRoot = std::move(path);
     }
 
     auto set_settings(Settings settings) -> void

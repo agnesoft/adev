@@ -80,6 +80,11 @@ public:
         }
     }
 
+    auto save_project_root(const std::filesystem::path &path) -> void
+    {
+        this->root["project_root"] = path.string();
+    }
+
     auto save_projects(const std::vector<std::unique_ptr<Project>> &projects) -> void
     {
         ::YAML::Node node = this->root["projects"];
@@ -376,6 +381,7 @@ auto write_cache(const CacheData &data) -> void
 {
     CacheWriter writer;
     writer.save_configuration_name(data.configurationName);
+    writer.save_project_root(data.projectRoot);
     writer.save_settings(data.settings);
     writer.save_toolchain(data.toolchain);
     writer.save_compiler_flags(data.compilerFlags);

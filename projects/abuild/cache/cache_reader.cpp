@@ -115,6 +115,11 @@ public:
         }
     }
 
+    auto read_project_root() -> void
+    {
+        this->cache.set_project_root(this->root["project_root"].as<std::string>());
+    }
+
     auto read_projects() -> void
     {
         const ::YAML::Node node = this->root["projects"];
@@ -473,6 +478,7 @@ auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void
 {
     CacheReader reader{path, cache};
     reader.read_configuration_name();
+    reader.read_project_root();
     reader.read_settings();
     reader.read_toolchain();
     reader.read_compiler_flags();
