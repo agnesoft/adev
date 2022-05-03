@@ -127,6 +127,14 @@ public:
     }
 
 private:
+    static auto save_references(::YAML::Node &node, const auto &entity) -> void
+    {
+        CacheWriter::save_includes(node["includes"], entity.includes);
+        CacheWriter::save_imported_header_units(node["imported_header_units"], entity.importedHeaderUnits);
+        CacheWriter::save_imported_modules(node["imported_modules"], entity.importedModules);
+        CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], entity.importedModulePartitions);
+    }
+
     static auto save_abi(::YAML::Node &&node, const ABI &abi) -> void
     {
         node["architecture"] = CacheWriter::to_string(abi.architecture);
@@ -172,10 +180,7 @@ private:
     {
         ::YAML::Node node = includes[include.file->path.string()];
         node = {};
-        CacheWriter::save_includes(node["includes"], include.includes);
-        CacheWriter::save_imported_header_units(node["imported_header_units"], include.importedHeaderUnits);
-        CacheWriter::save_imported_modules(node["imported_modules"], include.importedModules);
-        CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], include.importedModulePartitions);
+        CacheWriter::save_references(node, include);
     }
 
     static auto save_includes(::YAML::Node &&node, const std::vector<Header> &includes) -> void
@@ -191,40 +196,21 @@ private:
         ::YAML::Node node = files[file->path.string()];
         node["timestamp"] = file->timestamp;
         CacheWriter::save_tokens(node["tokens"], file->tokens);
-        CacheWriter::save_includes(node["includes"], file->includes);
-        CacheWriter::save_imported_header_units(node["imported_header_units"], file->importedHeaderUnits);
-        CacheWriter::save_imported_modules(node["imported_modules"], file->importedModules);
-        CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], file->importedModulePartitions);
+        CacheWriter::save_references(node, *file);
     }
 
     static auto save_header_unit(::YAML::Node &units, const HeaderUnit *unit) -> void
     {
         ::YAML::Node node = units[unit->headerFile->path.string()];
-
-        ::YAML::Node precompiledHeaderUnit = node["precompiled_header_unit"];
-        precompiledHeaderUnit["path"] = unit->precompiledHeaderUnit.path.string();
-        precompiledHeaderUnit["timestamp"] = unit->precompiledHeaderUnit.timestamp;
+        CacheWriter::save_file(node["precompiled_header_unit"], unit->precompiledHeaderUnit);
     }
 
     static auto save_module(::YAML::Node &modules, const Module *mod) -> void
     {
         ::YAML::Node node = modules[mod->name];
-
-        if (mod->sourceFile != nullptr)
-        {
-            node["source_file"] = mod->sourceFile->path.string();
-        }
-        else
-        {
-            node["source_file"] = "";
-        }
-
-        ::YAML::Node precompiledModuleInterface = node["precompiled_module_interface"];
-        precompiledModuleInterface["path"] = mod->precompiledModuleInterface.path.string();
-        precompiledModuleInterface["timestamp"] = mod->precompiledModuleInterface.timestamp;
-
         node["exported"] = mod->exported;
-
+        CacheWriter::save_referenced_source_file(node["source_file"], mod->sourceFile);
+        CacheWriter::save_file(node["precompiled_module_interface"], mod->precompiledModuleInterface);
         CacheWriter::save_module_partitions(node["partitions"], mod->partitions);
     }
 
@@ -232,12 +218,8 @@ private:
     {
         ::YAML::Node node = partitions[partition->name];
         node["source_file"] = partition->sourceFile->path.string();
-
-        ::YAML::Node precompiledModuleInterface = node["precompiled_module_interface"];
-        precompiledModuleInterface["path"] = partition->precompiledModuleInterface.path.string();
-        precompiledModuleInterface["timestamp"] = partition->precompiledModuleInterface.timestamp;
-
         node["exported"] = partition->exported;
+        CacheWriter::save_file(node["precompiled_module_interface"], partition->precompiledModuleInterface);
     }
 
     static auto save_module_partitions(::YAML::Node &&node, const std::vector<ModulePartition *> &partitions) -> void
@@ -248,15 +230,17 @@ private:
         }
     }
 
+    static auto save_file(::YAML::Node &&node, const File &file) -> void
+    {
+        node["path"] = file.path.string();
+        node["timestamp"] = file.timestamp;
+    }
+
     static auto save_project(::YAML::Node &projects, const Project *project) -> void
     {
         ::YAML::Node node = projects[project->name];
         node["type"] = CacheWriter::to_string(project->type);
-
-        ::YAML::Node linkedFile = node["linked_file"];
-        linkedFile["path"] = project->linkedFile.path.string();
-        linkedFile["timestamp"] = project->linkedFile.timestamp;
-
+        CacheWriter::save_file(node["linked_file"], project->linkedFile);
         CacheWriter::save_project_headers(node["headers"], project->headers);
         CacheWriter::save_project_sources(node["sources"], project->sources);
     }
@@ -269,20 +253,25 @@ private:
         }
     }
 
+    static auto save_referenced_source_file(::YAML::Node &&node, SourceFile *file) -> void
+    {
+        if (file != nullptr)
+        {
+            node = file->path.string();
+        }
+        else
+        {
+            node = "";
+        }
+    }
+
     static auto save_source_file(::YAML::Node &files, const SourceFile *file) -> void
     {
         ::YAML::Node node = files[file->path.string()];
         node["timestamp"] = file->timestamp;
-
-        ::YAML::Node objectFile = node["object_file"];
-        objectFile["path"] = file->objectFile.path.string();
-        objectFile["timestamp"] = file->objectFile.timestamp;
-
+        CacheWriter::save_file(node["object_file"], file->objectFile);
         CacheWriter::save_tokens(node["tokens"], file->tokens);
-        CacheWriter::save_includes(node["includes"], file->includes);
-        CacheWriter::save_imported_header_units(node["imported_header_units"], file->importedHeaderUnits);
-        CacheWriter::save_imported_modules(node["imported_modules"], file->importedModules);
-        CacheWriter::save_imported_module_partitions(node["imported_module_partitions"], file->importedModulePartitions);
+        CacheWriter::save_references(node, *file);
     }
 
     static auto save_project_sources(::YAML::Node &&node, const std::vector<SourceFile *> &files) -> void

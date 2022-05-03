@@ -241,7 +241,7 @@ static const auto S = suite("HeaderFile", [] { // NOLINT(cert-err58-cpp)
             file->importedHeaderUnits.push_back(&headerUnit);
         }
 
-        expect([&] { ::abuild::Cache{testFile.path()}; }).to_throw<std::runtime_error>("Corrupted cache: missing header unit file '" + headerUnitPath.string() + '\'');
+        expect([&] { ::abuild::Cache{testFile.path()}; }).to_throw<std::runtime_error>("Corrupted cache: missing imported header unit file '" + headerUnitPath.string() + '\'');
     });
 
     test("imported missing module partition's module", [] {
