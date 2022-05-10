@@ -354,6 +354,81 @@ private:
         return includes;
     }
 
+    [[nodiscard]] auto module_partition(const std::string &name, const ::YAML::Node &node, Module *mod) -> ModulePartition *
+    {
+        ModulePartition *partition = this->cache.add_module_partition(name);
+        partition->mod = mod;
+        partition->sourceFile = this->cache.exact_source_file(node["source_file"].as<std::string>());
+        partition->exported = node["exported"].as<bool>();
+        CacheReader::read_file(partition->precompiledModuleInterface, node["precompiled_module_interface"]);
+        return partition;
+    }
+
+    [[nodiscard]] auto module_partitions(const ::YAML::Node &node, Module *mod) -> std::vector<ModulePartition *>
+    {
+        std::vector<ModulePartition *> partitions;
+        partitions.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            partitions.push_back(this->module_partition(it->first.as<std::string>(), it->second, mod));
+        }
+
+        return partitions;
+    }
+
+    [[nodiscard]] auto project_header(const std::filesystem::path &path, Project *project) const -> HeaderFile *
+    {
+        HeaderFile *file = this->cache.exact_header_file(path);
+
+        if (file == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing project header file '" + path.string() + '\''};
+        }
+
+        file->project = project;
+        return file;
+    }
+
+    [[nodiscard]] auto project_headers(const ::YAML::Node &node, Project *project) const -> std::vector<HeaderFile *>
+    {
+        std::vector<HeaderFile *> files;
+        files.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            files.emplace_back(this->project_header(it->as<std::string>(), project));
+        }
+
+        return files;
+    }
+
+    [[nodiscard]] auto project_source(const std::filesystem::path &path, Project *project) const -> SourceFile *
+    {
+        SourceFile *file = this->cache.exact_source_file(path);
+
+        if (file == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing project source file '" + path.string() + '\''};
+        }
+
+        file->project = project;
+        return file;
+    }
+
+    [[nodiscard]] auto project_sources(const ::YAML::Node &node, Project *project) const -> std::vector<SourceFile *>
+    {
+        std::vector<SourceFile *> files;
+        files.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            files.push_back(this->project_source(it->as<std::string>(), project));
+        }
+
+        return files;
+    }
+
     [[nodiscard]] static auto project_type(const std::string &value) -> Project::Type
     {
         if (value == "Executable")
@@ -497,16 +572,6 @@ private:
         mod->partitions = this->read_module_partitions(node["partitions"], mod);
     }
 
-    [[nodiscard]] auto read_module_partition(const std::string &name, const ::YAML::Node &node, Module *mod) -> ModulePartition *
-    {
-        ModulePartition *partition = this->cache.add_module_partition(name);
-        partition->mod = mod;
-        partition->sourceFile = this->cache.exact_source_file(node["source_file"].as<std::string>());
-        partition->exported = node["exported"].as<bool>();
-        CacheReader::read_file(partition->precompiledModuleInterface, node["precompiled_module_interface"]);
-        return partition;
-    }
-
     [[nodiscard]] auto read_module_partitions(const ::YAML::Node &&node, Module *mod) -> std::vector<ModulePartition *>
     {
         if (!node.IsDefined())
@@ -514,15 +579,7 @@ private:
             return {};
         }
 
-        std::vector<ModulePartition *> partitions;
-        partitions.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            partitions.push_back(this->read_module_partition(it->first.as<std::string>(), it->second, mod));
-        }
-
-        return partitions;
+        return this->module_partitions(node, mod);
     }
 
     auto read_project(std::string name, const ::YAML::Node &node) -> void
@@ -541,23 +598,7 @@ private:
             return {};
         }
 
-        std::vector<HeaderFile *> files;
-        files.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            HeaderFile *file = this->cache.exact_header_file(it->as<std::string>());
-
-            if (file == nullptr)
-            {
-                throw std::runtime_error("Corrupted cache: missing project header file '" + it->as<std::string>() + '\'');
-            }
-
-            file->project = project;
-            files.push_back(file);
-        }
-
-        return files;
+        return this->project_headers(node, project);
     }
 
     [[nodiscard]] auto read_project_sources(const ::YAML::Node &&node, Project *project) const -> std::vector<SourceFile *>
@@ -567,23 +608,7 @@ private:
             return {};
         }
 
-        std::vector<SourceFile *> files;
-        files.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            SourceFile *file = this->cache.exact_source_file(it->as<std::string>());
-
-            if (file == nullptr)
-            {
-                throw std::runtime_error("Corrupted cache: missing project source file '" + it->as<std::string>() + '\'');
-            }
-
-            file->project = project;
-            files.push_back(file);
-        }
-
-        return files;
+        return this->project_sources(node, project);
     }
 
     [[nodiscard]] static auto read_settings_list(const ::YAML::Node &&node) -> std::unordered_set<std::string>
