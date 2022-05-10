@@ -183,19 +183,6 @@ private:
         return ABI::Platform::Linux;
     }
 
-    [[nodiscard]] auto imported_header_units(const ::YAML::Node &node) const -> std::vector<HeaderUnit *>
-    {
-        std::vector<HeaderUnit *> units;
-        units.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            units.push_back(this->read_imported_header_unit(it->as<std::string>()));
-        }
-
-        return units;
-    }
-
     [[nodiscard]] auto find_imported_header_unit_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         HeaderFile *file = this->cache.exact_header_file(path);
@@ -208,7 +195,7 @@ private:
         return file;
     }
 
-    [[nodiscard]] auto find_imported_module_partition(const std::string &name, const Module *mod) const -> ModulePartition *
+    [[nodiscard]] static auto find_imported_module_partition(const std::string &name, const Module *mod) -> ModulePartition *
     {
         for (ModulePartition *partition : mod->partitions)
         {
@@ -233,16 +220,29 @@ private:
         return file;
     }
 
+    [[nodiscard]] auto imported_header_units(const ::YAML::Node &node) const -> std::vector<HeaderUnit *>
+    {
+        std::vector<HeaderUnit *> units;
+        units.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            units.push_back(this->read_imported_header_unit(it->as<std::string>()));
+        }
+
+        return units;
+    }
+
     [[nodiscard]] auto imported_module_partition(const std::string &names) const -> ModulePartition *
     {
         const std::pair<std::string, std::string> modPartition = CacheReader::module_partition_names(names);
         Module *mod = this->imported_module_partition_module(modPartition.first);
-        return this->imported_module_partition(modPartition.second, mod);
+        return CacheReader::imported_module_partition(modPartition.second, mod);
     }
 
-    [[nodiscard]] auto imported_module_partition(const std::string &name, const Module *mod) const -> ModulePartition *
+    [[nodiscard]] static auto imported_module_partition(const std::string &name, const Module *mod) -> ModulePartition *
     {
-        ModulePartition *partition = this->find_imported_module_partition(name, mod);
+        ModulePartition *partition = CacheReader::find_imported_module_partition(name, mod);
 
         if (partition == nullptr)
         {
@@ -444,9 +444,9 @@ private:
         return Project::Type::StaticLibrary;
     }
 
-    auto read_bare_header_file(std::filesystem::path path, const ::YAML::Node &node) -> void
+    auto read_bare_header_file(const std::filesystem::path &path, const ::YAML::Node &node) -> void
     {
-        HeaderFile *file = this->cache.add_header_file(std::move(path));
+        HeaderFile *file = this->cache.add_header_file(path);
         file->timestamp = node["timestamp"].as<std::size_t>();
         file->tokens = CacheReader::read_tokens(node["tokens"]);
     }
@@ -480,7 +480,7 @@ private:
         return defines;
     }
 
-    auto read_file(File &file, const ::YAML::Node &&node) -> void
+    static auto read_file(File &file, const ::YAML::Node &&node) -> void
     {
         file.path = node["path"].as<std::string>();
         file.timestamp = node["timestamp"].as<std::size_t>();

@@ -96,7 +96,7 @@ public:
         return nullptr;
     }
 
-    [[nodiscard]] auto module_(const std::string &name) const -> Module *
+    [[nodiscard]] auto module_(const std::string &name) const -> Module * // NOLINT(readability-identifier-naming)
     {
         auto it = this->modules.find(name);
 

@@ -134,7 +134,7 @@ public:
     auto add_project(std::string name) -> Project *
     {
         Project *proj = this->data.projects.emplace_back(std::make_unique<Project>()).get();
-        proj->name = name;
+        proj->name = std::move(name);
         this->index.insert(proj);
         return proj;
     }
@@ -143,7 +143,7 @@ public:
     auto add_source_file(std::filesystem::path path) -> SourceFile *
     {
         SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>()).get();
-        file->path = path;
+        file->path = std::move(path);
         this->index.insert(file);
         return file;
     }
@@ -191,7 +191,7 @@ public:
 
     //! Finds the module `name` or `nullptr` if
     //! not found.
-    [[nodiscard]] auto module_(const std::string &name) const -> Module *
+    [[nodiscard]] auto module_(const std::string &name) const -> Module * // NOLINT(readability-identifier-naming)
     {
         return this->index.module_(name);
     }
