@@ -14,6 +14,7 @@ export struct ModulePartition
     //! Name of the partition.
     std::string name;
 
+    //! Underlying source file.
     SourceFile *sourceFile = nullptr;
 
     //! The module to which this partition belongs.
@@ -22,6 +23,7 @@ export struct ModulePartition
     //! Precompiled interface file.
     File precompiledModuleInterface;
 
+    //! Indicates if the partition is exported.
     bool exported = false;
 };
 }

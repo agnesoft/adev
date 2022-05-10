@@ -14,6 +14,7 @@ export struct Module
     //! Name of the module.
     std::string name;
 
+    //! Underlying source file.
     SourceFile *sourceFile = nullptr;
 
     //! List of `ModulePartition`s of this module.
@@ -22,7 +23,7 @@ export struct Module
     //! The precompiled interface file.
     File precompiledModuleInterface;
 
-    //! Declared visibility of this partition.
+    //! Indicates if the module is exported.
     bool exported = false;
 };
 }

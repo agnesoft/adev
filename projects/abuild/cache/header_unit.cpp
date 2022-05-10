@@ -11,6 +11,7 @@ export struct HeaderFile;
 //! module format.
 export struct HeaderUnit
 {
+    //! Underlying header file.
     HeaderFile *headerFile = nullptr;
 
     //! Precompiled header unit file.

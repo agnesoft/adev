@@ -29,5 +29,6 @@ import yamlcpp;
 
 namespace abuild
 {
+//! Convenience type alias for `CacheImpl`.
 export using Cache = CacheImpl;
 }

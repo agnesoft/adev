@@ -74,6 +74,7 @@ public:
         return this->data.compilerFlags;
     }
 
+    //! Returns the configuration name.
     [[nodiscard]] auto configuration_name() const noexcept -> const std::string &
     {
         return this->data.configurationName;
@@ -92,11 +93,7 @@ public:
         return this->data.defines;
     }
 
-    //! Adds header `file` to the Cache and
-    //! associates it with `projectName` project.
-    //! If the project does not exist it is
-    //! created. Returns the pointer to the
-    //! inserted HeaderFile.
+    //! Adds header `file` to the Cache.
     auto add_header_file(const std::filesystem::path &path) -> HeaderFile *
     {
         HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>()).get();
@@ -105,6 +102,7 @@ public:
         return file;
     }
 
+    //! Adds header unit `file` to the Cache.
     auto add_header_unit(HeaderFile *file) -> HeaderUnit *
     {
         HeaderUnit *unit = this->data.headerUnits.emplace_back(std::make_unique<HeaderUnit>()).get();
@@ -113,6 +111,7 @@ public:
         return unit;
     }
 
+    //! Adds module `name` to the Cache.
     auto add_module(const std::string &name) -> Module *
     {
         Module *mod = this->data.modules.emplace_back(std::make_unique<Module>()).get();
@@ -121,6 +120,9 @@ public:
         return mod;
     }
 
+    //! Adds module partition `name` to the cache.
+    //! Note that you should associate it with a
+    //! module.
     auto add_module_partition(const std::string &name) -> ModulePartition *
     {
         ModulePartition *partition = this->data.modulePartitions.emplace_back(std::make_unique<ModulePartition>()).get();
@@ -128,6 +130,7 @@ public:
         return partition;
     }
 
+    //! Adds project `name` to the cache.
     auto add_project(std::string name) -> Project *
     {
         Project *proj = this->data.projects.emplace_back(std::make_unique<Project>()).get();
@@ -136,11 +139,7 @@ public:
         return proj;
     }
 
-    //! Adds source `file` to the Cache and
-    //! associates it with `projectName` project.
-    //! If the project does not exist it is
-    //! created. Returns the pointer to the
-    //! inserted SourceFile.
+    //! Adds source `file` to the Cache.
     auto add_source_file(std::filesystem::path path) -> SourceFile *
     {
         SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>()).get();
@@ -156,14 +155,14 @@ public:
     }
 
     //! Finds the header with the exact `path` and
-    //! returns it or nullptr if not found.
+    //! returns it or `nullptr` if not found.
     [[nodiscard]] auto exact_header_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         return this->index.exact_header_file(path);
     }
 
     //! Finds the source with the exact `path` and
-    //! returns it or nullptr if not found.
+    //! returns it or `nullptr` if not found.
     [[nodiscard]] auto exact_source_file(const std::filesystem::path &path) const -> SourceFile *
     {
         return this->index.exact_source_file(path);
@@ -183,11 +182,15 @@ public:
         return this->index.header_file(path);
     }
 
+    //! Finds the header unit associated with the
+    //! `file` or `nullptr` if not found.
     [[nodiscard]] auto header_unit(HeaderFile *file) const -> HeaderUnit *
     {
         return this->index.header_unit(file);
     }
 
+    //! Finds the module `name` or `nullptr` if
+    //! not found.
     [[nodiscard]] auto module_(const std::string &name) const -> Module *
     {
         return this->index.module_(name);
@@ -200,6 +203,8 @@ public:
         return this->index.project(name);
     }
 
+    //! Returns the source (project) directory
+    //! root.
     [[nodiscard]] auto project_root() const noexcept -> const std::filesystem::path &
     {
         return this->data.projectRoot;
@@ -225,6 +230,7 @@ public:
         this->data.archiverFlags = std::move(flags);
     }
 
+    //! Returns the configuration name.
     auto set_configuration_name(const std::string &name) -> void
     {
         this->data.configurationName = name;
@@ -250,23 +256,25 @@ public:
         this->data.linkerFlags = std::move(flags);
     }
 
+    //! Sets the source (project) root.
     auto set_project_root(std::filesystem::path path) noexcept -> void
     {
         this->data.projectRoot = std::move(path);
     }
 
+    //! Sets the settings.
     auto set_settings(Settings settings) -> void
     {
         this->data.settings = std::move(settings);
     }
 
+    //! Sets the toolchain.
     auto set_toolchain(Toolchain toolchain) -> void
     {
         this->data.toolchain = std::move(toolchain);
     }
 
-    //! Returns the toolchain with `name` or
-    //! `nullptr` if there is no such toolchain.
+    //! Returns the toolchain.
     [[nodiscard]] auto toolchain() const noexcept -> const Toolchain &
     {
         return this->data.toolchain;

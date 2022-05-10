@@ -13,18 +13,26 @@ export struct SourceFile;
 //! tracked by the `Cache`.
 export struct Project
 {
+    //! Type of the project.
     enum class Type
     {
+        //! The project is an executable file.
         Executable,
+
+        //! The project is a dynamic library.
         DynamicLibrary,
+
+        //! The project is a static library.
         StaticLibrary
     };
 
     //! Name of the project.
     std::string name;
 
+    //! Type of the project.
     Type type = Type::StaticLibrary;
 
+    //! The output file of the project.
     File linkedFile;
 
     //! List of headers that are part of the
