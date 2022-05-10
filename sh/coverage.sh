@@ -2,15 +2,15 @@ source "sh/common.sh"
 
 if is_windows; then
     ignoredSources="(\\\\|\\|\/)(test|test_utilities|yamlcpp)(\\\\|\\|\/)"
-    uncoveredFunctions="4"
-    uncoveredLines="38"
-    uncoveredRegions="37"
+    uncoveredFunctions="7"
+    uncoveredLines="41"
+    uncoveredRegions="40"
     uncoveredBranches="4"
 else
     ignoredSources="\/(test|test_utilities|yamlcpp)\/"
-    uncoveredFunctions="4"
-    uncoveredLines="35"
-    uncoveredRegions="36"
+    uncoveredFunctions="7"
+    uncoveredLines="38"
+    uncoveredRegions="39"
     uncoveredBranches="3"
 fi
 

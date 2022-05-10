@@ -53,7 +53,10 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_header_file(File{path}, projectName);
+            Project *project = this->get_project(projectName);
+            file = this->cache.add_header_file(path);
+            file->project = project;
+            project->headers.push_back(file);
         }
 
         return file;
@@ -65,7 +68,10 @@ private:
 
         if (file == nullptr)
         {
-            file = this->cache.add_source_file(File{path}, projectName);
+            Project *project = this->get_project(projectName);
+            file = this->cache.add_source_file(path);
+            file->project = project;
+            project->sources.push_back(file);
         }
 
         return file;
@@ -91,6 +97,18 @@ private:
         }
 
         return projectName;
+    }
+
+    [[nodiscard]] auto get_project(const std::string &name) -> Project *
+    {
+        Project *project = this->cache.project(name);
+
+        if (project == nullptr)
+        {
+            project = this->cache.add_project(name);
+        }
+
+        return project;
     }
 
     [[nodiscard]] auto is_executable_filename(const std::filesystem::path &path) const -> bool

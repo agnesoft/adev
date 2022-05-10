@@ -1,118 +1,42 @@
 import atest;
 import abuild.cache;
 import abuild.test_utilities;
-import yamlcpp;
 
-using ::atest::assert_;
 using ::atest::expect;
 using ::atest::suite;
 using ::atest::test;
 
 static const auto S = suite("Cache", [] { // NOLINT(cert-err58-cpp)
-    test("add_source_file()", [] {
-        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+    test("configuration name", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const std::string name = "release";
 
         {
-            ::abuild::Cache cache{file.path()};
-            cache.add_source_file(::abuild::File{"main.cpp"}, "my_project");
-            cache.add_source_file(::abuild::File{"source.cpp"}, "my_project");
+            ::abuild::Cache cache{testFile.path()};
+            cache.set_configuration_name(name);
+            expect(cache.configuration_name()).to_be(name);
         }
 
-        const auto node = ::YAML::LoadFile(file.path().string());
-
-        expect(node["sources"]["main.cpp"].IsDefined()).to_be(true);
-        expect(node["sources"]["source.cpp"].IsDefined()).to_be(true);
+        const ::abuild::Cache cache{testFile.path()};
+        expect(cache.configuration_name()).to_be(name);
     });
 
-    test("add_header_file()", [] {
-        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
-
-        {
-            ::abuild::Cache cache{file.path()};
-            cache.add_header_file(::abuild::File{"header.hpp"}, "my_project");
-            cache.add_header_file(::abuild::File{"include/header.hpp"}, "my_project");
-        }
-
-        const auto node = ::YAML::LoadFile(file.path().string());
-
-        expect(node["headers"]["header.hpp"].IsDefined()).to_be(true);
-        expect(node["headers"]["include/header.hpp"].IsDefined()).to_be(true);
+    test("build root", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        expect(::abuild::Cache{testFile.path()}.build_root()).to_be(testFile.path().parent_path());
     });
 
-    test("add project", [] {
-        const ::abuild::TestFile file{"./abuild.cache_test.yaml"};
+    test("project root", [] {
+        const ::abuild::TestFile testFile{"./abuild.cache_test.yaml"};
+        const std::filesystem::path root = "/some/path/somewhere";
 
         {
-            ::abuild::Cache cache{file.path()};
-            cache.add_source_file(::abuild::File{"main.cpp"}, "my.project");
-            cache.add_header_file(::abuild::File{"header.hpp"}, "my.project");
+            ::abuild::Cache cache{testFile.path()};
+            cache.set_project_root(root);
+            expect(cache.project_root()).to_be(root);
         }
 
-        const auto node = ::YAML::LoadFile(file.path().string());
-
-        expect(node["sources"]["main.cpp"]["project"].as<std::string>()).to_be("my.project");
-        expect(node["headers"]["header.hpp"]["project"].as<std::string>()).to_be("my.project");
-    });
-
-    test("load from file", [] {
-        const ::abuild::TestProject testProject{
-            "cache_test",
-            {{"main.cpp", ""},
-              {"my_header.hpp", ""}}
-        };
-
-        {
-            ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            cache.add_source_file(::abuild::File{testProject.root() / "main.cpp"}, "my_project");
-            cache.add_header_file(::abuild::File{testProject.root() / "my_header.hpp"}, "my_project");
-        }
-
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-
-        ::abuild::HeaderFile *header = cache.exact_header_file(testProject.root() / "my_header.hpp");
-        ::abuild::SourceFile *source = cache.exact_source_file(testProject.root() / "main.cpp");
-
-        assert_(header).not_to_be(nullptr);
-        assert_(source).not_to_be(nullptr);
-        expect(header->path).to_be(testProject.root() / "my_header.hpp");
-        expect(source->path).to_be(testProject.root() / "main.cpp");
-
-        const ::abuild::Project *project = cache.project("my_project");
-
-        assert_(project->sources.size()).to_be(1U);
-        expect(project->sources[0]).to_be(source);
-        assert_(project->headers.size()).to_be(1U);
-        expect(project->headers[0]).to_be(header);
-    });
-
-    test("load missing files", [] {
-        const ::abuild::TestProject testProject{
-            "cache_test",
-            {{"main.cpp", ""},
-              {"source.cpp", ""},
-              {"my_header.hpp", ""},
-              {"header.hpp", ""}}
-        };
-
-        {
-            ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-            cache.add_source_file(::abuild::File{testProject.root() / "main.cpp"}, "my_project");
-            cache.add_source_file(::abuild::File{testProject.root() / "source.cpp"}, "my_project");
-            cache.add_header_file(::abuild::File{testProject.root() / "my_header.hpp"}, "my_project");
-            cache.add_header_file(::abuild::File{testProject.root() / "header.hpp"}, "my_project");
-
-            assert_(cache.source_files().size()).to_be(2U);
-            assert_(cache.header_files().size()).to_be(2U);
-        }
-
-        std::filesystem::remove(testProject.root() / "source.cpp");
-        std::filesystem::remove(testProject.root() / "header.hpp");
-
-        ::abuild::Cache cache{testProject.root() / "abuild.cache_test.yaml"};
-
-        expect(cache.source_files().size()).to_be(1U);
-        expect(cache.source_files()[0]->path).to_be(testProject.root() / "main.cpp");
-        expect(cache.header_files().size()).to_be(1U);
-        expect(cache.header_files()[0]->path).to_be(testProject.root() / "my_header.hpp");
+        const ::abuild::Cache cache{testFile.path()};
+        expect(cache.project_root()).to_be(root);
     });
 });

@@ -1,22 +1,13 @@
 #ifndef __clang__
 export module abuild.cache:header_file;
-export import :file;
-export import abuild.cpptokenizer;
+export import :cpp_file;
 #endif
 
 namespace abuild
 {
-export struct Project;
-
 //! The `HeaderFile` is a base struct for header
 //! files that are being tracked by the `Cache`.
-export struct HeaderFile : File
+export struct HeaderFile : CppFile
 {
-    //! Project this header file belongs to.
-    Project *project = nullptr;
-
-    //! Relevant code tokens extracted during code
-    //! analysis.
-    std::vector<Token> tokens;
 };
 }

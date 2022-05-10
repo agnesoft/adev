@@ -6,14 +6,14 @@ import :cache_index;
 
 namespace abuild
 {
-export class Cache;
+export class CacheImpl;
 
 //! \private
-auto read_cache(const std::filesystem::path &path, Cache &cache) -> void;
+auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void;
 //! \private
-auto write_cache(const std::filesystem::path &path, const CacheData &data) -> void;
+auto write_cache(const CacheData &data) -> void;
 
-//! The Cache class stores all the build
+//! The CacheImpl class stores all the build
 //! information.
 //!
 //! The Cache indexes all of its content for
@@ -23,98 +23,146 @@ auto write_cache(const std::filesystem::path &path, const CacheData &data) -> vo
 //! the file. Upon destruction the cache data are
 //! written back to the file.
 //!
-//! The Cache YAML schema:
-//!
-//! ```
-//! headers:
-//!   path/to/header1:
-//!     project: my_project
-//!     timestamp: 123
-//!     tokens:
-//!       - #if defined(SOME_MACRO)
-//!       - #define MY_MACRO
-//!       - #endif
-//! sources:
-//!   path/to/source:
-//!     project: my_project
-//!     timestamp: 456
-//!     tokens:
-//! ```
-//!
-//! NOTE: When loaded from a cache file all
-//! non-existent files are skipped.
-export class Cache
+//! When loaded from a cache file all non-existent
+//! files are skipped.
+export class CacheImpl
 {
 public:
-    //! Constructs the `Cache` with `path`. If the
-    //! `path` exists it will read the data from it
-    //! and populate the cache and build all the
-    //! indexes.
-    explicit Cache(std::filesystem::path path) :
-        filePath{std::move(path)}
+    //! Constructs the `Cache` with file `path`.
+    //! If the `path` exists it will read the data
+    //! from it and populate the cache and build
+    //! all the indexes.
+    explicit CacheImpl(std::filesystem::path path) :
+        data{.filePath = std::move(path)}
     {
-        if (std::filesystem::exists(this->filePath))
+        if (std::filesystem::exists(this->data.filePath))
         {
-            ::abuild::read_cache(this->filePath, *this);
+            ::abuild::read_cache(this->data.filePath, *this);
         }
     }
 
     //! Deleted copy constructor.
-    Cache(const Cache &other) = delete;
+    CacheImpl(const CacheImpl &other) = delete;
 
     //! Move constructor.
-    Cache(Cache &&other) noexcept = default;
+    CacheImpl(CacheImpl &&other) noexcept = default;
 
     //! Destructs the Cache and writes its data to
-    //! the file.
-    ~Cache()
+    //! the file passed in the constructor.
+    ~CacheImpl()
     {
         try
         {
-            ::abuild::write_cache(this->filePath, this->data);
+            ::abuild::write_cache(this->data);
         }
         catch (...)
         {
         }
     }
 
-    //! Adds header `file` to the Cache and
-    //! associates it with `projectName` project.
-    //! If the project does not exist it is
-    //! created. Returns the pointer to the
-    //! inserted HeaderFile.
-    auto add_header_file(File headerFile, const std::string &projectName) -> HeaderFile *
+    //! Returns the list of flags to be passed to all
+    //! archiver calls.
+    [[nodiscard]] auto archiver_flags() const noexcept -> const std::vector<Flag> &
     {
-        Project *proj = this->get_project(projectName);
-        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>(HeaderFile{File{std::move(headerFile)}, proj, {}})).get();
-        proj->headers.push_back(file);
+        return this->data.archiverFlags;
+    }
+
+    //! Returns the list of flags to be passed to
+    //! all compiler calls.
+    [[nodiscard]] auto compiler_flags() const noexcept -> const std::vector<Flag> &
+    {
+        return this->data.compilerFlags;
+    }
+
+    //! Returns the configuration name.
+    [[nodiscard]] auto configuration_name() const noexcept -> const std::string &
+    {
+        return this->data.configurationName;
+    }
+
+    //! Returns the list of flags to be passed to
+    //! every linker call.
+    [[nodiscard]] auto linker_flags() const noexcept -> const std::vector<Flag> &
+    {
+        return this->data.linkerFlags;
+    }
+
+    //! Returns the list of defines.
+    [[nodiscard]] auto defines() const noexcept -> const std::vector<DefineToken> &
+    {
+        return this->data.defines;
+    }
+
+    //! Adds header `file` to the Cache.
+    auto add_header_file(const std::filesystem::path &path) -> HeaderFile *
+    {
+        HeaderFile *file = this->data.headers.emplace_back(std::make_unique<HeaderFile>()).get();
+        file->path = path;
         this->index.insert(file);
         return file;
     }
 
-    //! Adds source `file` to the Cache and
-    //! associates it with `projectName` project.
-    //! If the project does not exist it is
-    //! created. Returns the pointer to the
-    //! inserted SourceFile.
-    auto add_source_file(File sourceFile, const std::string &projectName) -> SourceFile *
+    //! Adds header unit `file` to the Cache.
+    auto add_header_unit(HeaderFile *file) -> HeaderUnit *
     {
-        Project *proj = this->get_project(projectName);
-        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>(SourceFile{File{std::move(sourceFile)}, proj, {}})).get();
-        proj->sources.push_back(file);
+        HeaderUnit *unit = this->data.headerUnits.emplace_back(std::make_unique<HeaderUnit>()).get();
+        unit->headerFile = file;
+        this->index.insert(unit);
+        return unit;
+    }
+
+    //! Adds module `name` to the Cache.
+    auto add_module(const std::string &name) -> Module *
+    {
+        Module *mod = this->data.modules.emplace_back(std::make_unique<Module>()).get();
+        mod->name = name;
+        this->index.insert(mod);
+        return mod;
+    }
+
+    //! Adds module partition `name` to the cache.
+    //! Note that you should associate it with a
+    //! module.
+    auto add_module_partition(const std::string &name) -> ModulePartition *
+    {
+        ModulePartition *partition = this->data.modulePartitions.emplace_back(std::make_unique<ModulePartition>()).get();
+        partition->name = name;
+        return partition;
+    }
+
+    //! Adds project `name` to the cache.
+    auto add_project(std::string name) -> Project *
+    {
+        Project *proj = this->data.projects.emplace_back(std::make_unique<Project>()).get();
+        proj->name = std::move(name);
+        this->index.insert(proj);
+        return proj;
+    }
+
+    //! Adds source `file` to the Cache.
+    auto add_source_file(std::filesystem::path path) -> SourceFile *
+    {
+        SourceFile *file = this->data.sources.emplace_back(std::make_unique<SourceFile>()).get();
+        file->path = std::move(path);
         this->index.insert(file);
         return file;
+    }
+
+    //! Returns path directory of the cache file.
+    [[nodiscard]] auto build_root() const -> std::filesystem::path
+    {
+        return this->data.filePath.parent_path();
     }
 
     //! Finds the header with the exact `path` and
-    //! returns it or nullptr if not found.
+    //! returns it or `nullptr` if not found.
     [[nodiscard]] auto exact_header_file(const std::filesystem::path &path) const -> HeaderFile *
     {
         return this->index.exact_header_file(path);
     }
 
     //! Finds the source with the exact `path` and
-    //! returns it or nullptr if not found.
+    //! returns it or `nullptr` if not found.
     [[nodiscard]] auto exact_source_file(const std::filesystem::path &path) const -> SourceFile *
     {
         return this->index.exact_source_file(path);
@@ -134,10 +182,18 @@ public:
         return this->index.header_file(path);
     }
 
-    //! Returns the list of all header files.
-    [[nodiscard]] auto header_files() const noexcept -> const std::vector<std::unique_ptr<HeaderFile>> &
+    //! Finds the header unit associated with the
+    //! `file` or `nullptr` if not found.
+    [[nodiscard]] auto header_unit(HeaderFile *file) const -> HeaderUnit *
     {
-        return this->data.headers;
+        return this->index.header_unit(file);
+    }
+
+    //! Finds the module `name` or `nullptr` if
+    //! not found.
+    [[nodiscard]] auto module_(const std::string &name) const -> Module * // NOLINT(readability-identifier-naming)
+    {
+        return this->index.module_(name);
     }
 
     //! Find the project with `name`. If no such
@@ -147,18 +203,17 @@ public:
         return this->index.project(name);
     }
 
+    //! Returns the source (project) directory
+    //! root.
+    [[nodiscard]] auto project_root() const noexcept -> const std::filesystem::path &
+    {
+        return this->data.projectRoot;
+    }
+
     //! Returns the list of projects.
     [[nodiscard]] auto projects() const noexcept -> const std::vector<std::unique_ptr<Project>> &
     {
         return this->data.projects;
-    }
-
-    //! Returns root of the project which is the
-    //! directory containing the cache file by
-    //! default.
-    [[nodiscard]] auto project_root() const -> std::filesystem::path
-    {
-        return this->filePath.parent_path();
     }
 
     //! Returns the internal read-only Settings
@@ -168,47 +223,83 @@ public:
         return this->data.settings;
     }
 
+    //! Sets the flags to be passed to the
+    //! archiver calls.
+    auto set_archiver_flags(std::vector<Flag> flags) noexcept -> void
+    {
+        this->data.archiverFlags = std::move(flags);
+    }
+
+    //! Returns the configuration name.
+    auto set_configuration_name(const std::string &name) -> void
+    {
+        this->data.configurationName = name;
+    }
+
+    //! Sets the defines.
+    auto set_defines(std::vector<DefineToken> values) noexcept -> void
+    {
+        this->data.defines = std::move(values);
+    }
+
+    //! Sets the flags to be passed to the
+    //! compiler calls.
+    auto set_compiler_flags(std::vector<Flag> flags) noexcept -> void
+    {
+        this->data.compilerFlags = std::move(flags);
+    }
+
+    //! Sets the flags to be passed to the linker
+    //! calls.
+    auto set_linker_flags(std::vector<Flag> flags) noexcept -> void
+    {
+        this->data.linkerFlags = std::move(flags);
+    }
+
+    //! Sets the source (project) root.
+    auto set_project_root(std::filesystem::path path) noexcept -> void
+    {
+        this->data.projectRoot = std::move(path);
+    }
+
+    //! Sets the settings.
+    auto set_settings(Settings settings) -> void
+    {
+        this->data.settings = std::move(settings);
+    }
+
+    //! Sets the toolchain.
+    auto set_toolchain(Toolchain toolchain) -> void
+    {
+        this->data.toolchain = std::move(toolchain);
+    }
+
+    //! Returns the toolchain.
+    [[nodiscard]] auto toolchain() const noexcept -> const Toolchain &
+    {
+        return this->data.toolchain;
+    }
+
     //! Finds the first source matching the `path`
     //! such that the `path` is a subpath of the
     //! matched file. E.g. searching for
     //! `main.cpp` could match
-    //! `project1/main.cpp`,
-    //! `project2/main.cpp` etc. If
-    //! there are multiple matching files their
-    //! order is unspecified. If no file is
+    //! `project1/main.cpp`, `project2/main.cpp`
+    //! etc. If there are multiple matching files
+    //! their order is unspecified. If no file is
     //! matched returns `nullptr`.
     [[nodiscard]] auto source_file(const std::filesystem::path &path) const -> SourceFile *
     {
         return this->index.source_file(path);
     }
 
-    //! Returns the list of all source files.
-    [[nodiscard]] auto source_files() const noexcept -> const std::vector<std::unique_ptr<SourceFile>> &
-    {
-        return this->data.sources;
-    }
-
     //! Deleted copy assignment.
-    auto operator=(const Cache &other) -> Cache & = delete;
+    auto operator=(const CacheImpl &other) -> CacheImpl & = delete;
 
     //! Move assignment.
-    auto operator=(Cache &&other) noexcept -> Cache & = default;
+    auto operator=(CacheImpl &&other) noexcept -> CacheImpl & = default;
 
 private:
-    auto get_project(const std::string &name) -> Project *
-    {
-        Project *proj = this->project(name);
-
-        if (proj == nullptr)
-        {
-            proj = this->data.projects.emplace_back(std::make_unique<Project>(Project{.name = name})).get();
-            this->index.insert(proj);
-        }
-
-        return proj;
-    }
-
-    std::filesystem::path filePath;
     CacheData data;
     CacheIndex index;
 };

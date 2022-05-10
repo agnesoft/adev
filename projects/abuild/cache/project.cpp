@@ -1,6 +1,6 @@
 #ifndef __clang__
 export module abuild.cache:project;
-export import astl;
+export import :file;
 #endif
 
 namespace abuild
@@ -13,21 +13,27 @@ export struct SourceFile;
 //! tracked by the `Cache`.
 export struct Project
 {
-    //! Output type of the project.
+    //! Type of the project.
     enum class Type
     {
-        //! Static library producing *.lib or *.a.
-        StaticLibrary,
+        //! The project is an executable file.
+        Executable,
 
-        //! Dynamic library producing *.dll or *.so.
+        //! The project is a dynamic library.
         DynamicLibrary,
 
-        //! Executable producing *.exe (on Windows).
-        Executable
+        //! The project is a static library.
+        StaticLibrary
     };
 
     //! Name of the project.
     std::string name;
+
+    //! Type of the project.
+    Type type = Type::StaticLibrary;
+
+    //! The output file of the project.
+    File linkedFile;
 
     //! List of headers that are part of the
     //! project.
@@ -36,8 +42,5 @@ export struct Project
     //! List of sources that are part of the
     //! project.
     std::vector<SourceFile *> sources;
-
-    //! Output type of the project.
-    Type type = Type::StaticLibrary;
 };
 }
