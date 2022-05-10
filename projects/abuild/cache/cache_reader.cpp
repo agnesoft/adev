@@ -27,9 +27,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            HeaderFile *file = this->cache.add_header_file(it->first.as<std::string>());
-            file->timestamp = it->second["timestamp"].as<std::size_t>();
-            file->tokens = CacheReader::read_tokens(it->second["tokens"]);
+            this->read_bare_header_file(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -39,13 +37,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            SourceFile *file = this->cache.add_source_file(it->first.as<std::string>());
-            file->timestamp = it->second["timestamp"].as<std::size_t>();
-            file->tokens = CacheReader::read_tokens(it->second["tokens"]);
-
-            const ::YAML::Node objectFileNode = it->second["object_file"];
-            file->objectFile.path = objectFileNode["path"].as<std::string>();
-            file->objectFile.timestamp = objectFileNode["timestamp"].as<std::size_t>();
+            this->read_bare_source_file(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -70,11 +62,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            HeaderFile *file = this->cache.exact_header_file(it->first.as<std::string>());
-            file->includes = this->read_includes(it->second["includes"]);
-            file->importedHeaderUnits = this->read_imported_header_units(it->second["imported_header_units"]);
-            file->importedModules = this->read_imported_modules(it->second["imported_modules"]);
-            file->importedModulePartitions = this->read_imported_module_partitions(it->second["imported_module_partitions"]);
+            this->read_header_file(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -84,18 +72,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            HeaderFile *file = this->cache.exact_header_file(it->first.as<std::string>());
-
-            if (file == nullptr)
-            {
-                throw std::runtime_error{"Corrupted cache: missing header unit file '" + it->first.as<std::string>() + '\''};
-            }
-
-            HeaderUnit *unit = this->cache.add_header_unit(file);
-
-            const ::YAML::Node precompiledHeaderUnit = it->second["precompiled_header_unit"];
-            unit->precompiledHeaderUnit.path = precompiledHeaderUnit["path"].as<std::string>();
-            unit->precompiledHeaderUnit.timestamp = precompiledHeaderUnit["timestamp"].as<std::size_t>();
+            this->read_header_unit(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -110,15 +87,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            Module *mod = this->cache.add_module(it->first.as<std::string>());
-            mod->sourceFile = this->cache.exact_source_file(it->second["source_file"].as<std::string>());
-            mod->exported = it->second["exported"].as<bool>();
-
-            const ::YAML::Node precompiledInterfaceNode = it->second["precompiled_module_interface"];
-            mod->precompiledModuleInterface.path = precompiledInterfaceNode["path"].as<std::string>();
-            mod->precompiledModuleInterface.timestamp = precompiledInterfaceNode["timestamp"].as<std::size_t>();
-
-            mod->partitions = this->read_module_partitions(it->second["partitions"], mod);
+            this->read_module(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -133,15 +102,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            Project *project = this->cache.add_project(it->first.as<std::string>());
-            project->type = CacheReader::project_type(it->second["type"].as<std::string>());
-
-            const ::YAML::Node linkedFile = it->second["linked_file"];
-            project->linkedFile.path = linkedFile["path"].as<std::string>();
-            project->linkedFile.timestamp = linkedFile["timestamp"].as<std::size_t>();
-
-            project->headers = this->read_project_headers(it->second["headers"], project);
-            project->sources = this->read_project_sources(it->second["sources"], project);
+            this->read_project(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -165,11 +126,7 @@ public:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            SourceFile *file = this->cache.exact_source_file(it->first.as<std::string>());
-            file->includes = this->read_includes(it->second["includes"]);
-            file->importedHeaderUnits = this->read_imported_header_units(it->second["imported_header_units"]);
-            file->importedModules = this->read_imported_modules(it->second["imported_modules"]);
-            file->importedModulePartitions = this->read_imported_module_partitions(it->second["imported_module_partitions"]);
+            this->read_source_file(it->first.as<std::string>(), it->second);
         }
     }
 
@@ -226,10 +183,175 @@ private:
         return ABI::Platform::Linux;
     }
 
+    [[nodiscard]] auto imported_header_units(const ::YAML::Node &node) const -> std::vector<HeaderUnit *>
+    {
+        std::vector<HeaderUnit *> units;
+        units.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            units.push_back(this->read_imported_header_unit(it->as<std::string>()));
+        }
+
+        return units;
+    }
+
+    [[nodiscard]] auto find_imported_header_unit_file(const std::filesystem::path &path) const -> HeaderFile *
+    {
+        HeaderFile *file = this->cache.exact_header_file(path);
+
+        if (file == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing imported header unit file '" + path.string() + '\''};
+        }
+
+        return file;
+    }
+
+    [[nodiscard]] auto find_imported_module_partition(const std::string &name, const Module *mod) const -> ModulePartition *
+    {
+        for (ModulePartition *partition : mod->partitions)
+        {
+            if (partition->name == name)
+            {
+                return partition;
+            }
+        }
+
+        return nullptr;
+    }
+
+    [[nodiscard]] auto header_unit_file(const std::filesystem::path &path) -> HeaderFile *
+    {
+        HeaderFile *file = this->cache.exact_header_file(path);
+
+        if (file == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing header unit file '" + path.string() + '\''};
+        }
+
+        return file;
+    }
+
+    [[nodiscard]] auto imported_module_partition(const std::string &names) const -> ModulePartition *
+    {
+        const std::pair<std::string, std::string> modPartition = CacheReader::module_partition_names(names);
+        Module *mod = this->imported_module_partition_module(modPartition.first);
+        return this->imported_module_partition(modPartition.second, mod);
+    }
+
+    [[nodiscard]] auto imported_module_partition(const std::string &name, const Module *mod) const -> ModulePartition *
+    {
+        ModulePartition *partition = this->find_imported_module_partition(name, mod);
+
+        if (partition == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing imported module partition '" + mod->name + ':' + name + '\''};
+        }
+
+        return partition;
+    }
+
+    [[nodiscard]] auto imported_module_partitions(const ::YAML::Node &node) const -> std::vector<ModulePartition *>
+    {
+        std::vector<ModulePartition *> partitions;
+        partitions.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            partitions.push_back(this->imported_module_partition(it->as<std::string>()));
+        }
+
+        return partitions;
+    }
+
+    [[nodiscard]] auto imported_module_partition_module(const std::string &name) const -> Module *
+    {
+        Module *mod = this->cache.module_(name);
+
+        if (mod == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing imported module '" + name + '\''};
+        }
+
+        return mod;
+    }
+
     [[nodiscard]] static auto module_partition_names(const std::string &value) -> std::pair<std::string, std::string>
     {
         const std::size_t split = value.find(':');
         return {value.substr(0, split), value.substr(split + 1)};
+    }
+
+    [[nodiscard]] auto imported_module(const std::string &name) const -> Module *
+    {
+        Module *mod = this->cache.module_(name);
+
+        if (mod == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing imported module '" + name + '\''};
+        }
+
+        return mod;
+    }
+
+    [[nodiscard]] auto imported_modules(const ::YAML::Node &node) const -> std::vector<Module *>
+    {
+        std::vector<Module *> modules;
+        modules.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            modules.push_back(this->imported_module(it->as<std::string>()));
+        }
+
+        return modules;
+    }
+
+    [[nodiscard]] auto include(const std::filesystem::path &path, const ::YAML::Node &node) const -> Header
+    {
+        return {.file = this->include_file(path),
+                .includes = this->read_includes(node["includes"]),
+                .importedHeaderUnits = this->read_imported_header_units(node["imported_header_units"]),
+                .importedModules = this->read_imported_modules(node["imported_modules"]),
+                .importedModulePartitions = this->read_imported_module_partitions(node["imported_module_partitions"])};
+    }
+
+    [[nodiscard]] auto include_file(const std::filesystem::path &path) const -> CppFile *
+    {
+        CppFile *file = this->include_header_or_source_file(path);
+
+        if (file == nullptr)
+        {
+            throw std::runtime_error("Corrupted cache: missing included file '" + path.string() + '\'');
+        }
+
+        return file;
+    }
+
+    [[nodiscard]] auto include_header_or_source_file(const std::filesystem::path &path) const -> CppFile *
+    {
+        CppFile *file = this->cache.exact_header_file(path);
+
+        if (file == nullptr)
+        {
+            file = this->cache.exact_source_file(path);
+        }
+
+        return file;
+    }
+
+    [[nodiscard]] auto includes(const ::YAML::Node &node) const -> std::vector<Header>
+    {
+        std::vector<Header> includes;
+        includes.reserve(node.size());
+
+        for (auto it = node.begin(); it != node.end(); ++it)
+        {
+            includes.emplace_back(this->include(it->first.as<std::string>(), it->second));
+        }
+
+        return includes;
     }
 
     [[nodiscard]] static auto project_type(const std::string &value) -> Project::Type
@@ -247,6 +369,29 @@ private:
         return Project::Type::StaticLibrary;
     }
 
+    auto read_bare_header_file(std::filesystem::path path, const ::YAML::Node &node) -> void
+    {
+        HeaderFile *file = this->cache.add_header_file(std::move(path));
+        file->timestamp = node["timestamp"].as<std::size_t>();
+        file->tokens = CacheReader::read_tokens(node["tokens"]);
+    }
+
+    auto read_bare_source_file(std::filesystem::path path, const ::YAML::Node &node) -> void
+    {
+        SourceFile *file = this->cache.add_source_file(std::move(path));
+        file->timestamp = node["timestamp"].as<std::size_t>();
+        file->tokens = CacheReader::read_tokens(node["tokens"]);
+        CacheReader::read_file(file->objectFile, node["object_file"]);
+    }
+
+    auto read_cppfile(CppFile *file, const ::YAML::Node &node) -> void
+    {
+        file->includes = this->read_includes(node["includes"]);
+        file->importedHeaderUnits = this->read_imported_header_units(node["imported_header_units"]);
+        file->importedModules = this->read_imported_modules(node["imported_modules"]);
+        file->importedModulePartitions = this->read_imported_module_partitions(node["imported_module_partitions"]);
+    }
+
     [[nodiscard]] static auto read_defines(const ::YAML::Node &&node) -> std::vector<DefineToken>
     {
         std::vector<DefineToken> defines;
@@ -258,6 +403,12 @@ private:
         }
 
         return defines;
+    }
+
+    auto read_file(File &file, const ::YAML::Node &&node) -> void
+    {
+        file.path = node["path"].as<std::string>();
+        file.timestamp = node["timestamp"].as<std::size_t>();
     }
 
     [[nodiscard]] static auto read_flags(const ::YAML::Node &&node) -> std::vector<Flag>
@@ -273,6 +424,30 @@ private:
         return flags;
     }
 
+    auto read_header_file(const std::filesystem::path &path, const ::YAML::Node &node) -> void
+    {
+        this->read_cppfile(this->cache.exact_header_file(path), node);
+    }
+
+    auto read_header_unit(const std::filesystem::path &path, const ::YAML::Node &node) -> void
+    {
+        HeaderFile *file = this->header_unit_file(path);
+        HeaderUnit *unit = this->cache.add_header_unit(file);
+        CacheReader::read_file(unit->precompiledHeaderUnit, node["precompiled_header_unit"]);
+    }
+
+    [[nodiscard]] auto read_imported_header_unit(const std::filesystem::path &path) const -> HeaderUnit *
+    {
+        HeaderUnit *unit = this->cache.header_unit(this->find_imported_header_unit_file(path));
+
+        if (unit == nullptr)
+        {
+            throw std::runtime_error{"Corrupted cache: missing imported header unit '" + path.string() + '\''};
+        }
+
+        return unit;
+    }
+
     [[nodiscard]] auto read_imported_header_units(const ::YAML::Node &&node) const -> std::vector<HeaderUnit *>
     {
         if (!node.IsDefined())
@@ -280,29 +455,7 @@ private:
             return {};
         }
 
-        std::vector<HeaderUnit *> units;
-        units.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            HeaderFile *file = this->cache.exact_header_file(it->as<std::string>());
-
-            if (file == nullptr)
-            {
-                throw std::runtime_error{"Corrupted cache: missing imported header unit file '" + it->as<std::string>() + '\''};
-            }
-
-            HeaderUnit *unit = this->cache.header_unit(file);
-
-            if (unit == nullptr)
-            {
-                throw std::runtime_error{"Corrupted cache: missing imported header unit '" + it->as<std::string>() + '\''};
-            }
-
-            units.push_back(unit);
-        }
-
-        return units;
+        return this->imported_header_units(node);
     }
 
     [[nodiscard]] auto read_imported_module_partitions(const ::YAML::Node &&node) const -> std::vector<ModulePartition *>
@@ -312,41 +465,7 @@ private:
             return {};
         }
 
-        std::vector<ModulePartition *> partitions;
-        partitions.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            const std::pair<std::string, std::string> modPartition = CacheReader::module_partition_names(it->as<std::string>());
-            Module *mod = this->cache.module_(modPartition.first);
-
-            if (mod == nullptr)
-            {
-                throw std::runtime_error{"Corrupted cache: missing imported module '" + modPartition.first + '\''};
-            }
-
-            ModulePartition *partition = nullptr;
-
-            for (ModulePartition *candidate : mod->partitions)
-            {
-                if (candidate->name == modPartition.second)
-                {
-                    partition = candidate;
-                    break;
-                }
-            }
-
-            if (partition == nullptr)
-            {
-                throw std::runtime_error{"Corrupted cache: missing imported module partition '" + it->as<std::string>() + '\''};
-            }
-            else
-            {
-                partitions.push_back(partition);
-            }
-        }
-
-        return partitions;
+        return this->imported_module_partitions(node);
     }
 
     [[nodiscard]] auto read_imported_modules(const ::YAML::Node &&node) const -> std::vector<Module *>
@@ -356,22 +475,7 @@ private:
             return {};
         }
 
-        std::vector<Module *> modules;
-        modules.reserve(node.size());
-
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            Module *mod = this->cache.module_(it->as<std::string>());
-
-            if (mod == nullptr)
-            {
-                throw std::runtime_error{"Corrupted cache: missing imported module '" + it->as<std::string>() + '\''};
-            }
-
-            modules.push_back(mod);
-        }
-
-        return modules;
+        return this->imported_modules(node);
     }
 
     [[nodiscard]] auto read_includes(const ::YAML::Node &&node) const -> std::vector<Header>
@@ -381,32 +485,26 @@ private:
             return {};
         }
 
-        std::vector<Header> includes;
-        includes.reserve(node.size());
+        return this->includes(node);
+    }
 
-        for (auto it = node.begin(); it != node.end(); ++it)
-        {
-            const std::filesystem::path path = it->first.as<std::string>();
-            CppFile *file = this->cache.exact_header_file(path);
+    auto read_module(const std::string &name, const ::YAML::Node &node) -> void
+    {
+        Module *mod = this->cache.add_module(name);
+        mod->sourceFile = this->cache.exact_source_file(node["source_file"].as<std::string>());
+        mod->exported = node["exported"].as<bool>();
+        CacheReader::read_file(mod->precompiledModuleInterface, node["precompiled_module_interface"]);
+        mod->partitions = this->read_module_partitions(node["partitions"], mod);
+    }
 
-            if (file == nullptr)
-            {
-                file = this->cache.exact_source_file(path);
-
-                if (file == nullptr)
-                {
-                    throw std::runtime_error("Corrupted cache: missing included file '" + path.string() + '\'');
-                }
-            }
-
-            includes.emplace_back(Header{.file = file,
-                                         .includes = this->read_includes(it->second["includes"]),
-                                         .importedHeaderUnits = this->read_imported_header_units(it->second["imported_header_units"]),
-                                         .importedModules = this->read_imported_modules(it->second["imported_modules"]),
-                                         .importedModulePartitions = this->read_imported_module_partitions(it->second["imported_module_partitions"])});
-        }
-
-        return includes;
+    [[nodiscard]] auto read_module_partition(const std::string &name, const ::YAML::Node &node, Module *mod) -> ModulePartition *
+    {
+        ModulePartition *partition = this->cache.add_module_partition(name);
+        partition->mod = mod;
+        partition->sourceFile = this->cache.exact_source_file(node["source_file"].as<std::string>());
+        partition->exported = node["exported"].as<bool>();
+        CacheReader::read_file(partition->precompiledModuleInterface, node["precompiled_module_interface"]);
+        return partition;
     }
 
     [[nodiscard]] auto read_module_partitions(const ::YAML::Node &&node, Module *mod) -> std::vector<ModulePartition *>
@@ -421,19 +519,19 @@ private:
 
         for (auto it = node.begin(); it != node.end(); ++it)
         {
-            ModulePartition *partition = this->cache.add_module_partition(it->first.as<std::string>());
-            partition->mod = mod;
-            partition->sourceFile = this->cache.exact_source_file(it->second["source_file"].as<std::string>());
-            partition->exported = it->second["exported"].as<bool>();
-
-            const ::YAML::Node precompiledInterfaceNode = it->second["precompiled_module_interface"];
-            partition->precompiledModuleInterface.path = precompiledInterfaceNode["path"].as<std::string>();
-            partition->precompiledModuleInterface.timestamp = precompiledInterfaceNode["timestamp"].as<std::size_t>();
-
-            partitions.push_back(partition);
+            partitions.push_back(this->read_module_partition(it->first.as<std::string>(), it->second, mod));
         }
 
         return partitions;
+    }
+
+    auto read_project(std::string name, const ::YAML::Node &node) -> void
+    {
+        Project *project = this->cache.add_project(std::move(name));
+        project->type = CacheReader::project_type(node["type"].as<std::string>());
+        CacheReader::read_file(project->linkedFile, node["linked_file"]);
+        project->headers = this->read_project_headers(node["headers"], project);
+        project->sources = this->read_project_sources(node["sources"], project);
     }
 
     [[nodiscard]] auto read_project_headers(const ::YAML::Node &&node, Project *project) const -> std::vector<HeaderFile *>
@@ -498,6 +596,11 @@ private:
         }
 
         return list;
+    }
+
+    auto read_source_file(const std::filesystem::path &path, const ::YAML::Node &node) -> void
+    {
+        this->read_cppfile(this->cache.exact_source_file(path), node);
     }
 
     [[nodiscard]] static auto read_tokens(const ::YAML::Node &node) -> std::vector<Token>
