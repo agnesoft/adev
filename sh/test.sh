@@ -11,7 +11,7 @@ function set_iterations() {
 }
 
 function run_test() {
-    local test="${1}"
+    local -r test="${1}"
     local failures=0
     local i=0
 
@@ -37,7 +37,7 @@ function run_test() {
 }
 
 function run_tests() {
-    local testDir="build/${toolchain}/bin"
+    local -r testDir="build/${toolchain}/bin"
     result=0
     echo "Running tests from '${testDir}'..."
 
@@ -59,5 +59,5 @@ function run_tests() {
 }
 
 set_toolchain "${1}"
-set_iterations $1 $2
+set_iterations "${1}" "${2}"
 run_tests

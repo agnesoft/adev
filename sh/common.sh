@@ -33,10 +33,10 @@ function is_windows() {
 }
 
 function run_script() {
-    local script="${1}"
-    local arg1="${2}"
-    local arg2="${3}"
-    local arg3="${4}"
+    local -r script="${1}"
+    local -r arg1="${2}"
+    local -r arg2="${3}"
+    local -r arg3="${4}"
     "${script[@]}" "${arg1}" "${arg2}" "${arg3}"
     local status=$?
 

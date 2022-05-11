@@ -9,13 +9,13 @@ function detect_clang_format() {
 }
 
 function format_check_source() {
-    local source="${1}"
+    local -r source="${1}"
 
     if [[ ${source} == projects/yamlcpp/* ]]; then
         return
     fi
 
-    local replacements=$($clangFormat -output-replacements-xml $source | grep "<replacement ")
+    local -r replacements=$($clangFormat -output-replacements-xml $source | grep "<replacement ")
 
     if [[ "${replacements}" != "" ]]; then
         print_error "[ FAILED ] $source"
@@ -26,7 +26,7 @@ function format_check_source() {
 }
 
 function format_check_diff() {
-    local sources=$(git diff origin/main --name-only -- *.cpp *.hpp)
+    local -r sources=$(git diff origin/main --name-only -- *.cpp *.hpp)
 
     for file in ${sources[@]}; do
         format_check_source "${file}"
@@ -40,7 +40,7 @@ function format_check_all() {
 }
 
 function format_check() {
-    local diff="${1}"
+    local -r diff="${1}"
     result=0
 
     if [[ "${diff}" == "diff" ]]; then

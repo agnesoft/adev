@@ -1,8 +1,8 @@
 source "sh/common.sh"
 
 function install_package() {
-    local package="${1}"
-    local installScript="sh/install/${package}.sh"
+    local -r package="${1}"
+    local -r installScript="sh/install/${package}.sh"
 
     if [[ -f "${installScript}" ]]; then
         echo "Installing package '${package}'..."

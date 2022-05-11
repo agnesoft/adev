@@ -22,7 +22,7 @@ function coverage() {
 
     local objectArgs=""
     local profData=""
-    local dir=$(pwd)
+    local -r dir=$(pwd)
 
     for test in build/clang/bin/*_test${executableExtension}; do
         if [[ "${test}" != "build/clang/bin/aprocess_test${executableExtension}" ]]; then
