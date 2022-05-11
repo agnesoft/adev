@@ -19,7 +19,7 @@ Agnesoft central development repository.
 Run (use Git Bash on Windows):
 
 ```
-./adev.sh
+./build.sh
 ```
 
 This will show all available actions: building, running various checks, installation of prerequisites & tools etc. E.g.
@@ -27,9 +27,9 @@ This will show all available actions: building, running various checks, installa
 To build simply run any of:
 
 ```
-./adev.sh build
-./adev.sh build <toolchain>
-./adev.sh build <project> <toolchain>
+./build.sh build
+./build.sh build <toolchain>
+./build.sh build <project> <toolchain>
 ```
 
 Available toolchains are:
@@ -56,23 +56,23 @@ The binaries will be output to `build/<toolchain>`.
 
 ## Tools
 
-| Windows                                                                | Installation                | Note                                                                |
-| ---------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------- |
-| [(Git) Bash](https://git-scm.com/download/win)                         | -                           |                                                                     |
-| [Visual Studio 2022](https://visualstudio.microsoft.com/cs/downloads/) | manual                      |                                                                     |
-| [clang 13](https://llvm.org/)                                          | `./adev.sh install llvm`    |                                                                     |
-| [gcc 11\*](https://gcc.gnu.org/)                                       | `./adev.sh install gcc`     | See [Known Issues](#known-issues)                                   |
-| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./adev.sh install llvm`    |                                                                     |
-| [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)   | `./adev.sh install llvm`    |                                                                     |
-| [Doxygen](https://www.doxygen.nl/index.html)                           | `./adev.sh install doxygen` |                                                                     |
-| [clang-format](https://clang.llvm.org/docs/ClangFormat.html)           | `./adev.sh install llvm`    |                                                                     |
-| [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | manual                      | Required only for [Continuous Integration](#continuous-integration) |
+| Windows                                                                | Installation                 | Note                                                                |
+| ---------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------- |
+| [(Git) Bash](https://git-scm.com/download/win)                         | -                            |                                                                     |
+| [Visual Studio 2022](https://visualstudio.microsoft.com/cs/downloads/) | manual                       |                                                                     |
+| [clang 13](https://llvm.org/)                                          | `./build.sh install llvm`    |                                                                     |
+| [gcc 11\*](https://gcc.gnu.org/)                                       | `./build.sh install gcc`     | See [Known Issues](#known-issues)                                   |
+| [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)                 | `./build.sh install llvm`    |                                                                     |
+| [llvm-cov](https://clang.llvm.org/docs/SourceBasedCodeCoverage.html)   | `./build.sh install llvm`    |                                                                     |
+| [Doxygen](https://www.doxygen.nl/index.html)                           | `./build.sh install doxygen` |                                                                     |
+| [clang-format](https://clang.llvm.org/docs/ClangFormat.html)           | `./build.sh install llvm`    |                                                                     |
+| [Docker Desktop](https://docs.docker.com/desktop/windows/install/)     | manual                       | Required only for [Continuous Integration](#continuous-integration) |
 
 ## Development
 
 Please refer to [contribution.md](contribution.md) and [style_guide.md](style_guide.md) for general information.
 
-For development you can use the [docker image](https://github.com/agnesoft/adev/pkgs/container/adev) (preferred) or setup your environment with `./adev.sh install <package>` actions or install the [tools](#tools) manually.
+For development you can use the [docker image](https://github.com/agnesoft/adev/pkgs/container/adev) (preferred) or setup your environment with `./build.sh install <package>` actions or install the [tools](#tools) manually.
 
 Workflow summary:
 
@@ -80,14 +80,14 @@ Workflow summary:
 2. Create a branch for that issue
     - observe the naming rules in the [style_guide.md](style_guide.md), i.e. use `[project tag]` and name the branch after your issue, including the issue #
 3. Work on the branch
-    - build & run checks via `./adev.sh`
+    - build & run checks via `./build.sh`
 4. Push the branch to GitHub & open PR from your branch to `main`
 5. Merge to `main`
     - requires 1 approval & all [Continous Integration](#continuous-integration) checks to pass
 
 ## Continuous Integration
 
-The `adev` is using GitHub Actions. The `.adev.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites & tools listed above:
+The `adev` is using GitHub Actions. The `.build.sh` script actions are run as part of the continuous integration (CI) on every pull request and subsequent merge to `main`. Most actions are run on Ubuntu based custom docker image that comes with preinstalled prerequisites & tools listed above:
 
 -   [`agnesoft/adev`](https://github.com/agnesoft/adev/pkgs/container/adev)
 
@@ -114,7 +114,6 @@ There are two workflows:
 | -------- | ----------------- | -------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | any      | coverage          | llvm           | 13      | LLVM instrumentation has difficulties with `if constexpr` and some other entities showing them "uncovered" even though they are executed.                             | **None.** Increase coverage thresholds as needed.                                                                                      | 29/09/2021 |
 | any      | coverage          | llvm           | 13      | LLVM source code based coverage has difficulties with spawned processes. The resulting `profraw` file is reported as corrupted and cannot be used by `llvm-profdata`. | **None.** Exclude affected projects from coverage.                                                                                     | 25/11/2021 |
-| any      | analysis          | llvm           | 13      | `clang-tidy` cannot use TemplateParameterCase style parameter along with other style checks citing "invalid style".                                                   | **None.** Do not use for now.                                                                                                          | 02/10/2021 |
 | Linux    | build             | gcc            | 11      | Unable to use its own STL (`libstdc++`) as header units. Build fails on internal compiler error. The `libc++` does not work either.                                   | **None.** GCC is not usable with modules and STL.                                                                                      | 31/08/2021 |
 | Linux    | analysis          | llvm           | 13      | `clang-tidy` has difficulties using Unix headers such as `wait.h` as header units even with correct `module.modulemap`. The build si ok.                              | Specify the headers in `module.modulemap` manually.                                                                                    | 25/11/2021 |
 | Linux    | address-sanitizer | llvm           | 13.0.1  | Address sanitizer produces `alloc-dealloc-mismatch` false positives coming from `libc++`.                                                                             | Set `export ASAN_OPTIONS=alloc_dealloc_mismatch=0` before running the tests built with asan.                                           | 18/01/2022 |
