@@ -11,6 +11,7 @@
 *.pch
 *.profraw
 /gcm.cache/
+.clang-tidy
 
 #JS
 node_modules/
