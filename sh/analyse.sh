@@ -1,4 +1,5 @@
 source sh/common.sh
+source sh/clang-tidy.sh
 
 pids=()
 
@@ -145,9 +146,54 @@ function do_analyse_source() {
     fi
 }
 
+function set_checks() {
+    local checkSets=("${1}")
+    local checks=""
+
+    if [[ "${checkSets[@]}" == "" ]]; then
+        checkSets=("bugprone cert cppcoreguidelines fuchsia google hicpp misc modernize performance readability")
+    fi
+
+    for check in ${checkSets[@]}; do
+        checks="${checks}
+${allChecks[$check]},"
+    done
+
+    echo "Checks: '${checks}
+'
+WarningsAsErrors: '${checks}
+'
+FormatStyle: file
+CheckOptions:
+  - key:   readability-identifier-naming.ClassCase
+    value: 'CamelCase'
+  - key:   readability-identifier-naming.EnumCase
+    value: 'CamelCase'
+  - key:   readability-identifier-naming.EnumConstantCase
+    value: 'CamelCase'
+  - key:   readability-identifier-naming.FunctionCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.GlobalConstantCase
+    value: 'UPPER_CASE'
+  - key:   readability-identifier-naming.MacroDefinitionCase
+    value: 'UPPER_CASE'
+  - key:   readability-identifier-naming.NamespaceCase
+    value: 'lower_case'
+  - key:   readability-identifier-naming.StructCase
+    value: 'CamelCase'
+  - key:   readability-identifier-naming.TemplateParameterCase
+    value: 'CamelCase'
+  - key:   readability-identifier-naming.ValueTemplateParameterCase
+    value: 'camelBack'
+  - key:   readability-identifier-naming.TypeAliasCase
+    value: 'CamelCase'
+  - key:   readability-identifier-naming.VariableCase
+    value: 'camelBack'" > ./.clang-tidy
+}
+
 function should_analyse() {
-    local diff="${1}"
-    local sources="${2}"
+    local -r diff="${1}"
+    local -r sources="${2}"
 
     ( ! [[ "${diff}" == "diff" ]] || is_changed "${sources}" )
 }
@@ -166,7 +212,15 @@ function wait_for_jobs() {
 }
 
 detect_clang_tidy
-analyse "${1}"
+
+if [[ "${1}" == "diff" ]]; then
+    set_checks "${2}"
+    analyse "${1}"
+else
+    set_checks "${1}"
+    analyse
+fi
+
 wait_for_jobs
 
 if (( $result == 0 )); then
