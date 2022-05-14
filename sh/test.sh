@@ -1,10 +1,28 @@
-source "sh/common.sh"
+[ -n "$TEST_SH" ] && return || readonly TEST_SH=1
+
+source "sh/build_common.sh"
+source "sh/coverage.sh"
+
+function test_() {
+    set_build_properties "${1}" "${2}" "${3}"
+    set_iterations "${1}" "${2}" "${3}" "${4}"
+
+    if [[ "${configuration}" == "coverage" ]]; then
+        coverage
+    else
+        run_tests
+    fi
+}
 
 function set_iterations() {
     if [[ "${1}" != "" ]] && is_number $1; then
         iterations=$1
     elif [[ "${2}" != "" ]] && is_number $2; then
         iterations=$2
+    elif [[ "${3}" != "" ]] && is_number $3; then
+        iterations=$3
+    elif [[ "${4}" != "" ]] && is_number $4; then
+        iterations=$4
     else
         iterations=1
     fi
@@ -17,9 +35,9 @@ function run_test() {
 
     for (( i=0; i < $iterations; i++ )); do
         local log
-        log=$($test)
+        
 
-        if (( $? != 0 )); then
+        if ! log=$($test); then
             result=1
             failures=$(( $failures + 1 ))
             echo "${log}"
@@ -36,17 +54,26 @@ function run_test() {
     result=$(( $result + $failures ))
 }
 
-function run_tests() {
-    local -r testDir="build/${toolchain}/bin"
+function run_all_tests() {
+    local -r testDir="build/${toolchain}/${configuration}/bin"
+
     result=0
     echo "Running tests from '${testDir}'..."
 
     if [[ -d "${testDir}" ]]; then
-        for test in $testDir/*_test$executableExtension; do
+        for test in ${testDir}/*.test${executableExtension}; do
             if [[ -f "${test}" ]]; then
                 run_test "${test}"
             fi
         done
+    fi
+}
+
+function run_tests() {
+    if [[ "${project}" != "" ]]; then
+        run_test "build/${toolchain}/${configuration}/bin/${project}"
+    else
+        run_all_tests
     fi
 
     if (( $result != 0 )); then
@@ -54,10 +81,5 @@ function run_tests() {
         exit 1
     else
         print_ok "All tests PASSED"
-        exit 0
     fi
 }
-
-set_toolchain "${1}"
-set_iterations "${1}" "${2}"
-run_tests

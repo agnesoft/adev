@@ -2,6 +2,57 @@
 
 source "sh/common.sh"
 
+function build_project() {
+    local -r buildScript="sh/build/${1}.sh"
+
+    if [[ -f "${buildScript}" ]]; then
+        run_script "${buildScript}" "${toolchain}" "${configuration}"
+    else
+        print_error "ERROR: Project '${1}' does not exist."
+        exit 1;
+    fi
+}
+
+function build() {
+    if [[ -f "${buildRoot}/${project}.done" ]]; then
+        return
+    fi
+
+    build_dependencies "${1}"
+
+    echo "*** ${project} | ${toolchain} | ${configuration} ***"
+
+    mkdir -p "${binDir}"
+    mkdir -p "${buildDir}"
+
+    if [[ "${toolchain}" == "clang" ]]; then
+        set -e
+        build_clang
+        readonly status=$?
+    elif [[ "${toolchain}" == "gcc" ]]; then
+        set -e
+        build_gcc
+        readonly status=$?
+    elif [[ "${toolchain}" == "msvc" ]]; then
+        build_msvc
+    fi
+
+    if (( $status == 0 )); then
+        echo "${satus}" > "${buildRoot}/${project}.done"
+    else
+        print_error "ERROR: build of '${project}' failed"
+        exit 1
+    fi
+}
+
+function build_dependencies() {
+    local -r dependencies="${1}"
+
+    for dependency in ${dependencies[@]}; do
+        build_project "${dependency}"
+    done
+}
+
 function set_build_properties() {
     set_build_arguments "${1}" "${2}" "${3}"
     detect_msvc_env_script
@@ -20,6 +71,7 @@ function set_build_dirs() {
     else
         readonly projectDir="projects/${project}"
         readonly buildDir="${buildRoot}/${project}"
+        
     fi
 }
 
@@ -37,7 +89,7 @@ function set_first_argument() {
         readonly toolchain="${1}"
     elif is_configuration "${1}"; then
         readonly configuration="${1}"
-    else
+    elif ! is_number $1; then
         readonly project="${1}"
     fi
 
@@ -51,7 +103,7 @@ function set_second_argument() {
         readonly toolchain="${1}"
     elif is_configuration "${1}"; then
         readonly configuration="${1}"
-    else
+    elif ! is_number $1; then
         print_error "ERROR: second build argument '${1}' is not a toolchain or configuration"
         exit 1
     fi
@@ -64,7 +116,7 @@ function set_second_argument() {
 function set_third_argument() {
     if is_configuration "${1}"; then
         readonly configuration="${1}"
-    else
+    elif ! is_number $1; then
         print_error "ERROR: third build argument '${1}' is not a configuration"
         exit 1
     fi
@@ -220,12 +272,11 @@ function set_gcc_flags() {
 }
 
 function set_msvc_flags() {
-    readonly msvcCompilerFlags=\
+    readonly msvcCommonFlags=\
 "/nologo \
 /std:c++latest \
 /EHsc \
 /MT \
-/Z7 \
 /W4 \
 /WX \
 /wd4005 \
@@ -235,6 +286,12 @@ function set_msvc_flags() {
 /headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" \
 /headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" \
 /headerUnit \"projects/yamlcpp/yamlcpp.hpp=${buildRoot}/yamlcpp/yamlcpp.hpp.ifc\""
+
+    if [[ "${configuration}" == "release" ]]; then
+        readonly msvcCompilerFlags="${msvcCommonFlags} /O2"
+    elif [[ "${configuration}" == "debug" ]]; then
+        readonly msvcCompilerFlags="${msvcCommonFlags} /Z7"
+    fi
 }
 
 function set_build_flags() {
@@ -247,56 +304,7 @@ function set_build_flags() {
     fi
 }
 
-function build_project() {
-    local -r buildScript="sh/build/${1}.sh"
 
-    if [[ -f "${buildScript}" ]]; then
-        run_script "${buildScript}" "${toolchain}" "${configuration}"
-    else
-        print_error "ERROR: Project '${1}' does not exist."
-        exit 1;
-    fi
-}
-
-function build_dependencies() {
-    local -r dependencies="${1}"
-
-    for dependency in ${dependencies[@]}; do
-        build_project "${dependency}"
-    done
-}
-
-function build() {
-    if [[ -f "${buildRoot}/${project}.done" ]]; then
-        return
-    fi
-
-    build_dependencies "${1}"
-
-    echo "*** ${project} | ${toolchain} | ${configuration} ***"
-
-    mkdir -p "${binDir}"
-    mkdir -p "${buildDir}"
-
-    if [[ "${toolchain}" == "clang" ]]; then
-        set -e
-        build_clang
-        readonly status=$?
-    elif [[ "${toolchain}" == "gcc" ]]; then
-        set -e
-        build_gcc
-        readonly status=$?
-    elif [[ "${toolchain}" == "msvc" ]]; then
-        build_msvc
-    fi
-
-    if (( $status == 0 )); then
-        echo "${satus}" > "${buildRoot}/${project}.done"
-    else
-        print_error "ERROR: build of '${project}' failed"
-        exit 1
-    fi
-}
 
 function build_msvc() {
     echo "@echo off

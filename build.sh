@@ -2,11 +2,10 @@
 
 #source "sh/analyse.sh"
 source "sh/build.sh"
-#source "sh/coverage.sh"
 source "sh/format.sh"
 source "sh/help.sh"
-#source "sh/install.sh"
-#source "sh/test.sh"
+source "sh/install.sh"
+source "sh/test.sh"
 
 readonly action="${1}"
 

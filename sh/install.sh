@@ -1,4 +1,14 @@
+[ -n "$INSTALL_SH" ] && return || readonly INSTALL_SH=1
+
 source "sh/common.sh"
+
+function install() {
+    if [[ "${1}" == "list" ]]; then
+        list_packages
+    else
+        install_package "${1}"
+    fi
+}
 
 function install_package() {
     local -r package="${1}"
@@ -9,8 +19,6 @@ function install_package() {
         run_script "${installScript}"
     else
         print_error "ERROR: Package '${package}' does not exist."
-        echo ""
-        list_packages
         exit 1;
     fi
 }
@@ -24,9 +32,3 @@ function list_packages() {
         fi
     done
 }
-
-if [[ "${1}" == "list" ]]; then
-    list_packages
-else
-    install_package "${1}"
-fi

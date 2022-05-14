@@ -1,3 +1,5 @@
+[ -n "$COVERAGE_SH" ] && return || readonly COVERAGE_SH=1
+
 source "sh/common.sh"
 
 if is_windows; then
@@ -126,5 +128,3 @@ function print_summary() {
         print_ok "  * branch: ${branch} uncovered"
     fi
 }
-
-coverage
