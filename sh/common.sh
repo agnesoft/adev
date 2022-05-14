@@ -77,6 +77,7 @@ function set_linux_properties() {
     readonly home="/adev"
     readonly llvmVersion=14
     readonly gccVersion=12
+    readonly ubuntuRepository="jammy"
     readonly clang="clang++-${llvmVersion}"
     readonly clangFormat="clang-format-${llvmVersion}"
     readonly clangTidy="clang-tidy-${llvmVersion}"
