@@ -1,6 +1,9 @@
+[ -n "$ANALYSE_CHECKS_SH" ] && return || readonly ANALYSE_CHECKS_SH=1
+
 declare -A allChecks
 
-allChecks["bugprone"]="bugprone-bool-pointer-implicit-conversion
+allChecks["bugprone"]=\
+"bugprone-bool-pointer-implicit-conversion
 bugprone-branch-clone
 bugprone-copy-constructor-init
 bugprone-dangling-handle
@@ -45,7 +48,8 @@ bugprone-unused-return-value
 bugprone-use-after-move
 bugprone-virtual-near-miss"
 
-allChecks["cert"]="cert-dcl21-cpp
+allChecks["cert"]=\
+"cert-dcl21-cpp
 cert-dcl58-cpp
 cert-env33-c
 cert-err33-c
@@ -53,7 +57,8 @@ cert-err58-cpp
 cert-err60-cpp
 cert-mem57-cpp"
 
-allChecks["cppcoreguidelines"]="cppcoreguidelines-avoid-non-const-global-variables
+allChecks["cppcoreguidelines"]=\
+"cppcoreguidelines-avoid-non-const-global-variables
 cppcoreguidelines-init-variables
 cppcoreguidelines-interfaces-global-init
 cppcoreguidelines-narrowing-conversions
@@ -70,17 +75,19 @@ cppcoreguidelines-pro-type-reinterpret-cast
 cppcoreguidelines-pro-type-static-cast-downcast
 cppcoreguidelines-pro-type-vararg
 cppcoreguidelines-slicing
-cppcoreguidelines-special-member-functions (IgnorePositiveIntegerLiterals: true)
+cppcoreguidelines-special-member-functions
 cppcoreguidelines-virtual-class-destructor"
 
-allChecks["fuchsia"]="fuchsia-default-arguments-calls
+allChecks["fuchsia"]=\
+"fuchsia-default-arguments-calls
 fuchsia-default-arguments-declarations
 fuchsia-multiple-inheritance
 fuchsia-overloaded-operator
 fuchsia-statically-constructed-objects
 fuchsia-virtual-inheritance"
 
-allChecks["google"]="google-build-explicit-make-pair
+allChecks["google"]=\
+"google-build-explicit-make-pair
 google-build-namespaces
 google-build-using-namespace
 google-default-arguments
@@ -89,10 +96,12 @@ google-readability-casting
 google-runtime-int
 google-runtime-operator"
 
-allChecks["hicpp"]="hicpp-exception-baseclass
+allChecks["hicpp"]=\
+"hicpp-exception-baseclass
 hicpp-signed-bitwise"
 
-allChecks["misc"]="misc-misleading-bidirectional
+allChecks["misc"]=\
+"misc-misleading-bidirectional
 misc-misleading-identifier
 misc-misplaced-const
 misc-new-delete-overloads
@@ -106,7 +115,8 @@ misc-unused-alias-decls
 misc-unused-parameters
 misc-unused-using-decls"
 
-allChecks["modernize"]="modernize-avoid-bind
+allChecks["modernize"]=\
+"modernize-avoid-bind
 modernize-avoid-c-arrays
 modernize-deprecated-ios-base-aliases
 modernize-loop-convert
@@ -128,7 +138,8 @@ modernize-use-trailing-return-type
 modernize-use-transparent-functors
 modernize-use-using"
 
-allChecks["performance"]="performance-faster-string-find
+allChecks["performance"]=\
+"performance-faster-string-find
 performance-for-range-copy
 performance-implicit-conversion-in-loop
 performance-inefficient-algorithm
@@ -144,7 +155,8 @@ performance-type-promotion-in-math-fn
 performance-unnecessary-copy-initialization
 performance-unnecessary-value-param"
 
-allChecks["readability"]="readability-avoid-const-params-in-decls
+allChecks["readability"]=\
+"readability-avoid-const-params-in-decls
 readability-braces-around-statements
 readability-const-return-type
 readability-container-contains

@@ -3,10 +3,6 @@
 source "sh/common.sh"
 source "sh/coverage_thresholds.sh"
 
-#function | line | region | branch
-#e.g. thresholds["abuild.cache.test.exe"]="1 0 1 0"
-declare -A thresholds
-
 function coverage() {
     detect_llvm_cov
     detect_llvm_profdata
@@ -109,6 +105,11 @@ function coverage_project() {
 }
 
 function coverage_all() {
+    if ! [[ -d "${binDir}" ]]; then
+        print_error "ERROR: 'clang | coverage' build missing. Please build it with './build.sh clang coverage'."
+        exit 1
+    fi
+
     for test in ${binDir}/*.test${executableExtension}; do
         coverage_project "${test}"
     done

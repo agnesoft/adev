@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#source "sh/analyse.sh"
+source "sh/analyse.sh"
 source "sh/build.sh"
 source "sh/format.sh"
 source "sh/help.sh"
