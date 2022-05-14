@@ -1,6 +1,7 @@
 import awinapi;
 import acommandline;
 
+//! \private
 struct Inputs
 {
     std::int64_t exitCode = 0;

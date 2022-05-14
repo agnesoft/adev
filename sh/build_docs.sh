@@ -16,7 +16,9 @@ function build_docs () {
 
     echo "Doxygen $("$doxygen" --version)"
 
-    if $("${doxygen}" .doxyfile); then
+    "${doxygen}" .doxyfile
+    
+    if (( $? != 0 )); then
         print_error "ERROR: Building documentation failed."
         exit 1
     fi

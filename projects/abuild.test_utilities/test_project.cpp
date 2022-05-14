@@ -5,6 +5,7 @@ export import :test_file;
 
 namespace abuild
 {
+//! \private
 export class ProjectRoot
 {
 public:

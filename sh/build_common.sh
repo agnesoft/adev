@@ -150,7 +150,7 @@ function validate_toolchain() {
 function validate_configuration() {
     if [[ "${configuration}" == "memory" ]]; then
         if [[ ! -d "${libCppMsanRoot}" ]]; then
-            print_error "ERROR: libc++ with memory sanitizer not found. Build it with './build.sh libc++-msan'."
+            print_error "ERROR: libc++ with memory sanitizer not found. Build it with './build.sh build libc++-msan'."
             exit 1
         fi
     elif [[ "${configuration}" == "" ]]; then
@@ -176,8 +176,10 @@ function set_clang_common_flags() {
 
     if is_windows; then
         clangCompilerFlags="${clangCommonFlags}"
+    elif [[ "${configuration}" != "memory" ]]; then
+        clangCompilerFlags="${clangCommonFlags} -stdlib=libc++"
     else
-        clangCompilerFlags="${clangCompilerFlagsCommon} -stdlib=libc++"
+        clangCompilerFlags="${clangCommonFlags}"
     fi
 }
 
@@ -204,7 +206,7 @@ function set_clang_address_flags() {
 
 function set_clang_memory_flags() {
     clangCompilerFlags=\
-"${clangCommonFlags} \
+"${clangCompilerFlags} \
 -g \
 -Wno-error=unused-command-line-argument
 -fsanitize=memory \
@@ -233,7 +235,7 @@ function set_clang_compiler_linker_flags() {
         readonly clangCompilerLinkerFlags="${clangCompilerFlags}"
     elif [[ "${configuration}" == "memory" ]]; then
         readonly clangCompilerLinkerFlags=\
-"${clangCompilerLinkerFlags} \
+"${clangCompilerFlags} \
 -L${libCppMsanRoot}/lib \
 -lc++ \
 -lc++abi \
@@ -307,8 +309,6 @@ function set_build_flags() {
         set_msvc_flags
     fi
 }
-
-
 
 function build_msvc() {
     echo "@echo off

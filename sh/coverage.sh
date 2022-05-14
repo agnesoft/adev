@@ -72,6 +72,7 @@ function match_thresholds() {
     if [[ "${functionCoverage}" == "${functionThreshold}" ]] && [[ "${lineCoverage}" == "${lineThreshold}" ]] && [[ "${regionCoverage}" == "${regionThreshold}" ]] && [[ "${branchCoverage}" == "${branchThreshold}" ]]; then
         result=0
     else
+        echo "HERE"
         result=1
     fi
 }
@@ -111,7 +112,9 @@ function coverage_all() {
     fi
 
     for test in ${binDir}/*.test${executableExtension}; do
-        coverage_project "${test}"
+        if [[ "${test}" != *awinapi.test ]]; then
+            coverage_project "${test}"
+        fi
     done
 }
 
@@ -142,8 +145,8 @@ function print_project_summary() {
 Insufficient coverage:
   * function: ${functionCoverage} uncovered (must be ${functionThreshold})
   * line:     ${lineCoverage} uncovered (must be ${lineThreshold})
-  * region:   ${regionCoverage} uncovered (must be ${branchThreshold})
-  * branch:   ${branchCoverage} uncovered (must be ${regionThreshold})"
+  * region:   ${regionCoverage} uncovered (must be ${regionThreshold})
+  * branch:   ${branchCoverage} uncovered (must be ${branchThreshold})"
     else
         print_ok "[ PASSED ] ${test}"
     fi

@@ -10,12 +10,10 @@ function build_libcpp_msan() {
 
     cd ${home}/llvm/build_msan/
 
-    #echo "src:/adev/llvm/libcxx/src/filesystem/operations.cpp" > ignorelist.txt
     local dir=$(pwd)
 
     cmake -G Ninja \
           ../llvm \
-          -D CMAKE_CXX_FLAGS="-fsanitize-ignorelist=${dir}/ignorelist.txt" \
           -D CMAKE_BUILD_TYPE=Release \
           -D LLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
           -D CMAKE_C_COMPILER=clang-${llvmVersion} \
