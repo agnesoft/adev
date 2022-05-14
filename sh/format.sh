@@ -4,7 +4,7 @@ function detect_clang_format() {
     if ! is_available "${clangFormat}"; then
         print_error "ERROR: ${clangFormat} is not available. Please install it with './adev.sh install llvm'."
     else
-        $clangFormat --version | head -n 1
+        ${clangFormat} --version | head -n 1
     fi
 }
 
@@ -15,13 +15,13 @@ function format_check_source() {
         return
     fi
 
-    local -r replacements=$($clangFormat -output-replacements-xml $source | grep "<replacement ")
+    local -r replacements=$("${clangFormat}" -output-replacements-xml "${source}" | grep "<replacement ")
 
     if [[ "${replacements}" != "" ]]; then
-        print_error "[ FAILED ] $source"
+        print_error "[ FAILED ] ${source}"
         result=$(( $result + 1 ))
     else
-        print_ok "[ PASSED ] $source"
+        print_ok "[ PASSED ] ${source}"
     fi
 }
 

@@ -6,5 +6,5 @@ if is_windows; then
 else
     sudo add-apt-repository -y 'deb http://mirrors.kernel.org/ubuntu hirsute main universe'
     sudo apt-get update -y
-    sudo apt-get install -y g++-11
+    sudo apt-get install -y g++-12
 fi

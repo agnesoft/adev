@@ -153,7 +153,6 @@ readability-container-size-empty
 readability-convert-member-functions-to-static
 readability-function-cognitive-complexity
 readability-function-size
-readability-identifier-length
 readability-identifier-naming
 readability-implicit-bool-conversion
 readability-inconsistent-declaration-parameter-name

@@ -1,19 +1,19 @@
 #ifndef __clang__
-export module abuild.cache:cache_impl;
+export module abuild.cache:cache;
 export import :cache_data;
 import :cache_index;
 #endif
 
 namespace abuild
 {
-export class CacheImpl;
+export class Cache;
 
 //! \private
-auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void;
+auto read_cache(const std::filesystem::path &path, Cache &cache) -> void;
 //! \private
 auto write_cache(const CacheData &data) -> void;
 
-//! The CacheImpl class stores all the build
+//! The Cache class stores all the build
 //! information.
 //!
 //! The Cache indexes all of its content for
@@ -25,14 +25,14 @@ auto write_cache(const CacheData &data) -> void;
 //!
 //! When loaded from a cache file all non-existent
 //! files are skipped.
-export class CacheImpl
+export class Cache
 {
 public:
     //! Constructs the `Cache` with file `path`.
     //! If the `path` exists it will read the data
     //! from it and populate the cache and build
     //! all the indexes.
-    explicit CacheImpl(std::filesystem::path path) :
+    explicit Cache(std::filesystem::path path) :
         data{.filePath = std::move(path)}
     {
         if (std::filesystem::exists(this->data.filePath))
@@ -42,14 +42,14 @@ public:
     }
 
     //! Deleted copy constructor.
-    CacheImpl(const CacheImpl &other) = delete;
+    Cache(const Cache &other) = delete;
 
     //! Move constructor.
-    CacheImpl(CacheImpl &&other) noexcept = default;
+    Cache(Cache &&other) noexcept = default;
 
     //! Destructs the Cache and writes its data to
     //! the file passed in the constructor.
-    ~CacheImpl()
+    ~Cache()
     {
         try
         {
@@ -294,10 +294,10 @@ public:
     }
 
     //! Deleted copy assignment.
-    auto operator=(const CacheImpl &other) -> CacheImpl & = delete;
+    auto operator=(const Cache &other) -> Cache & = delete;
 
     //! Move assignment.
-    auto operator=(CacheImpl &&other) noexcept -> CacheImpl & = default;
+    auto operator=(Cache &&other) noexcept -> Cache & = default;
 
 private:
     CacheData data;

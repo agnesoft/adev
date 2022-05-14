@@ -1,25 +1,36 @@
-source "sh/common.sh"
+[ -n "$BUILD_SH" ] && return || readonly BUILD_SH=1
 
-function build_project() {
-    local project="${1}"
-    local buildScript="sh/build/${project}.sh"
+source "sh/build_docs.sh"
+source "sh/build_libc++_msan.sh"
 
-    if [[ -f "${buildScript}" ]]; then
-        run_script "${buildScript}" "${toolchain}"
-    else
-        echo ""
-        print_error "ERROR: Project '${project}' does not exist."
-        echo "
-Available projects:"
+function build_() {
+    if [[ "${1}" == "docs" ]]; then
+        build_docs
+        return
+    fi
+
+    if [[ "${1}" == "libc++-msan" ]]; then
+        build_libcpp_msan
+        return
+    fi
+
+    if [[ "${1}" == "list" ]]; then
         list_projects
-        exit 1;
+        return
+    fi
+
+    set_build_properties "${1}" "${2}" "${3}"
+
+    if [[ "${project}" != "" ]]; then
+        rm -f "build/${toolchain}/${configuration}/${project}.done"
+        build_project "${project}"
+    else
+        build_projects
     fi
 }
 
 function build_projects() {
-    set_toolchain "${1}"
-
-    remove_done_files
+    remove_done_files "${1}" "${2}"
 
     for script in sh/build/*.sh; do
         if [[ "${script}" =~ sh/build/(.*)\.sh ]]; then
@@ -37,38 +48,7 @@ function list_projects() {
 }
 
 function remove_done_files() {
-    if [[ -d "build/${toolchain}/" ]]; then
-        find build/${toolchain}/ -name "*.done" -type f -delete
+    if [[ -d "build/${toolchain}/${configuration}" ]]; then
+        find "build/${toolchain}/${configuration}" -name "*.done" -type f -delete
     fi
 }
-
-if [[ "${1}" == "coverage" ]]; then
-    export CODE_COVERAGE="true"
-    build_projects "clang"
-elif [[ "${1}" == "docs" ]]; then
-    sh/build_docs.sh
-elif [[ "${1}" == "list" ]]; then
-    list_projects
-elif [[ "${1}" == "address-sanitizer" ]]; then
-    export ADDRESS_SANITIZER="true"
-    build_projects "clang"
-elif [[ "${1}" == "memory-sanitizer" ]]; then
-    export MEMORY_SANITIZER="true"
-    build_projects "clang"
-elif [[ "${1}" == "thread-sanitizer" ]]; then
-    export THREAD_SANITIZER="true"
-    build_projects "clang"
-elif [[ "${1}" == "undefined-sanitizer" ]]; then
-    export UNDEFINED_SANITIZER="true"
-    build_projects "clang"
-elif [[ "${1}" == "libc++-msan" ]]; then
-    sh/build_libc++.sh "msan"
-elif is_toolchain "${1}"; then
-    build_projects "${1}"
-elif [[ "${1}" != "" ]]; then
-    set_toolchain "${2}"
-    remove_done_files
-    build_project "${1}"
-else
-    build_projects
-fi

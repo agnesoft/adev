@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
 
-source "sh/common.sh"
+#source "sh/analyse.sh"
+source "sh/build.sh"
+#source "sh/coverage.sh"
+#source "sh/format.sh"
+source "sh/help.sh"
+#source "sh/install.sh"
+#source "sh/test.sh"
 
 readonly action="${1}"
 
-if [[ "${action}" == "" ]] || [[ "${action}" == "help" ]] || [[ "${action}" == "?" ]]; then
-    sh/help.sh
-elif [[ "${action}" == "analyse" ]]; then
-    sh/analyse.sh "${2}" "${3}"
-elif [[ "${action}" == "build" ]]; then
-    sh/build.sh "${2}" "${3}"
-elif [[ "${action}" == "coverage" ]]; then
-    sh/coverage.sh "${2}" "${3}"
+if [[ "${action}" == "analyse" ]]; then
+    analyse "${2}" "${3}"
+elif [[ "${action}" == "help" ]]; then
+    help_
 elif [[ "${action}" == "format" ]]; then
-    sh/format.sh "${2}" "${3}"
+    format "${2}"
 elif [[ "${action}" == "install" ]]; then
-    sh/install.sh "${2}" "${3}"
+    install "${2}"
 elif [[ "${action}" == "test" ]]; then
-    sh/test.sh "${2}" "${3}"
-else
-    print_error "ERROR: unknown action '${action}'. Run './build.sh' to display available actions."
+    test_ "${2}" "${3}" "${4}" "${5}"
+else 
+    build_ "${1}" "${2}" "${3}"
 fi
