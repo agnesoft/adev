@@ -53,13 +53,16 @@ function build_dependencies() {
     done
 }
 
+function is_clang_configuration() {
+    [[ "${configuration}" == "memory" ]] || [[ "${configuration}" == "coverage" ]]
+}
+
 function set_build_properties() {
     set_build_arguments "${1}" "${2}" "${3}"
     detect_msvc_env_script
     set_build_dirs
     set_build_flags
 }
-
 
 function set_build_dirs() {
     readonly buildRoot="build/${toolchain}/${configuration}"
@@ -132,7 +135,9 @@ function validate_toolchain() {
     fi
 
     if [[ "${toolchain}" == "" ]]; then
-        if is_windows; then
+        if is_clang_configuration; then
+            readonly toolchain="clang"
+        elif is_windows; then
             readonly toolchain="msvc"
         elif is_linux; then
             readonly toolchain="gcc"
@@ -148,9 +153,7 @@ function validate_configuration() {
             print_error "ERROR: libc++ with memory sanitizer not found. Build it with './adev.sh build libc++-msan'."
             exit 1
         fi
-    fi
-
-    if [[ "${configuration}" == "" ]]; then
+    elif [[ "${configuration}" == "" ]]; then
         readonly configuration="release"
     fi
 }
@@ -165,6 +168,7 @@ function set_clang_common_flags() {
 -Wno-missing-field-initializers \
 -fmodules \
 -fimplicit-module-maps \
+-fprebuilt-module-path=${buildRoot}/astl \
 -fmodule-map-file=projects/astl/module.modulemap \
 -fmodule-map-file=projects/awinapi/module.modulemap \
 -fmodule-map-file=projects/aprocess/module.modulemap \

@@ -2,50 +2,136 @@
 
 source "sh/common.sh"
 
-if is_windows; then
-    ignoredSources="(\\\\|\\|\/)(test|test_utilities|yamlcpp)(\\\\|\\|\/)"
-    uncoveredFunctions="7"
-    uncoveredLines="41"
-    uncoveredRegions="40"
-    uncoveredBranches="4"
-else
-    ignoredSources="\/(test|test_utilities|yamlcpp)\/"
-    uncoveredFunctions="7"
-    uncoveredLines="38"
-    uncoveredRegions="39"
-    uncoveredBranches="3"
-fi
+#function | line | region | branch
+#e.g. thresholds["abuild.cache.test.exe"]="1 0 1 0"
+declare -A thresholds
 
 function coverage() {
     detect_llvm_cov
     detect_llvm_profdata
+    set_coverage_properties
 
     result=0
 
-    local objectArgs=""
-    local profData=""
-    local -r dir=$(pwd)
+    if [[ "${project}" != "" ]]; then
+        coverage_project "${binDir}/${project}"
+    else
+        coverage_all
+    fi
 
-    for test in build/clang/bin/*_test${executableExtension}; do
-        if [[ "${test}" != "build/clang/bin/aprocess_test${executableExtension}" ]]; then
-            objectArgs="${objectArgs} -object=${test}"
-            
-            LLVM_PROFILE_FILE="${dir}/${test}.profraw" ${test}>/dev/null
-            if (( $? != 0 )); then
-                result=2
-            fi
-            "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
-            profData="${profData} ${test}.profdata"
-        fi
-    done
-
-    generate_report "${objectArgs}" "${profData}"
-    generate_summary "${objectArgs}"
-
-    rm build/clang/bin/*.profdata
-    rm build/clang/bin/*.profraw
+    cleanup
 
     exit $result
+}
+
+function set_coverage_properties() {
+    if is_windows; then
+        readonly ignoredSources="(\\\\|\\|\/)(test|test_utilities|yamlcpp)(\\\\|\\|\/)"
+
+        thresholds["astl.test.exe"]="2 2 2 0"
+        thresholds["abuild.cache.test.exe"]="3 4 4 0"
+        thresholds["abuild.scanners.test.exe"]="0 0 0 1"
+        thresholds["acommandline.test.exe"]="0 1 12 0"
+        thresholds["aprocess.test.exe"]="1 9 5 5"
+        thresholds["atest.test.exe"]="2 31 21 2"
+        thresholds["awinapi.test.exe"]="0 3 1 1"
+    else
+        readonly ignoredSources="\/(test|test_utilities|yamlcpp)\/"
+    fi
+}
+
+function generate_project_report() {
+    local -r test="${1}"
+
+    "${llvmCov}" show -output-dir="${buildRoot}/reports/$(basename ${test})"  \
+                      -format=html                                \
+                      -instr-profile="${test}.profdata"           \
+                      -ignore-filename-regex="${ignoredSources}"  \
+                      -show-instantiations=false                  \
+                      -show-branches=count                        \
+                      -show-expansions                            \
+                      -show-line-counts-or-regions                \
+                      "${test}"                                   \
+                      ${sources}
+}
+
+function set_data_points() {
+    local -r total="${1}"
+
+    local dataPoints=()
+
+    for point in ${total}; do
+        dataPoints+=($point)
+    done
+
+    regionCoverage=${dataPoints[2]}
+    functionCoverage=${dataPoints[5]}
+    lineCoverage=${dataPoints[8]}
+    branchCoverage=${dataPoints[11]}
+}
+
+function set_thresholds() {
+    local -r test="${1}"
+    local -r testThresholds=(${thresholds["${test}"]})
+
+    if [[ "${testThresholds}" == "" ]]; then
+        functionThreshold="0"
+        lineThreshold="0"
+        branchThreshold="0"
+        regionThreshold="0"
+    else
+        functionThreshold="${testThresholds[0]}"
+        lineThreshold="${testThresholds[1]}"
+        regionThreshold="${testThresholds[2]}"
+        branchThreshold="${testThresholds[3]}"
+    fi
+}
+
+function match_thresholds() {
+    if [[ "${functionCoverage}" == "${functionThreshold}" ]] && [[ "${lineCoverage}" == "${lineThreshold}" ]] && [[ "${regionCoverage}" == "${regionThreshold}" ]] && [[ "${branchCoverage}" == "${branchThreshold}" ]]; then
+        result=0
+    else
+        result=1
+    fi
+}
+
+function generate_project_summary() {
+    local -r test="${1}"
+    local -r basenameTest=$(basename "${test}")
+    local -r total=$(${llvmCov} report ${test} -instr-profile=${test}.profdata -ignore-filename-regex="${ignoredSources}" ${sources} | grep "TOTAL.*")
+
+    set_data_points "${total}"
+    set_thresholds "${basenameTest}"
+    match_thresholds
+    print_project_summary "${test}"
+}
+
+function coverage_project() {
+    local -r test="${1}"
+
+    log=$(LLVM_PROFILE_FILE="${test}.profraw" ${test})
+
+    if (( $? != 0 )); then
+        echo "${log}"
+        print_error "[ FAILED ] ${test}"
+        exit 1
+    else
+        "${llvmProfdata}" merge "${test}.profraw" -o "${test}.profdata"
+        set_sources "${test}"
+        generate_project_report "${test}"
+        generate_project_summary "${test}"
+    fi
+}
+
+function coverage_all() {
+    for test in ${binDir}/*.test${executableExtension}; do
+        coverage_project "${test}"
+    done
+}
+
+function cleanup() {
+    rm -f ${binDir}/*.profdata
+    rm -f ${binDir}/*.profraw
 }
 
 function detect_llvm_cov() {
@@ -62,69 +148,31 @@ function detect_llvm_profdata() {
     fi
 }
 
-function generate_report() {
-    local objectArgs=$1
-    local profData=$2
-
-    "${llvmProfdata}" merge ${profData} -o build/clang/bin/coverage.profdata
-    "${llvmCov}" show ${objectArgs} -output-dir=build/coverage -format=html -instr-profile=build/clang/bin/coverage.profdata -ignore-filename-regex="${ignoredSources}" -show-instantiations=false -show-branches=count -show-expansions -show-line-counts-or-regions
-}
-
-function generate_summary() {
-    local objectArgs=$1
-    local total=$($llvmCov report $objectArgs -instr-profile=build/clang/bin/coverage.profdata -ignore-filename-regex="${ignoredSources}" | grep "TOTAL.*")
-    local dataPoints=()
-    for point in ${total}; do
-        dataPoints+=($point)
-    done
-
-    local regionDiff=${dataPoints[2]}
-    local functionDiff=${dataPoints[5]}
-    local lineDiff=${dataPoints[8]}
-    local branchDiff=${dataPoints[11]}
-
-    if [[ "${functionDiff}" != "${uncoveredFunctions}" ]] || [[ "${lineDiff}" != "${uncoveredLines}" ]] || [[ "${regionDiff}" != "${uncoveredRegions}" ]] || [[ "${branchDiff}" != "${uncoveredBranches}" ]]; then
-        result=1
-    fi
-
-    print_summary "${functionDiff}" "${lineDiff}" "${regionDiff}" "${branchDiff}"
-}
-
-function print_summary() {
-    local function="${1}"
-    local line="${2}"
-    local region="${3}"
-    local branch="${4}"
+function print_project_summary() {
+    local -r test="${1}"
 
     if (( $result == 1 )); then
-        print_error "ERROR: insufficient code coverage:"
-    elif (( $result == 2 )); then
-        print_error "ERROR: tests failed:"
+        print_error "[ FAILED ] ${test}
+Insufficient coverage:
+  * function: ${functionCoverage} uncovered (must be ${functionThreshold})
+  * line:     ${lineCoverage} uncovered (must be ${lineThreshold})
+  * region:   ${regionCoverage} uncovered (must be ${branchThreshold})
+  * branch:   ${branchCoverage} uncovered (must be ${regionThreshold})"
     else
-        print_ok "Code coverage OK"
+        print_ok "[ PASSED ] ${test}"
+    fi
+}
+
+function set_sources() {
+    local -r test="${1}"
+    local -r baseName=$(basename ${test})
+    sources=""
+
+    if [[ "${baseName}" == *.exe ]]; then
+        local -r projectName="${baseName:: -9}"
+    else
+        local -r projectName="${baseName:: -5}"
     fi
 
-    if [[ "${function}" != "${uncoveredFunctions}" ]]; then
-        print_error "  * function: ${functionDiff} uncovered (${uncoveredFunctions} expected)"
-    else
-        print_ok "  * function: ${functionDiff} uncovered"
-    fi
-
-    if [[ "${line}" != "${uncoveredLines}" ]]; then
-        print_error "  * line: ${line} uncovered (${uncoveredLines} expected)"
-    else
-        print_ok "  * line: ${line} uncovered"
-    fi
-
-    if [[ "${region}" != "${uncoveredRegions}" ]]; then
-        print_error "  * region: ${region} uncovered (${uncoveredRegions} expected)"
-    else
-        print_ok "  * region: ${region} uncovered"
-    fi
-
-    if [[ "${branch}" != "${uncoveredBranches}" ]]; then
-        print_error "  * branch: ${branch} uncovered (${uncoveredBranches} expected)"
-    else
-        print_ok "  * branch: ${branch} uncovered"
-    fi
+    sources="$(find projects/${projectName} -maxdepth 1 -name *.cpp) $(find projects/${projectName} -maxdepth 1 -name *.hpp)"
 }

@@ -6,7 +6,7 @@ function build_clang() {
     ${clang} ${clangCompilerFlags}           \
              -Xclang -emit-module-interface  \
              -o "${buildDir}/${project}.pcm" \
-             -c "${projectDir}/project.cpp"
+             -c "${projectDir}/${project}.cpp"
 
     ${clang} ${clangCompilerFlags}           \
              -o "${buildDir}/${project}.obj" \

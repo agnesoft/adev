@@ -4,9 +4,9 @@ set_build_properties "abuild.cpptokenizer.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                                \
-             -fprebuilt-module-path="${buildRoot}/atest"                \
-             -fprebuilt-module-path="${buildRoot}/acommandline"         \
-             -fprebuilt-module-path="${buildRoot}/abuild.cpptokenizer"  \
+             -fprebuilt-module-path=${buildRoot}/atest                  \
+             -fprebuilt-module-path=${buildRoot}/acommandline           \
+             -fprebuilt-module-path=${buildRoot}/abuild.cpptokenizer    \
              -o "${binDir}/${project}${executableExtension}"            \
              "${projectDir}/define_test.cpp"                            \
              "${projectDir}/if_bracket_test.cpp"                        \

@@ -4,12 +4,12 @@ set_build_properties "abuild.cache.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                                    \
-             -fprebuilt-module-path="${buildRoot}/atest"                    \
-             -fprebuilt-module-path="${buildRoot}/acommandline"             \
-             -fprebuilt-module-path="${buildRoot}/abuild.cache"             \
-             -fprebuilt-module-path="${buildRoot}/abuild.cpptokenizer"      \
-             -fprebuilt-module-path="${buildRoot}/abuild.test_utilities"    \
-             -fprebuilt-module-path="${buildRoot}/yamlcpp"                  \
+             -fprebuilt-module-path=${buildRoot}/atest                      \
+             -fprebuilt-module-path=${buildRoot}/acommandline               \
+             -fprebuilt-module-path=${buildRoot}/abuild.cache               \
+             -fprebuilt-module-path=${buildRoot}/abuild.cpptokenizer        \
+             -fprebuilt-module-path=${buildRoot}/abuild.test_utilities      \
+             -fprebuilt-module-path=${buildRoot}/yamlcpp                    \
              -o "${binDir}/${project}${executableExtension}"                \
              "${projectDir}/cache_test.cpp"                                 \
              "${projectDir}/defines_test.cpp"                               \

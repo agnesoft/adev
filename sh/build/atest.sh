@@ -6,12 +6,12 @@ function build_clang() {
     ${clang} ${clangCompilerFlags}                              \
              -Xclang                                            \
              -emit-module-interface                             \
-             -fprebuilt-module-path="${buildRoot}/acommandline" \
+             -fprebuilt-module-path=${buildRoot}/acommandline   \
              -o "${buildDir}/${project}.pcm"                    \
              -c "${projectDir}/${project}.cpp"
 
     ${clang} ${clangCompilerFlags}                              \
-             -fprebuilt-module-path="${buildRoot}/acommandline" \
+             -fprebuilt-module-path=${buildRoot}/acommandline   \
              -o "${buildDir}/${project}.obj"                    \
              -c "${projectDir}/${project}.cpp"
 }

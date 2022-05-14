@@ -5,18 +5,18 @@ set_build_properties "abuild.scanners" "${1}" "${2}"
 function build_clang() {
     ${clang} ${clangCompilerFlags}                                     \
              -Xclang -emit-module-interface                            \
-             -fprebuilt-module-path="${buildRoot}/abuild.cache"        \
-             -fprebuilt-module-path="${buildRoot}/abuild.cpptokenizer" \
-             -fprebuilt-module-path="${buildRoot}/athreadpool"         \
-             -fprebuilt-module-path="${buildRoot}/yamlcpp"             \
+             -fprebuilt-module-path=${buildRoot}/abuild.cache          \
+             -fprebuilt-module-path=${buildRoot}/abuild.cpptokenizer   \
+             -fprebuilt-module-path=${buildRoot}/athreadpool           \
+             -fprebuilt-module-path=${buildRoot}/yamlcpp               \
              -o "${buildDir}/${project}.pcm"                           \
              -c "${projectDir}/${project}.cpp"
     
     ${clang} ${clangCompilerFlags}                                     \
-             -fprebuilt-module-path="${buildRoot}/abuild.cache"        \
-             -fprebuilt-module-path="${buildRoot}/abuild.cpptokenizer" \
-             -fprebuilt-module-path="${buildRoot}/athreadpool"         \
-             -fprebuilt-module-path="${buildRoot}/yamlcpp"             \
+             -fprebuilt-module-path=${buildRoot}/abuild.cache          \
+             -fprebuilt-module-path=${buildRoot}/abuild.cpptokenizer   \
+             -fprebuilt-module-path=${buildRoot}/athreadpool           \
+             -fprebuilt-module-path=${buildRoot}/yamlcpp               \
              -o "${buildDir}/${project}.obj"                           \
              -c "${projectDir}/${project}.cpp"
 }

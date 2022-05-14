@@ -4,8 +4,8 @@ set_build_properties "acommandline.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                        \
-             -fprebuilt-module-path="${buildRoot}/atest"        \
-             -fprebuilt-module-path="${buildRoot}/acommandline" \
+             -fprebuilt-module-path=${buildRoot}/atest          \
+             -fprebuilt-module-path=${buildRoot}/acommandline   \
              -o "${binDir}/${project}${executableExtension}"    \
              "${projectDir}/application_name_test.cpp"          \
              "${projectDir}/command_line_test.cpp"              \

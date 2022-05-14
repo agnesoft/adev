@@ -55,13 +55,11 @@ function run_test() {
 }
 
 function run_all_tests() {
-    local -r testDir="build/${toolchain}/${configuration}/bin"
-
     result=0
-    echo "Running tests from '${testDir}'..."
+    echo "Running tests from '${binDir}'..."
 
-    if [[ -d "${testDir}" ]]; then
-        for test in ${testDir}/*.test${executableExtension}; do
+    if [[ -d "${binDir}" ]]; then
+        for test in ${binDir}/*.test${executableExtension}; do
             if [[ -f "${test}" ]]; then
                 run_test "${test}"
             fi
@@ -71,7 +69,7 @@ function run_all_tests() {
 
 function run_tests() {
     if [[ "${project}" != "" ]]; then
-        run_test "build/${toolchain}/${configuration}/bin/${project}"
+        run_test "${binDir}/${project}"
     else
         run_all_tests
     fi

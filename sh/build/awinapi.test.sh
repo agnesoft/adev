@@ -4,8 +4,8 @@ set_build_properties "awinapi.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags} \
-             -fprebuilt-module-path="${buildRoot}/atest"     \
-             -fprebuilt-module-path="${buildRoot}/awinapi"   \
+             -fprebuilt-module-path=${buildRoot}/atest       \
+             -fprebuilt-module-path=${buildRoot}/awinapi     \
              -o "${binDir}/${project}${executableExtension}" \
              "${projectDir}/main.cpp"                        \
              "${projectDir}/buffer_test.cpp"                 \

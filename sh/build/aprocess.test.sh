@@ -4,9 +4,9 @@ set_build_properties "aprocess.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                     \
-             -fprebuilt-module-path="${buildRoot}/atest"     \
-             -fprebuilt-module-path="${buildRoot}/aprocess"  \
-             -fprebuilt-module-path="${buildRoot}/awinapi"   \
+             -fprebuilt-module-path=${buildRoot}/atest       \
+             -fprebuilt-module-path=${buildRoot}/aprocess    \
+             -fprebuilt-module-path=${buildRoot}/awinapi     \
              -o "${binDir}/${project}${executableExtension}" \
              "${projectDir}/arguments_test.cpp"              \
              "${projectDir}/command_test.cpp"                \

@@ -4,7 +4,7 @@ set_build_properties "astl.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                     \
-             -fprebuilt-module-path="${buildRoot}/atest"     \
+             -fprebuilt-module-path=${buildRoot}/atest       \
              -o "${binDir}/${project}${executableExtension}" \
              "${projectDir}/main.cpp"                        \
              "${projectDir}/source_location_test.cpp"        \

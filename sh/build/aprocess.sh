@@ -5,12 +5,12 @@ set_build_properties "aprocess" "${1}" "${2}"
 function build_clang() {
     ${clang} ${clangCompilerFlags}                         \
              -Xclang -emit-module-interface                \
-             -fprebuilt-module-path="${buildRoot}/awinapi" \
+             -fprebuilt-module-path=${buildRoot}/awinapi   \
              -o "${buildDir}/${project}.pcm"               \
              -c "${projectDir}/${project}.cpp"
     
     ${clang} ${clangCompilerFlags}                         \
-             -fprebuilt-module-path="${buildRoot}/awinapi" \
+             -fprebuilt-module-path=${buildRoot}/awinapi   \
              -o "${buildDir}/${project}.obj"               \
              -c "${projectDir}/${project}.cpp"
 }

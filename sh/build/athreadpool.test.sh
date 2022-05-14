@@ -4,9 +4,9 @@ set_build_properties "athreadpool.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                      \
-           -fprebuilt-module-path="${buildRoot}/atest"        \
-           -fprebuilt-module-path="${buildRoot}/acommandline" \
-           -fprebuilt-module-path="${buildRoot}/athreadpool"  \
+           -fprebuilt-module-path=${buildRoot}/atest          \
+           -fprebuilt-module-path=${buildRoot}/acommandline   \
+           -fprebuilt-module-path=${buildRoot}/athreadpool    \
            -o "${binDir}/${project}${executableExtension}"    \
            "${projectDir}/main.cpp"                           \
            "${projectDir}/threadpool_test.cpp"                \

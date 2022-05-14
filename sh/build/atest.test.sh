@@ -4,7 +4,7 @@ set_build_properties "atest.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                       \
-             -fprebuilt-module-path="${buildRoot}/atest"       \
+             -fprebuilt-module-path=${buildRoot}/atest         \
              -o "${binDir}/${project}${executableExtension}"   \
              "${projectDir}/assert_test.cpp"                   \
              "${projectDir}/throwing_test_test.cpp"            \

@@ -4,14 +4,14 @@ set_build_properties "abuild.scanners.test" "${1}" "${2}"
 
 function build_clang() {
     ${clang} ${clangCompilerLinkerFlags}                                    \
-             -fprebuilt-module-path="${buildRoot}/atest"                    \
-             -fprebuilt-module-path="${buildRoot}/acommandline"             \
-             -fprebuilt-module-path="${buildRoot}/abuild.scanners"          \
-             -fprebuilt-module-path="${buildRoot}/abuild.cache"             \
-             -fprebuilt-module-path="${buildRoot}/abuild.cpptokenizer"      \
-             -fprebuilt-module-path="${buildRoot}/abuild.test_utilities"    \
-             -fprebuilt-module-path="${buildRoot}/athreadpool"              \
-             -fprebuilt-module-path="${buildRoot}/yamlcpp"                  \
+             -fprebuilt-module-path=${buildRoot}/atest                      \
+             -fprebuilt-module-path=${buildRoot}/acommandline               \
+             -fprebuilt-module-path=${buildRoot}/abuild.scanners            \
+             -fprebuilt-module-path=${buildRoot}/abuild.cache               \
+             -fprebuilt-module-path=${buildRoot}/abuild.cpptokenizer        \
+             -fprebuilt-module-path=${buildRoot}/abuild.test_utilities      \
+             -fprebuilt-module-path=${buildRoot}/athreadpool                \
+             -fprebuilt-module-path=${buildRoot}/yamlcpp                    \
              -o "${binDir}/${project}${executableExtension}"                \
              "${projectDir}/main.cpp"                                       \
              "${projectDir}/project_scanner_test.cpp"                       \
