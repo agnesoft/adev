@@ -1,6 +1,7 @@
 [ -n "$COVERAGE_SH" ] && return || readonly COVERAGE_SH=1
 
 source "sh/common.sh"
+source "sh/coverage_thresholds.sh"
 
 #function | line | region | branch
 #e.g. thresholds["abuild.cache.test.exe"]="1 0 1 0"
@@ -9,8 +10,8 @@ declare -A thresholds
 function coverage() {
     detect_llvm_cov
     detect_llvm_profdata
-    set_coverage_properties
 
+    readonly ignoredSources="(\\\\|\\|\/)(test|test_utilities|yamlcpp)(\\\\|\\|\/)"
     result=0
 
     if [[ "${project}" != "" ]]; then
@@ -22,22 +23,6 @@ function coverage() {
     cleanup
 
     exit $result
-}
-
-function set_coverage_properties() {
-    if is_windows; then
-        readonly ignoredSources="(\\\\|\\|\/)(test|test_utilities|yamlcpp)(\\\\|\\|\/)"
-
-        thresholds["astl.test.exe"]="2 2 2 0"
-        thresholds["abuild.cache.test.exe"]="3 4 4 0"
-        thresholds["abuild.scanners.test.exe"]="0 0 0 1"
-        thresholds["acommandline.test.exe"]="0 1 12 0"
-        thresholds["aprocess.test.exe"]="1 9 5 5"
-        thresholds["atest.test.exe"]="2 31 21 2"
-        thresholds["awinapi.test.exe"]="0 3 1 1"
-    else
-        readonly ignoredSources="\/(test|test_utilities|yamlcpp)\/"
-    fi
 }
 
 function generate_project_report() {
