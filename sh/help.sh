@@ -21,8 +21,9 @@ function help_() {
 ./build.sh analyse diff <checks>                                      Runs clang-tidy on sources changed from main with <checks> sets.
 ./build.sh analyse <file>                                             Runs clang-tidy on <file> with all checks.
 ./build.sh analyse <file> <checks>                                    Runs clang-tidy on <file> with <checks> sets.
-./build.sh format                                                     Runs clang-format on sources.
-./build.sh format diff                                                Runs clang-format on sources changed fomr main.
+./build.sh format                                                     Runs clang-format on all sources.
+./build.sh format check                                               Runs clang-format on all sources to detect unformatted files.
+./build.sh format check diff                                          Runs clang-format on sources changed from main to detect unformatted files.
 ./build.sh install list                                               Lists available packages.
 ./build.sh install <package>                                          Installs <package> for current platform.
 ./build.sh test                                                       Runs all tests once for default toolchain and release configuration.

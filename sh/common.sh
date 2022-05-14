@@ -20,6 +20,10 @@ function is_configuration() {
     || [[ "${1}" == "undefined" ]]
 }
 
+function is_ignored() {
+    [[ "${1}" == projects/yamlcpp/* ]]
+}
+
 function is_linux() { 
     [[ $OSTYPE == "linux-gnu" ]]
 }

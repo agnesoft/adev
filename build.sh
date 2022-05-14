@@ -3,7 +3,7 @@
 #source "sh/analyse.sh"
 source "sh/build.sh"
 #source "sh/coverage.sh"
-#source "sh/format.sh"
+source "sh/format.sh"
 source "sh/help.sh"
 #source "sh/install.sh"
 #source "sh/test.sh"
@@ -15,7 +15,7 @@ if [[ "${action}" == "analyse" ]]; then
 elif [[ "${action}" == "help" ]]; then
     help_
 elif [[ "${action}" == "format" ]]; then
-    format "${2}"
+    format "${2}" "${3}"
 elif [[ "${action}" == "install" ]]; then
     install "${2}"
 elif [[ "${action}" == "test" ]]; then
