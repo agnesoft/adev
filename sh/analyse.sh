@@ -98,7 +98,7 @@ function analyse_sources() {
 
 function detect_clang_tidy() {
     if ! is_available "${clangTidy}"; then
-        print_error "ERROR: ${clangTidy} is not available. Please install it with './adev.sh install llvm'."
+        print_error "ERROR: ${clangTidy} is not available. Please install it with './build.sh install llvm'."
     else
         if is_linux; then
             libCppModuleMap="--extra-arg=-fmodule-map-file=/usr/lib/llvm-${llvmVersion}/include/c++/v1/module.modulemap"

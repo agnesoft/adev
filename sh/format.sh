@@ -53,7 +53,7 @@ function format_sources() {
 
 function detect_clang_format() {
     if ! is_available "${clangFormat}"; then
-        print_error "ERROR: ${clangFormat} is not available. Please install it with './adev.sh install llvm'."
+        print_error "ERROR: ${clangFormat} is not available. Please install it with './build.sh install llvm'."
     else
         ${clangFormat} --version | head -n 1
     fi

@@ -11,16 +11,16 @@ function install_prerequisites() {
 }
 
 function install() {
-    bash ./adev.sh install llvm
-    bash ./adev.sh install gcc
-    bash ./adev.sh install doxygen
-    bash ./adev.sh install ninja
-    bash ./adev.sh install cmake
-    bash ./adev.sh build libc++-msan
+    bash ./build.sh install llvm
+    bash ./build.sh install gcc
+    bash ./build.sh install doxygen
+    bash ./build.sh install ninja
+    bash ./build.sh install cmake
+    bash ./build.sh libc++-msan
 }
 
 function cleanup() {
-    rm "${home}/adev.sh"
+    rm "${home}/build.sh"
     rm -rf "${home}/sh"
     rm -rf "${home}/llvm"
 }

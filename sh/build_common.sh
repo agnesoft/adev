@@ -150,7 +150,7 @@ function validate_toolchain() {
 function validate_configuration() {
     if [[ "${configuration}" == "memory" ]]; then
         if [[ ! -d "${libCppMsanRoot}" ]]; then
-            print_error "ERROR: libc++ with memory sanitizer not found. Build it with './adev.sh build libc++-msan'."
+            print_error "ERROR: libc++ with memory sanitizer not found. Build it with './build.sh libc++-msan'."
             exit 1
         fi
     elif [[ "${configuration}" == "" ]]; then

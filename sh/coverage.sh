@@ -122,14 +122,14 @@ function cleanup() {
 
 function detect_llvm_cov() {
     if ! is_available "${llvmCov}"; then
-        print_error "ERROR: 'llvm-cov' is not available. Try installing it with './adev.sh install llvm'"
+        print_error "ERROR: 'llvm-cov' is not available. Try installing it with './build.sh install llvm'"
         exit 1
     fi
 }
 
 function detect_llvm_profdata() {
     if ! is_available "${llvmProfdata}"; then
-        print_error "ERROR: 'llvm-profdata' is not available. Try installing it with './adev.sh install llvm'"
+        print_error "ERROR: 'llvm-profdata' is not available. Try installing it with './build.sh install llvm'"
         exit 1
     fi
 }
