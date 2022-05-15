@@ -48,15 +48,15 @@ jobs:
                       os: windows
                 exclude:
                     - toolchain: gcc
-                    - toolchain: msvc
-                      host: ubuntu-latest
-                    - toolchain: msvc
+                    - host: ubuntu-latest
+                      toolchain: msvc
+                    - host: windows-latest
                       configuration: address
-                    - toolchain: msvc
+                    - host: windows-latest
                       configuration: memory
-                    - toolchain: msvc
+                    - host: windows-latest
                       configuration: thread
-                    - toolchain: msvc
+                    - host: windows-latest
                       configuration: undefined
         name: build_${{ matrix.os }}_${{ matrix.toolchain }}_${{ matrix.configuration }}
         runs-on: ${{ matrix.host }}
@@ -99,14 +99,16 @@ jobs:
         name: analyse_${{ matrix.os }}_${{ matrix.checks }}
         runs-on: ${{ matrix.host }}
         container: ${{ matrix.container }}
-        needs: [diff, create_container]
+        needs: [diff, create_container, build]
         if: needs.diff.outputs.diff == 'true'
         steps:
             - uses: actions/checkout@v2
               with:
                   fetch-depth: 0
-            - shell: bash
-              run: ./build.sh clang release
+            - uses: actions/download-artifact@v3
+              with:
+                  name: adev-pr-${{ github.run_number }}-${{ matrix.os }}-clang-release
+                  path: build/clang/release
             - shell: bash
               run: ./build.sh analyse diff ${{ matrix.checks }}
 
