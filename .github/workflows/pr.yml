@@ -36,9 +36,9 @@ jobs:
     build:
         strategy:
             matrix:
-                configuration: ["release", "debug", "coverage", "address", "memory", "thread", "undefined"]
-                toolchain: ["clang", "gcc", "msvc"]
                 host: [ubuntu-latest, windows-latest]
+                toolchain: ["clang", "gcc", "msvc"]
+                configuration: ["release", "debug", "coverage", "address", "memory", "thread", "undefined"]
                 include:
                     - container:
                     - host: ubuntu-latest
@@ -58,6 +58,9 @@ jobs:
                       configuration: thread
                     - host: windows-latest
                       configuration: undefined
+                    - host: windows-latest
+                      toolchain: msvc
+                      configuration: coverage
         name: build_${{ matrix.os }}_${{ matrix.toolchain }}_${{ matrix.configuration }}
         runs-on: ${{ matrix.host }}
         env:
