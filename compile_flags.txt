@@ -22,3 +22,4 @@
 -fmodule-map-file=projects/aprocess/module.modulemap
 -fmodule-map-file=projects/yamlcpp/module.modulemap
 -I projects/yamlcpp/include
+-Isystem /usr/include/c++/12/
