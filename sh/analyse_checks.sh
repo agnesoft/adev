@@ -79,11 +79,7 @@ cppcoreguidelines-special-member-functions
 cppcoreguidelines-virtual-class-destructor"
 
 allChecks["fuchsia"]=\
-"fuchsia-default-arguments-calls
-fuchsia-default-arguments-declarations
-fuchsia-multiple-inheritance
-fuchsia-overloaded-operator
-fuchsia-statically-constructed-objects
+"fuchsia-multiple-inheritance
 fuchsia-virtual-inheritance"
 
 allChecks["google"]=\
@@ -92,7 +88,6 @@ google-build-namespaces
 google-build-using-namespace
 google-default-arguments
 google-explicit-constructor
-google-readability-casting
 google-runtime-int
 google-runtime-operator"
 

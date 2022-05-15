@@ -48,7 +48,7 @@ function analyse_project_module_source() {
     local sources=(projects/${project}/*.cpp)
 
     if should_analyse "${sources[@]}"; then
-        analyse_source "projects/${project}/${project}.cpp"
+        analyse_source "projects/${project}/${project}.cpp" "-header-filter=.*\\.cpp"
     fi
 }
 
@@ -102,9 +102,10 @@ function detect_clang_tidy() {
     else
         if is_linux; then
             libCppModuleMap="--extra-arg=-fmodule-map-file=/usr/lib/llvm-${llvmVersion}/include/c++/v1/module.modulemap"
+            "${clangTidy}" --version | head -n 1
+        else
+            "${clangTidy}" --version | head -n 2 | tail -n +2
         fi
-
-        "${clangTidy}" --version | head -n 2 | tail -n +2
     fi
 }
 
@@ -112,7 +113,7 @@ function do_analyse_source() {
     local source="${1}"
     local headerFilter="${2}"
     local log
-    log=$(${clangTidy} --quiet ${libCppModuleMap} "-header-filter=.*\\.cpp" ${source} 2>&1)
+    log=$(${clangTidy} --quiet ${libCppModuleMap} ${headerFilter} ${source} 2>&1)
 
     if (( $? != 0 )); then
         echo "${log}"
@@ -151,8 +152,17 @@ function set_checks() {
 
     for checkSet in ${checkSets[@]}; do
         for check in ${allChecks[$checkSet]}; do
-            checks="${checks}
+            # MSVC STL has throwing std::string / std::vector
+            # default constructors (that should not throw) and
+            # clang-tidy somewhat incorrectly leak that diagnostics
+            # to user code via 'bugprone-exception-escape' so that
+            # check cannot be used on Windows for now.
+            #
+            # 15. 5. 2022
+            if ! is_windows || [[ "${check}" != "bugprone-exception-escape" ]]; then
+                checks="${checks}
 ${check},"
+            fi
         done
     done
 

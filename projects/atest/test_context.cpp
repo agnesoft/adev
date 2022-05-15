@@ -150,7 +150,7 @@ public:
     auto operator=(TestContext &&other) noexcept -> TestContext & = delete;
 
 private:
-    TestContext(TestContext *context) noexcept :
+    explicit TestContext(TestContext *context) noexcept :
         parentContext{context}
     {
         this->initialize_global_test_suite();
