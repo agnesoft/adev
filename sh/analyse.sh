@@ -147,7 +147,7 @@ function set_checks() {
     local checks=""
 
     if [[ "${checkSets[@]}" == "" ]]; then
-        checkSets=("bugprone cert cppcoreguidelines fuchsia google hicpp misc modernize performance readability")
+        checkSets=("bugprone cert cppcoreguidelines google misc modernize performance readability")
     fi
 
     for checkSet in ${checkSets[@]}; do
