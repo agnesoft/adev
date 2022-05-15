@@ -78,8 +78,8 @@ cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /if
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcOutput\"${buildDir}/${project}-cache_data.ifc\"          /Fo\"${buildDir}/${project}-cache_data.obj\"          /c /TP \"${projectDir}/cache_data.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcOutput\"${buildDir}/${project}-cache_index.ifc\"         /Fo\"${buildDir}/${project}-cache_index.obj\"         /c /TP \"${projectDir}/cache_index.cpp\" || exit 1
 cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcOutput\"${buildDir}/${project}-cache.ifc\"               /Fo\"${buildDir}/${project}-cache.obj\"               /c /TP \"${projectDir}/cache.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcSearchDir \"${buildRoot}/yamlcpp\" /ifcOutput\"${buildDir}/${project}-cache_reader.ifc\" /Fo\"${buildDir}/${project}-cache_reader.obj\" /c /TP \"${projectDir}/cache_reader.cpp\" || exit 1
-cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcSearchDir \"${buildRoot}/yamlcpp\" /ifcOutput\"${buildDir}/${project}-cache_writer.ifc\" /Fo\"${buildDir}/${project}-cache_writer.obj\" /c /TP \"${projectDir}/cache_writer.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcSearchDir \"${buildRoot}/yamlcpp\" /ifcOutput\"${buildDir}/${project}-cache_reader.ifc\"        /Fo\"${buildDir}/${project}-cache_reader.obj\"        /c /TP \"${projectDir}/cache_reader.cpp\" || exit 1
+cl.exe ${msvcCompilerFlags} /internalPartition /ifcSearchDir \"${buildDir}\" /ifcSearchDir \"${buildRoot}/abuild.cpptokenizer\" /ifcSearchDir \"${buildRoot}/yamlcpp\" /ifcOutput\"${buildDir}/${project}-cache_writer.ifc\"        /Fo\"${buildDir}/${project}-cache_writer.obj\"        /c /TP \"${projectDir}/cache_writer.cpp\" || exit 1
 
 cl.exe ${msvcCompilerFlags}                               ^
        /interface                                         ^
@@ -90,7 +90,7 @@ cl.exe ${msvcCompilerFlags}                               ^
        /Fo\"${buildDir}/${project}.obj\"                  ^
        /c \"${projectDir}/${project}.cpp\" || exit 1
 
-lib.exe /NOLOGO ^
+lib.exe /NOLOGO                                         ^
         /OUT:\"${buildDir}/${project}.lib\"             ^
         \"${buildDir}/${project}.obj\"                  ^
         \"${buildDir}/${project}-project.obj\"          ^

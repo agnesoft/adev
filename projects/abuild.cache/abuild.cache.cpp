@@ -2,6 +2,8 @@ export module abuild.cache;
 
 #ifndef __clang__
 export import :cache;
+import :cache_reader;
+import :cache_writer;
 #else
 export import abuild.cpptokenizer;
 import yamlcpp;

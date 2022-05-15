@@ -279,19 +279,19 @@ function set_gcc_flags() {
 
 function set_msvc_flags() {
     readonly msvcCommonFlags=\
-"/nologo \
-/std:c++latest \
-/EHsc \
-/MT \
-/W4 \
-/WX \
-/wd4005 \
-/wd5105 \
-/wd5106 \
-/ifcSearchDir \"${buildRoot}/astl\" \
-/headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" \
-/headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" \
-/headerUnit \"projects/yamlcpp/yamlcpp.hpp=${buildRoot}/yamlcpp/yamlcpp.hpp.ifc\""
+"/nologo ^
+/std:c++latest ^
+/EHsc ^
+/MT ^
+/W4 ^
+/WX ^
+/wd4005 ^
+/wd5105 ^
+/wd5106 ^
+/ifcSearchDir \"${buildRoot}/astl\" ^
+/headerUnit \"projects/astl/astl.hpp=${buildRoot}/astl/astl.hpp.ifc\" ^
+/headerUnit \"projects/awinapi/windows.hpp=${buildRoot}/awinapi/windows.hpp.ifc\" ^
+/headerUnit \"projects/yamlcpp/yamlcpp.hpp=${buildRoot}/yamlcpp/yamlcpp.hpp.ifc\" "
 
     if [[ "${configuration}" == "release" ]]; then
         readonly msvcCompilerFlags="${msvcCommonFlags} /O2"
@@ -321,7 +321,7 @@ ${buildMSVC}" > build.bat
         readonly status=0
     else
         readonly status=1
-        echo "Failed: ${log}"
+        echo "${log}"
     fi
 
     rm build.bat
