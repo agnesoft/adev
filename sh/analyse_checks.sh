@@ -78,10 +78,6 @@ cppcoreguidelines-slicing
 cppcoreguidelines-special-member-functions
 cppcoreguidelines-virtual-class-destructor"
 
-allChecks["fuchsia"]=\
-"fuchsia-multiple-inheritance
-fuchsia-virtual-inheritance"
-
 allChecks["google"]=\
 "google-build-explicit-make-pair
 google-build-namespaces
@@ -89,11 +85,9 @@ google-build-using-namespace
 google-default-arguments
 google-explicit-constructor
 google-runtime-int
-google-runtime-operator"
-
-allChecks["hicpp"]=\
-"hicpp-exception-baseclass
-hicpp-signed-bitwise"
+google-runtime-operator
+fuchsia-multiple-inheritance
+fuchsia-virtual-inheritance"
 
 allChecks["misc"]=\
 "misc-misleading-bidirectional
@@ -148,7 +142,9 @@ performance-noexcept-move-constructor
 performance-trivially-destructible
 performance-type-promotion-in-math-fn
 performance-unnecessary-copy-initialization
-performance-unnecessary-value-param"
+performance-unnecessary-value-param
+hicpp-exception-baseclass
+hicpp-signed-bitwise"
 
 allChecks["readability"]=\
 "readability-avoid-const-params-in-decls
