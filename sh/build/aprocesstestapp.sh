@@ -1,45 +1,41 @@
-source "sh/build_common.sh" "${1}"
+source "sh/build_common.sh" 
 
-project="aprocesstestapp"
-projectDir="projects/aprocess/test/aprocesstestapp"
-buildDir="${buildRoot}/aprocess/test/aprocesstestapp"
+set_build_properties "aprocesstestapp" "${1}" "${2}"
 
 function build_clang() {
-    $clang $clangCompilerLinkerFlags \
-           -fprebuilt-module-path=${buildRoot}/aprocess \
-           -fprebuilt-module-path=${buildRoot}/acommandline \
-           -fprebuilt-module-path=${buildRoot}/awinapi \
-           -o "${binDir}/aprocesstestapp${executableExtension}" \
-           "${projectDir}/main.cpp" \
-           "${buildRoot}/aprocess/aprocess.obj" \
-           "${buildRoot}/acommandline/acommandline.obj" \
-           "${buildRoot}/awinapi/awinapi.obj" \
+    ${clang} ${clangCompilerLinkerFlags}                      \
+           -fprebuilt-module-path=${buildRoot}/aprocess       \
+           -fprebuilt-module-path=${buildRoot}/acommandline   \
+           -fprebuilt-module-path=${buildRoot}/awinapi        \
+           -o "${binDir}/${project}${executableExtension}"    \
+           "${projectDir}/main.cpp"                           \
+           "${buildRoot}/aprocess/aprocess.obj"               \
+           "${buildRoot}/acommandline/acommandline.obj"       \
+           "${buildRoot}/awinapi/awinapi.obj"                 \
            "${buildRoot}/astl/astl.obj"
 }
 
 function build_gcc() {
-    $gcc $gccCompilerFlags \
-         -o "${binDir}/aprocesstestapp" \
-         "${projectDir}/main.cpp" \
-         "${buildRoot}/aprocess/aprocess.lib" \
-         "${buildRoot}/acommandline/acommandline.obj" \
-         "${buildRoot}/astl/astl.obj"
+    ${gcc} ${gccCompilerFlags}                          \
+           -o "${binDir}/${project}"                    \
+           "${projectDir}/main.cpp"                     \
+           "${buildRoot}/aprocess/aprocess.lib"         \
+           "${buildRoot}/acommandline/acommandline.obj" \
+           "${buildRoot}/astl/astl.obj"
 }
 
 buildMSVC="
-cl.exe ${msvcCompilerFlags} ^
-       /ifcSearchDir \"${buildRoot}/acommandline\" ^
-       /ifcSearchDir \"${buildRoot}/aprocess\" ^
-       /ifcSearchDir \"${buildRoot}/awinapi\" ^
-       /Fo\"$buildDir/\" ^
-       /Fe\"${binDir}/aprocesstestapp.exe\" ^
-       \"${projectDir}/main.cpp\" \
-       \"${buildRoot}/astl/astl.lib\" ^
+cl.exe ${msvcCompilerFlags}                           ^
+       /ifcSearchDir \"${buildRoot}/acommandline\"    ^
+       /ifcSearchDir \"${buildRoot}/aprocess\"        ^
+       /ifcSearchDir \"${buildRoot}/awinapi\"         ^
+       /Fo\"$buildDir/\"                              ^
+       /Fe\"${binDir}/${project}.exe\"                ^
+       \"${projectDir}/main.cpp\"                     ^
+       \"${buildRoot}/astl/astl.lib\"                 ^
        \"${buildRoot}/acommandline/acommandline.lib\" ^
-       \"${buildRoot}/aprocess/aprocess.lib\" ^
+       \"${buildRoot}/aprocess/aprocess.lib\"         ^
        \"${buildRoot}/awinapi/awinapi.lib\" || exit 1
 "
 
-sh/build/acommandline.sh "${toolchain}"
-sh/build/aprocess.sh "${toolchain}"
-build
+build "acommandline aprocess"

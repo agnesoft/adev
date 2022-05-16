@@ -1,7 +1,6 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 WORKDIR /adev
-ADD adev.sh /adev
+ADD build.sh /adev
 ADD sh /adev/sh
 RUN bash sh/docker.sh
-

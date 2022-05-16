@@ -1,7 +1,9 @@
 export module abuild.cache;
 
 #ifndef __clang__
-export import :cache_impl;
+export import :cache;
+import :cache_reader;
+import :cache_writer;
 #else
 export import abuild.cpptokenizer;
 import yamlcpp;
@@ -21,14 +23,8 @@ import yamlcpp;
 #include "toolchain.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_data.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_index.cpp" //NOLINT(bugprone-suspicious-include)
-#include "cache_impl.cpp" //NOLINT(bugprone-suspicious-include)
+#include "cache.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_reader.cpp" //NOLINT(bugprone-suspicious-include)
 #include "cache_writer.cpp" //NOLINT(bugprone-suspicious-include)
 // clang-format on
 #endif
-
-namespace abuild
-{
-//! Convenience type alias for `CacheImpl`.
-export using Cache = CacheImpl;
-}

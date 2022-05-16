@@ -151,7 +151,7 @@ public:
         //! Process object by moving from itself.
         //! The Builder object is unusable
         //! afterwards.
-        operator Process()
+        operator Process() // NOLINT(google-explicit-constructor)
         {
             return Process{std::move(this->setup)};
         }

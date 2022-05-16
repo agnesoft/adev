@@ -1,6 +1,7 @@
 import awinapi;
 import acommandline;
 
+//! \private
 struct Inputs
 {
     std::int64_t exitCode = 0;
@@ -25,7 +26,7 @@ struct Inputs
     if (_dupenv_s(&buffer, &size, key) == 0 && buffer != nullptr)
     {
         value = buffer;
-        free(buffer);
+        free(buffer); // NOLINT(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
     }
 
     return value;
@@ -74,7 +75,7 @@ auto large_echo(const Inputs &inputs) -> void
 
 auto input(const Inputs &inputs) -> void
 {
-    if (inputs.echoInput != 0)
+    if (inputs.echoInput)
     {
         const auto end = std::chrono::system_clock::now() + std::chrono::milliseconds{inputs.echoInputTimeout};
 
@@ -110,13 +111,14 @@ auto main(int argc, char *argv[]) -> int
 
     try
     {
+        static constexpr std::int64_t defaultEchoTimeout{500};
         ::acommandline::CommandLine parser;
         parser.option().long_name("exit-code").description("Exits with the given <value>").bind_to(&inputs.exitCode);
         parser.option().long_name("echo").description("Print the given <value>").bind_to(&inputs.echo);
         parser.option().long_name("echo-delay").description("Delay each echo by <value> milliseconds").bind_to(&inputs.echoDelay);
         parser.option().long_name("echo-env").description("Print the value of the environment variable <value>").bind_to(&inputs.env);
         parser.option().long_name("echo-input").description("Print the values received on stanard input").bind_to(&inputs.echoInput);
-        parser.option().long_name("echo-input-timeout").default_value(std::int64_t{500}).description("Print the values received on stanard input for <value> milliseconds").bind_to(&inputs.echoInputTimeout);
+        parser.option().long_name("echo-input-timeout").default_value(defaultEchoTimeout).description("Print the values received on stanard input for <value> milliseconds").bind_to(&inputs.echoInputTimeout);
         parser.option().long_name("echo-large").description("A character to repeat in a large echo").bind_to(&inputs.largeEcho);
         parser.option().long_name("echo-large-size").description("Size of the large echo").bind_to(&inputs.largeEchoSize);
         parser.option().long_name("echo-working-directory").description("Prints working directory").bind_to(&inputs.echoWorkingDirectory);

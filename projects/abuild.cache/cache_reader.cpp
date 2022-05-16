@@ -1,6 +1,6 @@
 #ifndef __clang__
 module abuild.cache:cache_reader;
-import :cache_impl;
+import :cache;
 import yamlcpp;
 #endif
 
@@ -10,7 +10,7 @@ namespace abuild
 class CacheReader
 {
 public:
-    explicit CacheReader(const std::filesystem::path &path, CacheImpl &cache) :
+    explicit CacheReader(const std::filesystem::path &path, Cache &cache) :
         cache{cache},
         root{::YAML::LoadFile(path.string())}
     {
@@ -655,12 +655,12 @@ private:
         return Toolchain::Frontend::GCC;
     }
 
-    CacheImpl &cache;
+    Cache &cache;
     ::YAML::Node root;
 };
 
 //! \private
-auto read_cache(const std::filesystem::path &path, CacheImpl &cache) -> void
+auto read_cache(const std::filesystem::path &path, Cache &cache) -> void
 {
     CacheReader reader{path, cache};
     reader.read_configuration_name();

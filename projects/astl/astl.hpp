@@ -9,6 +9,13 @@
 #    endif
 #endif
 
+// Needs to go first to prevent ICE (MSVC 17.2.0, 16. 5. 2022)
+#if __has_include(<fstream>)
+#    include <fstream>
+#else
+#    pragma message("<fstream> not available")
+#endif
+
 // Concepts
 #if __has_include(<concepts>)
 #    include <concepts> //C++20
@@ -489,12 +496,6 @@
 #    include <iostream>
 #else
 #    pragma message("<iostream> not available")
-#endif
-
-#if __has_include(<fstream>)
-#    include <fstream>
-#else
-#    pragma message("<fstream> not available")
 #endif
 
 #if __has_include(<sstream>)

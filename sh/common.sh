@@ -1,10 +1,4 @@
-function print_error() {
-    echo -e "\033[31m${1}\033[0m"
-}
-
-function print_ok() {
-    echo -e "\033[32m${1}\033[0m"
-}
+[ -n "$COMMON_SH" ] && return || readonly COMMON_SH=1
 
 function is_available() {
     local cmd=$(command -v $1)
@@ -16,6 +10,20 @@ function is_changed() {
     [[ "${diff}" != "" ]]
 }
 
+function is_configuration() {
+    [[ "${1}" == "release" ]] \
+    || [[ "${1}" == "debug" ]] \
+    || [[ "${1}" == "coverage" ]] \
+    || [[ "${1}" == "address" ]] \
+    || [[ "${1}" == "memory" ]] \
+    || [[ "${1}" == "thread" ]] \
+    || [[ "${1}" == "undefined" ]]
+}
+
+function is_ignored() {
+    [[ "${1}" == projects/yamlcpp/* ]]
+}
+
 function is_linux() { 
     [[ $OSTYPE == "linux-gnu" ]]
 }
@@ -25,80 +33,81 @@ function is_number() {
 }
 
 function is_toolchain() {
-    [[ "${1}" == "clang" ]] || [[ "${1}" == "msvc" ]] || [[ "${1}" == "gcc" ]]
+    [[ "${1}" == "clang" ]] \
+    || [[ "${1}" == "msvc" ]] \
+    || [[ "${1}" == "gcc" ]]
 }
 
 function is_windows() { 
     [[ $OSTYPE == "msys" ]] || [[ $OSTYPE == "cygwin" ]]
 }
 
-function run_script() {
-    local script="${1}"
-    local arg1="${2}"
-    local arg2="${3}"
-    local arg3="${4}"
-    "${script[@]}" "${arg1}" "${arg2}" "${arg3}"
-    local status=$?
+function print_error() {
+    echo -e "\033[31m${1}\033[0m"
+}
 
-    if (( $status != 0 )); then
-        print_error "ERROR: ${script} failed: ${status}"
+function print_ok() {
+    echo -e "\033[32m${1}\033[0m"
+}
+
+function run_script() {
+    local -r script="${1}"
+    local -r arg1="${2}"
+    local -r arg2="${3}"
+    local -r arg3="${4}"
+
+    "${script}" "${arg1}" "${arg2}" "${arg3}"
+
+    if (( $? != 0 )); then
         exit 1
     fi
 }
 
-function set_toolchain() {
-    if [[ "${1}" == "" ]]; then
-        if is_linux; then
-            toolchain="gcc"
-        elif is_windows; then
-            toolchain="msvc"
-        else
-            toolchain="clang"
-        fi
-    elif is_toolchain "${1}"; then
-        toolchain="${1}"
-
-        if [[ "${toolchain}" == "msvc" ]] && ! is_windows; then
-            print_error "ERROR: 'msvc' toolchain is only available on Windows"
-            exit 1
-        elif [[ "${toolchain}" == "gcc" ]] && ! is_linux; then
-            print_error "ERROR: 'gcc' toolchain is only available on Linux"
-            exit 1
-        fi
+function set_host_properties() {
+    if is_windows; then
+        set_windows_properties
+    elif is_linux; then
+        set_linux_properties
     else
-        print_error "ERROR: unknown toolchain '${1}'"
-        exit 1
+        set_unix_properties
     fi
+}
 
-    echo "Toolchain: ${toolchain}"
+function set_linux_properties() {
+    readonly home="/adev"
+    readonly llvmVersion=14
+    readonly gccVersion=12
+    readonly ubuntuRepository="jammy"
+    readonly clang="clang++-${llvmVersion}"
+    readonly clangFormat="clang-format-${llvmVersion}"
+    readonly clangTidy="clang-tidy-${llvmVersion}"
+    readonly lld="lld-${llvmVersion}"
+    readonly llvmCov="llvm-cov-${llvmVersion}"
+    readonly llvmProfdata="llvm-profdata-${llvmVersion}"
+    readonly gcc="g++-${gccVersion}"
+    readonly ar="ar"
+    readonly libCppMsanRoot="${home}/libc++-msan"
+}
+
+function set_unix_properties() {
+    readonly clang="clang++"
+    readonly clangFormat="clang-format"
+    readonly clangTidy="clang-tidy"
+    readonly llvmCov="llvm-cov"
+    readonly llvmProfdata="llvm-profdata"
+    readonly ar="ar"
+}
+
+function set_windows_properties() {
+    readonly executableExtension=".exe"
+    readonly clang="clang++${executableExtension}"
+    readonly clangFormat="clang-format${executableExtension}"
+    readonly clangTidy="clang-tidy${executableExtension}"
+    readonly llvmCov="llvm-cov${executableExtension}"
+    readonly llvmProfdata="llvm-profdata${executableExtension}"
+    readonly ar="llvm-ar${executableExtension}"
 }
 
 shopt -s globstar
 
-if is_windows; then
-    executableExtension=".exe"
-    clang="clang++${executableExtension}"
-    clangFormat="clang-format${executableExtension}"
-    clangTidy="clang-tidy${executableExtension}"
-    llvmCov="llvm-cov${executableExtension}"
-    llvmProfdata="llvm-profdata${executableExtension}"
-    ar="llvm-ar${executableExtension}"
-elif is_linux; then
-    home="/adev"
-    llvmVersion=14
-    clang="clang++-${llvmVersion}"
-    clangFormat="clang-format-${llvmVersion}"
-    clangTidy="clang-tidy-${llvmVersion}"
-    lld="lld-${llvmVersion}"
-    llvmCov="llvm-cov-${llvmVersion}"
-    llvmProfdata="llvm-profdata-${llvmVersion}"
-    gcc="g++-11"
-    ar="ar"
-else
-    clang="clang++"
-    clangFormat="clang-format"
-    clangTidy="clang-tidy"
-    llvmCov="llvm-cov"
-    llvmProfdata="llvm-profdata"
-    ar="ar"
-fi
+set_host_properties

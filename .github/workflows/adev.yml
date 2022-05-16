@@ -25,10 +25,10 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build address-sanitizer
+            - run: ./build.sh build address-sanitizer
             - run: |
                   export ASAN_OPTIONS=alloc_dealloc_mismatch=0
-                  ./adev.sh test clang
+                  ./build.sh test clang
 
     analysis_linux:
         runs-on: ubuntu-latest
@@ -36,17 +36,17 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build clang
-            - run: ./adev.sh analyse
+            - run: ./build.sh build clang
+            - run: ./build.sh analyse
 
     analysis_windows:
         runs-on: windows-2022
         steps:
             - uses: actions/checkout@v2
             - shell: bash
-              run: ./adev.sh build clang
+              run: ./build.sh build clang
             - shell: bash
-              run: ./adev.sh analyse
+              run: ./build.sh analyse
 
     coverage_linux:
         runs-on: ubuntu-latest
@@ -54,8 +54,8 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build coverage
-            - run: ./adev.sh coverage
+            - run: ./build.sh build coverage
+            - run: ./build.sh coverage
             - if: always()
               uses: actions/upload-artifact@v2
               with:
@@ -68,9 +68,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - shell: bash
-              run: ./adev.sh build coverage
+              run: ./build.sh build coverage
             - shell: bash
-              run: ./adev.sh coverage
+              run: ./build.sh coverage
             - if: always()
               uses: actions/upload-artifact@v2
               with:
@@ -84,7 +84,7 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build docs
+            - run: ./build.sh build docs
             - if: always()
               uses: actions/upload-artifact@v2
               with:
@@ -98,7 +98,7 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh format check
+            - run: ./build.sh format check
 
     linux_clang_x64:
         runs-on: ubuntu-latest
@@ -106,8 +106,8 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build clang
-            - run: ./adev.sh test clang 100
+            - run: ./build.sh build clang
+            - run: ./build.sh test clang 100
             - if: always()
               uses: actions/upload-artifact@v2
               with:
@@ -122,8 +122,8 @@ jobs:
         if: false
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build gcc
-            - run: ./adev.sh test gcc 100
+            - run: ./build.sh build gcc
+            - run: ./build.sh test gcc 100
             - if: always()
               uses: actions/upload-artifact@v2
               with:
@@ -137,8 +137,8 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build memory-sanitizer
-            - run: ./adev.sh test clang
+            - run: ./build.sh build memory-sanitizer
+            - run: ./build.sh test clang
 
     thread_sanitizer:
         runs-on: ubuntu-latest
@@ -146,8 +146,8 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build thread-sanitizer
-            - run: ./adev.sh test clang
+            - run: ./build.sh build thread-sanitizer
+            - run: ./build.sh test clang
 
     undefined_sanitizer:
         runs-on: ubuntu-latest
@@ -155,17 +155,17 @@ jobs:
         needs: create_container
         steps:
             - uses: actions/checkout@v2
-            - run: ./adev.sh build undefined-sanitizer
-            - run: ./adev.sh test clang
+            - run: ./build.sh build undefined-sanitizer
+            - run: ./build.sh test clang
 
     windows_clang_x64:
         runs-on: windows-2022
         steps:
             - uses: actions/checkout@v2
             - shell: bash
-              run: ./adev.sh build clang
+              run: ./build.sh build clang
             - shell: bash
-              run: ./adev.sh test clang 100
+              run: ./build.sh test clang 100
             - if: always()
               uses: actions/upload-artifact@v2
               with:
@@ -178,9 +178,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - shell: bash
-              run: ./adev.sh build msvc
+              run: ./build.sh build msvc
             - shell: bash
-              run: ./adev.sh test msvc 100
+              run: ./build.sh test msvc 100
             - if: always()
               uses: actions/upload-artifact@v2
               with:

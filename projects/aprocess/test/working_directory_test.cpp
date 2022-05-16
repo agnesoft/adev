@@ -29,6 +29,6 @@ static const auto S = suite("working directory", [] { // NOLINT(cert-err58-cpp)
                                           .wait(DEFAULT_WAIT_TIMEOUT);
 
         expect(process.working_directory()).to_be(dir);
-        expect(std::filesystem::path{process.read()}).to_be(dir);
+        expect(process.read()).to_contain(dir.string());
     });
 });

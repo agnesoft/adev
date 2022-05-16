@@ -10,6 +10,7 @@
 *.pcm
 *.pch
 *.profraw
+*.profdata
 /gcm.cache/
 
 #JS
@@ -18,3 +19,5 @@ node_modules/
 #adev
 /build/
 /.vscode/
+/build.bat
+/.clang-tidy
